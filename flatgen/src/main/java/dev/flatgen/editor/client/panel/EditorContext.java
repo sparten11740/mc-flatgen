@@ -3,6 +3,8 @@ package dev.flatgen.editor.client.panel;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.options.rules.WorldOption;
+import java.util.List;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -48,6 +50,9 @@ public interface EditorContext {
 
     /** The message shown now, if any; null for none. */
     Component message();
+
+    /** The world options installed, read once when the editor opened. */
+    List<WorldOption> worldOptions();
 
     /** The registries of the world being created, which ids resolve against. */
     HolderLookup.Provider registries();

@@ -8,7 +8,6 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
-import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.SetOptions;
 import dev.flatgen.options.rules.WorldOption;
@@ -31,7 +30,7 @@ public final class OptionsPanel implements EditorPanel {
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        List<WorldOption> installed = InstalledOptions.load();
+        List<WorldOption> installed = editor.worldOptions();
         Map<String, List<WorldOption>> groups = new LinkedHashMap<>();
         installed.forEach(option -> groups.computeIfAbsent(option.group(), group -> new ArrayList<>()).add(option));
         List<Widget> widgets = new ArrayList<>();

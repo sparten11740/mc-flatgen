@@ -4,7 +4,6 @@ import dev.flatgen.biomes.rules.BiomeInfo;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.rules.WorldFacts;
 import dev.flatgen.mc.Biomes;
-import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.WorldOption;
 import java.util.List;
@@ -31,7 +30,7 @@ final class FactsNow {
 
     FactsNow(EditorContext editor) {
         this.editor = editor;
-        this.installed = InstalledOptions.load();
+        this.installed = editor.worldOptions();
     }
 
     /** The facts of the world as the editor shows it now. */

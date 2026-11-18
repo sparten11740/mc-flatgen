@@ -28,9 +28,9 @@ public final class OptionsAtDone {
     private OptionsAtDone() {
     }
 
-    /** Applies the preset, with the options it has on, to the world on the screen. */
-    public static void apply(CreateWorldScreen screen, Preset preset, HolderLookup.Provider registries) {
-        List<WorldOption> installed = InstalledOptions.load();
+    /** Applies the preset, with the options it has on of those installed, to the world on the screen. */
+    public static void apply(CreateWorldScreen screen, Preset preset, HolderLookup.Provider registries,
+            List<WorldOption> installed) {
         List<WorldOption> on = OptionChoices.on(preset.options(), installed);
         OptionChoices.Applied turnedOff = OptionChoices.applied(OptionChoices.on(OptionSessions.applied(screen),
                 installed).stream().filter(option -> !on.contains(option)).toList());

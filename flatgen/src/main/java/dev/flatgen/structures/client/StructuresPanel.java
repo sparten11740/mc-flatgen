@@ -7,7 +7,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
 import dev.flatgen.mc.Structures;
-import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.structures.rules.StructureChoice;
 import java.util.List;
@@ -36,7 +35,7 @@ public final class StructuresPanel implements EditorPanel {
 
     private static void open(EditorContext editor) {
         editor.open(new StructuresScreen(editor, Structures.all(editor.registries()),
-                OptionChoices.applied(OptionChoices.on(editor.shown().preset().options(), InstalledOptions.load()))
+                OptionChoices.applied(OptionChoices.on(editor.shown().preset().options(), editor.worldOptions()))
                         .structureSets()));
     }
 }

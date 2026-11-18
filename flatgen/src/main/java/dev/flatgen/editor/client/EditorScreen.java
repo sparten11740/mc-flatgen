@@ -21,6 +21,7 @@ import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionSessions;
 import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,8 @@ public final class EditorScreen extends FlatgenScreen {
     private final WorldCreationContext context;
     private final World world;
     private final History history;
+    /** The world options installed, read once as the editor opens. */
+    private final List<WorldOption> worldOptions;
     private final Context editor = new Context();
     private Edit previewed;
     /** What the last copy or paste said, until the next change; null for nothing. */
@@ -67,8 +70,9 @@ public final class EditorScreen extends FlatgenScreen {
         this.context = context;
         this.world = new World(WorldCreation.overworldType(context).minY(),
                 WorldCreation.overworldType(context).height());
+        this.worldOptions = InstalledOptions.load();
         Preset preset = OptionSessions.shown(parent, FlatSettings.toPreset(WorldCreation.flatSettings(context),
-                context.worldgenLoadContext(), "", ICON).preset(), InstalledOptions.load());
+                context.worldgenLoadContext(), "", ICON).preset(), worldOptions);
         this.history = new History(new EditorState(preset, preset.layers().size() - 1));
     }
 
@@ -142,7 +146,7 @@ public final class EditorScreen extends FlatgenScreen {
     }
 
     private void done() {
-        OptionsAtDone.apply(parent, history.current().preset(), context.worldgenLoadContext());
+        OptionsAtDone.apply(parent, history.current().preset(), context.worldgenLoadContext(), worldOptions);
         onClose();
     }
 
@@ -220,6 +224,11 @@ public final class EditorScreen extends FlatgenScreen {
         @Override
         public Component message() {
             return message;
+        }
+
+        @Override
+        public List<WorldOption> worldOptions() {
+            return worldOptions;
         }
 
         @Override
