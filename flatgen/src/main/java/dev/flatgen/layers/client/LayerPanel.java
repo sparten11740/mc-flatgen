@@ -48,7 +48,7 @@ public final class LayerPanel implements EditorPanel {
                         : panel.tip("flatgen.layer.deeper")));
         for (int quick : QUICK_HEIGHTS) {
             widgets.add(panel.button(Integer.toString(quick), flow.next(QUICK), new LayerEdits.SetHeight(quick),
-                    panel::hasLayer, List::of));
+                    panel::hasLayer, () -> panel.hasLayer() && quick > panel.room() ? panel.full() : List.of()));
         }
         flow.newRow();
         widgets.addAll(surfaceRow(editor, flow));
