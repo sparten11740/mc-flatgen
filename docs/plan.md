@@ -48,7 +48,7 @@ Everything is under `dev.flatgen`. Each feature has its own package (`layers`, `
 |---|---|---|
 | `<feature>/rules/` | The feature's logic as plain Java: records, pure functions, edits. Same on every version. | Other features' `rules`, the JDK, Gson. Never Minecraft, never a loader. |
 | `<feature>/` | Game-facing code that is the same on every version. | Its `rules`, other features' public types, `mc/`, Minecraft classes that do not change between the versions built. |
-| `<feature>/client/` | The feature's widgets and screens. | Its feature, `client/gui/`. |
+| `<feature>/client/` | The feature's widgets and screens. | Its feature, other features' public types, `client/gui/`, `mc/`. |
 | `client/gui/` | Flatgen's GUI toolkit (3.3). | `mc/` for drawing and input. |
 | `mc/` (in each version tree) | What differs between Minecraft versions, behind the same class and method names in every tree. | `rules` types and Minecraft. Never a feature's game-facing or client code. |
 | `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
@@ -91,7 +91,7 @@ Things that grow are lists of small classes behind an interface, so adding one n
 - `library/PresetSource`: where presets come from (the player's folder, built-ins, pack resources).
 - `templates/rules/Template`: each template.
 - `facts/rules/Fact`: each world fact.
-- `editor/PresetEditors`: which world types Flatgen edits (a key, or a test on the world type from F18).
+- `editor/client/PresetEditors`: which world types Flatgen edits (a key, or a test on the world type from F18).
 
 ### 3.5 Storage
 

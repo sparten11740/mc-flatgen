@@ -67,3 +67,8 @@ sourceSets.main {
     resources.srcDir(generateModMetadata)
 }
 neoForge.ideSyncTask(generateModMetadata)
+
+// Fabric's mixins stay out of this jar; NeoForge reaches the game through its events.
+tasks.processResources {
+    exclude("$modId-fabric.mixins.json")
+}

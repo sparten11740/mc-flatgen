@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "dev.flatgen.platform.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "WorldCreationUiStateMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

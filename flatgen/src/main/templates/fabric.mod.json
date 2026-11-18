@@ -9,6 +9,7 @@
   "entrypoints": {
     "client": ["dev.flatgen.platform.fabric.FabricClientEntrypoint"]
   },
+  "mixins": ["${mod_id}-fabric.mixins.json"],
   "depends": {
     "fabricloader": ">=${fabric_loader_min_version}",
     "fabric-api": ">=${fabric_api_version}",
