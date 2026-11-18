@@ -6,6 +6,7 @@ import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.facts.client.FactsPanel;
 import dev.flatgen.layers.client.LayerPanel;
 import dev.flatgen.options.client.OptionsPanel;
+import dev.flatgen.structures.client.StructuresPanel;
 import java.util.List;
 
 /** The panels beside the editor's column, top down; a feature that adds controls to the editor adds its panel here. */
@@ -15,6 +16,7 @@ final class EditorPanels {
             new SummaryPanel(),
             new FactsPanel(),
             new BiomePanel(),
+            new StructuresPanel(),
             new BlockPanel(),
             new LayerPanel(),
             new HistoryPanel(),

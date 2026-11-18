@@ -45,6 +45,7 @@ public final class FlatgenTests {
         tests.putAll(CodeGameTests.tests());
         tests.putAll(OptionGameTests.tests());
         tests.putAll(FactGameTests.tests());
+        tests.putAll(StructureGameTests.tests());
         return tests;
     }
 

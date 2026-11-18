@@ -14,9 +14,6 @@ public final class Badge implements Widget {
     /** A badge's size, in GUI pixels: an icon and a two pixel border. */
     public static final int SIZE = Icon.SIZE + 4;
     private static final int TILE = 0x60000000;
-    private static final int STRIKE = 0xFFE03030;
-    /** The thickness of the red stroke, in GUI pixels. */
-    private static final int STROKE = 2;
 
     private final Rect bounds;
     private final Supplier<Optional<Look>> look;
@@ -43,19 +40,10 @@ public final class Badge implements Widget {
             return;
         }
         canvas.fill(bounds, TILE);
-        now.get().icon().draw(canvas, bounds.x() + 2, bounds.y() + 2);
-        if (now.get().no()) {
-            strike(canvas);
-        }
+        Icon icon = now.get().no() ? Icon.struck(now.get().icon()) : now.get().icon();
+        icon.draw(canvas, bounds.x() + 2, bounds.y() + 2);
         if (bounds.contains(mouseX, mouseY)) {
             canvas.tooltip(now.get().tooltip(), mouseX, mouseY);
-        }
-    }
-
-    /** A red stroke from the top left corner to the bottom right. */
-    private void strike(Canvas canvas) {
-        for (int step = 0; step < bounds.width() - STROKE; step++) {
-            canvas.fill(new Rect(bounds.x() + step, bounds.y() + step, STROKE, STROKE), STRIKE);
         }
     }
 }

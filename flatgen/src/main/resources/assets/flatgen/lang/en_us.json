@@ -56,5 +56,22 @@
   "flatgen.picks.recent": "Recent",
   "flatgen.picks.star": "Right-click to star",
   "flatgen.picks.starred": "Starred",
-  "flatgen.picks.unstar": "Right-click to unstar"
+  "flatgen.picks.unstar": "Right-click to unstar",
+  "flatgen.structures.button.biome": "Structures: the biome's",
+  "flatgen.structures.button.chosen": "Structures: %s chosen",
+  "flatgen.structures.button.none": "Structures: none",
+  "flatgen.structures.decorations": "Decorations",
+  "flatgen.structures.decorations_tip": "The biome's trees, flowers, grass and ores",
+  "flatgen.structures.from_option": "Added by a world option that is on",
+  "flatgen.structures.lakes": "Lakes",
+  "flatgen.structures.lakes_tip": "Lakes of lava, on the surface and below it",
+  "flatgen.structures.mode.biome": "The biome's",
+  "flatgen.structures.mode.biome_tip": "Every structure the biome allows, as the game's own presets",
+  "flatgen.structures.mode.chosen": "Chosen",
+  "flatgen.structures.mode.chosen_tip": "Only the structures switched on below",
+  "flatgen.structures.mode.none": "None",
+  "flatgen.structures.mode.none_tip": "No structures at all",
+  "flatgen.structures.not_in_biome": "Cannot appear in %s: it needs %s",
+  "flatgen.structures.open": "Choose the world's structures, decorations and lakes",
+  "flatgen.structures.title": "Structures and decorations"
 }
