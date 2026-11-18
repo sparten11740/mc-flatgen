@@ -1,6 +1,6 @@
 # F05 Block picker
 
-Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F04
+Milestone: M1 layer editor · Release: v1 · Status: done · Depends on: F04
 
 ## Why
 
@@ -9,32 +9,48 @@ of blocks, so finding one has to be quick, and the picture has to be enough for 
 
 ## What the player gets
 
-A grid of block pictures beside the column: type to search, narrow it to one mod, see the blocks used recently and the
-ones starred. Clicking one sets the selected layer's block.
+A block picker opened from the button showing the selected layer's block: a grid of block pictures to search by typing,
+narrow to one mod, with the starred and recently picked blocks first. Clicking one sets the selected layer's block
+and goes back. It is a screen of its own rather than a grid beside the column, which has no room for one at the
+largest GUI scale.
 
 ## Acceptance criteria
 
-- [ ] Every block in the game's block registry, modded ones included, with its item picture; blocks without an item
-  (water, lava, fire and the like) with their texture.
-- [ ] Search by name and by id, as the player types.
-- [ ] Filter by mod (namespace), with the mod's name.
-- [ ] Recently used blocks first (last 16), starred blocks in their own row; both kept across games.
-- [ ] Hover shows name, id and mod.
-- [ ] Hints with a picture for blocks that make a poor layer: falling blocks over air or a fluid, blocks that need
-  support (torches, flowers), block entities.
-- [ ] Blocks disabled by the world's feature flags (experimental content not turned on) are hidden.
+- [x] Every block in the game's block registry, modded ones included, with its item picture; blocks without an item
+  (water, lava, fire and the like) with their side, as the column draws it.
+- [x] Search by name and by id, as the player types.
+- [x] Filter by mod (namespace), with the mod's name from the loader (`ClientPlatform`).
+- [x] Starred blocks first, then the last 16 picked, each under a heading; a right click stars or unstars; both kept
+  across games in `config/flatgen/blocks.json`.
+- [x] Hover shows name, id and mod.
+- [x] Hints for blocks that make a poor layer, under the selected layer in the editor: a falling block over air, a
+  fluid or the void, a block that is not whole (torches, flowers, water), a block entity. Their pictures come with
+  F16.
+- [x] Blocks disabled by the world's feature flags (experimental content not turned on) are hidden.
 
 ## Design
 
 - `search/rules/Search` (pure, shared with the biome picker of F07 from the start): matching and ranking (exact id,
   name prefix, word prefix, contains), recent and starred ordering, over plain entries of id, name and namespace.
   Unit-tested once for both pickers.
-- `blocks/client/BlockGrid`: the grid, through `Canvas`.
+- `blocks/client/BlockGrid`: the grid, through `Canvas`; `blocks/client/BlockPickerScreen`: the search field, the mod
+  filter and Cancel around it.
+- `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
+  which `mc/BlockCatalog` reads from the game; `blocks/rules/BlockMemory`: the starred and recent blocks.
+- The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
+  reader, `config/ConfigFiles`.
 - The list comes from the block registry of the world being created, filtered by its enabled feature flags, as the
   vanilla presets screen does (`filterFeatures`).
 - Recent and starred blocks live in `config/flatgen/blocks.json`, the blocks feature's own file.
 
 ## Tests
 
-- Unit: `Search` ranking, filtering, recents.
-- Dev client: search finds `stone`, `create:`, a block without an item; screenshot on both nodes.
+- Unit: `SearchTest`, `BlockMemoryTest`, `BlockRulesTest` (the edit and the hints), `TypedTextTest`,
+  `BlockRowsTest`.
+- GameTests on both nodes: the picker lists the game's blocks but air; sand, stone, water, a torch and a chest have
+  the traits the hints read.
+- Played with Blockpilot (`flatgen:blocks` lists the grid's slots): on NeoForge, search "glass" put glass first and
+  picking it made the grass layer glass; it came back as recent, a right click starred stone, both kept in
+  `blocks.json`; the mod filter showed the loader's name for the mod; sand picked for the bottom layer showed the
+  falling hint. On Fabric, andesite picked through a search set the dirt layer.
+- Not tried: a modded block (the dev runs have no block mods); blocks without an item drawn in the grid.
