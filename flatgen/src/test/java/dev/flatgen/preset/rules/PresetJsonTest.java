@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 class PresetJsonTest {
     @Test
     void readsWhatItWrites() {
-        PresetReading reading = PresetJson.read(PresetJson.write(PresetTest.TALL_FLAT));
-        assertEquals(PresetTest.TALL_FLAT, reading.preset());
+        PresetReading reading = PresetJson.read(PresetJson.write(TestPresets.TALL_FLAT));
+        assertEquals(TestPresets.TALL_FLAT, reading.preset());
         assertEquals(List.of(), reading.problems());
     }
 
@@ -38,7 +38,7 @@ class PresetJsonTest {
                   "options": { "flatgen:always_day": true }
                 }
                 """;
-        assertEquals(PresetTest.TALL_FLAT, PresetJson.read(file).preset());
+        assertEquals(TestPresets.TALL_FLAT, PresetJson.read(file).preset());
     }
 
     @Test

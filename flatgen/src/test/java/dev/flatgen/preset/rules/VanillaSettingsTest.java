@@ -45,7 +45,7 @@ class VanillaSettingsTest {
 
     @Test
     void writesTheDecorationsAsFeatures() {
-        JsonObject settings = VanillaSettings.toJson(PresetTest.TALL_FLAT);
+        JsonObject settings = VanillaSettings.toJson(TestPresets.TALL_FLAT);
         assertEquals(false, settings.get("features").getAsBoolean());
         assertEquals(4, settings.getAsJsonArray("layers").size());
         assertEquals("minecraft:plains", settings.get("biome").getAsString());

@@ -14,25 +14,16 @@ import org.junit.jupiter.api.Test;
 
 /** A preset's own rules: its height, what fits a world, and that nothing changes it from outside. */
 class PresetTest {
-    /** The stack most of the test instance's superflat worlds use. */
-    static final Preset TALL_FLAT = new Preset("Tall flat", "minecraft:grass_block", List.of(
-            new Layer("minecraft:bedrock", 1),
-            new Layer("minecraft:stone", 100),
-            new Layer("minecraft:dirt", 2),
-            new Layer("minecraft:grass_block", 1)),
-            "minecraft:plains", Optional.of(List.of("minecraft:strongholds", "minecraft:villages")), false, false,
-            Map.of("flatgen:always_day", true));
-
     @Test
     void addsUpItsLayersHeights() {
-        assertEquals(104, TALL_FLAT.height());
+        assertEquals(104, TestPresets.TALL_FLAT.height());
     }
 
     @Test
     void fitsAWorldAsTallAsItOrTaller() {
-        assertTrue(TALL_FLAT.fitsWorld(104));
-        assertTrue(TALL_FLAT.fitsWorld(384));
-        assertFalse(TALL_FLAT.fitsWorld(103));
+        assertTrue(TestPresets.TALL_FLAT.fitsWorld(104));
+        assertTrue(TestPresets.TALL_FLAT.fitsWorld(384));
+        assertFalse(TestPresets.TALL_FLAT.fitsWorld(103));
     }
 
     @Test
