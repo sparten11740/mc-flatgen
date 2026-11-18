@@ -65,4 +65,9 @@ extra["modMetadata"] = mapOf(
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+    // The sources as checked in, which the tests about the code itself read (BoundariesTest): inputs of the task too,
+    // so that changing them runs those tests again rather than taking a result from the build cache.
+    systemProperty("flatgen.project", treeDir.path)
+    inputs.files(fileTree(treeDir.resolve("src")) { include("**/*.java") })
+        .withPropertyName("sources").withPathSensitivity(PathSensitivity.RELATIVE)
 }

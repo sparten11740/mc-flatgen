@@ -51,6 +51,7 @@ Everything is under `dev.flatgen`. Each feature has its own package (`layers`, `
 | `<feature>/client/` | The feature's widgets and screens. | Its feature, `client/gui/`. |
 | `client/gui/` | Flatgen's GUI toolkit (3.3). | `mc/` for drawing and input. |
 | `mc/` (in each version tree) | What differs between Minecraft versions, behind the same class and method names in every tree. | `rules` types and Minecraft. Never a feature's game-facing or client code. |
+| `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
 | `platform/` | `ClientPlatform`, the interface shared code reaches loader hooks through, and its holder. | Nothing loader-specific. |
 | `platform/<loader>/` | Entry points, event wiring, the loader's mixins. | Anything. Nothing depends on it. |
 
