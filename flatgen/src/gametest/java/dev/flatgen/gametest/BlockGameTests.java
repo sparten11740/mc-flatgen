@@ -35,8 +35,9 @@ final class BlockGameTests {
         traitsAre("minecraft:sand", new LayerHints.Traits(true, true, false, true));
         traitsAre("minecraft:stone", new LayerHints.Traits(false, true, false, true));
         traitsAre("minecraft:water", new LayerHints.Traits(false, false, false, false));
-        traitsAre("minecraft:torch", new LayerHints.Traits(false, false, false, false));
-        traitsAre("minecraft:chest", new LayerHints.Traits(false, false, true, false));
+        traitsAre("minecraft:torch", new LayerHints.Traits(false, false, false, true));
+        traitsAre("minecraft:chest", new LayerHints.Traits(false, false, true, true));
+        traitsAre("minecraft:short_grass", new LayerHints.Traits(false, false, false, false));
     }
 
     private static void traitsAre(String block, LayerHints.Traits expected) {

@@ -38,6 +38,6 @@ public final class BlockCatalog {
         BlockState state = block.defaultBlockState();
         boolean whole = state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
         return new LayerHints.Traits(block instanceof FallingBlock, whole, state.hasBlockEntity(),
-                whole && state.getFluidState().isEmpty());
+                !FallingBlock.isFree(state));
     }
 }

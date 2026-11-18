@@ -28,7 +28,8 @@ public final class LayerHints {
      * @param falls     whether it falls when nothing holds it up
      * @param whole     whether it fills its whole block
      * @param keepsData whether it is a block entity
-     * @param holds     whether it holds up a falling block above it: a solid block, not air or a fluid
+     * @param holds     whether a falling block above it stays: not air, fire, a fluid or something it replaces, as the
+     *                  game's own falling blocks decide
      */
     public record Traits(boolean falls, boolean whole, boolean keepsData, boolean holds) {
     }
