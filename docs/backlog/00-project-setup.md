@@ -37,9 +37,10 @@ Nothing to see yet: a jar per node that loads, does nothing and breaks nothing.
 - Copied from Blockpilot and Glowline: the plugin versions (ModDevGradle, Loom with loom-back-compat, Stonecutter
   0.9.8), `common.gradle.kts` for what every node does alike, `version-sources.gradle.kts` for the version tree, the
   metadata templates in `src/main/templates`, and the Gradle wrapper.
-- Flatgen is a client mod: NeoForge's entry point is `@Mod(dist = Dist.CLIENT)` and the jar says
-  `displayTest = "IGNORE_ALL_VERSION"`, Fabric's `fabric.mod.json` says `"environment": "client"`. The integrated
-  server's hooks (F10) still run, as the integrated server runs inside the client.
+- Flatgen is a client mod: NeoForge constructs its entry point on the client only (`@Mod(dist = Dist.CLIENT)`) and
+  the jar says `displayTest = "IGNORE_ALL_VERSION"`; Fabric applies its mixins on the client only. Both jars load
+  harmlessly on a dedicated server, where nothing of theirs runs, which the GameTest server relies on (F02). The
+  integrated server's hooks (F27) still run, as the integrated server runs inside the client.
 - Blockpilot in the dev client comes with F01, GameTests with F02 and the boot tool with F20: each with the first
   feature that needs it, not empty here.
 

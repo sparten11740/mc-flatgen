@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "id": "flatgen-gametest",
+  "version": "0.0.0",
+  "name": "Flatgen GameTests",
+  "description": "Flatgen's GameTests, run on Fabric API's GameTest server in development only.",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": ["dev.flatgen.platform.fabric.FlatgenGameTests"]
+  },
+  "depends": {
+    "flatgen": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

@@ -25,6 +25,13 @@ tasks.jar {
     destinationDirectory = rootProject.layout.buildDirectory.dir("libs")
 }
 
+// The GameTests (src/gametest), in a source set of their own that never reaches the jar and is loaded as part of the
+// mod in development: ./gradlew runGameTestServer runs them headless, and check runs that.
+val gametest = sourceSets.create("gametest") {
+    compileClasspath += sourceSets.main.get().output
+    runtimeClasspath += sourceSets.main.get().output
+}
+
 // Blockpilot in the client run, for play tests, when asked for with -Pflatgen.blockpilot=<version>.
 extra["blockpilotConfiguration"] = "runtimeClasspath"
 apply(from = treeDir.resolve("blockpilot.gradle.kts"))
@@ -44,18 +51,33 @@ neoForge {
         register("client") {
             client()
         }
+        register("gameTestServer") {
+            type = "gameTestServer"
+            sourceSet = gametest
+            systemProperty("neoforge.enabledGameTestNamespaces", modId)
+            systemProperty("flatgen.played", extra["gameTestPlayedFile"].toString())
+        }
     }
 
     mods {
         register(modId) {
             sourceSet(sourceSets.main.get())
+            sourceSet(gametest)
         }
     }
+}
+neoForge.addModdingDependenciesTo(gametest)
+tasks.named("check") {
+    dependsOn("runGameTestServer")
 }
 
 neoForge.ideSyncTask(tasks.named("generateModMetadata"))
 
-// Fabric's mixins stay out of this jar; NeoForge reaches the game through its events.
+// Fabric's mixins stay out of this jar, and Fabric's GameTest mod out of the GameTests: NeoForge reaches the game
+// through its events and finds the GameTests by their holder.
 tasks.processResources {
     exclude("$modId-fabric.mixins.json")
+}
+tasks.named<ProcessResources>("processGametestResources") {
+    exclude("fabric.mod.json")
 }

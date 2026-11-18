@@ -38,8 +38,26 @@ val sourceSets = the<SourceSetContainer>()
 sourceSets.named("main") {
     java.exclude(otherLoaders)
 }
+// The GameTests (src/gametest), whichever way the loader's build makes their source set: the other loaders' halves
+// stay out of it too.
+sourceSets.matching { it.name == "gametest" }.all {
+    java.exclude(otherLoaders)
+}
 // What differs between Minecraft versions: one tree per range.
 apply(from = treeDir.resolve("version-sources.gradle.kts"))
+
+// Where the GameTests leave word that they played, which each loader's GameTest run is told: a game that never started,
+// or stopped as its mods loaded, ends its run without playing a test, and some loaders call that a success.
+val played = layout.buildDirectory.file("gametest/played").get().asFile
+extra["gameTestPlayedFile"] = played.path
+tasks.matching { it.name == "runGameTestServer" || it.name == "runGameTest" }.configureEach {
+    doFirst { played.delete() }
+    doLast {
+        if (!played.exists()) {
+            throw GradleException("The GameTests never played: the game did not start, or stopped as mods loaded")
+        }
+    }
+}
 
 repositories {
     mavenCentral()
