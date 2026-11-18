@@ -5,7 +5,7 @@ import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import java.util.Optional;
+import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import net.minecraft.network.chat.Component;
@@ -80,8 +80,8 @@ public final class NumberField implements Widget {
     }
 
     @Override
-    public Optional<WidgetDescription> describe() {
-        return Optional.of(new WidgetDescription("number", name, bounds, true, Integer.toString(value.getAsInt())));
+    public List<WidgetDescription> describe() {
+        return List.of(new WidgetDescription("number", name, bounds, true, Integer.toString(value.getAsInt())));
     }
 
     private void enter() {

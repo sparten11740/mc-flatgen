@@ -2,7 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * A part of a Flatgen screen: it draws through a {@link Canvas} and hears the mouse in screen coordinates. A screen
@@ -50,8 +50,11 @@ public interface Widget {
         return false;
     }
 
-    /** What the widget says of itself to tools that drive the screen; nothing for a widget they need not find. */
-    default Optional<WidgetDescription> describe() {
-        return Optional.empty();
+    /**
+     * What the widget says of itself to tools that drive the screen, or a group of each of its widgets; nothing for a
+     * widget they need not find.
+     */
+    default List<WidgetDescription> describe() {
+        return List.of();
     }
 }

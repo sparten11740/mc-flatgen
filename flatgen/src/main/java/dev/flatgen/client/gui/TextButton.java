@@ -6,7 +6,6 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.UiSounds;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
@@ -73,9 +72,9 @@ public final class TextButton implements Widget {
     }
 
     @Override
-    public Optional<WidgetDescription> describe() {
+    public List<WidgetDescription> describe() {
         String text = label.get().getString().isEmpty() && !tooltip.get().isEmpty()
                 ? tooltip.get().get(0).getString() : label.get().getString();
-        return Optional.of(new WidgetDescription("button", text, bounds, active.getAsBoolean(), ""));
+        return List.of(new WidgetDescription("button", text, bounds, active.getAsBoolean(), ""));
     }
 }

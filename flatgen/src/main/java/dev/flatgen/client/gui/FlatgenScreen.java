@@ -4,9 +4,7 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.BlockSides;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -24,14 +22,14 @@ public abstract class FlatgenScreen extends Screen {
     /** White, the colour of a screen's title as the game draws it. */
     private static final int TITLE_COLOR = 0xFFFFFFFF;
 
-    private final List<Widget> widgets = new ArrayList<>();
+    private WidgetGroup widgets = new WidgetGroup(List.of());
     private BlockSides blockSides = new BlockSides();
-    /** The widget that took the click whose button is held, which hears the drag and the release. */
-    private Widget pressed;
+    /** Whether a widget took the click whose button is held, which then hears the drag and the release. */
+    private boolean pressed;
     /** The button held for {@link #pressed}; the others are ignored until it is let go. */
     private int pressedButton;
-    /** The widget that has the keyboard. */
-    private Widget keyboard;
+    /** Whether a widget has the keyboard. */
+    private boolean keyboard;
 
     protected FlatgenScreen(Component title) {
         super(title);
@@ -47,18 +45,15 @@ public abstract class FlatgenScreen extends Screen {
 
     /** What every widget that can be found says of itself, for tools that drive the screen. */
     public List<WidgetDescription> describeWidgets() {
-        List<WidgetDescription> descriptions = new ArrayList<>();
-        widgets.forEach(widget -> widget.describe().ifPresent(descriptions::add));
-        return descriptions;
+        return widgets.describe();
     }
 
     @Override
     protected void init() {
         blockSides = new BlockSides();
-        widgets.clear();
-        widgets.addAll(layOut(width, height));
-        pressed = null;
-        keyboard = null;
+        widgets = new WidgetGroup(layOut(width, height));
+        pressed = false;
+        keyboard = false;
     }
 
     @Override
@@ -66,33 +61,27 @@ public abstract class FlatgenScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         McCanvas canvas = new McCanvas(graphics, font, blockSides);
         canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
-        for (Widget widget : widgets) {
-            widget.draw(canvas, mouseX, mouseY);
-        }
+        widgets.draw(canvas, mouseX, mouseY);
         canvas.finish();
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (pressed != null) {
+        if (pressed) {
             return true;
         }
-        Optional<Widget> taker = Optional.empty();
-        for (int index = widgets.size() - 1; index >= 0 && taker.isEmpty(); index--) {
-            Widget widget = widgets.get(index);
-            taker = widget.click(mouseX, mouseY, button, modifiers()) ? Optional.of(widget) : Optional.empty();
-        }
-        pressed = taker.orElse(null);
+        pressed = widgets.click(mouseX, mouseY, button, modifiers());
         pressedButton = button;
-        giveKeyboard(taker.filter(Widget::takesKeyboard).orElse(null));
-        return taker.isPresent() || super.mouseClicked(mouseX, mouseY, button);
+        keyboard = widgets.takesKeyboard();
+        widgets.keyboard(keyboard);
+        return pressed || super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (pressed != null) {
+        if (pressed) {
             if (button == pressedButton) {
-                pressed.drag(mouseX, mouseY);
+                widgets.drag(mouseX, mouseY);
             }
             return true;
         }
@@ -101,10 +90,10 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (pressed != null) {
+        if (pressed) {
             if (button == pressedButton) {
-                pressed.release(mouseX, mouseY);
-                pressed = null;
+                widgets.release(mouseX, mouseY);
+                pressed = false;
             }
             return true;
         }
@@ -115,21 +104,18 @@ public abstract class FlatgenScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         double amount = scrollY != 0 ? scrollY : scrollX;
-        for (int index = widgets.size() - 1; index >= 0; index--) {
-            if (widgets.get(index).scroll(mouseX, mouseY, amount, modifiers())) {
-                return true;
-            }
-        }
-        return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return widgets.scroll(mouseX, mouseY, amount, modifiers())
+                || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifierBits) {
-        if (keyboard != null && keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            giveKeyboard(null);
+        if (keyboard && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            keyboard = false;
+            widgets.keyboard(false);
             return true;
         }
-        if (keyboard != null && keyboard.key(keyCode, modifiers())) {
+        if (keyboard && widgets.key(keyCode, modifiers())) {
             return true;
         }
         return shortcut(keyCode, modifiers()) || super.keyPressed(keyCode, scanCode, modifierBits);
@@ -137,20 +123,7 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     public boolean charTyped(char character, int modifierBits) {
-        return keyboard != null && keyboard.type(character) || super.charTyped(character, modifierBits);
-    }
-
-    private void giveKeyboard(Widget widget) {
-        if (keyboard == widget) {
-            return;
-        }
-        if (keyboard != null) {
-            keyboard.keyboard(false);
-        }
-        keyboard = widget;
-        if (keyboard != null) {
-            keyboard.keyboard(true);
-        }
+        return (keyboard && widgets.type(character)) || super.charTyped(character, modifierBits);
     }
 
     private static Modifiers modifiers() {

@@ -5,7 +5,7 @@ import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import java.util.Optional;
+import java.util.List;
 import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -81,7 +81,7 @@ public final class TextField implements Widget {
     }
 
     @Override
-    public Optional<WidgetDescription> describe() {
-        return Optional.of(new WidgetDescription("text", name, bounds, true, typed.text()));
+    public List<WidgetDescription> describe() {
+        return List.of(new WidgetDescription("text", name, bounds, true, typed.text()));
     }
 }
