@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /** Which options a preset has on, and options that cannot be on together. */
@@ -43,6 +44,13 @@ class OptionChoicesTest {
         Map<String, Boolean> chosen = Map.of("gone:rockets", true, "flatgen:always_day", true);
         assertEquals(List.of("gone:rockets"), OptionChoices.missing(chosen, INSTALLED));
         assertEquals(Map.of("gone:rockets", true), OptionChoices.switched(chosen, ALWAYS_DAY, false, INSTALLED));
+    }
+
+    @Test
+    void gathersTheGameRulesAndStructureSetsOfTheOptionsOn() {
+        OptionChoices.Applied applied = OptionChoices.applied(List.of(ALWAYS_DAY, AIRPORT, FROZEN_CLOCK));
+        assertEquals(Map.of("doDaylightCycle", "false"), applied.gameRules());
+        assertEquals(Set.of("skyliners:airports"), applied.structureSets());
     }
 
     private static WorldOption option(String id, boolean defaultOn, Effect... effects) {

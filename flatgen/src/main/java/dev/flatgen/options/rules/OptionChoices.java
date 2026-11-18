@@ -2,8 +2,10 @@ package dev.flatgen.options.rules;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -40,21 +42,31 @@ public final class OptionChoices {
         return installed.stream().filter(option -> isOn(option, chosen)).toList();
     }
 
-    /** The game rules the installed options that are on set, by name; a later option's value wins. */
-    public static Map<String, String> gameRules(Map<String, Boolean> chosen, List<WorldOption> installed) {
-        Map<String, String> rules = new LinkedHashMap<>();
+    /**
+     * What options do at Done, gathered.
+     *
+     * @param gameRules     the game rules they set, by name; a later option's value wins
+     * @param structureSets the structure sets they add, by id
+     */
+    public record Applied(Map<String, String> gameRules, Set<String> structureSets) {
+    }
+
+    /** What these options do at Done, in their order. */
+    public static Applied applied(List<WorldOption> options) {
+        Applied applied = new Applied(new LinkedHashMap<>(), new LinkedHashSet<>());
         WorldSetup setup = new WorldSetup() {
             @Override
             public void setGameRule(String rule, String value) {
-                rules.put(rule, value);
+                applied.gameRules().put(rule, value);
             }
 
             @Override
             public void addStructureSets(List<String> sets) {
+                applied.structureSets().addAll(sets);
             }
         };
-        on(chosen, installed).forEach(option -> option.effects().forEach(effect -> effect.atDone(setup)));
-        return rules;
+        options.forEach(option -> option.effects().forEach(effect -> effect.atDone(setup)));
+        return new Applied(Map.copyOf(applied.gameRules()), Set.copyOf(applied.structureSets()));
     }
 
     /** The ids a preset names that no installed option has, in id order. */

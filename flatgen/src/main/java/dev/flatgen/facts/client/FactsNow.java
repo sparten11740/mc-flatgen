@@ -61,7 +61,8 @@ final class FactsNow {
         Map<String, Boolean> options = editor.shown().preset().options();
         if (options != spawningFor) {
             spawningFor = options;
-            mobSpawning = !"false".equals(OptionChoices.gameRules(options, installed).get(MOB_SPAWNING));
+            mobSpawning = !"false".equals(OptionChoices.applied(OptionChoices.on(options, installed)).gameRules()
+                    .get(MOB_SPAWNING));
         }
         return mobSpawning;
     }
