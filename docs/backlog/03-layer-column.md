@@ -25,7 +25,8 @@ top, each layer as tall as it is deep, Y numbers at each boundary and lines for 
   snow) where they fall within the stack. Which matter for the current biome, and the world's bottom and build limit,
   come with F08's facts.
 - [x] Click selects a layer (outline), hover shows block name, height and Y range.
-- [x] Fits from the smallest window to large GUI scales; scrolls with the wheel when even the minimums cannot fit.
+- [x] Fits from the smallest window to large GUI scales; scrolls with the wheel when even the minimums cannot fit
+  (over the Y numbers since F04, whose wheel over a layer changes its depth).
 - [x] The editor is rebuilt on the toolkit (`docs/plan.md` 3.3): `FlatgenScreen` is the only class extending `Screen`,
   and only `McCanvas` and `mc/BlockSides` draw through the game's GUI classes; features draw through `Canvas`.
 

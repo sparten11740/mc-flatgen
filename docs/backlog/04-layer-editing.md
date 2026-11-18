@@ -1,6 +1,6 @@
 # F04 Layer editing
 
-Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F03
+Milestone: M1 layer editor · Release: v1 · Status: done · Depends on: F03
 
 ## Why
 
@@ -15,24 +15,31 @@ keys for everything, undo for every change.
 
 ## Acceptance criteria
 
-- [ ] Add a layer above or below the selected one (with the last used block), remove, duplicate.
-- [ ] Drag a layer to a new place in the stack; a gap shows where it will land.
-- [ ] Drag the top edge of a layer to change its height; the Y numbers follow while dragging.
-- [ ] Height of the selected layer: − and + buttons, scroll wheel over the layer (Shift for 10, Ctrl for 100), typed
-  number, quick heights (1, 2, 3, 5, 10, 50, 100).
-- [ ] "Surface at Y": type the Y the surface should be at; the selected layer's height changes to get there.
-- [ ] Undo and redo (buttons, Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z) for every change, including block and biome changes.
-- [ ] Keyboard: arrows select, Alt+↑/↓ move, Delete removes, Ctrl+D duplicates, Insert adds.
-- [ ] The stack can never get taller than the world; the control that would go over it stops at the top and says
-  why with a picture and a tooltip.
+- [x] Add a layer above or below the selected one (of the selected layer's block, one block deep; the last used block
+  joins with F05's picker), remove, duplicate.
+- [x] Drag a layer to a new place in the stack; a line shows where it will land.
+- [x] Drag the top edge of a layer to change its height; the Y numbers follow while dragging, and the whole drag is
+  one step to undo.
+- [x] Height of the selected layer: − and + buttons, scroll wheel over the layer (Shift for 10, Ctrl for 100), typed
+  number, quick heights (1, 2, 3, 5, 10, 50, 100). The wheel over the Y numbers scrolls a tall column instead.
+- [x] "Surface at Y": type the Y the surface should be at; the selected layer's height changes to get there.
+- [x] Undo and redo (buttons, Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z) for every change, including block and biome changes.
+- [x] Keyboard: arrows select, Alt+↑/↓ move, Delete removes, Ctrl+D duplicates, Insert adds. On a Mac, Ctrl is the
+  Command key, as the game has it; a number field with the keyboard takes its keys first, and Escape gives the
+  keyboard back rather than closing the editor.
+- [x] The stack can never get taller than the world; the control that would go over it stops at the top and says
+  why in its tooltip ("The world is 384 blocks tall"); the picture comes with F16.
 
 ## Design
 
-- `layers/rules/LayerStack` and `layers/rules/LayerEdit` (pure): each change is an edit applied to an immutable stack,
-  so undo is a list of stacks and every edit is unit-tested without the game.
-- `layers/client`: the widgets turn mouse and keys into edits; they never change the stack themselves.
-- Mouse and key input reach the widgets through Flatgen's own input types (`docs/plan.md` 3.3), since 1.21.9 changed
-  the game's.
+- `editor/rules`: `EditorState` (the preset and the selected layer), `Edit` (one change, a class per kind, so later
+  features add theirs), `History` (undo and redo as a list of states), `World` (the floor and height edits keep to).
+- `layers/rules/LayerEdits`: add, duplicate, remove, move, set and change the height, surface at Y; unit-tested.
+- `layers/client`: the column turns mouse input into edits through `ColumnActions`, which the editor answers, with a
+  dragged change previewed until it is let go; widgets never change the preset themselves.
+- The toolkit grows: modifier keys, drags, keyboard and typing for the widget that took a click (`FlatgenScreen`),
+  `NumberField`, buttons that can be unusable with a tooltip saying why, `TextLines`, `RowLayout`, and widgets that
+  describe themselves for Blockpilot's `flatgen:widgets`.
 
 ## Version notes
 
@@ -41,5 +48,8 @@ keys for everything, undo for every change.
 
 ## Tests
 
-- Unit: every edit, undo and redo sequences, height limits, "surface at Y".
-- Dev client (Blockpilot `drag`, `scroll`, `key`, `click`, `screenshot`): reorder, resize and undo on both nodes.
+- Unit: `LayerEditsTest` (every edit, height limits, surface at Y, empty stacks), `HistoryTest`, `WidgetRowsTest`.
+- Played with Blockpilot on NeoForge: +, a quick height, a typed height, surface at Y 40, undo and redo, add above,
+  copy, remove, the keys (up, Alt+down, Delete, Insert, Command+Z), dragging a layer's edge, dragging a layer to the
+  top, and the wheel alone, with Shift and with Command, checking `flatgen:editor` after each; Done and Create New
+  World made a world whose `level.dat` holds exactly the edited stack. A shorter run on Fabric did the same.
