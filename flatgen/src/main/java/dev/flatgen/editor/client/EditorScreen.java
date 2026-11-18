@@ -28,6 +28,7 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 /**
  * Flatgen's superflat editor, opened by Customize: the world's layers in a column, beside it the panels of
@@ -142,8 +143,12 @@ public final class EditorScreen extends FlatgenScreen {
         onClose();
     }
 
+    /** Opens the game's own editor on the layers as Flatgen has them now; its Cancel leaves the world as it was. */
     private void openVanilla() {
-        minecraft.setScreen(PresetEditors.VANILLA.createEditScreen(parent, context));
+        FlatLevelGeneratorSettings edited = FlatSettings.toSettings(history.current().preset(),
+                context.worldgenLoadContext());
+        minecraft.setScreen(PresetEditors.VANILLA.createEditScreen(parent,
+                WorldCreation.withFlatSettings(context, edited)));
     }
 
     /** What the column and the panels see of the editor: its history, with a dragged change shown until let go. */

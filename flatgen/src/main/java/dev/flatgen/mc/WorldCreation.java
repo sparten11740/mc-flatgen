@@ -33,8 +33,18 @@ public final class WorldCreation {
 
     /** Gives the world these superflat settings, as the game's own editor does when its Done is pressed. */
     public static void applyFlatSettings(CreateWorldScreen screen, FlatLevelGeneratorSettings settings) {
-        screen.getUiState().updateDimensions((registries, dimensions) ->
-                dimensions.replaceOverworldGenerator(registries, new FlatLevelSource(settings)));
+        screen.getUiState().updateDimensions(withFlatOverworld(settings));
+    }
+
+    /** The world being created, but with these superflat settings; the Create World screen stays as it is. */
+    public static WorldCreationContext withFlatSettings(WorldCreationContext context,
+            FlatLevelGeneratorSettings settings) {
+        return context.withDimensions(withFlatOverworld(settings));
+    }
+
+    private static WorldCreationContext.DimensionsUpdater withFlatOverworld(FlatLevelGeneratorSettings settings) {
+        return (registries, dimensions) -> dimensions.replaceOverworldGenerator(registries,
+                new FlatLevelSource(settings));
     }
 
     /** The world's overworld type, which says where its floor is and how tall it is. */
