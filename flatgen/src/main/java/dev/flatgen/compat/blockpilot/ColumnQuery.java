@@ -7,7 +7,6 @@ import dev.blockpilot.api.Fields;
 import dev.blockpilot.api.Result;
 import dev.blockpilot.api.Row;
 import dev.flatgen.compat.blockpilot.rules.ColumnRows;
-import dev.flatgen.compat.blockpilot.rules.ReportRow;
 import dev.flatgen.editor.client.EditorScreen;
 import dev.flatgen.layers.client.ColumnWidget;
 import java.util.List;

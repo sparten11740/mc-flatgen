@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.UiSounds;
@@ -15,13 +16,8 @@ import net.minecraft.network.chat.Component;
  * unusable for a while, drawn so, with a tooltip saying why.
  */
 public final class TextButton implements Widget {
-    private static final String SPRITE = "minecraft:widget/button";
-    private static final String HOVERED_SPRITE = "minecraft:widget/button_highlighted";
-    private static final String DISABLED_SPRITE = "minecraft:widget/button_disabled";
     private static final int LABEL_COLOR = 0xFFFFFFFF;
     private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
-    /** The left mouse button. */
-    private static final int LEFT_BUTTON = 0;
 
     private final Supplier<Component> label;
     private final Rect bounds;
@@ -56,7 +52,7 @@ public final class TextButton implements Widget {
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         boolean usable = active.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
-        canvas.sprite(!usable ? DISABLED_SPRITE : hovered ? HOVERED_SPRITE : SPRITE, bounds);
+        canvas.button(bounds, hovered, usable);
         canvas.centeredText(label.get(), bounds, usable ? LABEL_COLOR : DISABLED_LABEL_COLOR);
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
@@ -66,7 +62,7 @@ public final class TextButton implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        if (button != LEFT_BUTTON || !bounds.contains(x, y)) {
+        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
             return false;
         }
         if (active.getAsBoolean()) {

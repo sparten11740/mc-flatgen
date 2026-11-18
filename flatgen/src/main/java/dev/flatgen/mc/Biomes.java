@@ -7,8 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 
 /** What Flatgen shows of biomes, from the registries of the world being created. */
 public final class Biomes {
-    /** The water colour of a biome the game lacks: the game's own default water. */
-    private static final int DEFAULT_WATER = 0x3F76E4;
+    /** The game's own default water colour, RGB: a biome the game lacks has it, and a fluid's icon. */
+    public static final int DEFAULT_WATER = 0x3F76E4;
 
     private Biomes() {
     }

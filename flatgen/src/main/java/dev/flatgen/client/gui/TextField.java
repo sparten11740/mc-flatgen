@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
@@ -15,7 +16,6 @@ public final class TextField implements Widget {
     private static final int MOST_CHARACTERS = 64;
     /** The first character a player can type; those below are controls. */
     private static final char FIRST_TYPED = ' ';
-    private static final int LEFT_BUTTON = 0;
 
     private final String name;
     private final Rect bounds;
@@ -48,7 +48,7 @@ public final class TextField implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        return button == LEFT_BUTTON && bounds.contains(x, y);
+        return button == MouseButtons.LEFT && bounds.contains(x, y);
     }
 
     @Override

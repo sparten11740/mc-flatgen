@@ -25,9 +25,6 @@ import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
  * {@link VanillaSettings}, so ids resolve against the registries of the world they are for, modded ones included.
  */
 public final class FlatSettings {
-    /** How a tag of structure sets is written among their ids. */
-    private static final String TAG_MARK = "#";
-
     private FlatSettings() {
     }
 
@@ -77,10 +74,10 @@ public final class FlatSettings {
 
     private static <T> boolean hasSetOrTag(HolderLookup.Provider registries,
             ResourceKey<? extends Registry<T>> registry, String id) {
-        if (!id.startsWith(TAG_MARK)) {
+        if (!id.startsWith(VanillaSettings.TAG_MARK)) {
             return has(registries, registry, id);
         }
-        ResourceLocation location = ResourceLocation.tryParse(id.substring(TAG_MARK.length()));
+        ResourceLocation location = ResourceLocation.tryParse(id.substring(VanillaSettings.TAG_MARK.length()));
         return location != null
                 && registries.lookupOrThrow(registry).get(TagKey.create(registry, location)).isPresent();
     }

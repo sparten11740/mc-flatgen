@@ -3,6 +3,7 @@ package dev.flatgen.layers.client;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
@@ -51,7 +52,6 @@ public final class ColumnWidget implements Widget {
     private static final int SELECTION = 0xFFFFFFFF;
     private static final int DROP_LINE = 0xFFFFD040;
     private static final int LABEL_COLOR = 0xFFE0E0E0;
-    private static final int LEFT_BUTTON = 0;
 
     private final ColumnActions actions;
     private final World world;
@@ -133,7 +133,7 @@ public final class ColumnWidget implements Widget {
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
         OptionalInt layer = hoveredLayer(x, y);
-        if (button != LEFT_BUTTON || layer.isEmpty()) {
+        if (button != MouseButtons.LEFT || layer.isEmpty()) {
             return false;
         }
         int index = layer.getAsInt();

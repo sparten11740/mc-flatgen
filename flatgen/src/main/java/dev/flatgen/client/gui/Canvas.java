@@ -27,8 +27,11 @@ public interface Canvas {
     /** How tall a line of text is. */
     int lineHeight();
 
-    /** Draws one of the game's GUI sprites stretched over a rectangle, as {@code minecraft:widget/button}. */
-    void sprite(String sprite, Rect area);
+    /** Draws a button's face as the game draws its buttons: lit while hovered, greyed while it cannot be used. */
+    void button(Rect area, boolean hovered, boolean usable);
+
+    /** Draws a text field's box as the game draws its fields, lit while it has the keyboard. */
+    void field(Rect area, boolean lit);
 
     /**
      * Fills a rectangle with a block's side, tiled at the size of a block in the inventory, as the block looks from

@@ -8,6 +8,4 @@ package dev.flatgen.client.gui.rules;
  * @param alt     whether Alt (Option on a Mac) is held
  */
 public record Modifiers(boolean shift, boolean control, boolean alt) {
-    /** No modifier held. */
-    public static final Modifiers NONE = new Modifiers(false, false, false);
 }

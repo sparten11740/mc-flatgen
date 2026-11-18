@@ -32,9 +32,6 @@ public final class BlockSides {
     /** The seed the faces are picked with, so a block with random variants always looks the same. */
     private static final long SEED = 42L;
 
-    /** The game's own default water colour, for the icon of a fluid block, which shows no biome. */
-    private static final int DEFAULT_WATER = 0x3F76E4;
-
     private final Map<String, List<Face>> faces = new HashMap<>();
     private final Map<String, ItemStack> items = new HashMap<>();
 
@@ -60,7 +57,7 @@ public final class BlockSides {
     public void drawIcon(GuiGraphics graphics, String block, int x, int y) {
         ItemStack item = items.computeIfAbsent(block, BlockSides::itemOf);
         if (item.isEmpty()) {
-            draw(graphics, block, DEFAULT_WATER, x, y, TILE, TILE);
+            draw(graphics, block, Biomes.DEFAULT_WATER, x, y, TILE, TILE);
         } else {
             graphics.renderItem(item, x, y);
         }

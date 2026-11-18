@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
@@ -18,7 +19,6 @@ import org.lwjgl.glfw.GLFW;
 public final class NumberField implements Widget {
     /** The most characters typed, enough for any Y or height with its sign. */
     private static final int MOST_CHARACTERS = 6;
-    private static final int LEFT_BUTTON = 0;
 
     private final String name;
     private final Rect bounds;
@@ -47,7 +47,7 @@ public final class NumberField implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        return button == LEFT_BUTTON && bounds.contains(x, y);
+        return button == MouseButtons.LEFT && bounds.contains(x, y);
     }
 
     @Override

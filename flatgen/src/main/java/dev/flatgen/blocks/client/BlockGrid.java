@@ -3,6 +3,7 @@ package dev.flatgen.blocks.client;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
@@ -30,8 +31,6 @@ public final class BlockGrid implements Widget {
     private static final int STAR = 0xFFFFD040;
     /** The size of the mark on a starred block's slot, in GUI pixels. */
     private static final int STAR_SIZE = 3;
-    private static final int LEFT_BUTTON = 0;
-    private static final int RIGHT_BUTTON = 1;
 
     private final Rect bounds;
     private final Supplier<List<Section>> sections;
@@ -149,10 +148,10 @@ public final class BlockGrid implements Widget {
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
         Optional<Slot> slot = slotAt(x, y);
-        if (slot.isEmpty() || (button != LEFT_BUTTON && button != RIGHT_BUTTON)) {
+        if (slot.isEmpty() || (button != MouseButtons.LEFT && button != MouseButtons.RIGHT)) {
             return false;
         }
-        (button == LEFT_BUTTON ? onPick : onStar).accept(slot.get().block().id());
+        (button == MouseButtons.LEFT ? onPick : onStar).accept(slot.get().block().id());
         return true;
     }
 

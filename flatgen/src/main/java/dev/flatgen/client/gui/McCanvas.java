@@ -11,6 +11,14 @@ import net.minecraft.resources.ResourceLocation;
 
 /** A {@link Canvas} drawing through this version's {@link GuiGraphics}, one frame at a time. */
 final class McCanvas implements Canvas {
+    private static final ResourceLocation BUTTON = ResourceLocation.withDefaultNamespace("widget/button");
+    private static final ResourceLocation LIT_BUTTON =
+            ResourceLocation.withDefaultNamespace("widget/button_highlighted");
+    private static final ResourceLocation GREY_BUTTON = ResourceLocation.withDefaultNamespace("widget/button_disabled");
+    private static final ResourceLocation FIELD = ResourceLocation.withDefaultNamespace("widget/text_field");
+    private static final ResourceLocation LIT_FIELD =
+            ResourceLocation.withDefaultNamespace("widget/text_field_highlighted");
+
     private final GuiGraphics graphics;
     private final Font font;
     private final BlockSides blockSides;
@@ -57,8 +65,17 @@ final class McCanvas implements Canvas {
     }
 
     @Override
-    public void sprite(String sprite, Rect area) {
-        graphics.blitSprite(ResourceLocation.parse(sprite), area.x(), area.y(), area.width(), area.height());
+    public void button(Rect area, boolean hovered, boolean usable) {
+        sprite(!usable ? GREY_BUTTON : hovered ? LIT_BUTTON : BUTTON, area);
+    }
+
+    @Override
+    public void field(Rect area, boolean lit) {
+        sprite(lit ? LIT_FIELD : FIELD, area);
+    }
+
+    private void sprite(ResourceLocation sprite, Rect area) {
+        graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
     }
 
     @Override

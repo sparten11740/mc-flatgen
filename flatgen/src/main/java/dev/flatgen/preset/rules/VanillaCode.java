@@ -9,8 +9,8 @@ import java.util.stream.Collectors;
  * The game's superflat code, the text its presets screen shares worlds as:
  * {@code minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;minecraft:plains}, the layers bottom up, each
  * {@code [height*]block}, then the biome, plains when it is left out. Flatgen writes it exactly as the game does, and
- * reads anything the game reads (ids without a namespace are the game's, a trailing comma is ignored), saying which part
- * is wrong where the game quietly falls back to its default world.
+ * reads anything the game reads (ids without a namespace are the game's, a trailing comma is ignored), saying which
+ * part is wrong where the game quietly falls back to its default world.
  */
 public final class VanillaCode {
     private static final char PART = ';';

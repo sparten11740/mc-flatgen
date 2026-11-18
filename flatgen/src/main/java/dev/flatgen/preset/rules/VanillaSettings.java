@@ -21,8 +21,8 @@ public final class VanillaSettings {
     private static final String LAKES = "lakes";
     private static final String FEATURES = "features";
     private static final String STRUCTURE_OVERRIDES = "structure_overrides";
-    /** How the codec writes a tag of structure sets in place of a list. */
-    private static final String TAG_MARK = "#";
+    /** How the codec writes a tag of structure sets in place of a list, and how Flatgen writes one among ids. */
+    public static final String TAG_MARK = "#";
 
     private VanillaSettings() {
     }
