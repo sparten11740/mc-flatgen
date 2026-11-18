@@ -9,7 +9,8 @@ import java.util.stream.Collectors;
  * The game's superflat code, the text its presets screen shares worlds as:
  * {@code minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;minecraft:plains}, the layers bottom up, each
  * {@code [height*]block}, then the biome, plains when it is left out. Flatgen writes it exactly as the game does, and
- * reads anything the game reads, saying which part is wrong where the game quietly falls back to its default world.
+ * reads anything the game reads (ids without a namespace are the game's, a trailing comma is ignored), saying which part
+ * is wrong where the game quietly falls back to its default world.
  */
 public final class VanillaCode {
     private static final char PART = ';';
@@ -19,6 +20,8 @@ public final class VanillaCode {
     private static final String ID = "[a-z0-9_.-]+(:[a-z0-9_./-]+)?";
     /** A layer's height as the code writes it: one to four digits. */
     private static final String DEPTH = "\\d{1,4}";
+    /** The namespace of an id written without one, as the game reads it. */
+    private static final String GAME_NAMESPACE = "minecraft:";
 
     private VanillaCode() {
     }
@@ -79,7 +82,7 @@ public final class VanillaCode {
         List<Layer> layers = new ArrayList<>();
         List<Problem> problems = new ArrayList<>();
         int start = 0;
-        for (String piece : layersPart.split(LAYER, -1)) {
+        for (String piece : layersPart.split(LAYER)) {
             Optional<Layer> layer = readLayer(piece.trim());
             if (layer.isPresent()) {
                 layers.add(layer.get());
@@ -88,6 +91,9 @@ public final class VanillaCode {
             }
             start += piece.length() + LAYER.length();
         }
+        if (layers.isEmpty() && problems.isEmpty()) {
+            problems.add(new Problem(Kind.NO_LAYERS, 0, layersPart.length(), ""));
+        }
         return new Reading(layers, biome, problems);
     }
 
@@ -95,7 +101,7 @@ public final class VanillaCode {
     private static String biomeOf(String rest) {
         int next = rest.indexOf(PART);
         String biome = (next < 0 ? rest : rest.substring(0, next)).trim();
-        return biome.isEmpty() ? Preset.DEFAULT_BIOME : biome;
+        return biome.isEmpty() ? Preset.DEFAULT_BIOME : withNamespace(biome);
     }
 
     /** A layer from its piece of the code, {@code [height*]block}; none when the piece cannot be read. */
@@ -104,7 +110,12 @@ public final class VanillaCode {
         String block = (star < 0 ? piece : piece.substring(star + 1)).trim();
         String depth = star < 0 ? "1" : piece.substring(0, star).trim();
         boolean readable = block.matches(ID) && depth.matches(DEPTH) && Integer.parseInt(depth) >= 1;
-        return readable ? Optional.of(new Layer(block, Integer.parseInt(depth))) : Optional.empty();
+        return readable ? Optional.of(new Layer(withNamespace(block), Integer.parseInt(depth))) : Optional.empty();
+    }
+
+    /** An id with the game's namespace when it is written without one, as the game reads {@code stone}. */
+    private static String withNamespace(String id) {
+        return id.contains(":") ? id : GAME_NAMESPACE + id;
     }
 
     private static String layer(Layer layer) {

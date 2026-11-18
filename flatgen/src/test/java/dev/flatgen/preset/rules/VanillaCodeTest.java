@@ -40,6 +40,14 @@ class VanillaCodeTest {
     }
 
     @Test
+    void readsIdsWithoutANamespaceAsTheGamesAndIgnoresATrailingComma() {
+        VanillaCode.Reading reading = VanillaCode.read("bedrock,2*stone,;plains");
+        assertEquals(List.of(new Layer("minecraft:bedrock", 1), new Layer("minecraft:stone", 2)), reading.layers());
+        assertEquals("minecraft:plains", reading.biome());
+        assertEquals(List.of(), reading.problems());
+    }
+
+    @Test
     void saysWhichLayerItCannotReadAndWhere() {
         VanillaCode.Reading reading = VanillaCode.read("minecraft:bedrock,x*minecraft:stone,0*minecraft:dirt,Stone");
         assertEquals(List.of(new Layer("minecraft:bedrock", 1)), reading.layers());
@@ -54,5 +62,6 @@ class VanillaCodeTest {
         assertEquals(List.of(new VanillaCode.Problem(VanillaCode.Kind.NO_LAYERS, 0, 0, "")),
                 VanillaCode.read(";minecraft:plains").problems());
         assertEquals(VanillaCode.Kind.NO_LAYERS, VanillaCode.read("").problems().get(0).kind());
+        assertEquals(VanillaCode.Kind.NO_LAYERS, VanillaCode.read(",,;minecraft:plains").problems().get(0).kind());
     }
 }
