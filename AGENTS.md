@@ -19,8 +19,9 @@ tree builds it with Stonecutter, the setup of Blockpilot (github.com/sparten1174
 - `settings.gradle.kts`: the nodes. `flatgen/stonecutter.gradle.kts`: loader constants and rename rules.
   `flatgen/build.<loader>.gradle.kts`: each loader's build; `flatgen/common.gradle.kts`: what every node does alike.
   `flatgen/versions/<node>/gradle.properties`: each node's versions.
-- `flatgen/src/main`: shared by every node. `flatgen/src/<range>` (first `1.21.1`): the version tree, `mc/` and the
-  classes that extend or mix into Minecraft's, serving its version up to the next tree's.
+- `flatgen/src/main`: shared by every node. `flatgen/src/<range>` (first `1.21.1`): a version tree, serving its version
+  up to the next tree's, for the classes that differ between versions. A class moves there only when a version built
+  needs it to differ (`docs/plan.md` 3.2).
 - Packages and the direction they may depend in: `docs/plan.md` 3.1. Each feature has its own package; its logic in
   `rules/` (plain Java, unit-tested), its game-facing code beside it, its screens in `client/`. Loader code only in
   `platform/<loader>/`.

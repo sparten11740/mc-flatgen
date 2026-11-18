@@ -37,7 +37,8 @@ anything Flatgen does not do yet.
   `FlatLevelSource`, or the default flat settings when it is not) and applies its result with
   `CreateWorldScreen.getUiState().updateDimensions((registries, dimensions) ->
   dimensions.replaceOverworldGenerator(registries, new FlatLevelSource(settings)))`, as the vanilla editor does.
-  This reading and writing is version-specific and lives in the version tree (`mc/WorldCreation`).
+  This reading and writing is the game's API most likely to change, so it lives in `mc/WorldCreation`, in `src/main`
+  while every version built shares it.
 - The vanilla editor stays reachable through `PresetEditor.EDITORS`, which still holds it on both loaders in 1.21.1.
 
 ## Version notes

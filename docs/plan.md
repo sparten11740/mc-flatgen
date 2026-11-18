@@ -50,7 +50,7 @@ Everything is under `dev.flatgen`. Each feature has its own package (`layers`, `
 | `<feature>/` | Game-facing code that is the same on every version. | Its `rules`, other features' public types, `mc/`, Minecraft classes that do not change between the versions built. |
 | `<feature>/client/` | The feature's widgets and screens. | Its feature, other features' public types, `client/gui/`, `mc/`. |
 | `client/gui/` | Flatgen's GUI toolkit (3.3). | `mc/` for drawing and input. |
-| `mc/` (in each version tree) | What differs between Minecraft versions, behind the same class and method names in every tree. | `rules` types and Minecraft. Never a feature's game-facing or client code. |
+| `mc/` | The game's API that may differ between versions, behind Flatgen's own names (3.2). | `rules` types, the root, Minecraft. Never a feature's game-facing or client code. |
 | `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
 | `platform/` | `ClientPlatform`, the interface shared code reaches loader hooks through, and its holder. | Nothing loader-specific. |
 | `platform/<loader>/` | Entry points, event wiring, the loader's mixins. | Anything. Nothing depends on it. |
@@ -62,10 +62,12 @@ fails on an import against this table (F00).
 
 - Stonecutter, set up as in Blockpilot: each node is `<minecraft>-<loader>`, built by `build.<loader>.gradle.kts`, with
   its versions in `flatgen/versions/<node>/gradle.properties`. The checked-in node is `1.21.1-neoforge`.
-- `src/main` is shared by every node. `src/<range>` (first `src/1.21.1`) holds the version tree: `mc/` and the classes
-  that extend or mix into Minecraft's (screen base, `Canvas` implementation, mixins). A tree serves its version up to
-  the next tree's. Tree classes sit in the package they belong to and keep its dependency rules: `FlatgenScreen` and
-  the `Canvas` implementation in `client/gui/`, the Fabric mixin in `platform/fabric/`.
+- `src/main` is shared by every node. `src/<range>` (first `src/1.21.1`) is a version tree, serving its version up to
+  the next tree's, for the classes that differ between versions. A class lives in `src/main` until a version built
+  needs it to differ; then it moves into the trees, one copy per range, as each node reads one tree only. So that such
+  a move stays small, the game's API that may change (world creation, drawing, input) is called from `mc/` and the
+  GUI toolkit's base classes (3.3), not from features. Tree classes sit in the package they belong to and keep its
+  dependency rules.
 - A plain rename between versions is a rename rule in `stonecutter.gradle.kts`, naming the release that introduced it;
   a small difference is a `//? if` block; anything larger is a tree class.
 - Loader code lives in `platform/<loader>/`; each loader's build excludes the others' folders. Shared code names no

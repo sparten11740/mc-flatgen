@@ -25,6 +25,9 @@ top, each layer as tall as it is deep, Y numbers at each boundary and lines for 
   then always).
 - [ ] Click selects a layer (highlight), hover shows block name and Y range.
 - [ ] Fits from the smallest window Minecraft allows to large GUI scales; scrolls when it cannot fit.
+- [ ] The editor is rebuilt on `client/gui/FlatgenScreen` and `Canvas` (`docs/plan.md` 3.3): afterwards nothing in
+  `src/main` extends `Screen` or draws through the game's GUI classes. F01's `EditorScreen` uses 1.21.1 layout classes
+  that 1.20.1 lacks; it becomes the column editor's screen.
 
 ## Design
 

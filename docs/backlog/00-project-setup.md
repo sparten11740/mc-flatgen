@@ -22,8 +22,8 @@ Nothing to see yet: a jar per node that loads, does nothing and breaks nothing.
 - [x] `./gradlew build` builds both nodes and runs the unit tests; jars land in `build/libs` as
   `flatgen-<version>+<minecraft>-<loader>.jar`.
 - [x] The source layout of `docs/plan.md` 3 set up and enforced by the boundaries test: one loader each in
-  `platform/<loader>`, the version tree `src/1.21.1` read by every node; the first feature packages, with their
-  `rules/`, arrive with F01 and F02.
+  `platform/<loader>`, the version tree `src/1.21.1` read by every node (empty until a class differs between versions);
+  the first feature packages, with their `rules/`, arrive with F01 and F02.
 - [x] A boundaries test that reads the sources and fails when a `rules/` package imports Minecraft or a loader, or
   code outside `platform/<loader>` names a loader's API.
 - [x] Java 17 in all shared code, as the 1.20.1 nodes (v3) compile it: the main compile runs at Java 17 language
