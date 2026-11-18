@@ -15,14 +15,11 @@ the<BasePluginExtension>().archivesName = modId
 the<JavaPluginExtension>().toolchain.languageVersion =
     JavaLanguageVersion.of(javaVersion.toInt())
 
+// The mod's code and its tests are written in Java 17, which the 1.20.1 nodes compile them with (docs/plan.md 2.6), so
+// a newer language feature fails here already; the classes still target the node's own Java. -Xlint:-options silences
+// javac's note that an older source level is compiled against a newer JDK's classes.
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
-}
-
-// The mod's code is written in Java 17, which the 1.20.1 nodes compile it with (docs/plan.md 2.6), so a newer language
-// feature fails here already; the classes still target the node's own Java. -Xlint:-options silences javac's note that
-// an older source level is compiled against a newer JDK's classes.
-tasks.named<JavaCompile>("compileJava") {
     sourceCompatibility = "17"
     targetCompatibility = javaVersion
     options.compilerArgs.add("-Xlint:-options")
