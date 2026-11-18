@@ -12,10 +12,15 @@ fun prop(name: String) = property(name).toString()
 val minecraft = prop("minecraft_version")
 val treeDir = parent!!.projectDir
 
+// Fabric's metadata, which common.gradle.kts generates from its template.
+extra["metadataTemplate"] = "fabric.mod.json"
+extra["loaderMetadata"] = mapOf(
+    "fabric_loader_min_version" to prop("fabric_loader_min_version"),
+    "fabric_api_version" to prop("fabric_api_version").substringBefore('+'),
+    "minecraft_version_range" to prop("minecraft_version_range"),
+    "java_version" to prop("java_version"),
+)
 apply(from = treeDir.resolve("common.gradle.kts"))
-// The mod's own metadata properties, which common.gradle.kts reads.
-@Suppress("UNCHECKED_CAST")
-val modMetadata = extra["modMetadata"] as Map<String, String>
 
 // Every jar lands in the root build/libs.
 loomx.modJar {
@@ -52,23 +57,4 @@ loom {
             runDirectory = layout.projectDirectory.dir("run")
         }
     }
-}
-
-val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
-    val properties = modMetadata + mapOf(
-        "fabric_loader_min_version" to prop("fabric_loader_min_version"),
-        "fabric_api_version" to prop("fabric_api_version").substringBefore('+'),
-        "minecraft_version_range" to prop("minecraft_version_range"),
-        "java_version" to prop("java_version"),
-    )
-    inputs.properties(properties)
-    expand(properties)
-    from(treeDir.resolve("src/main/templates")) {
-        include("fabric.mod.json")
-    }
-    into(layout.buildDirectory.dir("generated/sources/modMetadata"))
-}
-
-sourceSets.main {
-    resources.srcDir(generateModMetadata)
 }

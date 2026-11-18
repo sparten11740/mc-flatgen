@@ -11,10 +11,14 @@ fun prop(name: String) = property(name).toString()
 val modId = parent!!.property("mod_id").toString()
 val treeDir = parent!!.projectDir
 
+// NeoForge's metadata, which common.gradle.kts generates from its template.
+extra["metadataTemplate"] = "META-INF/neoforge.mods.toml"
+extra["loaderMetadata"] = mapOf(
+    "loader_version_range" to prop("loader_version_range"),
+    "neo_version" to prop("neo_version"),
+    "minecraft_version_range" to prop("minecraft_version_range"),
+)
 apply(from = treeDir.resolve("common.gradle.kts"))
-// The mod's own metadata properties, which common.gradle.kts reads.
-@Suppress("UNCHECKED_CAST")
-val modMetadata = extra["modMetadata"] as Map<String, String>
 
 // Every jar lands in the root build/libs.
 tasks.jar {
@@ -49,24 +53,7 @@ neoForge {
     }
 }
 
-val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
-    val properties = modMetadata + mapOf(
-        "loader_version_range" to prop("loader_version_range"),
-        "neo_version" to prop("neo_version"),
-        "minecraft_version_range" to prop("minecraft_version_range"),
-    )
-    inputs.properties(properties)
-    expand(properties)
-    from(treeDir.resolve("src/main/templates")) {
-        include("META-INF/neoforge.mods.toml")
-    }
-    into(layout.buildDirectory.dir("generated/sources/modMetadata"))
-}
-
-sourceSets.main {
-    resources.srcDir(generateModMetadata)
-}
-neoForge.ideSyncTask(generateModMetadata)
+neoForge.ideSyncTask(tasks.named("generateModMetadata"))
 
 // Fabric's mixins stay out of this jar; NeoForge reaches the game through its events.
 tasks.processResources {

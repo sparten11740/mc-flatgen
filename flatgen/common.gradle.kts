@@ -53,14 +53,30 @@ dependencies {
     "testImplementation"("com.google.code.gson:gson:2.10.1")
 }
 
-// The mod's own properties, which every loader's metadata template takes beside its loader's own.
-extra["modMetadata"] = mapOf(
+// The loader's metadata file, from its template in src/main/templates with the mod's own properties and the loader's,
+// which the loader's build sets before applying this script: the template's path (extra["metadataTemplate"]) and its
+// properties (extra["loaderMetadata"]).
+@Suppress("UNCHECKED_CAST")
+val loaderMetadata = extra["loaderMetadata"] as Map<String, String>
+val metadataTemplate = extra["metadataTemplate"].toString()
+val modMetadata = mapOf(
     "mod_id" to modId,
     "mod_name" to parent!!.property("mod_name").toString(),
     "mod_description" to parent!!.property("mod_description").toString(),
     "mod_version" to modVersion,
     "mod_license" to rootProject.property("mod_license").toString(),
-)
+) + loaderMetadata
+val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
+    inputs.properties(modMetadata)
+    expand(modMetadata)
+    from(treeDir.resolve("src/main/templates")) {
+        include(metadataTemplate)
+    }
+    into(layout.buildDirectory.dir("generated/sources/modMetadata"))
+}
+sourceSets.named("main") {
+    resources.srcDir(generateModMetadata)
+}
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
