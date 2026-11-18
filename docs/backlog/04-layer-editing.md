@@ -15,8 +15,8 @@ keys for everything, undo for every change.
 
 ## Acceptance criteria
 
-- [x] Add a layer above or below the selected one (of the selected layer's block, one block deep; the last used block
-  joins with F05's picker), remove, duplicate.
+- [x] Add a layer above or below the selected one (of the selected layer's block, one block deep; the blocks used
+  lately are first in F05's picker), remove, duplicate.
 - [x] Drag a layer to a new place in the stack; a line shows where it will land.
 - [x] Drag the top edge of a layer to change its height; the Y numbers follow while dragging, and the whole drag is
   one step to undo.

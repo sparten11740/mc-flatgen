@@ -29,8 +29,10 @@ Default, Amplified or other noise world types.
 3. **The Create World screen and its World tab are never changed.** Create Aeronautics hooks into the World tab's
    constructor and into world creation; replacing or re-laying out either would break it. Flatgen only adds listeners
    through public methods (F12) and its own screens.
-4. **Client mod.** The jar is client-only on both loaders. The one server-side step, setting the clock on a new
-   world's first start for "always day" (F10), runs on the integrated server inside the client.
+4. **Client mod.** Flatgen works on the client only and servers never need it, yet both jars load harmlessly on one,
+   so a modpack can ship them everywhere: Fabric's entrypoint and mixin are client-only, NeoForge builds the mod on the
+   client only, and neither side asks the other for it when connecting. The one server-side step, setting the clock on
+   a new world's first start for "always day" (F10), runs on the integrated server inside the client.
 5. **GUI behind a toolkit of Flatgen's own** (3.3), as the game's GUI drawing changed in 1.21.6 and 26.1 and its input
    events in 1.21.9.
 6. **Java 17 in all shared code** from the start, as the 1.20.1 nodes compile it.
