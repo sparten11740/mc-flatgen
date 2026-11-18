@@ -25,8 +25,8 @@ wrong marked.
 
 ## Design
 
-- `preset/rules/VanillaCode` (pure): parse to a preset part plus a list of problems with their character ranges;
-  write from a preset.
+- `preset/rules/VanillaCode` (pure): writing came with F26 (Blockpilot's `flatgen:editor` reports the code); this
+  feature adds parsing to a preset part plus a list of problems with their character ranges.
 - 1.21.1's own parser (`PresetFlatWorldScreen.fromString`) and writer (`save`) are the reference: the round-trip
   GameTest compares against them.
 
