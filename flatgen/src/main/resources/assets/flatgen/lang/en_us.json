@@ -38,6 +38,7 @@
   "flatgen.facts.no_slimes_tip": "Raise the surface to Y %s, out of slime chunks' reach",
   "flatgen.facts.slime_chunks": "Slimes spawn in slime chunks: the surface is below Y %s",
   "flatgen.facts.snow_line": "Snow from about Y %s",
+  "flatgen.facts.surface": "The surface is at Y %s",
   "flatgen.facts.surface_slimes": "Slimes spawn on the surface at night, as in a swamp",
   "flatgen.facts.weather.none": "No rain or snow here: always sunny",
   "flatgen.facts.weather.rain": "It rains here",
