@@ -48,6 +48,23 @@ class VanillaCodeTest {
     }
 
     @Test
+    void saysWhereTheCodeFirstNamesEachBlockAndTheBiomeTheGameLacks() {
+        String code = "minecraft:stone, 2*glow_rock,minecraft:glow_rock_wall,glow_rock; nomod:glowing";
+        VanillaCode.Reading reading = VanillaCode.read(code);
+        MissingIds missing = new MissingIds(List.of("minecraft:glow_rock"), List.of("nomod:glowing"), List.of());
+        assertEquals(List.of(
+                new VanillaCode.Problem(VanillaCode.Kind.UNKNOWN_BLOCK, 19, 28, "glow_rock"),
+                new VanillaCode.Problem(VanillaCode.Kind.UNKNOWN_BIOME, 65, 78, "nomod:glowing")),
+                VanillaCode.unknownIds(reading, missing));
+    }
+
+    @Test
+    void saysAnEmptyLayerBeforeOthersIsUnreadable() {
+        assertEquals(List.of(new VanillaCode.Problem(VanillaCode.Kind.UNREADABLE_LAYER, 0, 0, "")),
+                VanillaCode.read(",minecraft:stone").problems());
+    }
+
+    @Test
     void saysWhichLayerItCannotReadAndWhere() {
         VanillaCode.Reading reading = VanillaCode.read("minecraft:bedrock,x*minecraft:stone,0*minecraft:dirt,Stone");
         assertEquals(List.of(new Layer("minecraft:bedrock", 1)), reading.layers());
