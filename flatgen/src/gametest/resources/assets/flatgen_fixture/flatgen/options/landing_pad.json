@@ -1,0 +1,10 @@
+{
+  "name": "Landing pad (test)",
+  "description": "Flatgen's test fixture: a pad at spawn, the spawn moved onto it, and a midday that stays",
+  "icon": "minecraft:yellow_concrete",
+  "effects": [
+    { "type": "place_at_spawn", "template": "flatgen_fixture:landing_pad", "offset": [0, -1, 0], "spawn": [2, 1, 2] },
+    { "type": "first_start_time", "time": 6000 },
+    { "type": "game_rule", "rule": "doDaylightCycle", "value": false }
+  ]
+}

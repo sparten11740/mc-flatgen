@@ -68,10 +68,13 @@ tasks.named("check") {
 extra["blockpilotConfiguration"] = if (loomx.isUnobfuscated) "localRuntime" else "modLocalRuntime"
 apply(from = treeDir.resolve("blockpilot.gradle.kts"))
 
+// The dev client loads the GameTests' mod too, for its fixtures (a world option and its template), as NeoForge's
+// client run does with the GameTests' source set registered to Flatgen's mod.
 loom {
     runs {
         named("client") {
             runDirectory = layout.projectDirectory.dir("run")
+            sourceSet = "gametest"
         }
     }
 }
