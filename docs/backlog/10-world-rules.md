@@ -37,6 +37,9 @@ become part of the preset and show under Create World → More → Game Rules as
 
 ## Tests
 
-- GameTest: each option's effects applied to a level give the game rules and clock above.
+- Unit: the three files read through the option reader with the effects above (`FlatgenOptionFilesTest`).
+- GameTest: their game rules applied as Done applies them set the game's own rules, a value a rule cannot take or a
+  rule the game lacks is left and reported, and rules turned off go back to the game's defaults
+  (`GameRuleGameTests`); the clock on the first start is F27's `first_start_time`, which `OptionGameTests` covers.
 - Dev client: always day and always clear on, create the world, wait a minute, still noon and clear; reload the world,
   the clock has moved on from where it stopped rather than back to midday.

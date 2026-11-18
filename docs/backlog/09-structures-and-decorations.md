@@ -35,5 +35,8 @@ those that cannot appear in the chosen biome. Switches for decorations and lakes
 ## Tests
 
 - Unit: the choice's three states and its conversion to `structure_overrides`.
-- GameTest: a preset with villages only on plains finds a village within the usual search radius
-  (`/locate`-equivalent through the chunk generator), and none with "none".
+- GameTest: the structure sets the game's own flat generator keeps for a plains preset (its
+  `ChunkGeneratorStructureState`) are exactly those Flatgen marks as able to appear there, for the biome's choice;
+  a chosen list keeps villages but not desert pyramids, and none keeps none (`StructureGameTests`). Searching chunks
+  for a village, as planned at first, was left out: it needs chunks generated with the preset's settings, which the
+  GameTest world does not have, and the generator's own list is what decides it.

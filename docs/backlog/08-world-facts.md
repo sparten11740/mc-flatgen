@@ -49,5 +49,10 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
 ## Tests
 
 - Unit: every fact for plains, desert, snowy plains, swamp, mushroom fields, at surface Y 39, 40, 60, 100.
-- GameTest: for those biomes and heights, `WorldFacts` agrees with `Biome.getPrecipitationAt` and with
-  `Slime.checkSlimeSpawnRules` on a slime chunk.
+- Unit: each fact's picture, words and column line (`FactsTest`).
+- GameTest: for those biomes and heights (and 150 for the windswept hills' snow line), the weather agrees with
+  `Biome.getPrecipitationAt`, and on a slime chunk `Slime.checkSlimeSpawnRules` spawns slimes at Y 39 and not at 40,
+  as the fact says (`FactGameTests`). Surface slimes are not checked against the game, which would need a swamp in the
+  GameTest world; their heights (above 50, below 70) and the biome tag are taken from 1.21.1's `Slime`.
+- Known approximations: the weather leaves out the game's temperature noise (about 8 blocks either way, so the snow
+  line is "about"), and a frozen ocean, whose FROZEN temperature modifier lets it rain in patches, is told as snow.

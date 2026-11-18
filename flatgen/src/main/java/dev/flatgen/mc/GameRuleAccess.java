@@ -48,9 +48,25 @@ public final class GameRuleAccess {
      * @return the names left as they were: rules this version lacks, or values they cannot take
      */
     public static List<String> set(CreateWorldScreen screen, Map<String, String> rules) {
-        Rules known = Rules.of();
         WorldCreationUiState state = screen.getUiState();
-        CompoundTag values = state.getGameRules().createTag();
+        Changed changed = changed(state.getGameRules(), rules);
+        state.setGameRules(changed.rules());
+        return changed.left();
+    }
+
+    /**
+     * Game rules with some changed.
+     *
+     * @param rules the game rules
+     * @param left  the names left as they were: rules this version lacks, or values they cannot take
+     */
+    public record Changed(GameRules rules, List<String> left) {
+    }
+
+    /** These game rules with some set by name, their values as the game writes them; the others as they were. */
+    public static Changed changed(GameRules current, Map<String, String> rules) {
+        Rules known = Rules.of();
+        CompoundTag values = current.createTag();
         List<String> left = new ArrayList<>();
         for (Map.Entry<String, String> rule : rules.entrySet()) {
             if (known.takes(rule.getKey(), rule.getValue())) {
@@ -59,8 +75,7 @@ public final class GameRuleAccess {
                 left.add(rule.getKey());
             }
         }
-        state.setGameRules(new GameRules(new Dynamic<>(NbtOps.INSTANCE, values)));
-        return left;
+        return new Changed(new GameRules(new Dynamic<>(NbtOps.INSTANCE, values)), left);
     }
 
     /** This version's game rules by what they take: true or false, or a whole number. */
