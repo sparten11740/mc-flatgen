@@ -92,7 +92,7 @@ public final class PickerScreen extends FlatgenScreen {
         int gridTop = row.bottom() + GAP;
         grid = new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - FOOTER),
                 picker.cardWidth(), picker.cardHeight(), this::sections, id -> picks.starred().contains(id),
-                picker.cards(), this::pick, this::star);
+                picker.cards(), picker.modName(), this::pick, this::star);
         return List.of(search, modButton, grid,
                 new TextButton(CommonComponents.GUI_CANCEL,
                         new Rect((width - CANCEL_WIDTH) / 2, height - (FOOTER + ROW_HEIGHT) / 2, CANCEL_WIDTH,

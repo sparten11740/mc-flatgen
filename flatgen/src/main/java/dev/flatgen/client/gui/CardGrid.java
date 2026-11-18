@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
@@ -35,6 +36,7 @@ public final class CardGrid implements Widget {
     private final Supplier<List<Section>> sections;
     private final Predicate<String> starred;
     private final Cards cards;
+    private final Function<String, String> modName;
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
     private int scroll;
@@ -48,8 +50,10 @@ public final class CardGrid implements Widget {
         /** Draws an entry's card in its place. */
         void draw(Canvas canvas, Search.Entry entry, Rect place);
 
-        /** What a card's tooltip says of its entry, before the grid's line about starring. */
-        List<Component> describe(Search.Entry entry);
+        /** What a card's tooltip says of its entry besides its name, id and mod; nothing by default. */
+        default List<Component> describe(Search.Entry entry) {
+            return List.of();
+        }
     }
 
     /**
@@ -74,17 +78,20 @@ public final class CardGrid implements Widget {
      * A grid in this rectangle of cards this size, of the sections given, which may change as the player searches.
      *
      * @param starred whether an entry is starred, by id
+     * @param modName a mod's name for players, by namespace, for the tooltips
      * @param onPick  told the id a left click picks
      * @param onStar  told the id a right click stars or unstars
      */
     public CardGrid(Rect bounds, int cardWidth, int cardHeight, Supplier<List<Section>> sections,
-            Predicate<String> starred, Cards cards, Consumer<String> onPick, Consumer<String> onStar) {
+            Predicate<String> starred, Cards cards, Function<String, String> modName, Consumer<String> onPick,
+            Consumer<String> onStar) {
         this.bounds = bounds;
         this.cardWidth = cardWidth;
         this.cardHeight = cardHeight;
         this.sections = sections;
         this.starred = starred;
         this.cards = cards;
+        this.modName = modName;
         this.onPick = onPick;
         this.onStar = onStar;
     }
@@ -194,7 +201,9 @@ public final class CardGrid implements Widget {
     }
 
     private List<Component> describe(Search.Entry entry) {
-        List<Component> lines = new ArrayList<>(cards.describe(entry));
+        List<Component> lines = new ArrayList<>(List.of(Component.literal(entry.name()),
+                Component.literal(entry.id()), Component.literal(modName.apply(entry.namespace()))));
+        lines.addAll(cards.describe(entry));
         lines.add(Component.translatable(starred.test(entry.id()) ? "flatgen.picks.unstar" : "flatgen.picks.star"));
         return lines;
     }
