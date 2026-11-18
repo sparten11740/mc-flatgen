@@ -24,6 +24,7 @@ biomes. Each card shows the biome's colours and the facts of F08 as small pictur
 ## Design
 
 - Searching reuses `search/rules/Search` from the block picker (F05); no search code of the biome picker's own.
+- Recent and starred biomes live in `config/flatgen/biomes.json`, the biome feature's own file.
 - `biome/client/BiomeGrid` draws through `Canvas`; the card reads a `BiomeInfo` (pure record: id, name, colours,
   climate, spawns) that the version tree builds from `Biome` (`mc/Biomes`).
 - Colours from `BiomeSpecialEffects` (grass and foliage colour overrides or the climate's default colour map).

@@ -35,7 +35,7 @@ Default, Amplified or other noise world types.
    events in 1.21.9.
 6. **Java 17 in all shared code** from the start, as the 1.20.1 nodes compile it.
 7. **Presets are files, choices are separate.** Each preset is a JSON file in `config/flatgen/presets/`; favourites,
-   the default and recents are in `config/flatgen/flatgen.json`, so preset files can be shared as they are.
+   the default and recents are in `config/flatgen/library.json`, so preset files can be shared as they are.
 
 ## 3. Architecture
 
@@ -98,7 +98,9 @@ Things that grow are lists of small classes behind an interface, so adding one n
 
 ### 3.5 Storage
 
-- `config/flatgen/flatgen.json`: settings, favourites, default, recents, starred blocks and biomes.
+- Each feature that keeps a player's choices owns one file named after it, so a feature's data never grows another's
+  class: `config/flatgen/flatgen.json` (the `config` feature: whether Flatgen is on), `library.json` (F12: favourites,
+  the default, recents, start on Superflat), `blocks.json` and `biomes.json` (F05, F07: recent and starred).
 - `config/flatgen/presets/*.json`: one preset per file, format of F02, written atomically.
 - `config/flatgen/exports/`: datapacks exported by F21.
 

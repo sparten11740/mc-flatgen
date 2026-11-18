@@ -22,7 +22,7 @@ already applied.
   already changed are never replaced.
 - [ ] Option "Start Create World on Superflat": the World Type is Superflat with the default applied when the screen
   opens.
-- [ ] Favourites, the default and recently used presets live in `config/flatgen/flatgen.json`, by preset file name,
+- [ ] Favourites, the default and recently used presets live in `config/flatgen/library.json`, by preset file name,
   so preset files stay free of personal choices and can be shared as they are.
 
 ## Design

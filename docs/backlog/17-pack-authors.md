@@ -15,7 +15,7 @@ Nothing to do: a pack's presets are in the library and its default is set when t
 
 - [ ] Presets shipped in a mod or resource pack at `assets/<namespace>/flatgen/presets/*.json` show as built-ins of
   that pack (F13).
-- [ ] A pack ships `config/flatgen/flatgen.json` with its default preset, "start on Superflat" and hidden built-ins;
+- [ ] A pack ships `config/flatgen/library.json` with its default preset, "start on Superflat" and hidden built-ins;
   a player's own changes later are kept (the file is the player's once written).
 - [ ] A page for pack authors in `docs/pack-authors.md` with the file format and examples.
 

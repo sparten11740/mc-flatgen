@@ -32,7 +32,7 @@ ones starred. Clicking one sets the selected layer's block.
 - `blocks/client/BlockGrid`: the grid, through `Canvas`.
 - The list comes from the block registry of the world being created, filtered by its enabled feature flags, as the
   vanilla presets screen does (`filterFeatures`).
-- Recent and starred blocks live in `config/flatgen/flatgen.json`.
+- Recent and starred blocks live in `config/flatgen/blocks.json`, the blocks feature's own file.
 
 ## Tests
 
