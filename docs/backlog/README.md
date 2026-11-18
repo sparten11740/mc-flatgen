@@ -34,7 +34,7 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F00 | [Project setup](00-project-setup.md) | doing | |
+| F00 | [Project setup](00-project-setup.md) | done | |
 | F01 | [Customize opens Flatgen](01-customize-hook.md) | todo | F00 |
 
 **M1, layer editor**

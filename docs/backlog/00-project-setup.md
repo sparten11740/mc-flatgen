@@ -1,6 +1,6 @@
 # F00 Project setup
 
-Milestone: M0 foundation · Release: v1 · Status: doing · Depends on: nothing
+Milestone: M0 foundation · Release: v1 · Status: done · Depends on: nothing
 
 ## Why
 
@@ -14,20 +14,23 @@ Nothing to see yet: a jar per node that loads, does nothing and breaks nothing.
 
 ## Acceptance criteria
 
-- [ ] Stonecutter monorepo as Blockpilot's: `settings.gradle.kts` lists the nodes, `flatgen/stonecutter.gradle.kts`
+- [x] Stonecutter monorepo as Blockpilot's: `settings.gradle.kts` lists the nodes, `flatgen/stonecutter.gradle.kts`
   holds the loader constants and rename rules, `flatgen/build.<loader>.gradle.kts` each loader's build,
   `flatgen/versions/<node>/gradle.properties` each node's versions. Active and checked-in node `1.21.1-neoforge`.
-- [ ] Nodes `1.21.1-neoforge` and `1.21.1-fabric`. Adding a node is a line in `settings.gradle.kts`, a
+- [x] Nodes `1.21.1-neoforge` and `1.21.1-fabric`. Adding a node is a line in `settings.gradle.kts`, a
   `gradle.properties` and, where the game changed, a version tree.
-- [ ] `./gradlew build` builds both nodes and runs the unit tests; jars land in `build/libs` as
+- [x] `./gradlew build` builds both nodes and runs the unit tests; jars land in `build/libs` as
   `flatgen-<version>+<minecraft>-<loader>.jar`.
-- [ ] The source layout of `docs/plan.md` 3: features in their own packages, pure rules in `rules/`, version trees in
-  `src/<range>`, one loader each in `platform/<loader>`.
-- [ ] A boundaries test that reads the sources and fails when a `rules/` package imports Minecraft or a loader, or
+- [x] The source layout of `docs/plan.md` 3 set up and enforced by the boundaries test: one loader each in
+  `platform/<loader>`, the version tree `src/1.21.1` read by every node; the first feature packages, with their
+  `rules/`, arrive with F01 and F02.
+- [x] A boundaries test that reads the sources and fails when a `rules/` package imports Minecraft or a loader, or
   code outside `platform/<loader>` names a loader's API.
-- [ ] Java 17 syntax in all shared code, as the 1.20.1 nodes (v3) compile it.
-- [ ] Licences (Apache-2.0 OR MIT), `.gitignore`, Gradle wrapper, `README.md` for players, `AGENTS.md` for agents.
-- [ ] Both jars load in a dev client (`runClient`) without errors in the log.
+- [x] Java 17 in all shared code, as the 1.20.1 nodes (v3) compile it: the main compile runs at Java 17 language
+  level (`-source 17`, classes still for the node's Java), so newer language features fail now; newer JDK methods
+  (`getFirst`, `Math.clamp`, ...) are kept out by the rule in `AGENTS.md` until the 1.20.1 nodes compile them.
+- [x] Licences (Apache-2.0 OR MIT), `.gitignore`, Gradle wrapper, `README.md` for players, `AGENTS.md` for agents.
+- [x] Both jars load in a dev client (`runClient`) without errors in the log.
 
 ## Design
 
@@ -49,8 +52,10 @@ Nothing to see yet: a jar per node that loads, does nothing and breaks nothing.
 ## Tests
 
 - `./gradlew build` on both nodes.
-- The boundaries test.
-- A dev client of each node starts with the jar and logs no error from Flatgen.
+- The boundaries test, seen to fail on a `rules` class importing Minecraft and a loader's platform half.
+- The Java 17 level, seen to reject a pattern-matching `switch`.
+- A dev client of each node starts with the jar and logs no error: NeoForge lists `mod/flatgen` among its resources,
+  Fabric lists `flatgen 0.1.0-alpha.1` among its 55 mods; both reach the title screen.
 
 ## Out of scope
 
