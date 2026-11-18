@@ -82,7 +82,8 @@ and fully qualified names alike, and fails on a reference against this table (F0
 ### 3.3 GUI toolkit
 
 Flatgen's screens are built from widgets of its own (`client/gui/Widget`) that draw through `client/gui/Canvas` (fill,
-outline, text, sprite, a block's side, clipping, tooltips) and hear the mouse through the widget's own methods.
+outline, text, a button's face, a field's box, a block's side, clipping, tooltips) and hear the mouse through the
+widget's own methods; `WidgetGroup` hands input to a screen's widgets or to a part of a screen, as `ScrollGroup` does.
 `McCanvas` implements `Canvas` over the game's `GuiGraphics`, and `FlatgenScreen` is the one class extending
 Minecraft's `Screen`, turning the game's callbacks into widget calls. Features' widgets therefore compile unchanged on
 every version; when a version's GUI differs, these two classes (and `mc/BlockSides`) move into the version trees

@@ -23,8 +23,9 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 /**
- * The package rules of docs/plan.md 3.1, read from the sources as checked in: each test is one rule and lists every
- * reference that breaks it. A reference is an import or a fully qualified name in the code outside comments and text.
+ * The package rules of docs/plan.md 3.1 and 3.3, read from the sources as checked in: each test is one rule and lists
+ * every reference that breaks it. A reference is an import or a fully qualified name in the code outside comments and
+ * text.
  */
 class BoundariesTest {
     /** The packages of each loader's API, by the platform half allowed to name them. */
@@ -38,6 +39,9 @@ class BoundariesTest {
     private static final String VERSION_ADAPTERS = ROOT + ".mc";
     private static final String GUI_TOOLKIT = ROOT + ".client.gui";
     private static final String COMPAT = ROOT + ".compat";
+    /** The game's drawing and its own widgets, which only the toolkit and the version adapters use (plan 3.3). */
+    private static final List<String> GAME_GUI = List.of(
+            "net.minecraft.client.gui.GuiGraphics", "net.minecraft.client.gui.components.");
 
     private static final List<SourceFile> SOURCES = SourceFile.readAll(
             Path.of(System.getProperty("flatgen.project"), "src"));
@@ -75,6 +79,13 @@ class BoundariesTest {
                 (file, reference) -> isOwn(reference) && !isRulesOrRoot(reference)
                         && !isUnder(packageOf(reference), GUI_TOOLKIT)
                         && !isUnder(packageOf(reference), VERSION_ADAPTERS));
+    }
+
+    @Test
+    void onlyTheGuiToolkitAndVersionAdaptersDrawWithTheGame() {
+        assertNone(file -> !isUnder(file.packageName(), GUI_TOOLKIT)
+                        && !isUnder(file.packageName(), VERSION_ADAPTERS),
+                (file, reference) -> startsWithAny(reference, GAME_GUI));
     }
 
     @Test
