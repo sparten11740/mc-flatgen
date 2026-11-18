@@ -21,6 +21,12 @@ public final class Structures {
                 .sorted(Comparator.comparing(StructureSetInfo::id)).toList();
     }
 
+    /** The ids of every structure set of these registries. */
+    public static Set<String> ids(HolderLookup.Provider registries) {
+        return registries.lookupOrThrow(Registries.STRUCTURE_SET).listElementIds()
+                .map(key -> key.location().toString()).collect(Collectors.toSet());
+    }
+
     /** The biomes any structure of a set can appear in, by id. */
     private static Set<String> biomes(StructureSet set) {
         return set.structures().stream()

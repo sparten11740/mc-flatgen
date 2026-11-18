@@ -36,15 +36,18 @@ public record AddStructures(List<String> sets) implements Effect {
     }
 
     /**
-     * A preset with structure sets added to its chosen list, each once; a preset taking what its biome allows already
-     * has every set, so it stays as it is.
+     * A preset with the structure sets added to its chosen list that the game has, each once; a preset taking what its
+     * biome allows already has every set, so it stays as it is. A set the game lacks is left out, as the game would
+     * read a list naming it as no list at all and generate every set.
+     *
+     * @param known the ids of the structure sets the game has
      */
-    public static Preset addedTo(Preset preset, Collection<String> added) {
+    public static Preset addedTo(Preset preset, Collection<String> added, Set<String> known) {
         if (preset.structureSets().isEmpty() || added.isEmpty()) {
             return preset;
         }
         Set<String> sets = new LinkedHashSet<>(preset.structureSets().get());
-        sets.addAll(added);
+        added.stream().filter(known::contains).forEach(sets::add);
         return preset.withStructureSets(Optional.of(new ArrayList<>(sets)));
     }
 }

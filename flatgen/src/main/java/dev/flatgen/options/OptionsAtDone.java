@@ -3,6 +3,7 @@ package dev.flatgen.options;
 import dev.flatgen.Flatgen;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.GameRuleAccess;
+import dev.flatgen.mc.Structures;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.rules.AddStructures;
 import dev.flatgen.options.rules.Effect;
@@ -12,6 +13,7 @@ import dev.flatgen.preset.rules.Preset;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.core.HolderLookup;
@@ -33,8 +35,11 @@ public final class OptionsAtDone {
         OptionChoices.Applied turnedOff = OptionChoices.applied(OptionChoices.on(OptionSessions.applied(screen),
                 installed).stream().filter(option -> !on.contains(option)).toList());
         OptionChoices.Applied applied = OptionChoices.applied(on);
-        ChunkGenerator generator = WorldCreation.applyFlatSettings(screen,
-                FlatSettings.toSettings(AddStructures.addedTo(preset, applied.structureSets()), registries));
+        Set<String> knownSets = Structures.ids(registries);
+        warnIfAny("Flatgen left out these structure sets that world options add, which this game lacks: {}",
+                applied.structureSets().stream().filter(set -> !knownSets.contains(set)).sorted().toList());
+        ChunkGenerator generator = WorldCreation.applyFlatSettings(screen, FlatSettings.toSettings(
+                AddStructures.addedTo(preset, applied.structureSets(), knownSets), registries));
         FirstStarts.expect(generator, WorldCreation.describe(generator, registries), on.stream()
                 .flatMap(option -> option.effects().stream()).filter(Effect::actsAtFirstStart).toList());
         if (!OptionSessions.has(screen)) {
