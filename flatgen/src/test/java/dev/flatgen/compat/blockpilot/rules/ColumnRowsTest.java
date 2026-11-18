@@ -14,13 +14,13 @@ class ColumnRowsTest {
 
     @Test
     void listsTheLayersTopFirstKeyedFromTheBottom() {
-        List<ColumnRows.Row> rows = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3);
-        assertEquals(List.of("l3", "l2", "l1", "l0"), rows.stream().map(ColumnRows.Row::key).toList());
+        List<ReportRow> rows = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3);
+        assertEquals(List.of("l3", "l2", "l1", "l0"), rows.stream().map(ReportRow::key).toList());
     }
 
     @Test
     void saysEachLayersBlockYsAndWhereItIsDrawn() {
-        ColumnRows.Row stone = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3).get(2);
+        ReportRow stone = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3).get(2);
         assertEquals("minecraft:stone", stone.fields().get("block"));
         assertEquals(100, stone.fields().get("height"));
         assertEquals(-63, stone.fields().get("from_y"));
@@ -31,7 +31,7 @@ class ColumnRowsTest {
 
     @Test
     void marksTheSelectedLayer() {
-        ColumnRows.Row grass = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3).get(0);
+        ReportRow grass = ColumnRows.of(TestPresets.TALL_FLAT, -64, BOUNDS, 3).get(0);
         assertEquals(true, grass.fields().get("selected"));
     }
 }

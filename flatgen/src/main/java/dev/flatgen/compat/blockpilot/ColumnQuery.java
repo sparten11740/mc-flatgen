@@ -7,6 +7,7 @@ import dev.blockpilot.api.Fields;
 import dev.blockpilot.api.Result;
 import dev.blockpilot.api.Row;
 import dev.flatgen.compat.blockpilot.rules.ColumnRows;
+import dev.flatgen.compat.blockpilot.rules.ReportRow;
 import dev.flatgen.editor.client.EditorScreen;
 import dev.flatgen.layers.client.ColumnWidget;
 import java.util.List;
@@ -28,13 +29,7 @@ final class ColumnQuery {
         }
         ColumnWidget column = editor.column();
         List<Row> rows = ColumnRows.of(editor.preset(), editor.worldBottom(), column.layerBounds(), editor.selected())
-                .stream().map(ColumnQuery::toRow).toList();
+                .stream().map(WidgetsQuery::toRow).toList();
         return Result.ok(new Fields().put("open", true)).withRows(rows);
-    }
-
-    private static Row toRow(ColumnRows.Row row) {
-        Fields fields = new Fields();
-        row.fields().forEach(fields::put);
-        return new Row(row.key(), fields);
     }
 }

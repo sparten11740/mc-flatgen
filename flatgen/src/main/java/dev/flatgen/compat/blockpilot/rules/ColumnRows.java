@@ -17,18 +17,9 @@ public final class ColumnRows {
     private ColumnRows() {
     }
 
-    /**
-     * One row of the report.
-     *
-     * @param key    the layer's key, {@code l<n>}
-     * @param fields the row's fields by name, in the order they are said
-     */
-    public record Row(String key, Map<String, Object> fields) {
-    }
-
     /** The rows for a preset's layers, in a world whose floor is at this Y, drawn in these rectangles. */
-    public static List<Row> of(Preset preset, int floor, List<Rect> bounds, int selected) {
-        List<Row> rows = new ArrayList<>();
+    public static List<ReportRow> of(Preset preset, int floor, List<Rect> bounds, int selected) {
+        List<ReportRow> rows = new ArrayList<>();
         int bottomY = floor;
         for (int index = 0; index < preset.layers().size(); index++) {
             Layer layer = preset.layers().get(index);
@@ -38,15 +29,15 @@ public final class ColumnRows {
         return rows;
     }
 
-    private static Row row(int index, Layer layer, int bottomY, Rect bounds, boolean selected) {
+    private static ReportRow row(int index, Layer layer, int bottomY, Rect bounds, boolean selected) {
         int topY = bottomY + layer.height() - 1;
         Map<String, Object> fields = new LinkedHashMap<>();
         fields.put("block", layer.block());
         fields.put("height", layer.height());
         fields.put("from_y", bottomY);
         fields.put("to_y", topY);
-        fields.put("bounds", bounds.x() + "," + bounds.y() + "," + bounds.width() + "," + bounds.height());
+        fields.put("bounds", WidgetRows.bounds(bounds));
         fields.put("selected", selected);
-        return new Row("l" + index, fields);
+        return new ReportRow("l" + index, fields);
     }
 }
