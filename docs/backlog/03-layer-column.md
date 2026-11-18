@@ -1,6 +1,6 @@
 # F03 Layer column
 
-Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F01, F02
+Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F01, F02, F26
 
 ## Why
 
@@ -46,3 +46,4 @@ top, each layer as tall as it is deep, Y numbers at each boundary and lines for 
 
 - Unit: layout for 1, 4, 30 and 300 layers; minimum heights; break marks; markers inside and outside the world.
 - Dev client: screenshots of the vanilla presets and of a 104-block stack on both nodes at GUI scales 1 to 4.
+- `flatgen:column` (F26) lists each layer's key, block, height, Y range and bounds, matching the drawing.

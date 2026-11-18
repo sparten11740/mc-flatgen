@@ -42,7 +42,8 @@ v3 and v4 may swap; both come after v2.
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
 | F02 | [Preset model and file format](02-preset-model.md) | todo | F00 |
-| F03 | [Layer column](03-layer-column.md) | todo | F01, F02 |
+| F26 | [Blockpilot commands](26-blockpilot-commands.md) | todo | F01 |
+| F03 | [Layer column](03-layer-column.md) | todo | F01, F02, F26 |
 | F04 | [Layer editing](04-layer-editing.md) | todo | F03 |
 | F05 | [Block picker](05-block-picker.md) | todo | F04 |
 | F06 | [Vanilla superflat code](06-vanilla-code.md) | todo | F02 |
