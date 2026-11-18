@@ -2,6 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.Scrolling;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
 
@@ -10,8 +11,6 @@ import java.util.List;
  * scrolled by the wheel no widget takes, with a bar beside the window showing how far while there is more to see.
  */
 public final class ScrollGroup implements Widget {
-    /** How far one notch of the wheel scrolls, in GUI pixels. */
-    private static final int SCROLL_STEP = 16;
     /** The bar's width and its distance from the window, in GUI pixels. */
     private static final int BAR_WIDTH = 2;
     private static final int BAR_GAP = 2;
@@ -86,7 +85,7 @@ public final class ScrollGroup implements Widget {
         if (widgets.scroll(x, y, amount, modifiers)) {
             return true;
         }
-        int scrolled = Math.max(0, Math.min(hidden(), scroll - (int) Math.signum(amount) * SCROLL_STEP));
+        int scrolled = Scrolling.scrolled(scroll, amount, Scrolling.WHEEL_STEP, hidden());
         if (scrolled != scroll) {
             scroll = scrolled;
             widgets.keyboard(false);

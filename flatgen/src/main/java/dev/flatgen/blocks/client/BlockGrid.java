@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.Scrolling;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
@@ -161,8 +162,7 @@ public final class BlockGrid implements Widget {
             return false;
         }
         int bottom = slots().stream().mapToInt(slot -> slot.place().bottom()).max().orElse(bounds.y()) + scroll;
-        int hidden = Math.max(0, bottom - bounds.bottom());
-        scroll = Math.max(0, Math.min(hidden, scroll - (int) Math.signum(amount) * SLOT));
+        scroll = Scrolling.scrolled(scroll, amount, SLOT, bottom - bounds.bottom());
         return true;
     }
 

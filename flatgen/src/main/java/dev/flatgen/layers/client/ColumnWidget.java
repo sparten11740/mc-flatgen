@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.Scrolling;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.ColumnLayout;
@@ -37,8 +38,6 @@ public final class ColumnWidget implements Widget {
     private static final int EDGE = 2;
     /** How far the mouse goes with the button held before a press becomes a move, in GUI pixels. */
     private static final int MOVE_THRESHOLD = 3;
-    /** How far one notch of the wheel scrolls, in GUI pixels. */
-    private static final int SCROLL_STEP = 16;
     /** Blocks one notch of the wheel adds or takes, alone, with Shift and with Control. */
     private static final int WHEEL_BLOCKS = 1;
     private static final int SHIFT_WHEEL_BLOCKS = 10;
@@ -173,7 +172,7 @@ public final class ColumnWidget implements Widget {
         if (hidden <= 0 || !labels.contains(x, y)) {
             return false;
         }
-        scroll = Math.max(0, Math.min(hidden, scroll - (int) Math.signum(amount) * SCROLL_STEP));
+        scroll = Scrolling.scrolled(scroll, amount, Scrolling.WHEEL_STEP, hidden);
         return true;
     }
 
