@@ -44,11 +44,15 @@ class VanillaSettingsTest {
     }
 
     @Test
-    void writesTheDecorationsAsFeatures() {
-        JsonObject settings = VanillaSettings.toJson(TestPresets.TALL_FLAT);
-        assertEquals(false, settings.get("features").getAsBoolean());
+    void writesTheDecorationsAsFeaturesAndTheLakesAsLakes() {
+        Preset decorated = new Preset("", "", TestPresets.TALL_FLAT.layers(), "minecraft:plains", Optional.empty(),
+                true, false, Map.of());
+        JsonObject settings = VanillaSettings.toJson(decorated);
+        assertEquals(true, settings.get("features").getAsBoolean());
+        assertEquals(false, settings.get("lakes").getAsBoolean());
         assertEquals(4, settings.getAsJsonArray("layers").size());
         assertEquals("minecraft:plains", settings.get("biome").getAsString());
+        assertEquals(decorated, VanillaSettings.fromJson(settings, "", "").preset());
     }
 
     @Test
