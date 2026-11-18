@@ -4,10 +4,12 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
-/** Reading and writing the superflat settings of the world on the Create World screen, as this version does it. */
+/** The world on the Create World screen, as this version reads and changes it. */
 public final class WorldCreation {
     private WorldCreation() {
     }
@@ -28,5 +30,10 @@ public final class WorldCreation {
     public static void applyFlatSettings(CreateWorldScreen screen, FlatLevelGeneratorSettings settings) {
         screen.getUiState().updateDimensions((registries, dimensions) ->
                 dimensions.replaceOverworldGenerator(registries, new FlatLevelSource(settings)));
+    }
+
+    /** The world's overworld type, which says where its floor is and how tall it is. */
+    public static DimensionType overworldType(WorldCreationContext context) {
+        return context.selectedDimensions().dimensions().get(LevelStem.OVERWORLD).type().value();
     }
 }
