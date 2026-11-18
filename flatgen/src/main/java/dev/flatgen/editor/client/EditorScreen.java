@@ -1,5 +1,8 @@
 package dev.flatgen.editor.client;
 
+import dev.flatgen.blocks.client.BlockPickerScreen;
+import dev.flatgen.blocks.rules.LayerHints;
+import dev.flatgen.blocks.rules.SetBlock;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.TextButton;
@@ -16,18 +19,23 @@ import dev.flatgen.layers.client.ColumnActions;
 import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Biomes;
+import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.Names;
 import dev.flatgen.mc.WorldCreation;
+import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -52,8 +60,10 @@ public final class EditorScreen extends FlatgenScreen {
     private static final int QUICK = 22;
     private static final int FIELD = 40;
     private static final int WIDE = 70;
-    /** How many lines the panel's text has: the selected layer's block and Ys, and the surface and biome. */
+    /** How many lines the panel's text has: the selected layer's Ys, the surface and biome, and the layer's hints. */
     private static final int INFO_LINES = 3;
+    /** The width of the button showing the selected layer's block, in GUI pixels. */
+    private static final int BLOCK_BUTTON = 2 * 70 + 4;
     /** The depths a single click sets the selected layer to. */
     private static final List<Integer> QUICK_HEIGHTS = List.of(1, 2, 3, 5, 10, 50, 100);
     /** The icon of the preset the editor starts from, which the world's settings do not carry. */
@@ -141,9 +151,12 @@ public final class EditorScreen extends FlatgenScreen {
     /** The panel beside the column, its rows top down, this wide from this left edge. */
     private List<Widget> panel(int left, int width) {
         List<Widget> widgets = new ArrayList<>();
+        widgets.add(new TextButton(this::blockLabel, new Rect(left, HEADER, BLOCK_BUTTON, BUTTON_HEIGHT),
+                this::pickBlock, this::hasLayer, () -> tip("flatgen.editor.pick_block")));
+        int infoTop = HEADER + BUTTON_HEIGHT + GAP;
         int infoHeight = TextLines.height(INFO_LINES, font.lineHeight);
-        widgets.add(new TextLines(new Rect(left, HEADER, width, infoHeight), this::info));
-        int rowY = HEADER + infoHeight + GAP;
+        widgets.add(new TextLines(new Rect(left, infoTop, width, infoHeight), this::info));
+        int rowY = infoTop + infoHeight;
         widgets.addAll(heightRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
         rowY += BUTTON_HEIGHT + GAP;
         widgets.addAll(surfaceRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
@@ -224,20 +237,36 @@ public final class EditorScreen extends FlatgenScreen {
         return new TextButton(label, place, () -> apply(edit), active, tooltip);
     }
 
-    /** What the panel's text says: the selected layer's block and Ys, then the surface and the biome. */
+    /** What the panel's text says: the selected layer's Ys, the surface and the biome, and the layer's hints. */
     private List<Component> info() {
         List<Component> lines = new ArrayList<>();
-        if (hasLayer()) {
-            List<Component> layer = column.describe(selected());
-            lines.add(layer.get(0));
-            lines.add(layer.get(2));
-        } else {
-            lines.add(Component.translatable("flatgen.editor.empty"));
-            lines.add(Component.empty());
-        }
+        lines.add(hasLayer() ? column.describe(selected()).get(2) : Component.translatable("flatgen.editor.empty"));
         lines.add(Component.translatable("flatgen.editor.surface", world.floor() + preset().height(),
                 Names.biome(preset().biome())));
+        lines.add(hasLayer() ? hints() : Component.empty());
         return lines;
+    }
+
+    /** The selected layer's hints (falls, not a whole block, keeps data), each a few words, on one line. */
+    private Component hints() {
+        List<Layer> layers = preset().layers();
+        Optional<LayerHints.Traits> below = selected() > 0
+                ? Optional.of(BlockCatalog.traits(layers.get(selected() - 1).block())) : Optional.empty();
+        MutableComponent line = Component.empty();
+        for (LayerHints.Hint hint : LayerHints.of(BlockCatalog.traits(layers.get(selected()).block()), below)) {
+            line.append(line.getSiblings().isEmpty() ? Component.empty() : Component.literal(" · "))
+                    .append(Component.translatable("flatgen.hint." + hint.name().toLowerCase(Locale.ROOT)));
+        }
+        return line;
+    }
+
+    private Component blockLabel() {
+        return hasLayer() ? Names.block(preset().layers().get(selected()).block()) : Component.literal("-");
+    }
+
+    private void pickBlock() {
+        minecraft.setScreen(new BlockPickerScreen(this, context.dataConfiguration().enabledFeatures(),
+                block -> apply(new SetBlock(block))));
     }
 
     private List<Component> tip(String key) {
