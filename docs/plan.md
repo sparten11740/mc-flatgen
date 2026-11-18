@@ -36,13 +36,17 @@ Default, Amplified or other noise world types.
 6. **Java 17 in all shared code** from the start, as the 1.20.1 nodes compile it.
 7. **Presets are files, choices are separate.** Each preset is a JSON file in `config/flatgen/presets/`; favourites,
    the default and recents are in `config/flatgen/library.json`, so preset files can be shared as they are.
+8. **World options are data other mods can add** (F27). A switch in the editor that does something to the world (a
+   game rule, structures, a template placed at spawn on the first start) is a JSON file in a mod's or pack's
+   resources; Flatgen's own switches are written the same way. A Java API (F28) follows only once a mod needs code.
+   Worlds still open without Flatgen, as every effect leaves vanilla settings or blocks behind.
 
 ## 3. Architecture
 
 ### 3.1 Packages and dependency direction
 
 Everything is under `dev.flatgen`. Each feature has its own package (`config`, `editor`, `preset`, `layers`, `blocks`,
-`biome`, `facts`, `structures`, `gamerules`, `library`, `templates`), and logic several features share has one of its
+`biome`, `facts`, `structures`, `options`, `library`, `templates`), and logic several features share has one of its
 own (`search` for the pickers' search), split the same way in each:
 
 | Part | Holds | May depend on |
@@ -93,6 +97,8 @@ Things that grow are lists of small classes behind an interface, so adding one n
   `editor/EditorPanels`.
 - `library/PresetSource`: where presets come from (the player's folder, built-ins, pack resources).
 - `templates/rules/Template`: each template.
+- `options/rules/Effect`: each kind of world option effect (F27); the options themselves are data files that mods and
+  packs add.
 - `facts/rules/Fact`: each world fact.
 - `editor/client/PresetEditors`: which world types Flatgen edits (a key, or a test on the world type from F18).
 
