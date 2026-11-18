@@ -1,6 +1,6 @@
 # F26 Blockpilot commands
 
-Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F01
+Milestone: M1 layer editor · Release: v1 · Status: done · Depends on: F01
 
 ## Why
 
@@ -16,19 +16,20 @@ tests run.
 
 ## Acceptance criteria
 
-- [ ] `flatgen:editor` (query): whether Flatgen's editor is open, and its settings as fields: the layers bottom up
-  (`block*height` each, the vanilla code's form), the biome, the selected layer, the surface Y.
-- [ ] `flatgen:open` (action): from the title screen or the world list, opens Create World with Superflat chosen and
+- [x] `flatgen:editor` (query): whether Flatgen's editor is open, and its settings as fields: the layers bottom up and
+  the biome as the game's superflat code (`code`), the number of layers, the height, the surface Y, the biome. The
+  selected layer joins with F03, whose column brings selection.
+- [x] `flatgen:open` (action): from the title screen or the world list, opens Create World with Superflat chosen and
   presses Customize, so later play tests start in the editor in one step (F01's tests keep driving those screens
   themselves).
-- [ ] Each later feature that draws its own widgets adds a query listing them with keys and bounds, as `screen` does
+- [x] Each later feature that draws its own widgets adds a query listing them with keys and bounds, as `screen` does
   (`flatgen:column` with F03: each layer's key, block, height, Y range and bounds), so `click` and `drag` can target
   them.
-- [ ] Commands are registered only when Blockpilot is installed; without it nothing of theirs loads, and the jar works
+- [x] Commands are registered only when Blockpilot is installed; without it nothing of theirs loads, and the jar works
   as before.
-- [ ] Compiled against `blockpilot-api` from Blockpilot's GitHub release (the API jar attached to `v1.4.0`), so the
+- [x] Compiled against `blockpilot-api` from Blockpilot's GitHub release (the API jar attached to `v1.4.0`), so the
   build needs no local Maven repository.
-- [ ] Both loaders' metadata name Blockpilot as optional, from the release the commands are tested with.
+- [x] Both loaders' metadata name Blockpilot as optional, from the release the commands are tested with.
 
 ## Design
 
@@ -49,6 +50,11 @@ tests run.
 
 ## Tests
 
-- Unit: each command's field formatting from a plain preset.
-- Dev client on both nodes: `flatgen:open` reaches the editor; `flatgen:editor` reports the classic flat layers; after
-  Done and reopening, it reports the same.
+- Unit: `EditorFieldsTest` (the fields and their order from a plain preset), `VanillaCodeTest` (the code as the game
+  writes it).
+- Played on both nodes with Blockpilot 1.4.0: `help flatgen:editor` lists it; on the title screen `flatgen:editor`
+  answers `open=false`; `flatgen:open` lands in the editor; `flatgen:editor` reports the classic flat world (code
+  `minecraft:bedrock,2*minecraft:dirt,minecraft:grass_block;minecraft:plains`, height 4, surface Y -60); after Done,
+  the World tab and Customize, it reports the same.
+- Both nodes' dev clients without Blockpilot reach the title screen with no errors.
+- The boundaries test gains the rule that only the platform halves depend on `compat/`.
