@@ -73,6 +73,10 @@ class OptionReaderTest {
                 + " \"template\": \"a:b\", \"offset\": [1, 2]}]}", "a place_at_spawn needs");
         assertLeftOut("{\"icon\": \"minecraft:clock\", \"effects\": [{\"type\": \"first_start_time\","
                 + " \"time\": 24000}]}", "a first_start_time needs");
+        String clock = "\"icon\": \"minecraft:clock\", \"effects\": [{\"type\": \"first_start_time\", \"time\": 1}]";
+        assertLeftOut("{" + clock + ", \"requires\": \"skyliners\"}", "requires");
+        assertLeftOut("{" + clock + ", \"default\": \"true\"}", "default");
+        assertLeftOut("{" + clock + ", \"name\": 3}", "name");
     }
 
     private static WorldOption read(String id, String json) {

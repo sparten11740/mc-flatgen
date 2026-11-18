@@ -50,15 +50,17 @@ public final class OptionReader {
             problems.add("it needs an icon: an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
         }
         List<Effect> effects = effects(root, problems);
+        String key = "option." + id.replace(':', '.');
+        String name = JsonFields.text(root, "name", key, problems);
+        String description = JsonFields.text(root, "description", key + ".description", problems);
+        String group = JsonFields.text(root, "group", id.substring(0, Math.max(0, id.indexOf(':'))), problems);
+        boolean defaultOn = JsonFields.bool(root, "default", false, problems);
+        List<String> requires = JsonFields.texts(root, "requires", problems);
         if (!problems.isEmpty()) {
             return new Reading(Optional.empty(), problems);
         }
-        String key = "option." + id.replace(':', '.');
-        String namespace = id.substring(0, Math.max(0, id.indexOf(':')));
-        return new Reading(Optional.of(new WorldOption(id, JsonFields.text(root, "name", key, problems),
-                JsonFields.text(root, "description", key + ".description", problems), icon.get(),
-                JsonFields.text(root, "group", namespace, problems), JsonFields.bool(root, "default", false, problems),
-                JsonFields.texts(root, "requires", problems), effects)), problems);
+        return new Reading(Optional.of(new WorldOption(id, name, description, icon.get(), group, defaultOn, requires,
+                effects)), problems);
     }
 
     private static Optional<WorldOption.Icon> icon(JsonElement icon) {
