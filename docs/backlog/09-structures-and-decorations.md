@@ -25,8 +25,8 @@ those that cannot appear in the chosen biome. Switches for decorations and lakes
 
 - `structures/rules/StructureChoice` (pure): the three-way choice and the chosen ids.
 - `mc/Structures` (version tree): lists structure sets with their structures' allowed biomes, from the registries.
-- The panel is built on a toggle list widget in the shared toolkit (`client/gui/ToggleList`), which the world
-  settings of F10 reuse.
+- The panel is built on the toolkit's toggle list (`client/gui/ToggleList`), made for F27's options panel.
+- A world option (F27) whose effect adds structure sets shows them as chosen here too, so the two never disagree.
 
 ## Version notes
 

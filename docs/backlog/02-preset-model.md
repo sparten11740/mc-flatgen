@@ -15,9 +15,9 @@ Nothing directly; presets saved by one version of Flatgen load in every later on
 ## Acceptance criteria
 
 - [ ] `preset/rules/Preset`: name, layers (block id and height, bottom first), biome id, structures (either "what the
-  biome allows" or a chosen list of structure set ids), decorations on or off, lakes on or off, world rules (always
-  day, always clear, mob spawning), icon block id. Ids are plain text, so a preset naming a block from a mod that is
-  not installed still loads.
+  biome allows" or a chosen list of structure set ids), decorations on or off, lakes on or off, world options (F27) by
+  id with their values, icon block id. Ids are plain text, so a preset naming a block, biome or option from a mod
+  that is not installed still loads.
 - [ ] Validation: total height within the world's height (read from the dimension, not hard-coded 384), heights from
   1, no unknown ids when applying (reported, never dropped silently). An empty layer list is valid, an empty world,
   as Create Aeronautics' "End Sea" uses it.
@@ -50,7 +50,7 @@ Nothing directly; presets saved by one version of Flatgen load in every later on
     "structures": ["minecraft:strongholds", "minecraft:villages"],
     "decorations": false,
     "lakes": false,
-    "rules": { "alwaysDay": true, "alwaysClear": true, "mobSpawning": true }
+    "options": { "flatgen:always_day": true, "flatgen:always_clear": true }
   }
   ```
 

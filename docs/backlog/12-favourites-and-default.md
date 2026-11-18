@@ -18,7 +18,7 @@ already applied.
 - [ ] Star and unstar on cards and in the editor; favourites shown first in the library and as a row in the editor.
 - [ ] One default at most; pinning another moves the pin.
 - [ ] When the World Type changes to Superflat and its settings are still vanilla's default flat settings, the
-  default preset is applied (layers, biome, structures, decorations, lakes and game rules). Settings the player has
+  default preset is applied (layers, biome, structures, decorations, lakes and world options). Settings the player has
   already changed are never replaced.
 - [ ] Option "Start Create World on Superflat": the World Type is Superflat with the default applied when the screen
   opens.

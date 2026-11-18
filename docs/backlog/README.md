@@ -52,10 +52,11 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
+| F27 | [World options from other mods](27-world-options.md) | todo | F02, F01 |
 | F07 | [Biome picker](07-biome-picker.md) | todo | F03 |
 | F08 | [World facts](08-world-facts.md) | todo | F07 |
 | F09 | [Structures and decorations](09-structures-and-decorations.md) | todo | F03 |
-| F10 | [Time, weather and mob settings](10-world-rules.md) | todo | F02, F01 |
+| F10 | [Time, weather and mob options](10-world-rules.md) | todo | F27 |
 
 **M3, presets**
 
@@ -83,6 +84,7 @@ v3 and v4 may swap; both come after v2.
 |---|---|---|---|
 | F21 | [Exports for servers and datapacks](21-exports.md) | todo | F20 |
 | F22 | [Flat Nether and End](22-flat-nether-end.md) | todo | F20 |
+| F28 | [Java API for world options](28-options-java-api.md) | todo | F27, F20 |
 
 ### v2 and later
 
