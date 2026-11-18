@@ -53,6 +53,22 @@ class OptionChoicesTest {
         assertEquals(Set.of("skyliners:airports"), applied.structureSets());
     }
 
+    @Test
+    void showsOptionsAsTheGameRulesAre() {
+        Map<String, Boolean> chosen = Map.of("flatgen:always_day", true, "skyliners:airport", false);
+        Map<String, String> daylightOn = Map.of("doDaylightCycle", "true", "doWeatherCycle", "true");
+        assertEquals(Map.of("skyliners:airport", false),
+                OptionChoices.followingGameRules(chosen, INSTALLED, daylightOn));
+        assertEquals(Map.of("flatgen:always_day", true, "pack:frozen_clock", true, "skyliners:airport", false),
+                OptionChoices.followingGameRules(chosen, INSTALLED, Map.of("doDaylightCycle", "false")));
+    }
+
+    @Test
+    void turnsOnFromTheGameRulesOnlyOptionsThatDoNothingElse() {
+        assertEquals(Map.of("pack:frozen_clock", true), OptionChoices.followingGameRules(Map.of(), INSTALLED,
+                Map.of("doDaylightCycle", "false")));
+    }
+
     private static WorldOption option(String id, boolean defaultOn, Effect... effects) {
         return new WorldOption(id, id, id, new WorldOption.Icon("minecraft:clock", false), "flatgen", defaultOn,
                 List.of(), List.of(effects));

@@ -73,5 +73,13 @@
   "flatgen.structures.mode.none_tip": "No structures at all",
   "flatgen.structures.not_in_biome": "Cannot appear in %s: it needs %s",
   "flatgen.structures.open": "Choose the world's structures, decorations and lakes",
-  "flatgen.structures.title": "Structures and decorations"
+  "flatgen.structures.title": "Structures and decorations",
+  "option.flatgen.always_clear": "Always clear",
+  "option.flatgen.always_clear.description": "No rain, snow or thunder",
+  "option.flatgen.always_day": "Always day",
+  "option.flatgen.always_day.description": "Midday on the first start, and the sun stays there",
+  "option.flatgen.no_mobs": "No mobs",
+  "option.flatgen.no_mobs.description": "No animals or monsters spawn on their own",
+  "option_group.flatgen.mobs": "Mobs",
+  "option_group.flatgen.time_and_weather": "Time and weather"
 }

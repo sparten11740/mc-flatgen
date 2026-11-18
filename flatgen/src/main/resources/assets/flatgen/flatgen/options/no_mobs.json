@@ -1,0 +1,7 @@
+{
+  "icon": "minecraft:zombie_head",
+  "group": "flatgen:mobs",
+  "effects": [
+    { "type": "game_rule", "rule": "doMobSpawning", "value": false }
+  ]
+}

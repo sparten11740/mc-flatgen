@@ -22,6 +22,14 @@ public final class GameRuleAccess {
     private GameRuleAccess() {
     }
 
+    /** The world's game rules now, by name, their values as the game writes them. */
+    public static Map<String, String> values(CreateWorldScreen screen) {
+        CompoundTag values = screen.getUiState().getGameRules().createTag();
+        Map<String, String> byName = new LinkedHashMap<>();
+        values.getAllKeys().forEach(name -> byName.put(name, values.getString(name)));
+        return byName;
+    }
+
     /** The game's own default values of these game rules, by name, of those this version has. */
     public static Map<String, String> defaults(Collection<String> names) {
         CompoundTag defaults = new GameRules().createTag();

@@ -67,7 +67,7 @@ public final class EditorScreen extends FlatgenScreen {
         this.world = new World(WorldCreation.overworldType(context).minY(),
                 WorldCreation.overworldType(context).height());
         Preset preset = FlatSettings.toPreset(WorldCreation.flatSettings(context), context.worldgenLoadContext(), "",
-                ICON).preset().withOptions(OptionSessions.applied(parent));
+                ICON).preset().withOptions(OptionSessions.shown(parent));
         this.history = new History(new EditorState(preset, preset.layers().size() - 1));
     }
 

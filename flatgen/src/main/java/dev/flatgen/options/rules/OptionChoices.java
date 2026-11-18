@@ -69,6 +69,27 @@ public final class OptionChoices {
         return new Applied(Map.copyOf(applied.gameRules()), Set.copyOf(applied.structureSets()));
     }
 
+    /**
+     * The choices as the world's game rules show them: an option that only sets game rules is on exactly when they are
+     * as it sets them, and one that does more (sets the clock, places a template) goes off when they are not, never on,
+     * as the rules alone do not give what it does. Options that set no game rules stay as they were chosen.
+     *
+     * @param gameRules the world's game rules now, by name, their values as the game writes them
+     */
+    public static Map<String, Boolean> followingGameRules(Map<String, Boolean> chosen, List<WorldOption> installed,
+            Map<String, String> gameRules) {
+        Map<String, Boolean> following = new TreeMap<>(chosen);
+        for (WorldOption option : installed) {
+            Applied applied = applied(List.of(option));
+            boolean onlyRules = !option.actsAtFirstStart() && applied.structureSets().isEmpty();
+            boolean rulesAsSet = gameRules.entrySet().containsAll(applied.gameRules().entrySet());
+            if (!applied.gameRules().isEmpty() && (onlyRules || !rulesAsSet)) {
+                set(following, option, rulesAsSet && (onlyRules || isOn(option, chosen)));
+            }
+        }
+        return following;
+    }
+
     /** The ids a preset names that no installed option has, in id order. */
     public static List<String> missing(Map<String, Boolean> chosen, List<WorldOption> installed) {
         List<String> missing = new ArrayList<>(new TreeMap<>(chosen).keySet());

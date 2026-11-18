@@ -1,0 +1,8 @@
+{
+  "icon": "minecraft:clock",
+  "group": "flatgen:time_and_weather",
+  "effects": [
+    { "type": "game_rule", "rule": "doDaylightCycle", "value": false },
+    { "type": "first_start_time", "time": 6000 }
+  ]
+}
