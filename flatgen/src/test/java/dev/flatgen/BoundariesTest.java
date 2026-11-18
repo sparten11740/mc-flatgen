@@ -37,6 +37,7 @@ class BoundariesTest {
     private static final String PLATFORM = ROOT + ".platform";
     private static final String VERSION_ADAPTERS = ROOT + ".mc";
     private static final String GUI_TOOLKIT = ROOT + ".client.gui";
+    private static final String COMPAT = ROOT + ".compat";
 
     private static final List<SourceFile> SOURCES = SourceFile.readAll(
             Path.of(System.getProperty("flatgen.project"), "src"));
@@ -83,8 +84,14 @@ class BoundariesTest {
     }
 
     @Test
-    void onlyClientCodeAndPlatformHalvesDependOnClientCode() {
-        assertNone(file -> !file.isClient() && file.platformHalf().isEmpty(),
+    void onlyPlatformHalvesDependOnIntegrations() {
+        assertNone(file -> file.platformHalf().isEmpty() && !isUnder(file.packageName(), COMPAT),
+                (file, reference) -> isUnder(packageOf(reference), COMPAT));
+    }
+
+    @Test
+    void onlyClientCodeIntegrationsAndPlatformHalvesDependOnClientCode() {
+        assertNone(file -> !file.isClient() && file.platformHalf().isEmpty() && !isUnder(file.packageName(), COMPAT),
                 (file, reference) -> isOwn(reference) && hasSegment(packageOf(reference), "client"));
     }
 

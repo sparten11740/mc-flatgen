@@ -1,9 +1,11 @@
 package dev.flatgen.platform.neoforge;
 
 import dev.flatgen.Flatgen;
+import dev.flatgen.compat.blockpilot.BlockpilotCommands;
 import dev.flatgen.editor.client.PresetEditors;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 
@@ -12,6 +14,9 @@ import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 public final class NeoForgeEntrypoint {
     public NeoForgeEntrypoint(IEventBus modBus) {
         modBus.addListener(NeoForgeEntrypoint::registerEditors);
+        if (ModList.get().isLoaded(BlockpilotCommands.MOD_ID)) {
+            BlockpilotCommands.register();
+        }
     }
 
     /** Hands NeoForge Flatgen's editor for the world types it edits, in place of the game's own. */

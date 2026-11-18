@@ -23,3 +23,12 @@ type="required"
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="BOTH"
+
+# Blockpilot, which Flatgen gives commands of its own when it is there (docs/backlog/26-blockpilot-commands.md): never
+# required, but from the release whose API the commands are built against.
+[[dependencies.${mod_id}]]
+modId="blockpilot"
+type="optional"
+versionRange="[${blockpilot_release},)"
+ordering="NONE"
+side="CLIENT"

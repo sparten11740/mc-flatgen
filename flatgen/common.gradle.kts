@@ -61,9 +61,23 @@ tasks.matching { it.name == "runGameTestServer" || it.name == "runGameTest" }.co
 
 repositories {
     mavenCentral()
+    // Blockpilot's API, from the jar attached to its GitHub release, so the build needs no local Maven repository.
+    exclusiveContent {
+        forRepository {
+            ivy {
+                name = "Blockpilot API"
+                url = uri("https://github.com/sparten11740/mc-blockpilot/releases/download")
+                patternLayout { artifact("v${parent!!.property("blockpilot_release")}/[module]-[revision].[ext]") }
+                metadataSources { artifact() }
+            }
+        }
+        filter { includeModule("dev.blockpilot", "blockpilot-api") }
+    }
 }
 
 dependencies {
+    // Only compiled against: Flatgen's Blockpilot commands load only when Blockpilot, which brings its API, is there.
+    "compileOnly"("dev.blockpilot:blockpilot-api:${parent!!.property("blockpilot_api_version")}")
     "testImplementation"(platform("org.junit:junit-bom:5.11.4"))
     "testImplementation"("org.junit.jupiter:junit-jupiter")
     "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
@@ -84,6 +98,7 @@ val modMetadata = mapOf(
     "mod_description" to parent!!.property("mod_description").toString(),
     "mod_version" to modVersion,
     "mod_license" to rootProject.property("mod_license").toString(),
+    "blockpilot_release" to parent!!.property("blockpilot_release").toString(),
 ) + loaderMetadata
 val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata") {
     inputs.properties(modMetadata)

@@ -6,10 +6,19 @@
   "description": "${mod_description}",
   "license": "${mod_license}",
   "environment": "*",
+  "entrypoints": {
+    "client": ["dev.flatgen.platform.fabric.FabricClientEntrypoint"]
+  },
   "mixins": ["${mod_id}-fabric.mixins.json"],
   "depends": {
     "fabricloader": ">=${fabric_loader_min_version}",
     "minecraft": "${minecraft_version_range}",
     "java": ">=${java_version}"
+  },
+  "suggests": {
+    "blockpilot": ">=${blockpilot_release}"
+  },
+  "breaks": {
+    "blockpilot": "<${blockpilot_release}"
   }
 }

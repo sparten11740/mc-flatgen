@@ -19,7 +19,7 @@ if (blockpilotVersion != null) {
                     metadataSources { artifact() }
                 }
             }
-            filter { includeGroup("dev.blockpilot") }
+            filter { includeModule("dev.blockpilot", "blockpilot") }
         }
     }
     val blockpilot = "dev.blockpilot:blockpilot:$blockpilotVersion:$minecraft-$loader@jar"

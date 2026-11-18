@@ -57,6 +57,7 @@ own (`search` for the pickers' search, `json` for reading Flatgen's files), spli
 | `client/gui/` | Flatgen's GUI toolkit (3.3). | Itself, `mc/` for drawing and input, `rules`, the root. |
 | `mc/` | The game's API that may differ between versions, behind Flatgen's own names (3.2). | `rules` types, the root, Minecraft. Never a feature's game-facing or client code. |
 | `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
+| `compat/<mod>/` | Optional integrations with other mods (Blockpilot's commands, F26), loaded only when the mod is there. | Anything but the platform halves. Only the platform halves depend on it. |
 | `platform/` | `ClientPlatform`, the interface shared code reaches loader hooks through, and its holder. | Nothing loader-specific. |
 | `platform/<loader>/` | Entry points, event wiring, the loader's mixins. | Anything. Nothing depends on it. |
 
