@@ -95,8 +95,10 @@ templates), `ToggleList` (structures, world settings), `SearchField`, `IconButto
 
 Things that grow are lists of small classes behind an interface, so adding one never edits the others:
 
-- `editor/EditorPanel`: the editor screen's panels (layers, biome, structures, world settings), listed in
-  `editor/EditorPanels`.
+- `editor/client/panel/EditorPanel`: the editor screen's panels (layers, blocks, history, code; later biome,
+  structures, world settings), each in its feature's `client` package, listed in `editor/client/EditorPanels`. A panel
+  places its widgets with a wrapping `FlowLayout`, reads and changes the editor through `EditorContext`, and may take
+  keys of its own.
 - `library/PresetSource`: where presets come from (the player's folder, built-ins, pack resources).
 - `templates/rules/Template`: each template.
 - `options/rules/Effect`: each kind of world option effect (F27); the options themselves are data files that mods and

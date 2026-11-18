@@ -35,8 +35,9 @@ keys for everything, undo for every change.
 - `editor/rules`: `EditorState` (the preset and the selected layer), `Edit` (one change, a class per kind, so later
   features add theirs), `History` (undo and redo as a list of states), `World` (the floor and height edits keep to).
 - `layers/rules/LayerEdits`: add, duplicate, remove, move, set and change the height, surface at Y; unit-tested.
-- `layers/client`: the column turns mouse input into edits through `ColumnActions`, which the editor answers, with a
-  dragged change previewed until it is let go; widgets never change the preset themselves.
+- `layers/client`: the column turns mouse input into edits through the editor's `EditorContext`, with a dragged change
+  previewed until it is let go; widgets never change the preset themselves. The layer controls are the editor panel
+  `LayerPanel`.
 - The toolkit grows: modifier keys, drags, keyboard and typing for the widget that took a click (`FlatgenScreen`),
   `NumberField`, buttons that can be unusable with a tooltip saying why, `TextLines`, `RowLayout`, and widgets that
   describe themselves for Blockpilot's `flatgen:widgets`.

@@ -1,49 +1,38 @@
 package dev.flatgen.editor.client;
 
-import dev.flatgen.blocks.client.BlockPickerScreen;
-import dev.flatgen.blocks.rules.LayerHints;
-import dev.flatgen.blocks.rules.SetBlock;
 import dev.flatgen.client.gui.FlatgenScreen;
-import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.TextButton;
-import dev.flatgen.client.gui.TextLines;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.RowLayout;
+import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.client.panel.PanelSizes;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.History;
 import dev.flatgen.editor.rules.World;
-import dev.flatgen.layers.client.ColumnActions;
 import dev.flatgen.layers.client.ColumnWidget;
-import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Biomes;
-import dev.flatgen.mc.BlockCatalog;
-import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
-import dev.flatgen.mc.Names;
 import dev.flatgen.mc.WorldCreation;
-import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
-import dev.flatgen.preset.rules.VanillaCode;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import org.lwjgl.glfw.GLFW;
+import net.minecraft.world.flag.FeatureFlagSet;
 
 /**
- * Flatgen's superflat editor, opened by Customize: the world's layers in a column, beside it what is selected and the
- * controls that change it, and Done, the game's own editor and Cancel below. Every change is a step to undo. Done
- * applies the preset to the Create World screen; Cancel leaves it.
+ * Flatgen's superflat editor, opened by Customize: the world's layers in a column, beside it the panels of
+ * {@link EditorPanels}, top down, wrapping within the space left, and Done, the game's own editor and Cancel below.
+ * Every change is a step to undo. Done applies the preset to the Create World screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
     /** Space above the column for the title, in GUI pixels. */
@@ -54,20 +43,6 @@ public final class EditorScreen extends FlatgenScreen {
     private static final int MARGIN = 12;
     /** A footer button's size, in GUI pixels: three fit the narrowest screen at the largest GUI scale. */
     private static final int FOOTER_BUTTON_WIDTH = 100;
-    private static final int BUTTON_HEIGHT = 20;
-    /** Space between buttons and between the panel's rows, in GUI pixels. */
-    private static final int GAP = 4;
-    /** Widths of the panel's controls, in GUI pixels. */
-    private static final int SMALL = 20;
-    private static final int QUICK = 22;
-    private static final int FIELD = 40;
-    private static final int WIDE = 70;
-    /** How many lines the panel's text has: the selected layer's Ys, the surface and biome, and the layer's hints. */
-    private static final int INFO_LINES = 3;
-    /** The width of the button showing the selected layer's block, in GUI pixels. */
-    private static final int BLOCK_BUTTON = 2 * 70 + 4;
-    /** The depths a single click sets the selected layer to. */
-    private static final List<Integer> QUICK_HEIGHTS = List.of(1, 2, 3, 5, 10, 50, 100);
     /** The icon of the preset the editor starts from, which the world's settings do not carry. */
     private static final String ICON = "minecraft:grass_block";
 
@@ -75,9 +50,9 @@ public final class EditorScreen extends FlatgenScreen {
     private final WorldCreationContext context;
     private final World world;
     private final History history;
-    private final Actions actions = new Actions();
+    private final Context editor = new Context();
     private Edit previewed;
-    /** What the last copy or paste said, shown in place of the hints until the next edit; null for nothing. */
+    /** What the last copy or paste said, until the next change; null for nothing. */
     private Component message;
     private ColumnWidget column;
 
@@ -94,7 +69,7 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** The preset the editor shows, with a change being dragged made on it. */
     public Preset preset() {
-        return actions.shown().preset();
+        return editor.shown().preset();
     }
 
     /** The Y of the world's floor, where the bottom layer starts. */
@@ -109,42 +84,32 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** The selected layer, bottom first, or -1 when there are none. */
     public int selected() {
-        return actions.shown().selected();
+        return editor.shown().selected();
     }
 
     @Override
     protected List<Widget> layOut(int width, int height) {
         Rect space = new Rect(MARGIN, HEADER, ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH,
                 height - HEADER - FOOTER);
-        column = new ColumnWidget(actions, world, Biomes.waterColor(preset().biome(), context.worldgenLoadContext()),
-                space);
+        column = new ColumnWidget(editor, Biomes.waterColor(preset().biome(), context.worldgenLoadContext()), space);
         List<Widget> widgets = new ArrayList<>();
         widgets.add(column);
-        widgets.addAll(panel(space.right() + MARGIN, width - space.right() - 2 * MARGIN));
+        int left = space.right() + MARGIN;
+        FlowLayout flow = new FlowLayout(new Rect(left, HEADER, width - left - MARGIN, space.height()),
+                PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
+        EditorPanels.ALL.forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
         widgets.addAll(footer(width, height));
         return widgets;
     }
 
     @Override
     protected boolean shortcut(int keyCode, Modifiers modifiers) {
-        int selected = selected();
-        Runnable action = switch (keyCode) {
-            case GLFW.GLFW_KEY_UP -> modifiers.alt() ? () -> apply(new LayerEdits.Move(selected + 1))
-                    : () -> history.select(selected + 1);
-            case GLFW.GLFW_KEY_DOWN -> modifiers.alt() ? () -> apply(new LayerEdits.Move(selected - 1))
-                    : () -> history.select(Math.max(0, selected - 1));
-            case GLFW.GLFW_KEY_DELETE, GLFW.GLFW_KEY_BACKSPACE -> () -> apply(new LayerEdits.Remove());
-            case GLFW.GLFW_KEY_INSERT -> () -> apply(new LayerEdits.Add(true));
-            case GLFW.GLFW_KEY_D -> modifiers.control() ? () -> apply(new LayerEdits.Duplicate()) : null;
-            case GLFW.GLFW_KEY_Z -> modifiers.control() ? (modifiers.shift() ? history::redo : history::undo) : null;
-            case GLFW.GLFW_KEY_Y -> modifiers.control() ? history::redo : null;
-            default -> null;
-        };
-        if (action == null) {
-            return false;
+        for (EditorPanel panel : EditorPanels.ALL) {
+            if (panel.shortcut(editor, keyCode, modifiers)) {
+                return true;
+            }
         }
-        action.run();
-        return true;
+        return false;
     }
 
     @Override
@@ -152,189 +117,15 @@ public final class EditorScreen extends FlatgenScreen {
         minecraft.setScreen(parent);
     }
 
-    /** The panel beside the column, its rows top down, this wide from this left edge. */
-    private List<Widget> panel(int left, int width) {
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new TextButton(this::blockLabel, new Rect(left, HEADER, BLOCK_BUTTON, BUTTON_HEIGHT),
-                this::pickBlock, this::hasLayer, () -> tip("flatgen.editor.pick_block")));
-        int infoTop = HEADER + BUTTON_HEIGHT + GAP;
-        int infoHeight = TextLines.height(INFO_LINES, font.lineHeight);
-        widgets.add(new TextLines(new Rect(left, infoTop, width, infoHeight), this::info));
-        int rowY = infoTop + infoHeight;
-        widgets.addAll(heightRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
-        rowY += BUTTON_HEIGHT + GAP;
-        widgets.addAll(surfaceRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
-        rowY += BUTTON_HEIGHT + GAP;
-        widgets.addAll(layerRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
-        rowY += BUTTON_HEIGHT + GAP;
-        widgets.addAll(historyRow(new RowLayout(left, rowY, BUTTON_HEIGHT, GAP)));
-        return widgets;
-    }
-
-    /** Shallower, the depth to type, deeper, then a button for each quick depth. */
-    private List<Widget> heightRow(RowLayout row) {
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(button("−", row.next(SMALL), new LayerEdits.ChangeHeight(-1),
-                () -> hasLayer() && selectedHeight() > 1, () -> tip("flatgen.layer.shallower")));
-        widgets.add(new NumberField("height", row.next(FIELD), this::selectedHeight,
-                height -> apply(new LayerEdits.SetHeight(height))));
-        widgets.add(button("+", row.next(SMALL), new LayerEdits.ChangeHeight(1),
-                () -> hasLayer() && selectedHeight() < room(), this::deeperTip));
-        for (int quick : QUICK_HEIGHTS) {
-            widgets.add(button(Integer.toString(quick), row.next(QUICK), new LayerEdits.SetHeight(quick),
-                    this::hasLayer, List::of));
-        }
-        return widgets;
-    }
-
-    /** The surface's Y to type: the selected layer's depth changes so the surface is there. */
-    private List<Widget> surfaceRow(RowLayout row) {
-        Component label = Component.translatable("flatgen.editor.surface_field");
-        Rect labelPlace = row.next(font.width(label));
-        Rect text = new Rect(labelPlace.x(), labelPlace.y() + (BUTTON_HEIGHT - font.lineHeight) / 2,
-                labelPlace.width(), font.lineHeight);
-        return List.of(new TextLines(text, () -> List.of(label)),
-                new NumberField("surface", row.next(FIELD), () -> world.floor() + preset().height(),
-                        y -> apply(new LayerEdits.SurfaceAt(y))));
-    }
-
-    /** Add a layer above, add one below, copy the selected layer, remove it. */
-    private List<Widget> layerRow(RowLayout row) {
-        Supplier<List<Component>> fullTip = () -> roomLeft() > 0 ? List.of() : List.of(full());
-        return List.of(
-                button(Component.translatable("flatgen.editor.add_above"), row.next(WIDE), new LayerEdits.Add(true),
-                        () -> roomLeft() > 0, fullTip),
-                button(Component.translatable("flatgen.editor.add_below"), row.next(WIDE), new LayerEdits.Add(false),
-                        () -> roomLeft() > 0, fullTip),
-                button(Component.translatable("flatgen.editor.duplicate"), row.next(WIDE), new LayerEdits.Duplicate(),
-                        () -> hasLayer() && roomLeft() > 0, fullTip),
-                button(Component.translatable("flatgen.editor.remove"), row.next(WIDE), new LayerEdits.Remove(),
-                        this::hasLayer, List::of));
-    }
-
-    /** Undo and redo, then copying the game's superflat code and pasting one. */
-    private List<Widget> historyRow(RowLayout row) {
-        return List.of(
-                new TextButton(Component.translatable("flatgen.editor.undo"), row.next(WIDE), history::undo,
-                        history::canUndo, List::of),
-                new TextButton(Component.translatable("flatgen.editor.redo"), row.next(WIDE), history::redo,
-                        history::canRedo, List::of),
-                new TextButton(Component.translatable("flatgen.code.copy"), row.next(WIDE), this::copyCode,
-                        () -> true, () -> tip("flatgen.code.copy_tip")),
-                new TextButton(Component.translatable("flatgen.code.paste"), row.next(WIDE), this::pasteCode,
-                        () -> true, () -> tip("flatgen.code.paste_tip")));
-    }
-
-    /** Puts the game's superflat code for the preset on the clipboard. */
-    private void copyCode() {
-        Clipboard.set(VanillaCode.write(preset()));
-        message = Component.translatable("flatgen.code.copied");
-    }
-
-    /**
-     * Reads a superflat code from the clipboard and puts its layers and biome in place of the preset's, as one step to
-     * undo; a code with a wrong part changes nothing and says which part is wrong.
-     */
-    private void pasteCode() {
-        String code = Clipboard.get();
-        VanillaCode.Reading reading = VanillaCode.read(code);
-        List<VanillaCode.Problem> problems = new ArrayList<>(reading.problems());
-        if (problems.isEmpty()) {
-            problems.addAll(CodeChecks.unknownIds(code, reading, preset(), context.worldgenLoadContext()));
-        }
-        if (problems.isEmpty() && reading.layers().stream().mapToInt(Layer::height).sum() > world.height()) {
-            problems.add(new VanillaCode.Problem(VanillaCode.Kind.TOO_TALL, 0, code.length(), code));
-        }
-        if (problems.isEmpty()) {
-            apply(new LayerEdits.Replace(reading.layers(), reading.biome()));
-        }
-        message = problems.isEmpty() ? Component.translatable("flatgen.code.pasted")
-                : CodeChecks.describe(problems.get(0), problems.size() - 1, world.height());
-    }
-
     private List<Widget> footer(int width, int height) {
-        RowLayout row = new RowLayout((width - 3 * FOOTER_BUTTON_WIDTH - 2 * 2 * GAP) / 2,
-                height - (FOOTER + BUTTON_HEIGHT) / 2, BUTTON_HEIGHT, 2 * GAP);
+        int gap = 2 * PanelSizes.GAP;
+        RowLayout row = new RowLayout((width - 3 * FOOTER_BUTTON_WIDTH - 2 * gap) / 2,
+                height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2, PanelSizes.ROW_HEIGHT, gap);
         return List.of(
                 new TextButton(CommonComponents.GUI_DONE, row.next(FOOTER_BUTTON_WIDTH), this::done),
                 new TextButton(Component.translatable("flatgen.editor.vanilla"), row.next(FOOTER_BUTTON_WIDTH),
                         this::openVanilla),
                 new TextButton(CommonComponents.GUI_CANCEL, row.next(FOOTER_BUTTON_WIDTH), this::onClose));
-    }
-
-    private TextButton button(String label, Rect place, Edit edit, BooleanSupplier active,
-            Supplier<List<Component>> tooltip) {
-        return button(Component.literal(label), place, edit, active, tooltip);
-    }
-
-    private TextButton button(Component label, Rect place, Edit edit, BooleanSupplier active,
-            Supplier<List<Component>> tooltip) {
-        return new TextButton(label, place, () -> apply(edit), active, tooltip);
-    }
-
-    /** What the panel's text says: the selected layer's Ys, the surface and the biome, and the layer's hints. */
-    private List<Component> info() {
-        List<Component> lines = new ArrayList<>();
-        lines.add(hasLayer() ? column.describe(selected()).get(2) : Component.translatable("flatgen.editor.empty"));
-        lines.add(Component.translatable("flatgen.editor.surface", world.floor() + preset().height(),
-                Names.biome(preset().biome())));
-        lines.add(message != null ? message : hasLayer() ? hints() : Component.empty());
-        return lines;
-    }
-
-    /** The selected layer's hints (falls, not a whole block, keeps data), each a few words, on one line. */
-    private Component hints() {
-        List<Layer> layers = preset().layers();
-        Optional<LayerHints.Traits> below = selected() > 0
-                ? Optional.of(BlockCatalog.traits(layers.get(selected() - 1).block())) : Optional.empty();
-        MutableComponent line = Component.empty();
-        for (LayerHints.Hint hint : LayerHints.of(BlockCatalog.traits(layers.get(selected()).block()), below)) {
-            line.append(line.getSiblings().isEmpty() ? Component.empty() : Component.literal(" · "))
-                    .append(Component.translatable("flatgen.hint." + hint.name().toLowerCase(Locale.ROOT)));
-        }
-        return line;
-    }
-
-    private Component blockLabel() {
-        return hasLayer() ? Names.block(preset().layers().get(selected()).block()) : Component.literal("-");
-    }
-
-    private void pickBlock() {
-        minecraft.setScreen(new BlockPickerScreen(this, context.dataConfiguration().enabledFeatures(),
-                block -> apply(new SetBlock(block))));
-    }
-
-    private List<Component> tip(String key) {
-        return List.of(Component.translatable(key));
-    }
-
-    private List<Component> deeperTip() {
-        return hasLayer() && selectedHeight() >= room() ? List.of(full()) : tip("flatgen.layer.deeper");
-    }
-
-    private Component full() {
-        return Component.translatable("flatgen.editor.full", world.height());
-    }
-
-    private boolean hasLayer() {
-        return selected() >= 0;
-    }
-
-    private int selectedHeight() {
-        return hasLayer() ? preset().layers().get(selected()).height() : 0;
-    }
-
-    private int room() {
-        return LayerEdits.room(actions.shown(), world);
-    }
-
-    private int roomLeft() {
-        return world.height() - preset().height();
-    }
-
-    private void apply(Edit edit) {
-        history.apply(edit, world);
-        message = null;
     }
 
     private void done() {
@@ -347,21 +138,27 @@ public final class EditorScreen extends FlatgenScreen {
         minecraft.setScreen(PresetEditors.VANILLA.createEditScreen(parent, context));
     }
 
-    /** What the column asks of the editor: the history, with a dragged change shown on it until it is let go. */
-    private final class Actions implements ColumnActions {
+    /** What the column and the panels see of the editor: its history, with a dragged change shown until let go. */
+    private final class Context implements EditorContext {
         @Override
         public EditorState shown() {
             return previewed == null ? history.current() : previewed.apply(history.current(), world);
         }
 
         @Override
-        public void select(int layer) {
-            history.select(layer);
+        public World world() {
+            return world;
         }
 
         @Override
         public void apply(Edit edit) {
             history.apply(edit, world);
+            message = null;
+        }
+
+        @Override
+        public void select(int layer) {
+            history.select(layer);
         }
 
         @Override
@@ -372,9 +169,71 @@ public final class EditorScreen extends FlatgenScreen {
         @Override
         public void commitPreview() {
             if (previewed != null) {
-                history.apply(previewed, world);
+                apply(previewed);
                 previewed = null;
             }
+        }
+
+        @Override
+        public void undo() {
+            history.undo();
+            message = null;
+        }
+
+        @Override
+        public void redo() {
+            history.redo();
+            message = null;
+        }
+
+        @Override
+        public boolean canUndo() {
+            return history.canUndo();
+        }
+
+        @Override
+        public boolean canRedo() {
+            return history.canRedo();
+        }
+
+        @Override
+        public void say(Component text) {
+            message = text;
+        }
+
+        @Override
+        public Component message() {
+            return message;
+        }
+
+        @Override
+        public HolderLookup.Provider registries() {
+            return context.worldgenLoadContext();
+        }
+
+        @Override
+        public FeatureFlagSet enabledFeatures() {
+            return context.dataConfiguration().enabledFeatures();
+        }
+
+        @Override
+        public Screen screen() {
+            return EditorScreen.this;
+        }
+
+        @Override
+        public void open(Screen screen) {
+            minecraft.setScreen(screen);
+        }
+
+        @Override
+        public int textWidth(Component text) {
+            return font.width(text);
+        }
+
+        @Override
+        public int lineHeight() {
+            return font.lineHeight;
         }
     }
 }

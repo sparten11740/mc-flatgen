@@ -5,11 +5,10 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.rules.EditorState;
-import dev.flatgen.editor.rules.World;
 import dev.flatgen.layers.rules.ColumnLayout;
 import dev.flatgen.layers.rules.LayerEdits;
-import dev.flatgen.mc.Names;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
@@ -53,8 +52,7 @@ public final class ColumnWidget implements Widget {
     private static final int DROP_LINE = 0xFFFFD040;
     private static final int LABEL_COLOR = 0xFFE0E0E0;
 
-    private final ColumnActions actions;
-    private final World world;
+    private final EditorContext editor;
     private final int fluidColor;
     private final Rect column;
     private final Rect labels;
@@ -83,14 +81,12 @@ public final class ColumnWidget implements Widget {
     private enum Mode { NONE, RESIZING, PRESSED, MOVING }
 
     /**
-     * A column drawing what {@code actions} shows, in this world, at the left of this space with its Y numbers to the
-     * right of it.
+     * A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it.
      *
      * @param fluidColor the colour water layers are tinted, the biome's water colour
      */
-    public ColumnWidget(ColumnActions actions, World world, int fluidColor, Rect space) {
-        this.actions = actions;
-        this.world = world;
+    public ColumnWidget(EditorContext editor, int fluidColor, Rect space) {
+        this.editor = editor;
         this.fluidColor = fluidColor;
         this.column = new Rect(space.x(), space.y(), COLUMN_WIDTH, space.height());
         this.labels = new Rect(column.right(), space.y(), space.width() - COLUMN_WIDTH, space.height());
@@ -107,7 +103,7 @@ public final class ColumnWidget implements Widget {
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        EditorState state = actions.shown();
+        EditorState state = editor.shown();
         List<Rect> bounds = layerBounds();
         canvas.fill(column, BACKGROUND);
         canvas.clip(column);
@@ -126,7 +122,7 @@ public final class ColumnWidget implements Widget {
         drawLabels(canvas, bounds);
         OptionalInt hovered = hoveredLayer(mouseX, mouseY);
         if (drag.mode() == Mode.NONE && hovered.isPresent()) {
-            canvas.tooltip(describe(hovered.getAsInt()), mouseX, mouseY);
+            canvas.tooltip(LayerText.describe(editor.shown(), editor.world(), hovered.getAsInt()), mouseX, mouseY);
         }
     }
 
@@ -137,9 +133,9 @@ public final class ColumnWidget implements Widget {
             return false;
         }
         int index = layer.getAsInt();
-        actions.select(index);
+        editor.select(index);
         Rect bounds = layerBounds().get(index);
-        int height = actions.shown().preset().layers().get(index).height();
+        int height = editor.shown().preset().layers().get(index).height();
         Mode mode = y < bounds.y() + EDGE ? Mode.RESIZING : Mode.PRESSED;
         drag = new Drag(mode, y, height, (double) height / bounds.height(), -1);
         return true;
@@ -149,7 +145,7 @@ public final class ColumnWidget implements Widget {
     public void drag(double x, double y) {
         if (drag.mode() == Mode.RESIZING) {
             int blocks = (int) Math.round((drag.startY() - y) * drag.blocksPerPixel());
-            actions.preview(new LayerEdits.SetHeight(drag.startHeight() + blocks));
+            editor.preview(new LayerEdits.SetHeight(drag.startHeight() + blocks));
         } else if (drag.mode() == Mode.MOVING
                 || (drag.mode() == Mode.PRESSED && Math.abs(y - drag.startY()) > MOVE_THRESHOLD)) {
             drag = drag.moving(placeAt(y));
@@ -159,9 +155,9 @@ public final class ColumnWidget implements Widget {
     @Override
     public void release(double x, double y) {
         if (drag.mode() == Mode.RESIZING) {
-            actions.commitPreview();
+            editor.commitPreview();
         } else if (drag.mode() == Mode.MOVING) {
-            actions.apply(new LayerEdits.Move(placeAt(y)));
+            editor.apply(new LayerEdits.Move(placeAt(y)));
         }
         drag = Drag.NONE;
     }
@@ -170,8 +166,8 @@ public final class ColumnWidget implements Widget {
     public boolean scroll(double x, double y, double amount, Modifiers modifiers) {
         OptionalInt layer = hoveredLayer(x, y);
         if (layer.isPresent()) {
-            actions.select(layer.getAsInt());
-            actions.apply(new LayerEdits.ChangeHeight((int) Math.signum(amount) * wheelBlocks(modifiers)));
+            editor.select(layer.getAsInt());
+            editor.apply(new LayerEdits.ChangeHeight((int) Math.signum(amount) * wheelBlocks(modifiers)));
             return true;
         }
         int hidden = layout().contentHeight() - column.height();
@@ -180,16 +176,6 @@ public final class ColumnWidget implements Widget {
         }
         scroll = Math.max(0, Math.min(hidden, scroll - (int) Math.signum(amount) * SCROLL_STEP));
         return true;
-    }
-
-    /** What a layer's tooltip says: its block, how deep it is and the Ys it covers. */
-    public List<Component> describe(int index) {
-        List<Layer> layers = actions.shown().preset().layers();
-        Layer layer = layers.get(index);
-        int bottomY = world.floor() + layers.subList(0, index).stream().mapToInt(Layer::height).sum();
-        return List.of(Names.block(layer.block()),
-                Component.translatable("flatgen.layer.height", layer.height()),
-                Component.translatable("flatgen.layer.y_range", bottomY, bottomY + layer.height() - 1));
     }
 
     private static int wheelBlocks(Modifiers modifiers) {
@@ -201,7 +187,7 @@ public final class ColumnWidget implements Widget {
      * column that shrank to fit shows its top again.
      */
     private ColumnLayout layout() {
-        Preset preset = actions.shown().preset();
+        Preset preset = editor.shown().preset();
         if (!preset.equals(laidOut)) {
             laidOut = preset;
             layout = ColumnLayout.of(heights(preset), column.height(), THINNEST_LAYER);
@@ -229,7 +215,7 @@ public final class ColumnWidget implements Widget {
     }
 
     private void drawMarker(Canvas canvas, Marker marker) {
-        OptionalInt pixel = layout().pixelOfLine(marker.y(), world.floor(), heights(actions.shown().preset()));
+        OptionalInt pixel = layout().pixelOfLine(marker.y(), editor.world().floor(), heights(editor.shown().preset()));
         if (pixel.isEmpty()) {
             return;
         }
@@ -270,15 +256,15 @@ public final class ColumnWidget implements Widget {
 
     /** The lines between layers, top down, the surface first and the world's floor last: each one's pixel row and Y. */
     private List<Line> lines(List<Rect> bounds) {
-        Preset preset = actions.shown().preset();
+        Preset preset = editor.shown().preset();
         List<Line> lines = new ArrayList<>();
-        int y = world.floor() + preset.height();
+        int y = editor.world().floor() + preset.height();
         for (int index = bounds.size() - 1; index >= 0; index--) {
             lines.add(new Line(bounds.get(index).y(), y));
             y -= preset.layers().get(index).height();
         }
         if (!bounds.isEmpty()) {
-            lines.add(new Line(bounds.get(0).bottom(), world.floor()));
+            lines.add(new Line(bounds.get(0).bottom(), editor.world().floor()));
         }
         return lines;
     }

@@ -19,11 +19,6 @@ public final class TextLines implements Widget {
         this.lines = lines;
     }
 
-    /** How tall this many lines are drawn, in GUI pixels, for a line height. */
-    public static int height(int count, int lineHeight) {
-        return count * (lineHeight + LINE_GAP);
-    }
-
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         int y = bounds.y();
