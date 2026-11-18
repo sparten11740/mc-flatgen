@@ -28,6 +28,8 @@ public abstract class FlatgenScreen extends Screen {
     private BlockSides blockSides = new BlockSides();
     /** The widget that took the click whose button is held, which hears the drag and the release. */
     private Widget pressed;
+    /** The button held for {@link #pressed}; the others are ignored until it is let go. */
+    private int pressedButton;
     /** The widget that has the keyboard. */
     private Widget keyboard;
 
@@ -72,12 +74,16 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (pressed != null) {
+            return true;
+        }
         Optional<Widget> taker = Optional.empty();
         for (int index = widgets.size() - 1; index >= 0 && taker.isEmpty(); index--) {
             Widget widget = widgets.get(index);
             taker = widget.click(mouseX, mouseY, button, modifiers()) ? Optional.of(widget) : Optional.empty();
         }
         pressed = taker.orElse(null);
+        pressedButton = button;
         giveKeyboard(taker.filter(Widget::takesKeyboard).orElse(null));
         return taker.isPresent() || super.mouseClicked(mouseX, mouseY, button);
     }
@@ -85,7 +91,9 @@ public abstract class FlatgenScreen extends Screen {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (pressed != null) {
-            pressed.drag(mouseX, mouseY);
+            if (button == pressedButton) {
+                pressed.drag(mouseX, mouseY);
+            }
             return true;
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
@@ -94,17 +102,21 @@ public abstract class FlatgenScreen extends Screen {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (pressed != null) {
-            pressed.release(mouseX, mouseY);
-            pressed = null;
+            if (button == pressedButton) {
+                pressed.release(mouseX, mouseY);
+                pressed = null;
+            }
             return true;
         }
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
+    /** The wheel, vertical or, as macOS turns Shift with the wheel, horizontal, which then counts the same. */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        double amount = scrollY != 0 ? scrollY : scrollX;
         for (int index = widgets.size() - 1; index >= 0; index--) {
-            if (widgets.get(index).scroll(mouseX, mouseY, scrollY, modifiers())) {
+            if (widgets.get(index).scroll(mouseX, mouseY, amount, modifiers())) {
                 return true;
             }
         }
