@@ -1,0 +1,52 @@
+package dev.flatgen.compat.blockpilot.rules;
+
+import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.preset.rules.Layer;
+import dev.flatgen.preset.rules.Preset;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * What {@code flatgen:column} reports: a row for each layer, top first as the column shows them, keyed {@code l<n>}
+ * with {@code n} counted from the bottom, with the layer's block, height, Ys and where it is drawn, so {@code click}
+ * and {@code drag} can aim at it.
+ */
+public final class ColumnRows {
+    private ColumnRows() {
+    }
+
+    /**
+     * One row of the report.
+     *
+     * @param key    the layer's key, {@code l<n>}
+     * @param fields the row's fields by name, in the order they are said
+     */
+    public record Row(String key, Map<String, Object> fields) {
+    }
+
+    /** The rows for a preset's layers, in a world whose floor is at this Y, drawn in these rectangles. */
+    public static List<Row> of(Preset preset, int floor, List<Rect> bounds, int selected) {
+        List<Row> rows = new ArrayList<>();
+        int bottomY = floor;
+        for (int index = 0; index < preset.layers().size(); index++) {
+            Layer layer = preset.layers().get(index);
+            rows.add(0, row(index, layer, bottomY, bounds.get(index), index == selected));
+            bottomY += layer.height();
+        }
+        return rows;
+    }
+
+    private static Row row(int index, Layer layer, int bottomY, Rect bounds, boolean selected) {
+        int topY = bottomY + layer.height() - 1;
+        Map<String, Object> fields = new LinkedHashMap<>();
+        fields.put("block", layer.block());
+        fields.put("height", layer.height());
+        fields.put("from_y", bottomY);
+        fields.put("to_y", topY);
+        fields.put("bounds", bounds.x() + "," + bounds.y() + "," + bounds.width() + "," + bounds.height());
+        fields.put("selected", selected);
+        return new Row("l" + index, fields);
+    }
+}

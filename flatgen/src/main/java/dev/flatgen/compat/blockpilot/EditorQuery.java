@@ -19,6 +19,7 @@ final class EditorQuery {
             .field("height", "the stack's height in blocks")
             .field("surface_y", "the Y mobs stand at, on the top layer")
             .field("biome", "the biome's id")
+            .field("selected", "the selected layer's key in flatgen:column, l0 at the bottom, or none")
             .example("flatgen:editor");
 
     private EditorQuery() {
@@ -27,7 +28,7 @@ final class EditorQuery {
     private static Result run(CommandContext context, Args args) {
         Fields fields = new Fields();
         if (Minecraft.getInstance().screen instanceof EditorScreen editor) {
-            EditorFields.of(editor.preset(), editor.worldBottom()).forEach(fields::put);
+            EditorFields.of(editor.preset(), editor.worldBottom(), editor.column().selected()).forEach(fields::put);
         } else {
             fields.put("open", false);
         }

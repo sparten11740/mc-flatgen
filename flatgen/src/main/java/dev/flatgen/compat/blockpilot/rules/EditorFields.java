@@ -10,8 +10,11 @@ public final class EditorFields {
     private EditorFields() {
     }
 
-    /** The fields of an open editor holding this preset, in a world whose floor is at this Y. */
-    public static Map<String, Object> of(Preset preset, int worldBottom) {
+    /**
+     * The fields of an open editor holding this preset, in a world whose floor is at this Y, with this layer selected
+     * (bottom first, -1 for none).
+     */
+    public static Map<String, Object> of(Preset preset, int worldBottom, int selected) {
         Map<String, Object> fields = new LinkedHashMap<>();
         fields.put("open", true);
         fields.put("code", VanillaCode.write(preset));
@@ -19,6 +22,7 @@ public final class EditorFields {
         fields.put("height", preset.height());
         fields.put("surface_y", worldBottom + preset.height());
         fields.put("biome", preset.biome());
+        fields.put("selected", selected >= 0 ? "l" + selected : "none");
         return fields;
     }
 }

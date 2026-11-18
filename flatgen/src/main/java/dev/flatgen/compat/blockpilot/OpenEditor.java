@@ -13,8 +13,8 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 
 /**
- * {@code flatgen:open}: from the title screen or the world list, Create World with Superflat chosen and Flatgen's editor
- * open on it, so a play test starts in the editor in one step.
+ * {@code flatgen:open}: from the title screen or the world list, Create World with Superflat chosen and Flatgen's
+ * editor open on it, so a play test starts in the editor in one step.
  */
 final class OpenEditor {
     static final CommandSpec SPEC = CommandSpec.action("open", OpenEditor::start)
