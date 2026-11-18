@@ -2,10 +2,9 @@ package dev.flatgen.config.rules;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
+import dev.flatgen.json.rules.JsonFields;
+import java.util.ArrayList;
 
 /**
  * The player's settings for Flatgen, as config/flatgen/flatgen.json holds them.
@@ -25,16 +24,8 @@ public record Settings(boolean enabled) {
      * @throws IllegalArgumentException when the text is not a JSON object
      */
     public static Settings fromJson(String json) {
-        JsonElement root;
-        try {
-            root = JsonParser.parseString(json);
-        } catch (JsonParseException exception) {
-            throw new IllegalArgumentException("not JSON", exception);
-        }
-        if (!root.isJsonObject()) {
-            throw new IllegalArgumentException("not a JSON object");
-        }
-        return new Settings(readBoolean(root.getAsJsonObject(), ENABLED, DEFAULTS.enabled()));
+        JsonObject root = JsonFields.parseObject(json);
+        return new Settings(JsonFields.bool(root, ENABLED, DEFAULTS.enabled(), new ArrayList<>()));
     }
 
     /** The settings as JSON, as the file stores them. */
@@ -42,11 +33,5 @@ public record Settings(boolean enabled) {
         JsonObject root = new JsonObject();
         root.addProperty(ENABLED, enabled);
         return GSON.toJson(root);
-    }
-
-    private static boolean readBoolean(JsonObject object, String key, boolean fallback) {
-        JsonElement value = object.get(key);
-        boolean isBoolean = value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean();
-        return isBoolean ? value.getAsBoolean() : fallback;
     }
 }
