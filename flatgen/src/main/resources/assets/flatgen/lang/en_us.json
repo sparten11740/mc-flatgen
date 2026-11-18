@@ -1,6 +1,8 @@
 {
-  "flatgen.editor.title": "Flatgen",
-  "flatgen.editor.layer": "%s × %s",
   "flatgen.editor.biome": "Biome: %s",
-  "flatgen.editor.vanilla": "Vanilla editor"
+  "flatgen.editor.surface": "Surface at Y %s",
+  "flatgen.editor.title": "Flatgen",
+  "flatgen.editor.vanilla": "Vanilla editor",
+  "flatgen.layer.height": "Height: %s",
+  "flatgen.layer.y_range": "Y %s to %s"
 }
