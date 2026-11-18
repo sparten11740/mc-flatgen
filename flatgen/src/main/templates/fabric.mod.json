@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "license": "${mod_license}",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["dev.flatgen.platform.fabric.FabricClientEntrypoint"]
+  },
+  "depends": {
+    "fabricloader": ">=${fabric_loader_min_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "minecraft": "${minecraft_version_range}",
+    "java": ">=${java_version}"
+  }
+}
