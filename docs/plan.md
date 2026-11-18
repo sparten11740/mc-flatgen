@@ -41,22 +41,23 @@ Default, Amplified or other noise world types.
 
 ### 3.1 Packages and dependency direction
 
-Everything is under `dev.flatgen`. Each feature has its own package (`layers`, `blocks`, `biome`, `facts`,
-`structures`, `gamerules`, `library`, `templates`, `preset`, `editor`), split the same way in each:
+Everything is under `dev.flatgen`. Each feature has its own package (`config`, `editor`, `preset`, `layers`, `blocks`,
+`biome`, `facts`, `structures`, `gamerules`, `library`, `templates`), and logic several features share has one of its
+own (`search` for the pickers' search), split the same way in each:
 
 | Part | Holds | May depend on |
 |---|---|---|
 | `<feature>/rules/` | The feature's logic as plain Java: records, pure functions, edits. Same on every version. | Other features' `rules`, the JDK, Gson. Never Minecraft, never a loader. |
 | `<feature>/` | Game-facing code that is the same on every version. | Its `rules`, other features' public types, `mc/`, Minecraft classes that do not change between the versions built. |
 | `<feature>/client/` | The feature's widgets and screens. | Its feature, other features' public types, `client/gui/`, `mc/`. |
-| `client/gui/` | Flatgen's GUI toolkit (3.3). | `mc/` for drawing and input. |
+| `client/gui/` | Flatgen's GUI toolkit (3.3). | Itself, `mc/` for drawing and input, `rules`, the root. |
 | `mc/` | The game's API that may differ between versions, behind Flatgen's own names (3.2). | `rules` types, the root, Minecraft. Never a feature's game-facing or client code. |
 | `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
 | `platform/` | `ClientPlatform`, the interface shared code reaches loader hooks through, and its holder. | Nothing loader-specific. |
 | `platform/<loader>/` | Entry points, event wiring, the loader's mixins. | Anything. Nothing depends on it. |
 
-The direction is always towards `rules`: platform → client → feature → `mc` → rules. A test reads the sources and
-fails on an import against this table (F00).
+The direction is always towards `rules`: platform → client → feature → `mc` → rules. A test reads the sources, imports
+and fully qualified names alike, and fails on a reference against this table (F00).
 
 ### 3.2 Versions and loaders
 
