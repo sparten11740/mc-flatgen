@@ -150,7 +150,8 @@ public final class ColumnWidget implements Widget {
         if (drag.mode() == Mode.RESIZING) {
             int blocks = (int) Math.round((drag.startY() - y) * drag.blocksPerPixel());
             actions.preview(new LayerEdits.SetHeight(drag.startHeight() + blocks));
-        } else if (drag.mode() != Mode.NONE && Math.abs(y - drag.startY()) > MOVE_THRESHOLD) {
+        } else if (drag.mode() == Mode.MOVING
+                || (drag.mode() == Mode.PRESSED && Math.abs(y - drag.startY()) > MOVE_THRESHOLD)) {
             drag = drag.moving(placeAt(y));
         }
     }
@@ -195,12 +196,16 @@ public final class ColumnWidget implements Widget {
         return modifiers.control() ? CONTROL_WHEEL_BLOCKS : modifiers.shift() ? SHIFT_WHEEL_BLOCKS : WHEEL_BLOCKS;
     }
 
-    /** The layout of what is shown now, laid out again when the preset changes. */
+    /**
+     * The layout of what is shown now, laid out again when the preset changes, with the scroll kept within it, so a
+     * column that shrank to fit shows its top again.
+     */
     private ColumnLayout layout() {
         Preset preset = actions.shown().preset();
         if (!preset.equals(laidOut)) {
             laidOut = preset;
             layout = ColumnLayout.of(heights(preset), column.height(), THINNEST_LAYER);
+            scroll = Math.max(0, Math.min(layout.contentHeight() - column.height(), scroll));
         }
         return layout;
     }
