@@ -20,11 +20,13 @@ import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.BlockCatalog;
+import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.Names;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.preset.rules.VanillaCode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -75,6 +77,8 @@ public final class EditorScreen extends FlatgenScreen {
     private final History history;
     private final Actions actions = new Actions();
     private Edit previewed;
+    /** What the last copy or paste said, shown in place of the hints until the next edit; null for nothing. */
+    private Component message;
     private ColumnWidget column;
 
     public EditorScreen(CreateWorldScreen parent, WorldCreationContext context) {
@@ -208,13 +212,44 @@ public final class EditorScreen extends FlatgenScreen {
                         this::hasLayer, List::of));
     }
 
-    /** Undo and redo. */
+    /** Undo and redo, then copying the game's superflat code and pasting one. */
     private List<Widget> historyRow(RowLayout row) {
         return List.of(
                 new TextButton(Component.translatable("flatgen.editor.undo"), row.next(WIDE), history::undo,
                         history::canUndo, List::of),
                 new TextButton(Component.translatable("flatgen.editor.redo"), row.next(WIDE), history::redo,
-                        history::canRedo, List::of));
+                        history::canRedo, List::of),
+                new TextButton(Component.translatable("flatgen.code.copy"), row.next(WIDE), this::copyCode,
+                        () -> true, () -> tip("flatgen.code.copy_tip")),
+                new TextButton(Component.translatable("flatgen.code.paste"), row.next(WIDE), this::pasteCode,
+                        () -> true, () -> tip("flatgen.code.paste_tip")));
+    }
+
+    /** Puts the game's superflat code for the preset on the clipboard. */
+    private void copyCode() {
+        Clipboard.set(VanillaCode.write(preset()));
+        message = Component.translatable("flatgen.code.copied");
+    }
+
+    /**
+     * Reads a superflat code from the clipboard and puts its layers and biome in place of the preset's, as one step to
+     * undo; a code with a wrong part changes nothing and says which part is wrong.
+     */
+    private void pasteCode() {
+        String code = Clipboard.get();
+        VanillaCode.Reading reading = VanillaCode.read(code);
+        List<VanillaCode.Problem> problems = new ArrayList<>(reading.problems());
+        if (problems.isEmpty()) {
+            problems.addAll(CodeChecks.unknownIds(code, reading, preset(), context.worldgenLoadContext()));
+        }
+        if (problems.isEmpty() && reading.layers().stream().mapToInt(Layer::height).sum() > world.height()) {
+            problems.add(new VanillaCode.Problem(VanillaCode.Kind.TOO_TALL, 0, code.length(), code));
+        }
+        if (problems.isEmpty()) {
+            apply(new LayerEdits.Replace(reading.layers(), reading.biome()));
+        }
+        message = problems.isEmpty() ? Component.translatable("flatgen.code.pasted")
+                : CodeChecks.describe(problems.get(0), problems.size() - 1, world.height());
     }
 
     private List<Widget> footer(int width, int height) {
@@ -243,7 +278,7 @@ public final class EditorScreen extends FlatgenScreen {
         lines.add(hasLayer() ? column.describe(selected()).get(2) : Component.translatable("flatgen.editor.empty"));
         lines.add(Component.translatable("flatgen.editor.surface", world.floor() + preset().height(),
                 Names.biome(preset().biome())));
-        lines.add(hasLayer() ? hints() : Component.empty());
+        lines.add(message != null ? message : hasLayer() ? hints() : Component.empty());
         return lines;
     }
 
@@ -299,6 +334,7 @@ public final class EditorScreen extends FlatgenScreen {
 
     private void apply(Edit edit) {
         history.apply(edit, world);
+        message = null;
     }
 
     private void done() {

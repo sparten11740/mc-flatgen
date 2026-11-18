@@ -93,6 +93,17 @@ class LayerEditsTest {
     }
 
     @Test
+    void replacesTheLayersAndBiomeAndSelectsTheTopLayer() {
+        List<Layer> sandy = List.of(new Layer("minecraft:bedrock", 1), new Layer("minecraft:sand", 5));
+        EditorState pasted = new LayerEdits.Replace(sandy, "minecraft:desert").apply(STONE, OVERWORLD);
+        assertEquals(sandy, pasted.preset().layers());
+        assertEquals("minecraft:desert", pasted.preset().biome());
+        assertEquals(1, pasted.selected());
+        assertSame(STONE, new LayerEdits.Replace(List.of(new Layer("minecraft:stone", 400)), "minecraft:plains")
+                .apply(STONE, OVERWORLD));
+    }
+
+    @Test
     void leavesAnEmptyStackAsItIs() {
         EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), -1);
         assertSame(empty, new LayerEdits.Remove().apply(empty, OVERWORLD));

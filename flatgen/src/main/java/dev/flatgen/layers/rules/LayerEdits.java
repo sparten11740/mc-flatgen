@@ -131,6 +131,25 @@ public final class LayerEdits {
         }
     }
 
+    /**
+     * Puts other layers and a biome in place of the preset's, as pasting a superflat code does, and selects the top
+     * layer; layers taller than the world are not put in.
+     *
+     * @param layers the new layers, bottom first
+     * @param biome  the new biome's id
+     */
+    public record Replace(List<Layer> layers, String biome) implements Edit {
+        public Replace {
+            layers = List.copyOf(layers);
+        }
+
+        @Override
+        public EditorState apply(EditorState state, World world) {
+            Preset replaced = state.preset().withLayers(layers).withBiome(biome);
+            return replaced.fitsWorld(world.height()) ? new EditorState(replaced, layers.size() - 1) : state;
+        }
+    }
+
     /** How deep the selected layer may be: the world's height less the layers around it. */
     public static int room(EditorState state, World world) {
         return world.height() - state.preset().height() + state.preset().layers().get(state.selected()).height();
