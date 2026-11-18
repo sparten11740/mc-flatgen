@@ -48,7 +48,7 @@ Default, Amplified or other noise world types.
 ### 3.1 Packages and dependency direction
 
 Everything is under `dev.flatgen`. Each feature has its own package (`config`, `editor`, `preset`, `layers`, `blocks`,
-`biome`, `facts`, `structures`, `options`, `library`, `templates`), and logic several features share has one of its
+`biomes`, `facts`, `structures`, `options`, `library`, `templates`), and logic several features share has one of its
 own (`search` for the pickers' search, `json` for reading Flatgen's files), split the same way in each:
 
 | Part | Holds | May depend on |

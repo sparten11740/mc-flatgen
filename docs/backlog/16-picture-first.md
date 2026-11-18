@@ -15,7 +15,8 @@ alone and with the game's narrator.
 ## Acceptance criteria
 
 - [ ] Every control has an icon or a picture; no control is text only. A checklist of every control is in this file
-  when the feature is done.
+  when the feature is done. Text only so far: the editor's biome, block and structures buttons, No slimes, Undo,
+  Redo, the code buttons, the layer buttons (Add above, Add below, Copy, Remove) and the pickers' mod filter.
 - [ ] Colour is never the only cue (shape and picture too), for colour-blind players.
 - [ ] Keyboard: Tab moves between areas, arrows within one, Enter uses, Escape goes back.
 - [ ] Narration: every control narrates its name and state through Minecraft's narrator.

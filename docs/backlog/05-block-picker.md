@@ -49,8 +49,8 @@ largest GUI scale.
   `PickerRowsTest`.
 - GameTests on both nodes: the picker lists the game's blocks but air; sand, stone, water, a torch and a chest have
   the traits the hints read.
-- Played with Blockpilot (`flatgen:blocks`, now `flatgen:picker`, lists the grid's cards): on NeoForge, search "glass" put glass first and
-  picking it made the grass layer glass; it came back as recent, a right click starred stone, both kept in
-  `blocks.json`; the mod filter showed the loader's name for the mod; sand picked for the bottom layer showed the
-  falling hint. On Fabric, andesite picked through a search set the dirt layer.
+- Played with Blockpilot (`flatgen:blocks`, now `flatgen:picker`, lists the grid's cards): on NeoForge, search
+  "glass" put glass first and picking it made the grass layer glass; it came back as recent, a right click starred
+  stone, both kept in `blocks.json`; the mod filter showed the loader's name for the mod; sand picked for the bottom
+  layer showed the falling hint. On Fabric, andesite picked through a search set the dirt layer.
 - Not tried: a modded block (the dev runs have no block mods); blocks without an item drawn in the grid.

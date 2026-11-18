@@ -120,7 +120,7 @@ opens.
 
 Two options that set the same game rule or the clock to different values cannot be on together: turning one on turns
 the other off. Options that set them to the same value can be on together, structure sets add up, and templates are all
-placed, in id order, so give them offsets to keep them apart.
+placed, in the order Flatgen lists the options (by group, then by id), so give them offsets to keep them apart.
 
 ## Presets
 

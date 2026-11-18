@@ -87,6 +87,13 @@ Not tried in game: the `structures` effect (unit-tested), texture icons, options
 change on the Create World screen after Done, a required mod that is missing, and opening such a world without Flatgen
 (nothing of Flatgen is in it by design).
 
+## Known
+
+- Two options on by default that clash are both on until the player turns one of them on, which turns the other off;
+  Done then applies both, the later in Flatgen's order winning.
+- After a Cancel, the first-start effects and the generator they wait for are kept in memory until the next
+  integrated server starts, which forgets them.
+
 ## Out of scope
 
 Options with logic beyond these effects, and templates (F14) from other mods: they need code, which comes with the Java
