@@ -86,6 +86,12 @@ v3 and v4 may swap; both come after v2.
 | F22 | [Flat Nether and End](22-flat-nether-end.md) | todo | F20 |
 | F28 | [Java API for world options](28-options-java-api.md) | todo | F27, F20 |
 
+### Design track, when the owner asks for it
+
+| ID | Feature | Status | Depends on |
+|---|---|---|---|
+| F29 | [A simpler editor a child can work out](29-simple-editor-prototype.md) | todo | F06 |
+
 ### v2 and later
 
 | ID | Feature | Status | Depends on |
