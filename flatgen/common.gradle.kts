@@ -52,6 +52,8 @@ dependencies {
     "testImplementation"(platform("org.junit:junit-bom:5.11.4"))
     "testImplementation"("org.junit.jupiter:junit-jupiter")
     "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+    // The rules' JSON, read in the unit tests without the game: the Gson Minecraft 1.21.1 ships.
+    "testImplementation"("com.google.code.gson:gson:2.10.1")
 }
 
 // The mod's own properties, which every loader's metadata template takes beside its loader's own.

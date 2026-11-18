@@ -1,5 +1,6 @@
 package dev.flatgen.editor.client;
 
+import dev.flatgen.config.SettingsFile;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.screens.worldselection.PresetEditor;
@@ -16,12 +17,14 @@ public final class PresetEditors {
     /** The world types Flatgen edits. */
     public static final List<ResourceKey<WorldPreset>> EDITED = List.of(WorldPresets.FLAT);
 
-    /** The game's own superflat editor, which Flatgen's screen offers for what it cannot do yet. */
+    /** The game's own superflat editor, which Flatgen's screen offers and which returns when Flatgen is turned off. */
     @SuppressWarnings("deprecation")
     static final PresetEditor VANILLA = PresetEditor.EDITORS.get(Optional.of(WorldPresets.FLAT));
 
-    /** Flatgen's editor, which opens its screen. */
-    public static final PresetEditor EDITOR = EditorScreen::new;
+    /** Flatgen's editor: its screen, or the game's own when the player has turned Flatgen off. */
+    public static final PresetEditor EDITOR = (parent, context) -> SettingsFile.read().enabled()
+            ? new EditorScreen(parent, context)
+            : VANILLA.createEditScreen(parent, context);
 
     private PresetEditors() {
     }
