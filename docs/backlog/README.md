@@ -52,7 +52,7 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F27 | [World options from other mods](27-world-options.md) | todo | F02, F01 |
+| F27 | [World options from other mods](27-world-options.md) | doing | F02, F01 |
 | F07 | [Biome picker](07-biome-picker.md) | todo | F03 |
 | F08 | [World facts](08-world-facts.md) | todo | F07 |
 | F09 | [Structures and decorations](09-structures-and-decorations.md) | todo | F03 |

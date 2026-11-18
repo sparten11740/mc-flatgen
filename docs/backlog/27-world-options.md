@@ -1,6 +1,6 @@
 # F27 World options from other mods
 
-Milestone: M2 biome and world · Release: v1 · Status: todo · Depends on: F02, F01
+Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F02, F01
 
 ## Why
 

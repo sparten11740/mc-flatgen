@@ -1,0 +1,90 @@
+package dev.flatgen.options.rules;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import dev.flatgen.json.rules.JsonFields;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Reads a world option's file. Only the icon and the effects are required; the name and description default to the
+ * keys {@code option.<namespace>.<name>} and {@code option.<namespace>.<name>.description}, the group to the
+ * namespace. An option with a part it cannot read is left out whole, never half applied.
+ */
+public final class OptionReader {
+    /** The version of the format this Flatgen reads; a file of a later one is left out. */
+    private static final int FORMAT = 1;
+
+    private OptionReader() {
+    }
+
+    /**
+     * An option file read.
+     *
+     * @param option   the option; none when it is left out
+     * @param problems what is wrong with the file
+     */
+    public record Reading(Optional<WorldOption> option, List<String> problems) {
+        public Reading {
+            problems = List.copyOf(problems);
+        }
+    }
+
+    /** Reads the file of the option with this id, {@code <namespace>:<name>}. */
+    public static Reading read(String id, String json) {
+        List<String> problems = new ArrayList<>();
+        JsonObject root;
+        try {
+            root = JsonFields.parseObject(json);
+        } catch (IllegalArgumentException exception) {
+            return new Reading(Optional.empty(), List.of("the file is " + exception.getMessage()));
+        }
+        int format = JsonFields.integer(root, "format", FORMAT, problems);
+        if (format > FORMAT) {
+            problems.add("it is format " + format + ", made for a later Flatgen than this one, which reads " + FORMAT);
+        }
+        Optional<WorldOption.Icon> icon = icon(root.get("icon"));
+        if (icon.isEmpty()) {
+            problems.add("it needs an icon: an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
+        }
+        List<Effect> effects = effects(root, problems);
+        if (!problems.isEmpty()) {
+            return new Reading(Optional.empty(), problems);
+        }
+        String key = "option." + id.replace(':', '.');
+        String namespace = id.substring(0, Math.max(0, id.indexOf(':')));
+        return new Reading(Optional.of(new WorldOption(id, JsonFields.text(root, "name", key, problems),
+                JsonFields.text(root, "description", key + ".description", problems), icon.get(),
+                JsonFields.text(root, "group", namespace, problems), JsonFields.bool(root, "default", false, problems),
+                JsonFields.texts(root, "requires", problems), effects)), problems);
+    }
+
+    private static Optional<WorldOption.Icon> icon(JsonElement icon) {
+        if (icon != null && JsonFields.isText(icon)) {
+            return Optional.of(new WorldOption.Icon(icon.getAsString(), false));
+        }
+        boolean isTexture = icon != null && icon.isJsonObject() && icon.getAsJsonObject().has("texture")
+                && JsonFields.isText(icon.getAsJsonObject().get("texture"));
+        return isTexture ? Optional.of(new WorldOption.Icon(icon.getAsJsonObject().get("texture").getAsString(), true))
+                : Optional.empty();
+    }
+
+    /** Each effect of the file, noting every one that cannot be read and a file with none. */
+    private static List<Effect> effects(JsonObject root, List<String> problems) {
+        List<Effect> effects = new ArrayList<>();
+        for (JsonElement element : JsonFields.array(root, "effects", problems).map(JsonArray::asList)
+                .orElse(List.of())) {
+            if (element.isJsonObject()) {
+                EffectKinds.read(element.getAsJsonObject(), problems).ifPresent(effects::add);
+            } else {
+                problems.add("each effect should be an object with a type, so " + element + " cannot be read");
+            }
+        }
+        if (effects.isEmpty() && problems.isEmpty()) {
+            problems.add("it needs a list of effects, at least one");
+        }
+        return effects;
+    }
+}
