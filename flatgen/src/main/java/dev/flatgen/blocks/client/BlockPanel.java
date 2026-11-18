@@ -20,13 +20,11 @@ import net.minecraft.network.chat.MutableComponent;
 
 /** The editor's block controls: a button showing the selected layer's block, which opens the picker, and its hints. */
 public final class BlockPanel implements EditorPanel {
-    /** The width of the block button, in GUI pixels: two of the panel's wide buttons and the gap between them. */
-    private static final int BLOCK_BUTTON = 2 * PanelSizes.WIDE_BUTTON + PanelSizes.GAP;
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();
-        TextButton block = new TextButton(() -> label(editor), flow.next(BLOCK_BUTTON), () -> pick(editor),
+        TextButton block = new TextButton(() -> label(editor), flow.next(PanelSizes.DOUBLE_WIDTH), () -> pick(editor),
                 () -> editor.shown().selected() >= 0,
                 () -> List.of(Component.translatable("flatgen.editor.pick_block")));
         return List.of(block, new TextLines(flow.line(editor.lineHeight()), () -> List.of(hints(editor))));

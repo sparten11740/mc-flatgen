@@ -49,11 +49,6 @@ public final class Biomes {
 
     /** A biome's water colour, RGB. */
     public static int waterColor(String biome, HolderLookup.Provider registries) {
-        ResourceLocation location = ResourceLocation.tryParse(biome);
-        if (location == null) {
-            return DEFAULT_WATER;
-        }
-        return registries.lookupOrThrow(Registries.BIOME).get(ResourceKey.create(Registries.BIOME, location))
-                .map(found -> found.value().getWaterColor()).orElse(DEFAULT_WATER);
+        return info(biome, registries).map(found -> found.colours().water()).orElse(DEFAULT_WATER);
     }
 }

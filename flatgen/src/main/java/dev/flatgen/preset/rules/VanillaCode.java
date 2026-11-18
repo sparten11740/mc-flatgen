@@ -20,8 +20,6 @@ public final class VanillaCode {
     private static final String ID = "[a-z0-9_.-]+(:[a-z0-9_./-]+)?";
     /** A layer's height as the code writes it: one to four digits. */
     private static final String DEPTH = "\\d{1,4}";
-    /** The namespace of an id written without one, as the game reads it. */
-    private static final String GAME_NAMESPACE = "minecraft:";
 
     private VanillaCode() {
     }
@@ -99,7 +97,7 @@ public final class VanillaCode {
         int partEnd = code.indexOf(PART);
         String layersPart = partEnd < 0 ? code : code.substring(0, partEnd);
         Part biomePart = partEnd < 0 ? new Part(code.length(), code.length(), "") : biomePart(code, partEnd + 1);
-        String biome = biomePart.text().isEmpty() ? Preset.DEFAULT_BIOME : withNamespace(biomePart.text());
+        String biome = biomePart.text().isEmpty() ? Preset.DEFAULT_BIOME : Ids.withNamespace(biomePart.text());
         List<Layer> layers = new ArrayList<>();
         List<Part> blocks = new ArrayList<>();
         List<Problem> problems = new ArrayList<>();
@@ -157,13 +155,9 @@ public final class VanillaCode {
         String block = (star < 0 ? piece : piece.substring(star + 1)).trim();
         String depth = star < 0 ? "1" : piece.substring(0, star).trim();
         boolean readable = block.matches(ID) && depth.matches(DEPTH) && Integer.parseInt(depth) >= 1;
-        return readable ? Optional.of(new Layer(withNamespace(block), Integer.parseInt(depth))) : Optional.empty();
+        return readable ? Optional.of(new Layer(Ids.withNamespace(block), Integer.parseInt(depth))) : Optional.empty();
     }
 
-    /** An id with the game's namespace when it is written without one, as the game reads {@code stone}. */
-    private static String withNamespace(String id) {
-        return id.contains(":") ? id : GAME_NAMESPACE + id;
-    }
 
     private static String layer(Layer layer) {
         return (layer.height() != 1 ? layer.height() + "*" : "") + layer.block();

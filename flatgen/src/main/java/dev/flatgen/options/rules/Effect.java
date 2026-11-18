@@ -15,6 +15,14 @@ public interface Effect {
     default void atFirstStart(FirstStart start) {
     }
 
+    /**
+     * Whether all it does is set game rules, so the world's game rules alone tell whether an option of such effects is
+     * on (F10).
+     */
+    default boolean onlySetsGameRules() {
+        return false;
+    }
+
     /** Whether it acts on the world's first start, which Flatgen must then remember for the world. */
     default boolean actsAtFirstStart() {
         return false;

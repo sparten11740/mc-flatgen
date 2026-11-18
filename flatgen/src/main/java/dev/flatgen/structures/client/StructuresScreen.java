@@ -41,8 +41,6 @@ public final class StructuresScreen extends FlatgenScreen {
     private static final int FOOTER = 32;
     private static final int MARGIN = 12;
     private static final int DONE_WIDTH = 100;
-    /** The width of a switch, in GUI pixels: two of the panel's wide buttons and the gap between them. */
-    private static final int TOGGLE_WIDTH = 2 * PanelSizes.WIDE_BUTTON + PanelSizes.GAP;
     /** How many of the biomes a set needs its tooltip names. */
     private static final int BIOMES_NAMED = 3;
     private static final Map<StructureChoice.Mode, Icon> MODE_ICONS = Map.of(
@@ -88,7 +86,7 @@ public final class StructuresScreen extends FlatgenScreen {
         FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
         List<Widget> widgets = new ArrayList<>();
         for (StructureChoice.Mode mode : StructureChoice.Mode.values()) {
-            widgets.add(modeToggle(mode, flow.next(TOGGLE_WIDTH)));
+            widgets.add(modeToggle(mode, flow.next(PanelSizes.DOUBLE_WIDTH)));
         }
         flow.newRow();
         widgets.addAll(decorationToggles(flow));
@@ -97,7 +95,7 @@ public final class StructuresScreen extends FlatgenScreen {
         for (Map.Entry<String, List<StructureSetInfo>> mod : byMod.entrySet()) {
             widgets.add(new Label(StructureIcons.of(mod.getValue().get(0).id()),
                     Component.literal(ClientPlatform.get().modName(mod.getKey())), flow.line(Label.height())));
-            mod.getValue().forEach(set -> widgets.add(setToggle(set, flow.next(TOGGLE_WIDTH))));
+            mod.getValue().forEach(set -> widgets.add(setToggle(set, flow.next(PanelSizes.DOUBLE_WIDTH))));
             flow.newRow();
         }
         return new ScrollGroup.Laid(widgets, flow.bottom());
@@ -107,11 +105,11 @@ public final class StructuresScreen extends FlatgenScreen {
     private List<Toggle> decorationToggles(FlowLayout flow) {
         return List.of(
                 new Toggle(Icon.item("minecraft:poppy"), Component.translatable("flatgen.structures.decorations"),
-                        flow.next(TOGGLE_WIDTH), () -> preset().decorations(),
+                        flow.next(PanelSizes.DOUBLE_WIDTH), () -> preset().decorations(),
                         () -> editor.apply(new SetDecorations(!preset().decorations(), preset().lakes())),
                         () -> true, tip("flatgen.structures.decorations_tip")),
                 new Toggle(Icon.item("minecraft:lava_bucket"), Component.translatable("flatgen.structures.lakes"),
-                        flow.next(TOGGLE_WIDTH), () -> preset().lakes(),
+                        flow.next(PanelSizes.DOUBLE_WIDTH), () -> preset().lakes(),
                         () -> editor.apply(new SetDecorations(preset().decorations(), !preset().lakes())),
                         () -> true, tip("flatgen.structures.lakes_tip")));
     }

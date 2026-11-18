@@ -1,6 +1,7 @@
 package dev.flatgen.options.rules;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -66,7 +67,8 @@ public final class OptionChoices {
             }
         };
         options.forEach(option -> option.effects().forEach(effect -> effect.atDone(setup)));
-        return new Applied(Map.copyOf(applied.gameRules()), Set.copyOf(applied.structureSets()));
+        return new Applied(Collections.unmodifiableMap(applied.gameRules()),
+                Collections.unmodifiableSet(applied.structureSets()));
     }
 
     /**
@@ -81,7 +83,7 @@ public final class OptionChoices {
         Map<String, Boolean> following = new TreeMap<>(chosen);
         for (WorldOption option : installed) {
             Applied applied = applied(List.of(option));
-            boolean onlyRules = !option.actsAtFirstStart() && applied.structureSets().isEmpty();
+            boolean onlyRules = option.effects().stream().allMatch(Effect::onlySetsGameRules);
             boolean rulesAsSet = gameRules.entrySet().containsAll(applied.gameRules().entrySet());
             if (!applied.gameRules().isEmpty() && (onlyRules || !rulesAsSet)) {
                 set(following, option, rulesAsSet && (onlyRules || isOn(option, chosen)));

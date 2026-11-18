@@ -39,6 +39,11 @@ public record GameRule(String rule, String value) implements Effect {
     }
 
     @Override
+    public boolean onlySetsGameRules() {
+        return true;
+    }
+
+    @Override
     public Map<String, String> settings() {
         return Map.of(SETTING + rule, value);
     }

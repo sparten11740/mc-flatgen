@@ -1,5 +1,6 @@
 package dev.flatgen.biomes.rules;
 
+import dev.flatgen.preset.rules.Ids;
 import java.util.List;
 
 /**
@@ -51,7 +52,6 @@ public record BiomeInfo(String id, Colours colours, Climate climate, Spawns spaw
 
     /** The namespace of its id: the mod or data pack it comes from. */
     public String namespace() {
-        int colon = id.indexOf(':');
-        return colon < 0 ? "minecraft" : id.substring(0, colon);
+        return Ids.namespace(id);
     }
 }

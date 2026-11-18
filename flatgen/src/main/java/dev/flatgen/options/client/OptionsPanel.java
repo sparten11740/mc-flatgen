@@ -23,8 +23,6 @@ import net.minecraft.network.chat.Component;
  * for each option the preset names that is no longer installed, kept as it is.
  */
 public final class OptionsPanel implements EditorPanel {
-    /** The width of a switch, in GUI pixels: two of the panel's wide buttons and the gap between them. */
-    private static final int TOGGLE_WIDTH = 2 * PanelSizes.WIDE_BUTTON + PanelSizes.GAP;
     /** The picture of an option that is not installed. */
     private static final Icon MISSING = Icon.item("minecraft:barrier");
 
@@ -50,7 +48,7 @@ public final class OptionsPanel implements EditorPanel {
 
     private static Toggle toggle(EditorContext editor, WorldOption option, List<WorldOption> installed,
             FlowLayout flow) {
-        return new Toggle(icon(option), Component.translatable(option.name()), flow.next(TOGGLE_WIDTH),
+        return new Toggle(icon(option), Component.translatable(option.name()), flow.next(PanelSizes.DOUBLE_WIDTH),
                 () -> OptionChoices.isOn(option, editor.shown().preset().options()),
                 () -> turnOver(editor, option, installed), () -> true,
                 () -> List.of(Component.translatable(option.description())));
@@ -65,7 +63,7 @@ public final class OptionsPanel implements EditorPanel {
 
     /** A switch for an option that is not installed: it shows how the preset keeps it, and cannot be turned over. */
     private static Toggle missingToggle(EditorContext editor, String id, FlowLayout flow) {
-        return new Toggle(MISSING, Component.literal(id), flow.next(TOGGLE_WIDTH),
+        return new Toggle(MISSING, Component.literal(id), flow.next(PanelSizes.DOUBLE_WIDTH),
                 () -> editor.shown().preset().options().getOrDefault(id, false), () -> { }, () -> false,
                 () -> List.of(Component.translatable("flatgen.options.not_installed", id)));
     }

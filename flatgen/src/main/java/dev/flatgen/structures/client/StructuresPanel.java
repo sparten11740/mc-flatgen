@@ -16,13 +16,11 @@ import net.minecraft.network.chat.Component;
 
 /** The editor's structures control: a button saying how the world chooses its structures, which opens their screen. */
 public final class StructuresPanel implements EditorPanel {
-    /** The width of the button, in GUI pixels: two of the panel's wide buttons and the gap between them. */
-    private static final int BUTTON = 2 * PanelSizes.WIDE_BUTTON + PanelSizes.GAP;
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        return List.of(new TextButton(() -> label(editor.shown().preset().structureSets()), flow.next(BUTTON),
-                () -> open(editor), () -> true,
+        return List.of(new TextButton(() -> label(editor.shown().preset().structureSets()),
+                flow.next(PanelSizes.DOUBLE_WIDTH), () -> open(editor), () -> true,
                 () -> List.of(Component.translatable("flatgen.structures.open"))));
     }
 
