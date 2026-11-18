@@ -42,12 +42,29 @@ preset, saved with it like its layers.
   reader entry and its applier, nothing else changes.
 - Appliers in `options/`: what each kind does to the Create World screen (`game_rule`, `structures`, through `mc/`) and
   what it does on the first start (`first_start_time`, `place_at_spawn`).
-- The first start: when Done applies options with first-start effects, Flatgen remembers them for the world about to
-  be created; when the integrated server first starts that world (game time 0, marked), it runs them once. The server
-  start hook is the one loader-specific piece: NeoForge's `ServerStartedEvent`, Fabric's
-  `ServerLifecycleEvents.SERVER_STARTED`, behind `ClientPlatform`.
-- The editor's options panel is built on a toggle list widget in the shared toolkit (`client/gui/ToggleList`), which
-  the structures panel of F09 reuses.
+- The format (decided by a panel with a pack author's view, 2026-11-18): `icon` (an item id, or
+  `{"texture": "<ns>:textures/....png"}`, 16 by 16) and `effects` are required; `name` and `description` default to the
+  keys `option.<ns>.<name>` and `option.<ns>.<name>.description` and are read as a translation key or else as the text
+  itself; `group` defaults to the namespace (a mod's id takes the mod's name, `<ns>:<path>` the key
+  `option_group.<ns>.<path>`), a group's picture is its first option's; `default` false; `requires` mod ids; `format`
+  1. Each effect is an object with a `type`. `place_at_spawn` stands the template on the first block above the top
+  layer at the spawn's column (`void_height`, 64, with no layers), `align` `center` or `corner`, then `offset`, a
+  vanilla `rotation`, and an optional `spawn` block of the template the world's spawn moves to. Options that fix the
+  same game rule or clock differently cannot be on together: turning one on turns the others off. Templates are server
+  data (`data/<ns>/structure/`), from mod jars and data packs; resource packs cannot add them.
+- The first start (decided by a panel with an engineer's view, 2026-11-18): Done builds the overworld's
+  `FlatLevelSource` itself, puts that object on the Create World screen and keeps it with the first-start effects. A
+  listener added through the screen's public `WorldCreationUiState.addListener` follows a data-pack change, which
+  rebuilds the generator with the same settings. At every integrated server start Flatgen takes what it kept and runs
+  the effects only if the server's overworld generator is that very object, which no other world can have: a world
+  created after a Cancel, reopened, or of another session has its own. Nothing is left in the world, no marker or
+  game-time test is needed. The hooks: NeoForge's `ServerStartedEvent`; on Fabric, without Fabric API, a mixin at the
+  return of `IntegratedServer.initServer`; both call the feature directly. There the overworld, its spawn, the spawn
+  chunks and the template manager are ready and no player has joined.
+- The switches chosen for a Create World screen are remembered for it, so the editor reopens with them, and an option
+  turned off since the last Done puts its game rules back to the game's defaults.
+- The editor's options panel lays out picture switches (`client/gui/Toggle`) under each group's heading; F09's
+  structures panel reuses the switch.
 
 ## Version notes
 
