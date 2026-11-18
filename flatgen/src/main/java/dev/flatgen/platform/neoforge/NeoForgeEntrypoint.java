@@ -3,6 +3,7 @@ package dev.flatgen.platform.neoforge;
 import dev.flatgen.Flatgen;
 import dev.flatgen.compat.blockpilot.BlockpilotCommands;
 import dev.flatgen.editor.client.PresetEditors;
+import dev.flatgen.platform.ClientPlatform;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
@@ -13,6 +14,7 @@ import net.neoforged.neoforge.client.event.RegisterPresetEditorsEvent;
 @Mod(value = Flatgen.MOD_ID, dist = Dist.CLIENT)
 public final class NeoForgeEntrypoint {
     public NeoForgeEntrypoint(IEventBus modBus) {
+        ClientPlatform.install(new NeoForgeClientPlatform());
         modBus.addListener(NeoForgeEntrypoint::registerEditors);
         if (ModList.get().isLoaded(BlockpilotCommands.MOD_ID)) {
             BlockpilotCommands.register();
