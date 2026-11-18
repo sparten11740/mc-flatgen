@@ -54,7 +54,7 @@ public final class VanillaSettings {
 
     private static JsonElement structureOverrides(List<String> sets) {
         boolean isOneTag = sets.size() == 1 && sets.get(0).startsWith(TAG_MARK);
-        return isOneTag ? new JsonPrimitive(sets.get(0)) : PresetJson.textArray(sets);
+        return isOneTag ? new JsonPrimitive(sets.get(0)) : JsonFields.textArray(sets);
     }
 
     private static Optional<List<String>> structureSets(JsonObject settings, List<String> problems) {
@@ -63,6 +63,6 @@ public final class VanillaSettings {
             return Optional.of(List.of(overrides.getAsString()));
         }
         return JsonFields.array(settings, STRUCTURE_OVERRIDES, problems)
-                .map(array -> PresetJson.texts(array, STRUCTURE_OVERRIDES, problems));
+                .map(array -> JsonFields.texts(array, STRUCTURE_OVERRIDES, problems));
     }
 }

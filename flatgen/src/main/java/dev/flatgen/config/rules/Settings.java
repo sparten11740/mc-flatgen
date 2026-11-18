@@ -1,7 +1,5 @@
 package dev.flatgen.config.rules;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import dev.flatgen.json.rules.JsonFields;
 import java.util.ArrayList;
@@ -16,7 +14,6 @@ public record Settings(boolean enabled) {
     public static final Settings DEFAULTS = new Settings(true);
 
     private static final String ENABLED = "enabled";
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     /**
      * Reads settings from JSON. A missing key, or one of the wrong type, keeps its default.
@@ -32,6 +29,6 @@ public record Settings(boolean enabled) {
     public String toJson() {
         JsonObject root = new JsonObject();
         root.addProperty(ENABLED, enabled);
-        return GSON.toJson(root);
+        return JsonFields.PRETTY.toJson(root);
     }
 }

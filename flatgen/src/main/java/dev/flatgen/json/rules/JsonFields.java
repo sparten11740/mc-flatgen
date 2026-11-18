@@ -1,10 +1,13 @@
 package dev.flatgen.json.rules;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -14,6 +17,9 @@ import java.util.function.Predicate;
  * wrong kind keeps it too and is noted in a list of problems for the log or the player.
  */
 public final class JsonFields {
+    /** Writes JSON as Flatgen's files keep it: one key a line, indented. */
+    public static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().create();
+
     private JsonFields() {
     }
 
@@ -56,6 +62,31 @@ public final class JsonFields {
     /** The key's list, if it has one. */
     public static Optional<JsonArray> array(JsonObject object, String key, List<String> problems) {
         return element(object, key, JsonElement::isJsonArray, "a list", problems).map(JsonElement::getAsJsonArray);
+    }
+
+    /** Each text of the key's list, empty when it has none; anything else in the list is left out and noted. */
+    public static List<String> texts(JsonObject object, String key, List<String> problems) {
+        return array(object, key, problems).map(array -> texts(array, key, problems)).orElse(List.of());
+    }
+
+    /** Each text of a list; anything else in it is left out and noted under the list's key. */
+    public static List<String> texts(JsonArray array, String key, List<String> problems) {
+        List<String> texts = new ArrayList<>();
+        for (JsonElement element : array) {
+            if (isText(element)) {
+                texts.add(element.getAsString());
+            } else {
+                problems.add(key + " should hold only text, so " + element + " was left out");
+            }
+        }
+        return texts;
+    }
+
+    /** A list of texts as JSON. */
+    public static JsonArray textArray(List<String> texts) {
+        JsonArray array = new JsonArray();
+        texts.forEach(array::add);
+        return array;
     }
 
     /** The key's object, if it has one. */

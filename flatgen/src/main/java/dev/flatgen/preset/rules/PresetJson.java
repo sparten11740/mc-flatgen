@@ -1,7 +1,5 @@
 package dev.flatgen.preset.rules;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,7 +29,6 @@ public final class PresetJson {
     private static final String DECORATIONS = "decorations";
     private static final String LAKES = "lakes";
     private static final String OPTIONS = "options";
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private PresetJson() {
     }
@@ -54,7 +51,7 @@ public final class PresetJson {
                 JsonFields.text(root, ICON, topBlock(layers), problems),
                 layers,
                 JsonFields.text(root, BIOME, Preset.DEFAULT_BIOME, problems),
-                JsonFields.array(root, STRUCTURES, problems).map(sets -> texts(sets, STRUCTURES, problems)),
+                JsonFields.array(root, STRUCTURES, problems).map(sets -> JsonFields.texts(sets, STRUCTURES, problems)),
                 JsonFields.bool(root, DECORATIONS, false, problems),
                 JsonFields.bool(root, LAKES, false, problems),
                 JsonFields.object(root, OPTIONS, problems).map(options -> switches(options, problems))
@@ -70,38 +67,18 @@ public final class PresetJson {
         root.addProperty(ICON, preset.icon());
         root.add(LAYERS, LayerJson.write(preset.layers()));
         root.addProperty(BIOME, preset.biome());
-        preset.structureSets().ifPresent(sets -> root.add(STRUCTURES, textArray(sets)));
+        preset.structureSets().ifPresent(sets -> root.add(STRUCTURES, JsonFields.textArray(sets)));
         root.addProperty(DECORATIONS, preset.decorations());
         root.addProperty(LAKES, preset.lakes());
         JsonObject options = new JsonObject();
         preset.options().forEach(options::addProperty);
         root.add(OPTIONS, options);
-        return GSON.toJson(root);
+        return JsonFields.PRETTY.toJson(root);
     }
 
     /** The top layer's block, which stands for a preset that names no icon. */
     static String topBlock(List<Layer> layers) {
         return layers.isEmpty() ? DEFAULT_ICON : layers.get(layers.size() - 1).block();
-    }
-
-    /** Each text of a list; anything else in it is left out and noted. */
-    static List<String> texts(JsonArray array, String key, List<String> problems) {
-        List<String> texts = new ArrayList<>();
-        for (JsonElement element : array) {
-            if (JsonFields.isText(element)) {
-                texts.add(element.getAsString());
-            } else {
-                problems.add(key + " should hold only ids, so " + element + " was left out");
-            }
-        }
-        return texts;
-    }
-
-    /** A list of texts. */
-    static JsonArray textArray(List<String> texts) {
-        JsonArray array = new JsonArray();
-        texts.forEach(array::add);
-        return array;
     }
 
     private static List<Layer> readLayers(JsonObject root, List<String> problems) {
