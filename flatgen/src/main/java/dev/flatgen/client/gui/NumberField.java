@@ -2,6 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.Optional;
 import java.util.function.IntConsumer;
@@ -15,11 +16,6 @@ import org.lwjgl.glfw.GLFW;
  * leave it as it was.
  */
 public final class NumberField implements Widget {
-    private static final String SPRITE = "minecraft:widget/text_field";
-    private static final String FOCUSED_SPRITE = "minecraft:widget/text_field_highlighted";
-    private static final int TEXT_COLOR = 0xFFE0E0E0;
-    /** Space between the box's edge and its number, in GUI pixels. */
-    private static final int PADDING = 4;
     /** The most characters typed, enough for any Y or height with its sign. */
     private static final int MOST_CHARACTERS = 6;
     private static final int LEFT_BUTTON = 0;
@@ -28,7 +24,8 @@ public final class NumberField implements Widget {
     private final Rect bounds;
     private final IntSupplier value;
     private final IntConsumer onEnter;
-    private String typed;
+    private final TypedText typed = new TypedText(text -> text.matches("-?\\d*"), MOST_CHARACTERS);
+    private boolean keyboard;
 
     /**
      * A box showing a number from {@code value}, handing a typed one to {@code onEnter}.
@@ -44,10 +41,8 @@ public final class NumberField implements Widget {
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        canvas.sprite(typed == null ? SPRITE : FOCUSED_SPRITE, bounds);
-        String text = typed == null ? Integer.toString(value.getAsInt()) : typed + "_";
-        canvas.text(Component.literal(text), bounds.x() + PADDING,
-                bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1, TEXT_COLOR);
+        String text = keyboard ? typed.text() + "_" : Integer.toString(value.getAsInt());
+        FieldLook.draw(canvas, bounds, keyboard, Component.literal(text), FieldLook.TEXT_COLOR);
     }
 
     @Override
@@ -62,7 +57,8 @@ public final class NumberField implements Widget {
 
     @Override
     public void keyboard(boolean held) {
-        typed = held ? "" : null;
+        keyboard = held;
+        typed.clear();
     }
 
     @Override
@@ -72,7 +68,7 @@ public final class NumberField implements Widget {
             return true;
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
-            typed = typed.isEmpty() ? typed : typed.substring(0, typed.length() - 1);
+            typed.backspace();
             return true;
         }
         return keyCode == GLFW.GLFW_KEY_DELETE;
@@ -80,12 +76,7 @@ public final class NumberField implements Widget {
 
     @Override
     public boolean type(char character) {
-        boolean sign = character == '-' && typed.isEmpty();
-        if ((Character.isDigit(character) || sign) && typed.length() < MOST_CHARACTERS) {
-            typed += character;
-            return true;
-        }
-        return false;
+        return typed.type(character);
     }
 
     @Override
@@ -94,9 +85,10 @@ public final class NumberField implements Widget {
     }
 
     private void enter() {
-        if (!typed.isEmpty() && !typed.equals("-")) {
-            onEnter.accept(Integer.parseInt(typed));
+        String text = typed.text();
+        if (!text.isEmpty() && !text.equals("-")) {
+            onEnter.accept(Integer.parseInt(text));
         }
-        typed = "";
+        typed.clear();
     }
 }

@@ -23,7 +23,7 @@ public final class TextButton implements Widget {
     /** The left mouse button. */
     private static final int LEFT_BUTTON = 0;
 
-    private final Component label;
+    private final Supplier<Component> label;
     private final Rect bounds;
     private final Runnable action;
     private final BooleanSupplier active;
@@ -31,13 +31,19 @@ public final class TextButton implements Widget {
 
     /** A button always usable, without a tooltip. */
     public TextButton(Component label, Rect bounds, Runnable action) {
-        this(label, bounds, action, () -> true, List::of);
+        this(() -> label, bounds, action, () -> true, List::of);
     }
 
     /**
      * A button usable while {@code active} says so, with a tooltip whose lines may change, empty for none.
      */
     public TextButton(Component label, Rect bounds, Runnable action, BooleanSupplier active,
+            Supplier<List<Component>> tooltip) {
+        this(() -> label, bounds, action, active, tooltip);
+    }
+
+    /** A button whose label may change, usable while {@code active} says so, with a tooltip, empty for none. */
+    public TextButton(Supplier<Component> label, Rect bounds, Runnable action, BooleanSupplier active,
             Supplier<List<Component>> tooltip) {
         this.label = label;
         this.bounds = bounds;
@@ -51,7 +57,7 @@ public final class TextButton implements Widget {
         boolean usable = active.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
         canvas.sprite(!usable ? DISABLED_SPRITE : hovered ? HOVERED_SPRITE : SPRITE, bounds);
-        canvas.centeredText(label, bounds, usable ? LABEL_COLOR : DISABLED_LABEL_COLOR);
+        canvas.centeredText(label.get(), bounds, usable ? LABEL_COLOR : DISABLED_LABEL_COLOR);
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
             canvas.tooltip(lines, mouseX, mouseY);
@@ -72,8 +78,8 @@ public final class TextButton implements Widget {
 
     @Override
     public Optional<WidgetDescription> describe() {
-        String text = label.getString().isEmpty() && !tooltip.get().isEmpty()
-                ? tooltip.get().get(0).getString() : label.getString();
+        String text = label.get().getString().isEmpty() && !tooltip.get().isEmpty()
+                ? tooltip.get().get(0).getString() : label.get().getString();
         return Optional.of(new WidgetDescription("button", text, bounds, active.getAsBoolean(), ""));
     }
 }

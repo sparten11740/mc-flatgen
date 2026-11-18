@@ -13,6 +13,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -31,7 +32,11 @@ public final class BlockSides {
     /** The seed the faces are picked with, so a block with random variants always looks the same. */
     private static final long SEED = 42L;
 
+    /** The game's own default water colour, for the icon of a fluid block, which shows no biome. */
+    private static final int DEFAULT_WATER = 0x3F76E4;
+
     private final Map<String, List<Face>> faces = new HashMap<>();
+    private final Map<String, ItemStack> items = new HashMap<>();
 
     /** A sprite with the tint it is drawn in, RGB, or {@link #FLUID} for the fluid colour given when drawing. */
     private record Face(TextureAtlasSprite sprite, int tint) {
@@ -49,6 +54,23 @@ public final class BlockSides {
             }
         }
         graphics.disableScissor();
+    }
+
+    /** Draws the block's item at this corner, or its side when it has no item, as water and fire do not. */
+    public void drawIcon(GuiGraphics graphics, String block, int x, int y) {
+        ItemStack item = items.computeIfAbsent(block, BlockSides::itemOf);
+        if (item.isEmpty()) {
+            draw(graphics, block, DEFAULT_WATER, x, y, TILE, TILE);
+        } else {
+            graphics.renderItem(item, x, y);
+        }
+    }
+
+    private static ItemStack itemOf(String block) {
+        ResourceLocation location = ResourceLocation.tryParse(block);
+        return location == null ? ItemStack.EMPTY
+                : BuiltInRegistries.BLOCK.getOptional(location).map(found -> new ItemStack(found.asItem()))
+                        .orElse(ItemStack.EMPTY);
     }
 
     private static void drawTile(GuiGraphics graphics, List<Face> sides, int fluidColor, int x, int y) {

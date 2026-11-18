@@ -36,6 +36,9 @@ public interface Canvas {
      */
     void blockSide(String block, int fluidColor, Rect area);
 
+    /** Draws a block's item, 16 GUI pixels square, with its top left corner here; a block with no item, its side. */
+    void blockIcon(String block, int x, int y);
+
     /** Keeps what is drawn next inside a rectangle until {@link #unclip()}; clips nest. */
     void clip(Rect area);
 

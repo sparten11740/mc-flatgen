@@ -67,6 +67,11 @@ final class McCanvas implements Canvas {
     }
 
     @Override
+    public void blockIcon(String block, int x, int y) {
+        blockSides.drawIcon(graphics, block, x, y);
+    }
+
+    @Override
     public void clip(Rect area) {
         graphics.enableScissor(area.x(), area.y(), area.right(), area.bottom());
     }
