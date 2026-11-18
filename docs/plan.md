@@ -81,11 +81,12 @@ and fully qualified names alike, and fails on a reference against this table (F0
 
 ### 3.3 GUI toolkit
 
-Flatgen's screens are built from widgets of its own that draw through `client/gui/Canvas` (fill, outline, text, item,
-sprite, block texture, clipping) and receive Flatgen's own input records (`Pointer`, `Key`). Each version tree
-implements `Canvas` over that version's `GuiGraphics` and provides `FlatgenScreen`, the one class extending
-Minecraft's `Screen`, which turns the game's callbacks into Flatgen's input. Features' widgets therefore compile
-unchanged on every version, and a GUI change in Minecraft is one tree class.
+Flatgen's screens are built from widgets of its own (`client/gui/Widget`) that draw through `client/gui/Canvas` (fill,
+outline, text, sprite, a block's side, clipping, tooltips) and hear the mouse through the widget's own methods.
+`McCanvas` implements `Canvas` over the game's `GuiGraphics`, and `FlatgenScreen` is the one class extending
+Minecraft's `Screen`, turning the game's callbacks into widget calls. Features' widgets therefore compile unchanged on
+every version; when a version's GUI differs, these two classes (and `mc/BlockSides`) move into the version trees
+(3.2), and nothing else changes.
 
 Shared widgets used by several features live once in `client/gui/`: `CardGrid` (biome picker, preset library,
 templates), `ToggleList` (structures, world settings), `SearchField`, `IconButton`.
