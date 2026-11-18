@@ -37,14 +37,19 @@ public final class Search {
         if (query.isEmpty()) {
             return List.copyOf(entries);
         }
-        List<Entry> found = new ArrayList<>();
+        List<Ranked> found = new ArrayList<>();
         for (Entry entry : entries) {
-            if (rank(entry, query) != NO_MATCH) {
-                found.add(entry);
+            int rank = rank(entry, query);
+            if (rank != NO_MATCH) {
+                found.add(new Ranked(entry, rank));
             }
         }
-        found.sort(Comparator.comparingInt(entry -> rank(entry, query)));
-        return found;
+        found.sort(Comparator.comparingInt(Ranked::rank));
+        return found.stream().map(Ranked::entry).toList();
+    }
+
+    /** An entry with how well it matches, ranked once rather than at every comparison of the sort. */
+    private record Ranked(Entry entry, int rank) {
     }
 
     private static int rank(Entry entry, String query) {

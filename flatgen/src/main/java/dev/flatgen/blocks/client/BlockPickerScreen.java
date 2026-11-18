@@ -50,6 +50,9 @@ public final class BlockPickerScreen extends FlatgenScreen {
     /** The mod the grid is narrowed to, by its place in {@link #mods}; -1 for every mod. */
     private int mod = -1;
     private BlockGrid grid;
+    /** The sections for {@link #sectionsFor}, kept until the search, the mod or the memory changes. */
+    private List<BlockGrid.Section> sections;
+    private List<Object> sectionsFor;
 
     /** A picker over the blocks these features allow, handing a picked block to {@code onPick}. */
     public BlockPickerScreen(Screen parent, FeatureFlagSet enabled, Consumer<String> onPick) {
@@ -87,8 +90,18 @@ public final class BlockPickerScreen extends FlatgenScreen {
         minecraft.setScreen(parent);
     }
 
-    /** What the grid shows: what a search found, or the starred, the recent and then every block of the mod. */
+    /** What the grid shows, worked out again only when the search, the mod or the memory changed. */
     private List<BlockGrid.Section> sections() {
+        List<Object> key = List.of(query, mod, memory);
+        if (!key.equals(sectionsFor)) {
+            sectionsFor = key;
+            sections = workOutSections();
+        }
+        return sections;
+    }
+
+    /** What the grid shows: what a search found, or the starred, the recent and then every block of the mod. */
+    private List<BlockGrid.Section> workOutSections() {
         List<Search.Entry> shown = mod < 0 ? blocks
                 : blocks.stream().filter(block -> block.namespace().equals(mods.get(mod))).toList();
         if (!query.isBlank()) {

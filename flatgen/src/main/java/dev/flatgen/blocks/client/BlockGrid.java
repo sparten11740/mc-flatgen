@@ -40,6 +40,10 @@ public final class BlockGrid implements Widget {
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
     private int scroll;
+    /** The sections {@link #placed} was laid out for, at the scroll it had, and that layout. */
+    private List<Section> placedSections;
+    private int placedScroll;
+    private Placed placed;
 
     /**
      * A part of the grid under a heading.
@@ -95,12 +99,23 @@ public final class BlockGrid implements Widget {
         return placed().slots();
     }
 
+    /** Where everything is drawn now, laid out again only when the sections or the scroll change. */
     private Placed placed() {
+        List<Section> current = sections.get();
+        if (current != placedSections || scroll != placedScroll) {
+            placedSections = current;
+            placedScroll = scroll;
+            placed = layOut(current);
+        }
+        return placed;
+    }
+
+    private Placed layOut(List<Section> current) {
         List<Heading> headings = new ArrayList<>();
         List<Slot> slots = new ArrayList<>();
         int columns = Math.max(1, bounds.width() / SLOT);
         int y = bounds.y() - scroll;
-        for (Section section : sections.get()) {
+        for (Section section : current) {
             headings.add(new Heading(section.heading(), y + SECTION_GAP));
             y += SECTION_GAP + HEADING_HEIGHT;
             for (int index = 0; index < section.blocks().size(); index++) {
@@ -118,7 +133,9 @@ public final class BlockGrid implements Widget {
         canvas.clip(bounds);
         placed.headings().forEach(heading -> canvas.text(heading.text(), bounds.x(), heading.y(), HEADING_COLOR));
         for (Slot slot : placed.slots()) {
-            drawSlot(canvas, slot, slot.place().contains(mouseX, mouseY) && bounds.contains(mouseX, mouseY));
+            if (slot.place().bottom() > bounds.y() && slot.place().y() < bounds.bottom()) {
+                drawSlot(canvas, slot, slot.place().contains(mouseX, mouseY) && bounds.contains(mouseX, mouseY));
+            }
         }
         canvas.unclip();
         slotAt(mouseX, mouseY).ifPresent(slot -> canvas.tooltip(describe(slot.block()), mouseX, mouseY));
