@@ -1,14 +1,12 @@
-package dev.flatgen.editor.client;
+package dev.flatgen.client.gui;
 
-import dev.flatgen.client.gui.Canvas;
-import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
 import java.util.List;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
-/** The editor's panel beside the column: what is selected, a line each, then the world's surface and biome. */
-final class LayerInfo implements Widget {
+/** Lines of text from the top of a rectangle down, which may change from frame to frame. */
+public final class TextLines implements Widget {
     /** Space between lines, in GUI pixels, on top of a line's own height. */
     private static final int LINE_GAP = 3;
     private static final int TEXT_COLOR = 0xFFFFFFFF;
@@ -16,9 +14,14 @@ final class LayerInfo implements Widget {
     private final Rect bounds;
     private final Supplier<List<Component>> lines;
 
-    LayerInfo(Rect bounds, Supplier<List<Component>> lines) {
+    public TextLines(Rect bounds, Supplier<List<Component>> lines) {
         this.bounds = bounds;
         this.lines = lines;
+    }
+
+    /** How tall this many lines are drawn, in GUI pixels, for a line height. */
+    public static int height(int count, int lineHeight) {
+        return count * (lineHeight + LINE_GAP);
     }
 
     @Override

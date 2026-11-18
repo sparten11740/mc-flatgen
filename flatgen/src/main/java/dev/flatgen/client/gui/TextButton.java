@@ -1,41 +1,79 @@
 package dev.flatgen.client.gui;
 
+import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.UiSounds;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
-/** A button with a label that does something when clicked, drawn and sounding as the game's own buttons do. */
+/**
+ * A button with a label that does something when clicked, drawn and sounding as the game's own buttons do. It can be
+ * unusable for a while, drawn so, with a tooltip saying why.
+ */
 public final class TextButton implements Widget {
     private static final String SPRITE = "minecraft:widget/button";
     private static final String HOVERED_SPRITE = "minecraft:widget/button_highlighted";
-    /** White, the colour of a button's label. */
+    private static final String DISABLED_SPRITE = "minecraft:widget/button_disabled";
     private static final int LABEL_COLOR = 0xFFFFFFFF;
+    private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
     /** The left mouse button. */
     private static final int LEFT_BUTTON = 0;
 
     private final Component label;
     private final Rect bounds;
     private final Runnable action;
+    private final BooleanSupplier active;
+    private final Supplier<List<Component>> tooltip;
 
+    /** A button always usable, without a tooltip. */
     public TextButton(Component label, Rect bounds, Runnable action) {
+        this(label, bounds, action, () -> true, List::of);
+    }
+
+    /**
+     * A button usable while {@code active} says so, with a tooltip whose lines may change, empty for none.
+     */
+    public TextButton(Component label, Rect bounds, Runnable action, BooleanSupplier active,
+            Supplier<List<Component>> tooltip) {
         this.label = label;
         this.bounds = bounds;
         this.action = action;
+        this.active = active;
+        this.tooltip = tooltip;
     }
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        canvas.sprite(bounds.contains(mouseX, mouseY) ? HOVERED_SPRITE : SPRITE, bounds);
-        canvas.centeredText(label, bounds, LABEL_COLOR);
+        boolean usable = active.getAsBoolean();
+        boolean hovered = bounds.contains(mouseX, mouseY);
+        canvas.sprite(!usable ? DISABLED_SPRITE : hovered ? HOVERED_SPRITE : SPRITE, bounds);
+        canvas.centeredText(label, bounds, usable ? LABEL_COLOR : DISABLED_LABEL_COLOR);
+        List<Component> lines = tooltip.get();
+        if (hovered && !lines.isEmpty()) {
+            canvas.tooltip(lines, mouseX, mouseY);
+        }
     }
 
     @Override
-    public boolean click(double x, double y, int button) {
+    public boolean click(double x, double y, int button, Modifiers modifiers) {
         if (button != LEFT_BUTTON || !bounds.contains(x, y)) {
             return false;
         }
-        UiSounds.click();
-        action.run();
+        if (active.getAsBoolean()) {
+            UiSounds.click();
+            action.run();
+        }
         return true;
+    }
+
+    @Override
+    public Optional<WidgetDescription> describe() {
+        String text = label.getString().isEmpty() && !tooltip.get().isEmpty()
+                ? tooltip.get().get(0).getString() : label.getString();
+        return Optional.of(new WidgetDescription("button", text, bounds, active.getAsBoolean(), ""));
     }
 }

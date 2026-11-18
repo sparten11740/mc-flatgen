@@ -2,21 +2,26 @@ package dev.flatgen.layers.client;
 
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.editor.rules.EditorState;
+import dev.flatgen.editor.rules.World;
 import dev.flatgen.layers.rules.ColumnLayout;
+import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Names;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
-import java.util.function.IntConsumer;
 import net.minecraft.network.chat.Component;
 
 /**
  * The editor's column: the preset's layers seen from the side, the bottom layer lowest, each as tall as its share of
  * the column ({@link ColumnLayout}), with the Y of the lines between them beside it and lines at the heights that
- * matter. A click selects a layer; the wheel scrolls a column too tall for its space.
+ * matter. A click selects a layer; dragging a layer's top edge makes it deeper or shallower, dragging the layer moves
+ * it, and the wheel over it changes its depth (Shift for 10 blocks, Control for 100). The wheel over the Y numbers
+ * scrolls a column too tall for its space.
  */
 public final class ColumnWidget implements Widget {
     /** The thinnest a layer is drawn, in GUI pixels, so it stays visible and clickable. */
@@ -27,8 +32,16 @@ public final class ColumnWidget implements Widget {
     public static final int LABEL_WIDTH = 30;
     /** Space between the column and its Y numbers, in GUI pixels. */
     private static final int LABEL_GAP = 4;
+    /** How close to a layer's top edge a press starts resizing it rather than moving it, in GUI pixels. */
+    private static final int EDGE = 2;
+    /** How far the mouse goes with the button held before a press becomes a move, in GUI pixels. */
+    private static final int MOVE_THRESHOLD = 3;
     /** How far one notch of the wheel scrolls, in GUI pixels. */
     private static final int SCROLL_STEP = 16;
+    /** Blocks one notch of the wheel adds or takes, alone, with Shift and with Control. */
+    private static final int WHEEL_BLOCKS = 1;
+    private static final int SHIFT_WHEEL_BLOCKS = 10;
+    private static final int CONTROL_WHEEL_BLOCKS = 100;
     /** The lines drawn across the column, by Y: slime chunks spawn below 40; cool biomes may snow above 80. */
     private static final List<Marker> MARKERS = List.of(new Marker(40, 0xFF7FD34F), new Marker(80, 0xFF8FD8FF));
     /** Length of each dash of a marker line, and of the gap after it, in GUI pixels. */
@@ -36,89 +49,132 @@ public final class ColumnWidget implements Widget {
     private static final int BACKGROUND = 0xFF101010;
     private static final int LINE_BETWEEN_LAYERS = 0x80000000;
     private static final int SELECTION = 0xFFFFFFFF;
+    private static final int DROP_LINE = 0xFFFFD040;
     private static final int LABEL_COLOR = 0xFFE0E0E0;
     private static final int LEFT_BUTTON = 0;
 
-    private final Preset preset;
-    private final List<Integer> heights;
-    private final int floor;
+    private final ColumnActions actions;
+    private final World world;
     private final int fluidColor;
     private final Rect column;
-    private final ColumnLayout layout;
-    private final IntConsumer onSelect;
-    private int selected;
+    private final Rect labels;
+    private Preset laidOut;
+    private ColumnLayout layout;
     private int scroll;
+    private Drag drag = Drag.NONE;
 
     /** A line across the column at a Y, in a colour. */
     private record Marker(int y, int color) {
     }
 
     /**
-     * A column for a preset in a world whose floor is at this Y, drawn at the left of this space, its Y numbers to the
+     * What a held button is doing: nothing, resizing a layer (from the Y it was pressed at, its depth then and blocks
+     * per pixel of its drawing then), or about to move or moving one (to the place it would land).
+     */
+    private record Drag(Mode mode, double startY, int startHeight, double blocksPerPixel, int target) {
+        static final Drag NONE = new Drag(Mode.NONE, 0, 0, 0, -1);
+
+        Drag moving(int place) {
+            return new Drag(Mode.MOVING, startY, startHeight, blocksPerPixel, place);
+        }
+    }
+
+    /** The kinds of {@link Drag}. */
+    private enum Mode { NONE, RESIZING, PRESSED, MOVING }
+
+    /**
+     * A column drawing what {@code actions} shows, in this world, at the left of this space with its Y numbers to the
      * right of it.
      *
      * @param fluidColor the colour water layers are tinted, the biome's water colour
-     * @param selected   the layer selected at first, bottom first, or -1 for none
-     * @param onSelect   told the layer a click selects
      */
-    public ColumnWidget(Preset preset, int floor, int fluidColor, Rect space, int selected, IntConsumer onSelect) {
-        this.preset = preset;
-        this.heights = preset.layers().stream().map(Layer::height).toList();
-        this.floor = floor;
+    public ColumnWidget(ColumnActions actions, World world, int fluidColor, Rect space) {
+        this.actions = actions;
+        this.world = world;
         this.fluidColor = fluidColor;
         this.column = new Rect(space.x(), space.y(), COLUMN_WIDTH, space.height());
-        this.layout = ColumnLayout.of(heights, space.height(), THINNEST_LAYER);
-        this.selected = selected;
-        this.onSelect = onSelect;
+        this.labels = new Rect(column.right(), space.y(), space.width() - COLUMN_WIDTH, space.height());
     }
 
     /** Where each layer is drawn on the screen, bottom first; partly or wholly outside the column when scrolled. */
     public List<Rect> layerBounds() {
         List<Rect> bounds = new ArrayList<>();
-        for (ColumnLayout.Span span : layout.spans()) {
+        for (ColumnLayout.Span span : layout().spans()) {
             bounds.add(new Rect(column.x(), column.y() + span.top() - scroll, column.width(), span.height()));
         }
         return bounds;
     }
 
-    /** The selected layer, bottom first, or -1 for none. */
-    public int selected() {
-        return selected;
-    }
-
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        canvas.fill(column, BACKGROUND);
+        EditorState state = actions.shown();
         List<Rect> bounds = layerBounds();
+        canvas.fill(column, BACKGROUND);
         canvas.clip(column);
         for (int index = 0; index < bounds.size(); index++) {
-            canvas.blockSide(preset.layers().get(index).block(), fluidColor, bounds.get(index));
+            canvas.blockSide(state.preset().layers().get(index).block(), fluidColor, bounds.get(index));
             canvas.fill(new Rect(column.x(), bounds.get(index).y(), column.width(), 1), LINE_BETWEEN_LAYERS);
         }
         MARKERS.forEach(marker -> drawMarker(canvas, marker));
-        if (selected >= 0 && selected < bounds.size()) {
-            canvas.outline(bounds.get(selected), SELECTION);
+        if (state.selected() >= 0) {
+            canvas.outline(bounds.get(state.selected()), SELECTION);
+        }
+        if (drag.mode() == Mode.MOVING) {
+            canvas.fill(dropLine(bounds, state.selected(), drag.target()), DROP_LINE);
         }
         canvas.unclip();
         drawLabels(canvas, bounds);
-        hoveredLayer(mouseX, mouseY).ifPresent(index -> canvas.tooltip(describe(index), mouseX, mouseY));
+        OptionalInt hovered = hoveredLayer(mouseX, mouseY);
+        if (drag.mode() == Mode.NONE && hovered.isPresent()) {
+            canvas.tooltip(describe(hovered.getAsInt()), mouseX, mouseY);
+        }
     }
 
     @Override
-    public boolean click(double x, double y, int button) {
+    public boolean click(double x, double y, int button, Modifiers modifiers) {
         OptionalInt layer = hoveredLayer(x, y);
         if (button != LEFT_BUTTON || layer.isEmpty()) {
             return false;
         }
-        selected = layer.getAsInt();
-        onSelect.accept(selected);
+        int index = layer.getAsInt();
+        actions.select(index);
+        Rect bounds = layerBounds().get(index);
+        int height = actions.shown().preset().layers().get(index).height();
+        Mode mode = y < bounds.y() + EDGE ? Mode.RESIZING : Mode.PRESSED;
+        drag = new Drag(mode, y, height, (double) height / bounds.height(), -1);
         return true;
     }
 
     @Override
-    public boolean scroll(double x, double y, double amount) {
-        int hidden = layout.contentHeight() - column.height();
-        if (hidden <= 0 || !column.contains(x, y)) {
+    public void drag(double x, double y) {
+        if (drag.mode() == Mode.RESIZING) {
+            int blocks = (int) Math.round((drag.startY() - y) * drag.blocksPerPixel());
+            actions.preview(new LayerEdits.SetHeight(drag.startHeight() + blocks));
+        } else if (drag.mode() != Mode.NONE && Math.abs(y - drag.startY()) > MOVE_THRESHOLD) {
+            drag = drag.moving(placeAt(y));
+        }
+    }
+
+    @Override
+    public void release(double x, double y) {
+        if (drag.mode() == Mode.RESIZING) {
+            actions.commitPreview();
+        } else if (drag.mode() == Mode.MOVING) {
+            actions.apply(new LayerEdits.Move(placeAt(y)));
+        }
+        drag = Drag.NONE;
+    }
+
+    @Override
+    public boolean scroll(double x, double y, double amount, Modifiers modifiers) {
+        OptionalInt layer = hoveredLayer(x, y);
+        if (layer.isPresent()) {
+            actions.select(layer.getAsInt());
+            actions.apply(new LayerEdits.ChangeHeight((int) Math.signum(amount) * wheelBlocks(modifiers)));
+            return true;
+        }
+        int hidden = layout().contentHeight() - column.height();
+        if (hidden <= 0 || !labels.contains(x, y)) {
             return false;
         }
         scroll = Math.max(0, Math.min(hidden, scroll - (int) Math.signum(amount) * SCROLL_STEP));
@@ -127,19 +183,48 @@ public final class ColumnWidget implements Widget {
 
     /** What a layer's tooltip says: its block, how deep it is and the Ys it covers. */
     public List<Component> describe(int index) {
-        Layer layer = preset.layers().get(index);
-        int bottomY = floor + heights.subList(0, index).stream().mapToInt(Integer::intValue).sum();
+        List<Layer> layers = actions.shown().preset().layers();
+        Layer layer = layers.get(index);
+        int bottomY = world.floor() + layers.subList(0, index).stream().mapToInt(Layer::height).sum();
         return List.of(Names.block(layer.block()),
                 Component.translatable("flatgen.layer.height", layer.height()),
                 Component.translatable("flatgen.layer.y_range", bottomY, bottomY + layer.height() - 1));
     }
 
+    private static int wheelBlocks(Modifiers modifiers) {
+        return modifiers.control() ? CONTROL_WHEEL_BLOCKS : modifiers.shift() ? SHIFT_WHEEL_BLOCKS : WHEEL_BLOCKS;
+    }
+
+    /** The layout of what is shown now, laid out again when the preset changes. */
+    private ColumnLayout layout() {
+        Preset preset = actions.shown().preset();
+        if (!preset.equals(laidOut)) {
+            laidOut = preset;
+            layout = ColumnLayout.of(heights(preset), column.height(), THINNEST_LAYER);
+        }
+        return layout;
+    }
+
     private OptionalInt hoveredLayer(double x, double y) {
-        return column.contains(x, y) ? layout.layerAt((int) y - column.y() + scroll) : OptionalInt.empty();
+        return column.contains(x, y) ? layout().layerAt((int) y - column.y() + scroll) : OptionalInt.empty();
+    }
+
+    /** The place a moved layer lands when let go at this row: that of the layer there, or the nearest end. */
+    private int placeAt(double y) {
+        int pixel = (int) y - column.y() + scroll;
+        int last = layout().spans().size() - 1;
+        return layout().layerAt(pixel).orElse(pixel < 0 ? last : 0);
+    }
+
+    /** The line showing where a moved layer lands: above the layer at that place when moving up, below it if down. */
+    private Rect dropLine(List<Rect> bounds, int from, int to) {
+        Rect target = bounds.get(to);
+        int lineY = to > from ? target.y() : target.bottom() - 1;
+        return new Rect(column.x(), lineY - 1, column.width(), 2);
     }
 
     private void drawMarker(Canvas canvas, Marker marker) {
-        OptionalInt pixel = layout.pixelOfLine(marker.y(), floor, heights);
+        OptionalInt pixel = layout().pixelOfLine(marker.y(), world.floor(), heights(actions.shown().preset()));
         if (pixel.isEmpty()) {
             return;
         }
@@ -160,8 +245,7 @@ public final class ColumnWidget implements Widget {
             boolean visible = line.pixel() >= column.y() && line.pixel() <= column.bottom();
             boolean crowded = drawnTops.stream().anyMatch(top -> Math.abs(top - textY) < canvas.lineHeight());
             if (visible && !crowded) {
-                canvas.text(Component.literal(Integer.toString(line.y())), column.right() + LABEL_GAP, textY,
-                        LABEL_COLOR);
+                canvas.text(Component.literal(Integer.toString(line.y())), labels.x() + LABEL_GAP, textY, LABEL_COLOR);
                 drawnTops.add(textY);
             }
         }
@@ -181,16 +265,21 @@ public final class ColumnWidget implements Widget {
 
     /** The lines between layers, top down, the surface first and the world's floor last: each one's pixel row and Y. */
     private List<Line> lines(List<Rect> bounds) {
+        Preset preset = actions.shown().preset();
         List<Line> lines = new ArrayList<>();
-        int y = floor + preset.height();
+        int y = world.floor() + preset.height();
         for (int index = bounds.size() - 1; index >= 0; index--) {
             lines.add(new Line(bounds.get(index).y(), y));
-            y -= heights.get(index);
+            y -= preset.layers().get(index).height();
         }
         if (!bounds.isEmpty()) {
-            lines.add(new Line(bounds.get(0).bottom(), floor));
+            lines.add(new Line(bounds.get(0).bottom(), world.floor()));
         }
         return lines;
+    }
+
+    private static List<Integer> heights(Preset preset) {
+        return preset.layers().stream().map(Layer::height).toList();
     }
 
     /** A line between blocks: its pixel row on the screen and the Y of the block above it. */
