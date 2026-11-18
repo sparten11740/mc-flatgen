@@ -41,6 +41,7 @@ public final class FlatgenTests {
     private static Map<String, Consumer<GameTestHelper>> tests() {
         Map<String, Consumer<GameTestHelper>> tests = new LinkedHashMap<>();
         tests.putAll(PresetGameTests.tests());
+        tests.putAll(BlockGameTests.tests());
         return tests;
     }
 
