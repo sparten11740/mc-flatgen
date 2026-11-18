@@ -1,13 +1,17 @@
 package dev.flatgen.mc;
 
+import com.google.gson.JsonElement;
+import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
@@ -31,9 +35,16 @@ public final class WorldCreation {
                 registries.lookupOrThrow(Registries.PLACED_FEATURE));
     }
 
-    /** Gives the world these superflat settings, as the game's own editor does when its Done is pressed. */
-    public static void applyFlatSettings(CreateWorldScreen screen, FlatLevelGeneratorSettings settings) {
-        screen.getUiState().updateDimensions(withFlatOverworld(settings));
+    /**
+     * Gives the world these superflat settings, as the game's own editor does when its Done is pressed.
+     *
+     * @return the overworld's generator put on the screen, the very object the world will be created with
+     */
+    public static ChunkGenerator applyFlatSettings(CreateWorldScreen screen, FlatLevelGeneratorSettings settings) {
+        FlatLevelSource generator = new FlatLevelSource(settings);
+        screen.getUiState().updateDimensions((registries, dimensions) ->
+                dimensions.replaceOverworldGenerator(registries, generator));
+        return generator;
     }
 
     /** The world being created, but with these superflat settings; the Create World screen stays as it is. */
@@ -45,6 +56,25 @@ public final class WorldCreation {
     private static WorldCreationContext.DimensionsUpdater withFlatOverworld(FlatLevelGeneratorSettings settings) {
         return (registries, dimensions) -> dimensions.replaceOverworldGenerator(registries,
                 new FlatLevelSource(settings));
+    }
+
+    /** The world's overworld generator, as it is on the screen now. */
+    public static ChunkGenerator overworldGenerator(WorldCreationContext context) {
+        return context.selectedDimensions().overworld();
+    }
+
+    /**
+     * A generator's settings as JSON text, naming registry entries by id, to tell whether two generators of different
+     * registries generate alike; empty when it cannot be written.
+     */
+    public static String describe(ChunkGenerator generator, HolderLookup.Provider registries) {
+        return ChunkGenerator.CODEC.encodeStart(FlatSettings.ops(registries), generator).result()
+                .map(JsonElement::toString).orElse("");
+    }
+
+    /** Tells the listener each change of the world on the screen, as the screen's own tabs are told. */
+    public static void listen(CreateWorldScreen screen, Consumer<WorldCreationContext> listener) {
+        screen.getUiState().addListener(state -> listener.accept(state.getSettings()));
     }
 
     /** The world's overworld type, which says where its floor is and how tall it is. */

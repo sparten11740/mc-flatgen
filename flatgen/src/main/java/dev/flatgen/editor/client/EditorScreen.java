@@ -17,6 +17,8 @@ import dev.flatgen.editor.rules.World;
 import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
+import dev.flatgen.options.OptionSessions;
+import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,7 +66,7 @@ public final class EditorScreen extends FlatgenScreen {
         this.world = new World(WorldCreation.overworldType(context).minY(),
                 WorldCreation.overworldType(context).height());
         Preset preset = FlatSettings.toPreset(WorldCreation.flatSettings(context), context.worldgenLoadContext(), "",
-                ICON).preset();
+                ICON).preset().withOptions(OptionSessions.applied(parent));
         this.history = new History(new EditorState(preset, preset.layers().size() - 1));
     }
 
@@ -138,8 +140,7 @@ public final class EditorScreen extends FlatgenScreen {
     }
 
     private void done() {
-        WorldCreation.applyFlatSettings(parent,
-                FlatSettings.toSettings(history.current().preset(), context.worldgenLoadContext()));
+        OptionsAtDone.apply(parent, history.current().preset(), context.worldgenLoadContext());
         onClose();
     }
 

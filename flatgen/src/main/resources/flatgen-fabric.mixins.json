@@ -4,6 +4,7 @@
   "package": "dev.flatgen.platform.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "IntegratedServerMixin",
     "WorldCreationUiStateMixin"
   ],
   "injectors": {

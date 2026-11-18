@@ -46,6 +46,11 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
         return new Preset(name, icon, layers, biome, structureSets, decorations, lakes, newOptions);
     }
 
+    /** This preset with another chosen list of structure sets, or none to take what the biome allows. */
+    public Preset withStructureSets(Optional<List<String>> newStructureSets) {
+        return new Preset(name, icon, layers, biome, newStructureSets, decorations, lakes, options);
+    }
+
     /** How tall the stack is, in blocks. */
     public int height() {
         return layers.stream().mapToInt(Layer::height).sum();

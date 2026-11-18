@@ -2,8 +2,13 @@ package dev.flatgen.options.rules;
 
 import com.google.gson.JsonObject;
 import dev.flatgen.json.rules.JsonFields;
+import dev.flatgen.preset.rules.Preset;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * {@code structures}: adds structure sets to the world's chosen list of them.
@@ -28,5 +33,18 @@ public record AddStructures(List<String> sets) implements Effect {
     @Override
     public void atDone(WorldSetup setup) {
         setup.addStructureSets(sets);
+    }
+
+    /**
+     * A preset with structure sets added to its chosen list, each once; a preset taking what its biome allows already
+     * has every set, so it stays as it is.
+     */
+    public static Preset addedTo(Preset preset, Collection<String> added) {
+        if (preset.structureSets().isEmpty() || added.isEmpty()) {
+            return preset;
+        }
+        Set<String> sets = new LinkedHashSet<>(preset.structureSets().get());
+        sets.addAll(added);
+        return preset.withStructureSets(Optional.of(new ArrayList<>(sets)));
     }
 }
