@@ -11,7 +11,8 @@ page that says what Flatgen does.
 
 - [ ] Every v1 feature done; the milestone reviews of M0 to M4 done and their findings fixed.
 - [ ] Boot test: a dedicated server of each loader starts with the jar in its mods folder and is unaffected (client
-  mod), and a client of each loader starts with it (`tools/boot.mjs`, as in Glowline).
+  mod), and a client of each loader starts with it (`tools/boot.mjs`, as in Glowline), also on the oldest loader
+  versions the metadata accepts (NeoForge 21.1.1, Fabric Loader 0.16.14).
 - [ ] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender
   present: Customize, editing, presets, a world created and loaded. Copying the jar into the instance is asked for
   first.
