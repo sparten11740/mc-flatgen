@@ -25,8 +25,8 @@ tests run.
 - [x] `flatgen:widgets` (since F04) lists every widget of the Flatgen screen open now that describes itself (buttons,
   number fields) with its kind, label, bounds, whether usable and what it holds, so play tests press Flatgen's own
   controls; a feature whose widgets need more than that adds a query listing them with keys and bounds, as `screen` does
-  (`flatgen:column` with F03: each layer's key, block, height, Y range and bounds), so `click` and `drag` can target
-  them.
+  (`flatgen:column` with F03: each layer's key, block, height, Y range and bounds; `flatgen:picker` with F05 and F07:
+  the open picker's cards in sight, each one's id and bounds), so `click` and `drag` can target them.
 - [x] Commands are registered only when Blockpilot is installed; without it nothing of theirs loads, and the jar works
   as before.
 - [x] Compiled against `blockpilot-api` from Blockpilot's GitHub release (the API jar attached to `v1.4.0`), so the

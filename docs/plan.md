@@ -91,8 +91,9 @@ Minecraft's `Screen`, turning the game's callbacks into widget calls. Features' 
 every version; when a version's GUI differs, these two classes (and `mc/BlockSides`) move into the version trees
 (3.2), and nothing else changes.
 
-Shared widgets used by several features live once in `client/gui/`: `CardGrid` (biome picker, preset library,
-templates), `ToggleList` (structures, world settings), `SearchField`, `IconButton`.
+Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
+biome pickers, later the preset library and templates), `Toggle` (world options, structures), `Icon`, `Label`,
+`TextField`.
 
 ### 3.4 Extension points
 

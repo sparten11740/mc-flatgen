@@ -33,10 +33,10 @@ largest GUI scale.
 - `search/rules/Search` (pure, shared with the biome picker of F07 from the start): matching and ranking (exact id,
   name prefix, word prefix, contains), recent and starred ordering, over plain entries of id, name and namespace.
   Unit-tested once for both pickers.
-- `blocks/client/BlockGrid`: the grid, through `Canvas`; `blocks/client/BlockPickerScreen`: the search field, the mod
-  filter and Cancel around it.
+- `blocks/client/BlockPicker`: the block picker, a `client/gui/PickerScreen` (the search field, the mod filter and
+  Cancel around a `CardGrid`, shared with F07's biome picker) whose cards are block icons.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
-  which `mc/BlockCatalog` reads from the game; `blocks/rules/BlockMemory`: the starred and recent blocks.
+  which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
   reader, `config/ConfigFiles`.
 - The list comes from the block registry of the world being created, filtered by its enabled feature flags, as the
@@ -45,11 +45,11 @@ largest GUI scale.
 
 ## Tests
 
-- Unit: `SearchTest`, `BlockMemoryTest`, `BlockRulesTest` (the edit and the hints), `TypedTextTest`,
-  `BlockRowsTest`.
+- Unit: `SearchTest`, `PicksTest`, `PickSectionsTest`, `BlockRulesTest` (the edit and the hints), `TypedTextTest`,
+  `PickerRowsTest`.
 - GameTests on both nodes: the picker lists the game's blocks but air; sand, stone, water, a torch and a chest have
   the traits the hints read.
-- Played with Blockpilot (`flatgen:blocks` lists the grid's slots): on NeoForge, search "glass" put glass first and
+- Played with Blockpilot (`flatgen:blocks`, now `flatgen:picker`, lists the grid's cards): on NeoForge, search "glass" put glass first and
   picking it made the grass layer glass; it came back as recent, a right click starred stone, both kept in
   `blocks.json`; the mod filter showed the loader's name for the mod; sand picked for the bottom layer showed the
   falling hint. On Fabric, andesite picked through a search set the dirt layer.

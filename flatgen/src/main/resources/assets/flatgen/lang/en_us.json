@@ -1,9 +1,7 @@
 {
-  "flatgen.blocks.all_mods": "All mods",
+  "flatgen.blocks.all": "All blocks",
   "flatgen.blocks.search": "Search blocks",
-  "flatgen.blocks.star": "Right-click to star",
   "flatgen.blocks.title": "Pick a block",
-  "flatgen.blocks.unstar": "Right-click to unstar",
   "flatgen.code.copied": "Copied the code",
   "flatgen.code.copy": "Copy code",
   "flatgen.code.copy_tip": "Put the game's superflat code for these layers on the clipboard",
@@ -38,8 +36,10 @@
   "flatgen.layer.y_range": "Y %s to %s",
   "flatgen.options.missing": "Not installed",
   "flatgen.options.not_installed": "%s is not installed: the preset keeps it as it is",
-  "flatgen.picks.all": "All blocks",
+  "flatgen.picks.all_mods": "All mods",
   "flatgen.picks.found": "Found",
   "flatgen.picks.recent": "Recent",
-  "flatgen.picks.starred": "Starred"
+  "flatgen.picks.star": "Right-click to star",
+  "flatgen.picks.starred": "Starred",
+  "flatgen.picks.unstar": "Right-click to unstar"
 }

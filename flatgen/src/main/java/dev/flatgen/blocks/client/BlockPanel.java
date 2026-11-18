@@ -39,7 +39,7 @@ public final class BlockPanel implements EditorPanel {
     }
 
     private static void pick(EditorContext editor) {
-        editor.open(new BlockPickerScreen(editor.screen(), editor.enabledFeatures(),
+        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(),
                 block -> editor.apply(new SetBlock(block))));
     }
 
