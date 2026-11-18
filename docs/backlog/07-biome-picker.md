@@ -17,7 +17,8 @@ biomes. Each card shows the biome's colours and the facts of F08 as small pictur
 
 - [x] Every biome in the registry of the world being created, modded and datapack biomes included (Biomes O' Plenty
   and Oh The Biomes We've Gone in the test pack).
-- [x] Card: translated name, swatches of grass, foliage, water and sky colour; F08 adds its fact pictures.
+- [x] Card: translated name, swatches of grass, foliage, water and sky colour, and the pictures of F08's facts that
+  differ from biome to biome (weather, slimes, monsters) for the world as the editor has it.
 - [x] Search by name and id; filter by mod; starred biomes first; recently used kept.
 - [x] Choosing a biome is one undoable edit (F04); the column follows it (its water tint now, its marker lines with
   F08, which decides which lines matter for the biome).

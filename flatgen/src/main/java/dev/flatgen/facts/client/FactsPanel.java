@@ -1,7 +1,6 @@
 package dev.flatgen.facts.client;
 
 import dev.flatgen.client.gui.Badge;
-import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -36,14 +35,7 @@ public final class FactsPanel implements EditorPanel {
     }
 
     /** What a fact shows, as a badge draws it. */
-    static Badge.Look look(Fact.Shown shown) {
-        return new Badge.Look(Icon.item(shown.icon()), shown.no(), words(shown));
-    }
-
-    /** A fact's words, a line each, in the game's language. */
-    static List<Component> words(Fact.Shown shown) {
-        return shown.words().stream()
-                .<Component>map(words -> Component.translatable(words.key(), words.args().toArray()))
-                .toList();
+    private static Badge.Look look(Fact.Shown shown) {
+        return new Badge.Look(FactPictures.icon(shown), FactPictures.words(shown));
     }
 }

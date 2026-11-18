@@ -28,6 +28,8 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
   the top one, the bottom one in a stack of two or fewer, one undoable edit), or offers biomes without slimes. (The
   first rule, the thickest below the top two, made the classic flat world's bedrock 101 deep; tried 2026-11-19.)
 - [ ] Each fact is a picture with a tooltip; marker lines of F03 show only when they matter for the current biome.
+- [ ] The biome picker's cards (F07) show the facts that differ from biome to biome, for the world as the editor has
+  it, with their words in the card's tooltip.
 
 ## Design
 

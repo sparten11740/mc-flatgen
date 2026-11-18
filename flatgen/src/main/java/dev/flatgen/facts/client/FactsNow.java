@@ -1,5 +1,6 @@
 package dev.flatgen.facts.client;
 
+import dev.flatgen.biomes.rules.BiomeInfo;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.rules.Situation;
 import dev.flatgen.mc.Biomes;
@@ -14,7 +15,7 @@ import java.util.Optional;
  * options change; none for a biome the world being created lacks. Mob spawning is off when an option that is on says
  * so.
  */
-final class FactsNow {
+public final class FactsNow {
     private final EditorContext editor;
     private List<Object> situationFor;
     private Optional<Situation> situation;
@@ -22,12 +23,18 @@ final class FactsNow {
     private Map<String, Boolean> spawningFor;
     private boolean mobSpawning;
 
-    FactsNow(EditorContext editor) {
+    /** The world the editor shows, followed as it changes. */
+    public FactsNow(EditorContext editor) {
         this.editor = editor;
     }
 
+    /** The world as the editor shows it now, but of another biome, as the biome picker's cards show it. */
+    public Situation withBiome(BiomeInfo biome) {
+        return Situation.of(biome, editor.world().floor() + editor.shown().preset().height(), mobSpawning());
+    }
+
     /** The world as the editor shows it now. */
-    Optional<Situation> get() {
+    public Optional<Situation> get() {
         String biome = editor.shown().preset().biome();
         int surface = editor.world().floor() + editor.shown().preset().height();
         boolean spawning = mobSpawning();
@@ -40,7 +47,7 @@ final class FactsNow {
     }
 
     /** Whether mobs spawn: unless an option that is on turns the game rule off. */
-    boolean mobSpawning() {
+    private boolean mobSpawning() {
         Map<String, Boolean> options = editor.shown().preset().options();
         if (options != spawningFor) {
             spawningFor = options;

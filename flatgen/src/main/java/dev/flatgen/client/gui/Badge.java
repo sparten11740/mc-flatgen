@@ -7,12 +7,14 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * A fact as a picture: an icon on a dark tile, struck through in red when the fact is a "no", with a tooltip saying it
- * in words. What it shows may change from frame to frame; when there is nothing to show it draws nothing.
+ * A fact as a picture: an icon on a dark tile (struck through, {@link Icon#struck}, for a "no"), with a tooltip saying
+ * it in words. What it shows may change from frame to frame; when there is nothing to show it draws nothing.
  */
 public final class Badge implements Widget {
-    /** A badge's size, in GUI pixels: an icon and a two pixel border. */
-    public static final int SIZE = Icon.SIZE + 4;
+    /** The border around a badge's icon, in GUI pixels. */
+    private static final int BORDER = 2;
+    /** A badge's size, in GUI pixels: an icon and its border. */
+    public static final int SIZE = Icon.SIZE + 2 * BORDER;
     private static final int TILE = 0x60000000;
 
     private final Rect bounds;
@@ -22,10 +24,9 @@ public final class Badge implements Widget {
      * What a badge shows.
      *
      * @param icon    its picture
-     * @param no      whether the picture is struck through, saying "no"
      * @param tooltip what it says in words
      */
-    public record Look(Icon icon, boolean no, List<Component> tooltip) {
+    public record Look(Icon icon, List<Component> tooltip) {
     }
 
     public Badge(Rect bounds, Supplier<Optional<Look>> look) {
@@ -40,8 +41,7 @@ public final class Badge implements Widget {
             return;
         }
         canvas.fill(bounds, TILE);
-        Icon icon = now.get().no() ? Icon.struck(now.get().icon()) : now.get().icon();
-        icon.draw(canvas, bounds.x() + 2, bounds.y() + 2);
+        now.get().icon().draw(canvas, bounds.x() + BORDER, bounds.y() + BORDER);
         if (bounds.contains(mouseX, mouseY)) {
             canvas.tooltip(now.get().tooltip(), mouseX, mouseY);
         }

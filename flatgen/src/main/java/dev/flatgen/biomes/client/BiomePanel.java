@@ -7,6 +7,7 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.facts.client.FactsNow;
 import dev.flatgen.mc.Names;
 import java.util.List;
 import net.minecraft.network.chat.Component;
@@ -24,7 +25,7 @@ public final class BiomePanel implements EditorPanel {
     }
 
     private static void pick(EditorContext editor) {
-        editor.open(BiomePicker.screen(editor.screen(), editor.registries(),
+        editor.open(BiomePicker.screen(editor.screen(), editor.registries(), new FactsNow(editor)::withBiome,
                 biome -> editor.apply(new SetBiome(biome))));
     }
 }
