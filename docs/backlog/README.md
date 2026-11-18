@@ -46,7 +46,7 @@ v3 and v4 may swap; both come after v2.
 | F03 | [Layer column](03-layer-column.md) | done | F01, F02, F26 |
 | F04 | [Layer editing](04-layer-editing.md) | done | F03 |
 | F05 | [Block picker](05-block-picker.md) | done | F04 |
-| F06 | [Vanilla superflat code](06-vanilla-code.md) | todo | F02 |
+| F06 | [Vanilla superflat code](06-vanilla-code.md) | done | F02 |
 
 **M2, biome and world**
 

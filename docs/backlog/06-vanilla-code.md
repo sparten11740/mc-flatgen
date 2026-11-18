@@ -1,6 +1,6 @@
 # F06 Vanilla superflat code
 
-Milestone: M1 layer editor · Release: v1 · Status: todo · Depends on: F02
+Milestone: M1 layer editor · Release: v1 · Status: done · Depends on: F02
 
 ## Why
 
@@ -10,25 +10,29 @@ vanilla at saying what is wrong: vanilla silently falls back to the default worl
 
 ## What the player gets
 
-A box with the current preset's code to copy, and pasting a code turns it into layers at once, with the part that is
-wrong marked.
+Copy code puts the current layers and biome on the clipboard as the game's code; Paste code turns a code on the
+clipboard into layers at once, or says which part is wrong and changes nothing. Two buttons rather than a text box, as
+Flatgen's fields have no selection or clipboard of their own.
 
 ## Acceptance criteria
 
-- [ ] Writes the code for the current layers and biome exactly as vanilla's presets screen does.
-- [ ] Reads any code vanilla reads: `<layers>;<biome>`, layers as `[<height>*]<block>` separated by commas, the biome
-  optional (plains when missing).
-- [ ] An unknown block or biome, a bad number or a stack taller than the world is marked in the box and explained;
-  nothing is applied until the code is valid.
-- [ ] Pasting a code is one undoable edit (F04).
-- [ ] Structures, decorations and lakes, which the code does not carry, stay as they were.
+- [x] Writes the code for the current layers and biome exactly as vanilla's presets screen does.
+- [x] Reads any code vanilla reads: `<layers>;<biome>`, layers as `[<height>*]<block>` separated by commas, the biome
+  optional (plains when missing), spaces around parts allowed.
+- [x] A layer it cannot read (a bad number, a malformed id), no layers, an unknown block or biome, or a stack taller
+  than the world is explained under the selected layer, naming the part and its characters; nothing is applied until
+  the code is valid.
+- [x] Pasting a code is one undoable edit (F04).
+- [x] Structures, decorations and lakes, which the code does not carry, stay as they were.
 
 ## Design
 
-- `preset/rules/VanillaCode` (pure): writing came with F26 (Blockpilot's `flatgen:editor` reports the code); this
-  feature adds parsing to a preset part plus a list of problems with their character ranges.
-- 1.21.1's own parser (`PresetFlatWorldScreen.fromString`) and writer (`save`) are the reference: the round-trip
-  GameTest compares against them.
+- `preset/rules/VanillaCode` (pure): writing came with F26; this feature adds reading, to layers, a biome and the
+  problems found, each a kind with the part's text and characters, which the editor words through translations.
+- `editor/client/CodeChecks` finds the unknown blocks and biome of a code read; `layers/rules/LayerEdits.Replace` puts
+  the code's layers and biome in, one step; `mc/Clipboard` reaches the clipboard.
+- The game's parser (`PresetFlatWorldScreen`) is a client class, not on the GameTest server, so the GameTest compares
+  against the text the game writes for its layers (`FlatLayerInfo`), which its writer joins.
 
 ## Version notes
 
@@ -36,7 +40,10 @@ wrong marked.
 
 ## Tests
 
-- Unit: every vanilla preset's code, codes with spaces, missing biome, heights over the world, unknown ids, empty
-  layers (vanilla treats an empty layer list as invalid).
-- GameTest: for each vanilla preset, Flatgen's code equals `PresetFlatWorldScreen.save`, and both parsers read it to
-  the same settings.
+- Unit: `VanillaCodeTest` (writing, reading back, spaces and a missing biome, unreadable layers with their characters,
+  no layers), `LayerEditsTest` (replacing, refused when taller than the world).
+- GameTest on both nodes: every game preset's code is written as the game writes its layers and reads back to the same
+  layers and biome.
+- Played with Blockpilot: on NeoForge, Copy code put the classic flat's code on the clipboard; pasting the tall flat
+  made its layers; a broken layer, an unknown block and a stack of 400 changed nothing and said why; Undo took the
+  paste back. On Fabric, Water World's code pasted, and a broken one was refused with its message.
