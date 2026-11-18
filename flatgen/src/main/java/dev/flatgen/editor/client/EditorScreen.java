@@ -18,6 +18,7 @@ import dev.flatgen.facts.client.FactMarkers;
 import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
+import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionSessions;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.preset.rules.Preset;
@@ -66,8 +67,8 @@ public final class EditorScreen extends FlatgenScreen {
         this.context = context;
         this.world = new World(WorldCreation.overworldType(context).minY(),
                 WorldCreation.overworldType(context).height());
-        Preset preset = FlatSettings.toPreset(WorldCreation.flatSettings(context), context.worldgenLoadContext(), "",
-                ICON).preset().withOptions(OptionSessions.shown(parent));
+        Preset preset = OptionSessions.shown(parent, FlatSettings.toPreset(WorldCreation.flatSettings(context),
+                context.worldgenLoadContext(), "", ICON).preset(), InstalledOptions.load());
         this.history = new History(new EditorState(preset, preset.layers().size() - 1));
     }
 

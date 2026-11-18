@@ -48,7 +48,8 @@ public final class OptionsAtDone {
         setGameRules(screen, applied, turnedOff);
         warnIfAny("Flatgen keeps these world options in the preset, which are not installed: {}",
                 OptionChoices.missing(preset.options(), installed));
-        OptionSessions.remember(screen, preset.options());
+        OptionSessions.remember(screen, preset.options(),
+                AddStructures.newlyAdded(preset, applied.structureSets(), knownSets));
     }
 
     /** Sets the game rules of the options on, and puts those of options turned off back to the game's defaults. */

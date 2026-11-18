@@ -35,6 +35,19 @@ public record AddStructures(List<String> sets) implements Effect {
         setup.addStructureSets(sets);
     }
 
+    /** The sets {@link #addedTo} adds to a preset's chosen list that it did not have, which options alone gave it. */
+    public static Set<String> newlyAdded(Preset preset, Collection<String> added, Set<String> known) {
+        Set<String> newly = new LinkedHashSet<>(addedTo(preset, added, known).structureSets().orElse(List.of()));
+        preset.structureSets().ifPresent(newly::removeAll);
+        return newly;
+    }
+
+    /** A preset without the sets options alone gave its chosen list, as the player chose it. */
+    public static Preset removedFrom(Preset preset, Set<String> addedByOptions) {
+        return preset.withStructureSets(preset.structureSets()
+                .map(sets -> sets.stream().filter(set -> !addedByOptions.contains(set)).toList()));
+    }
+
     /**
      * A preset with the structure sets added to its chosen list that the game has, each once; a preset taking what its
      * biome allows already has every set, so it stays as it is. A set the game lacks is left out, as the game would

@@ -28,6 +28,16 @@ class AddStructuresTest {
     }
 
     @Test
+    void takesBackOnlyWhatOptionsAloneAdded() {
+        Preset villages = TestPresets.TALL_FLAT.withStructureSets(Optional.of(List.of("minecraft:villages")));
+        Set<String> newly = AddStructures.newlyAdded(villages, List.of("skyliners:airports", "minecraft:villages"),
+                KNOWN);
+        assertEquals(Set.of("skyliners:airports"), newly);
+        Preset applied = AddStructures.addedTo(villages, List.of("skyliners:airports"), KNOWN);
+        assertEquals(villages, AddStructures.removedFrom(applied, newly));
+    }
+
+    @Test
     void leavesAPresetTakingWhatItsBiomeAllows() {
         Preset everything = TestPresets.TALL_FLAT.withStructureSets(Optional.empty());
         assertEquals(everything, AddStructures.addedTo(everything, List.of("skyliners:airports"), KNOWN));
