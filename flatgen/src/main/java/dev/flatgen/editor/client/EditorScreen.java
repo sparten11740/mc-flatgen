@@ -1,6 +1,7 @@
 package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.FlatgenScreen;
+import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -31,8 +32,9 @@ import net.minecraft.world.flag.FeatureFlagSet;
 
 /**
  * Flatgen's superflat editor, opened by Customize: the world's layers in a column, beside it the panels of
- * {@link EditorPanels}, top down, wrapping within the space left, and Done, the game's own editor and Cancel below.
- * Every change is a step to undo. Done applies the preset to the Create World screen; Cancel leaves it.
+ * {@link EditorPanels}, top down, wrapping within the space left and scrolling when taller than it, and Done, the
+ * game's own editor and Cancel below. Every change is a step to undo. Done applies the preset to the Create World
+ * screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
     /** Space above the column for the title, in GUI pixels. */
@@ -95,11 +97,18 @@ public final class EditorScreen extends FlatgenScreen {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(column);
         int left = space.right() + MARGIN;
-        FlowLayout flow = new FlowLayout(new Rect(left, HEADER, width - left - MARGIN, space.height()),
-                PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
-        EditorPanels.ALL.forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
+        Rect panelSpace = new Rect(left, HEADER, width - left - MARGIN, space.height());
+        widgets.add(new ScrollGroup(panelSpace, top -> panels(new Rect(left, top, panelSpace.width(), 0))));
         widgets.addAll(footer(width, height));
         return widgets;
+    }
+
+    /** Every panel's widgets, from the top of this area down within its width. */
+    private ScrollGroup.Laid panels(Rect area) {
+        FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
+        List<Widget> widgets = new ArrayList<>();
+        EditorPanels.ALL.forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
+        return new ScrollGroup.Laid(widgets, flow.bottom());
     }
 
     @Override

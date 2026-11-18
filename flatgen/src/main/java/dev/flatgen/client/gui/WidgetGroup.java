@@ -67,14 +67,14 @@ public final class WidgetGroup implements Widget {
         return pressed != null && pressed.takesKeyboard();
     }
 
-    /** Hands the keyboard to the widget that took the last click when the group gains it, and takes it back. */
+    /**
+     * Hands the keyboard to the widget that took the last click while the group has it, telling that widget again even
+     * when it had it, so a group within passes it on to the widget within it that took the click.
+     */
     @Override
     public void keyboard(boolean held) {
         Widget holder = held && takesKeyboard() ? pressed : null;
-        if (keyboard == holder) {
-            return;
-        }
-        if (keyboard != null) {
+        if (keyboard != null && keyboard != holder) {
             keyboard.keyboard(false);
         }
         keyboard = holder;

@@ -36,7 +36,7 @@ public interface Widget {
         return false;
     }
 
-    /** The widget gains or loses the keyboard. */
+    /** Whether the widget has the keyboard now; told again with each click it takes while it keeps it. */
     default void keyboard(boolean held) {
     }
 

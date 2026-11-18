@@ -57,8 +57,10 @@ public final class NumberField implements Widget {
 
     @Override
     public void keyboard(boolean held) {
-        keyboard = held;
-        typed.clear();
+        if (held != keyboard) {
+            keyboard = held;
+            typed.clear();
+        }
     }
 
     @Override
