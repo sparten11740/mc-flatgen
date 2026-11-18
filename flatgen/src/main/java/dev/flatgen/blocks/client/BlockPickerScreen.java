@@ -77,7 +77,7 @@ public final class BlockPickerScreen extends FlatgenScreen {
                 id -> memory.starred().contains(id), this::modName, this::pick, this::star);
         return List.of(
                 new TextField("search", row.next(SEARCH_WIDTH), Component.translatable("flatgen.blocks.search"),
-                        text -> query = text),
+                        query, this::search),
                 new TextButton(this::modLabel, row.next(MOD_WIDTH), this::nextMod, () -> true, List::of),
                 grid,
                 new TextButton(CommonComponents.GUI_CANCEL,
@@ -138,12 +138,18 @@ public final class BlockPickerScreen extends FlatgenScreen {
         BlockMemoryFile.save(memory);
     }
 
+    private void search(String text) {
+        query = text;
+        grid.toTop();
+    }
+
     private Component modLabel() {
         return mod < 0 ? Component.translatable("flatgen.blocks.all_mods") : modName(mods.get(mod));
     }
 
     private void nextMod() {
         mod = mod + 1 < mods.size() ? mod + 1 : -1;
+        grid.toTop();
     }
 
     private Component modName(String namespace) {

@@ -26,15 +26,16 @@ public final class TextField implements Widget {
     private boolean keyboard;
 
     /**
-     * A box with a hint, handing its text to {@code onChange} each time it changes.
+     * A box with a hint, starting with some text, handing its text to {@code onChange} each time it changes.
      *
      * @param name what it is called, for tools that drive the screen
      */
-    public TextField(String name, Rect bounds, Component hint, Consumer<String> onChange) {
+    public TextField(String name, Rect bounds, Component hint, String text, Consumer<String> onChange) {
         this.name = name;
         this.bounds = bounds;
         this.hint = hint;
         this.onChange = onChange;
+        text.chars().forEach(character -> typed.type((char) character));
     }
 
     @Override

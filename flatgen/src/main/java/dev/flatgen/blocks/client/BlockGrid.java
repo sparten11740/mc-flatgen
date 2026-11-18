@@ -99,6 +99,11 @@ public final class BlockGrid implements Widget {
         return placed().slots();
     }
 
+    /** Starts the grid at its top again, as when what it shows changes. */
+    public void toTop() {
+        scroll = 0;
+    }
+
     /** Where everything is drawn now, laid out again only when the sections or the scroll change. */
     private Placed placed() {
         List<Section> current = sections.get();
