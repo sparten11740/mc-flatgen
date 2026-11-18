@@ -41,6 +41,11 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
         return new Preset(name, icon, layers, newBiome, structureSets, decorations, lakes, options);
     }
 
+    /** This preset with other world options set otherwise than their default, by id. */
+    public Preset withOptions(Map<String, Boolean> newOptions) {
+        return new Preset(name, icon, layers, biome, structureSets, decorations, lakes, newOptions);
+    }
+
     /** How tall the stack is, in blocks. */
     public int height() {
         return layers.stream().mapToInt(Layer::height).sum();

@@ -42,6 +42,12 @@ public interface Canvas {
     /** Draws a block's item, 16 GUI pixels square, with its top left corner here; a block with no item, its side. */
     void blockIcon(String block, int x, int y);
 
+    /** Draws an item, 16 GUI pixels square, with its top left corner here; nothing for an item the game lacks. */
+    void itemIcon(String item, int x, int y);
+
+    /** Draws a texture 16 by 16 pixels, by its location, with its top left corner here; nothing for a bad location. */
+    void texture(String location, int x, int y);
+
     /** Keeps what is drawn next inside a rectangle until {@link #unclip()}; clips nest. */
     void clip(Rect area);
 

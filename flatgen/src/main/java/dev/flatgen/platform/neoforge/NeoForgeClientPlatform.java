@@ -10,4 +10,9 @@ final class NeoForgeClientPlatform implements ClientPlatform {
         return ModList.get().getModContainerById(namespace)
                 .map(container -> container.getModInfo().getDisplayName()).orElse(namespace);
     }
+
+    @Override
+    public boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
+    }
 }

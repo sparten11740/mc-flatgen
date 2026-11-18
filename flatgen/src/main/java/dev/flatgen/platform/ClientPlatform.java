@@ -8,6 +8,9 @@ public interface ClientPlatform {
     /** A mod's name for players, by the namespace of its ids; the namespace itself for one the loader does not know. */
     String modName(String namespace);
 
+    /** Whether a mod of this id is loaded. */
+    boolean isModLoaded(String modId);
+
     /** The loader's half, as installed. */
     static ClientPlatform get() {
         return Installed.platform;

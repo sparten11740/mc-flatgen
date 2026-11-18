@@ -2,6 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
+import dev.flatgen.mc.Items;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
@@ -86,6 +87,17 @@ final class McCanvas implements Canvas {
     @Override
     public void blockIcon(String block, int x, int y) {
         blockSides.drawIcon(graphics, block, x, y);
+    }
+
+    @Override
+    public void itemIcon(String item, int x, int y) {
+        graphics.renderItem(Items.stack(item), x, y);
+    }
+
+    @Override
+    public void texture(String location, int x, int y) {
+        Optional.ofNullable(ResourceLocation.tryParse(location)).ifPresent(texture ->
+                graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE));
     }
 
     @Override

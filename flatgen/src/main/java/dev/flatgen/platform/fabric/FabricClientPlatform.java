@@ -10,4 +10,9 @@ final class FabricClientPlatform implements ClientPlatform {
         return FabricLoader.getInstance().getModContainer(namespace)
                 .map(container -> container.getMetadata().getName()).orElse(namespace);
     }
+
+    @Override
+    public boolean isModLoaded(String modId) {
+        return FabricLoader.getInstance().isModLoaded(modId);
+    }
 }

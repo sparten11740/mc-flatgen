@@ -36,6 +36,8 @@
   "flatgen.layer.height": "Height: %s",
   "flatgen.layer.shallower": "One block shallower",
   "flatgen.layer.y_range": "Y %s to %s",
+  "flatgen.options.missing": "Not installed",
+  "flatgen.options.not_installed": "%s is not installed: the preset keeps it as it is",
   "flatgen.picks.all": "All blocks",
   "flatgen.picks.found": "Found",
   "flatgen.picks.recent": "Recent",
