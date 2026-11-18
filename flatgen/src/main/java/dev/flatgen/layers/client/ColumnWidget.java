@@ -9,6 +9,7 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.ColumnLayout;
 import dev.flatgen.layers.rules.LayerEdits;
+import dev.flatgen.mc.Biomes;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
@@ -53,11 +54,13 @@ public final class ColumnWidget implements Widget {
     private static final int LABEL_COLOR = 0xFFE0E0E0;
 
     private final EditorContext editor;
-    private final int fluidColor;
     private final Rect column;
     private final Rect labels;
     private Preset laidOut;
     private ColumnLayout layout;
+    /** The biome {@link #fluidColor} is the water colour of, the colour water layers are tinted. */
+    private String tintedBiome;
+    private int fluidColor;
     private int scroll;
     private Drag drag = Drag.NONE;
 
@@ -80,14 +83,9 @@ public final class ColumnWidget implements Widget {
     /** The kinds of {@link Drag}. */
     private enum Mode { NONE, RESIZING, PRESSED, MOVING }
 
-    /**
-     * A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it.
-     *
-     * @param fluidColor the colour water layers are tinted, the biome's water colour
-     */
-    public ColumnWidget(EditorContext editor, int fluidColor, Rect space) {
+    /** A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it. */
+    public ColumnWidget(EditorContext editor, Rect space) {
         this.editor = editor;
-        this.fluidColor = fluidColor;
         this.column = new Rect(space.x(), space.y(), COLUMN_WIDTH, space.height());
         this.labels = new Rect(column.right(), space.y(), space.width() - COLUMN_WIDTH, space.height());
     }
@@ -107,8 +105,9 @@ public final class ColumnWidget implements Widget {
         List<Rect> bounds = layerBounds();
         canvas.fill(column, BACKGROUND);
         canvas.clip(column);
+        int fluid = fluidColor(state.preset().biome());
         for (int index = 0; index < bounds.size(); index++) {
-            canvas.blockSide(state.preset().layers().get(index).block(), fluidColor, bounds.get(index));
+            canvas.blockSide(state.preset().layers().get(index).block(), fluid, bounds.get(index));
             canvas.fill(new Rect(column.x(), bounds.get(index).y(), column.width(), 1), LINE_BETWEEN_LAYERS);
         }
         MARKERS.forEach(marker -> drawMarker(canvas, marker));
@@ -194,6 +193,15 @@ public final class ColumnWidget implements Widget {
             scroll = Math.max(0, Math.min(layout.contentHeight() - column.height(), scroll));
         }
         return layout;
+    }
+
+    /** The water colour of the biome shown, looked up again only when the biome changes. */
+    private int fluidColor(String biome) {
+        if (!biome.equals(tintedBiome)) {
+            tintedBiome = biome;
+            fluidColor = Biomes.waterColor(biome, editor.registries());
+        }
+        return fluidColor;
     }
 
     private OptionalInt hoveredLayer(double x, double y) {
