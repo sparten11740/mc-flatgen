@@ -1,6 +1,6 @@
 # F27 World options from other mods
 
-Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F02, F01
+Milestone: M2 biome and world · Release: v1 · Status: done · Depends on: F02, F01
 
 ## Why
 
@@ -17,22 +17,22 @@ preset, saved with it like its layers.
 
 ## Acceptance criteria
 
-- [ ] Options load from resources at `assets/<namespace>/flatgen/options/<name>.json`, from mods and resource packs;
+- [x] Options load from resources at `assets/<namespace>/flatgen/options/<name>.json`, from mods and resource packs;
   an option's id is `<namespace>:<name>`.
-- [ ] An option has a name and description (translation keys or text), an icon (an item id), a group, a default, the
+- [x] An option has a name and description (translation keys or text), an icon (an item id), a group, a default, the
   mods it requires (hidden when one is missing) and a list of effects.
-- [ ] Effects, each a kind of its own:
+- [x] Effects, each a kind of its own:
   - `game_rule`: sets a game rule on the Create World screen (always clear is `doWeatherCycle` false);
   - `first_start_time`: sets the clock once, on the world's first start (always day's midday);
   - `structures`: adds structure sets to the world's structure list;
   - `place_at_spawn`: places a structure template once, at or beside the spawn point, on the world's first start.
-- [ ] A preset stores the options that differ from their defaults by id (F02's `options`); an option that is not
+- [x] A preset stores the options that differ from their defaults by id (F02's `options`); an option that is not
   installed is kept in the preset and reported, never dropped.
-- [ ] A broken option file is logged with its path and what is wrong, and skipped; the editor still opens.
-- [ ] Worlds still open without Flatgen: game rules and structure lists are vanilla settings, and first-start effects
+- [x] A broken option file is logged with its path and what is wrong, and skipped; the editor still opens.
+- [x] Worlds still open without Flatgen: game rules and structure lists are vanilla settings, and first-start effects
   leave only blocks and the clock behind.
-- [ ] `docs/world-options.md` for mod and pack authors: the format, each effect, examples (Skyliners' airport).
-- [ ] Tested with a fixture option shipped in the dev run's resources that places a small template at spawn; the
+- [x] `docs/world-options.md` for mod and pack authors: the format, each effect, examples (Skyliners' airport).
+- [x] Tested with a fixture option shipped in the dev run's resources that places a small template at spawn; the
   Skyliners airport itself is added in Skyliners' repository.
 
 ## Design
@@ -77,6 +77,15 @@ preset, saved with it like its layers.
 - GameTest: a `place_at_spawn` fixture places its template at the spawn point once and not on a second start; a
   `first_start_time` fixture sets the clock once.
 - Dev client: the fixture option shows with its picture, is saved in a preset, and its world has the template at spawn.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: the fixture option shows with its picture under its group, turns on and
+off as a step to undo, and its world has the pad at the spawn, noon and the daylight cycle off; Done, Cancel and a new
+world leaves the new world without them. The GameTests run the first-start effects once and never on another world.
+Not tried in game: the `structures` effect (unit-tested), texture icons, options from a resource pack, a data pack
+change on the Create World screen after Done, a required mod that is missing, and opening such a world without Flatgen
+(nothing of Flatgen is in it by design).
 
 ## Out of scope
 

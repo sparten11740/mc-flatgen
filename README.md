@@ -12,6 +12,9 @@ will open Flatgen instead of the vanilla screen:
 
 Worlds made with Flatgen are plain superflat worlds: they open without the mod.
 
+Mods and modpacks can add switches of their own, such as an airport at the spawn, as data files with no code:
+[docs/world-options.md](docs/world-options.md).
+
 Flatgen is a client mod for Minecraft 1.21.1 on NeoForge and Fabric, with more versions to follow. None of the
 above is released yet; `docs/backlog/` shows what is done and what is next.
 
