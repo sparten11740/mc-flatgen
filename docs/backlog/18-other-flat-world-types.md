@@ -25,7 +25,7 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
   second kind of entry: a test on the selected world type. NeoForge then needs the same small mixin into
   `WorldCreationUiState#getPresetEditor` that Fabric has from F01; it moves to code both loaders share, and the
   NeoForge event stays for `minecraft:flat`.
-- `PresetEditors` holds both kinds behind one lookup, so F01's code does not change.
+- `editor/client/PresetEditors` holds both kinds behind one lookup, so F01's code does not change.
 
 ## Tests
 

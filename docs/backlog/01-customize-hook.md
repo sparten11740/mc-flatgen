@@ -1,6 +1,6 @@
 # F01 Customize opens Flatgen
 
-Milestone: M0 foundation · Release: v1 · Status: todo · Depends on: F00
+Milestone: M0 foundation · Release: v1 · Status: done · Depends on: F00
 
 ## Why
 
@@ -16,19 +16,19 @@ anything Flatgen does not do yet.
 
 ## Acceptance criteria
 
-- [ ] On `1.21.1-neoforge` and `1.21.1-fabric`, Superflat → Customize opens Flatgen's screen.
-- [ ] Done writes the settings back to the Create World screen; a world created afterwards has exactly those layers
+- [x] On `1.21.1-neoforge` and `1.21.1-fabric`, Superflat → Customize opens Flatgen's screen.
+- [x] Done writes the settings back to the Create World screen; a world created afterwards has exactly those layers
   and that biome (checked in `level.dat` or in game).
-- [ ] Cancel and Escape return to Create World with nothing changed.
-- [ ] "Vanilla editor" opens Minecraft's own flat screen, whose Done also reaches Create World.
-- [ ] `config/flatgen/flatgen.json` with `"enabled": false` gives the vanilla screen back.
-- [ ] The World tab's layout and the Create World screen itself are untouched (no mixin into either).
-- [ ] Other world types are unaffected: Default, Large Biomes, Amplified and Single Biome behave as without Flatgen.
+- [x] Cancel and Escape return to Create World with nothing changed.
+- [x] "Vanilla editor" opens Minecraft's own flat screen, whose Done also reaches Create World.
+- [x] `config/flatgen/flatgen.json` with `"enabled": false` gives the vanilla screen back.
+- [x] The World tab's layout and the Create World screen itself are untouched (no mixin into either).
+- [x] Other world types are unaffected: Default, Large Biomes, Amplified and Single Biome behave as without Flatgen.
 
 ## Design
 
-- `dev/flatgen/editor/PresetEditors`: Flatgen's table of world types it edits, filled by the client entry point. For
-  now one entry, `minecraft:flat`.
+- `editor/client/PresetEditors`: Flatgen's table of world types it edits and the editor it hands the game, which
+  each loader's platform half registers. For now one entry, `minecraft:flat`.
 - NeoForge (`platform/neoforge`): on the mod bus, `RegisterPresetEditorsEvent.register(key, editor)` for each entry,
   which replaces the vanilla editor. No mixin.
 - Fabric (`platform/fabric`): Fabric API has no such event; a mixin at the head of
@@ -48,6 +48,14 @@ anything Flatgen does not do yet.
 
 ## Tests
 
-- Dev client of each node: open Create World, pick Superflat, press Customize, see Flatgen; Done, create the world,
-  check its layers. Blockpilot can drive this with its safety level at `all`, the default.
-- With `enabled` false the vanilla screen opens.
+- Unit: `SettingsTest` reads and writes the settings file's JSON, with defaults for missing keys and values of the
+  wrong type.
+- Played on `1.21.1-neoforge` and `1.21.1-fabric` with Blockpilot 1.4.0 (`-Pflatgen.blockpilot=1.4.0`), each:
+  Superflat → Customize opens Flatgen; Cancel and Escape return unchanged; Vanilla editor opens the game's screen and
+  its Cancel returns to Create World; a vanilla preset chosen there (Tunnelers' Dream on NeoForge, Water World on
+  Fabric) shows in Flatgen, and after Flatgen's Done the created world's `level.dat` holds exactly its layers, biome
+  and structures; with `"enabled": false` Customize opens the vanilla screen without a restart; Large Biomes and
+  Amplified keep Customize off and Single Biome opens its own screen.
+- Seen at GUI scale 4 on the smallest window: the three footer buttons fit (they did not at the game's default width,
+  now 100 pixels each).
+- Not tried: with Create Aeronautics present (comes with F18 and the boot in the real pack, F20).
