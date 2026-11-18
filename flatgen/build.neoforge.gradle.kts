@@ -21,6 +21,10 @@ tasks.jar {
     destinationDirectory = rootProject.layout.buildDirectory.dir("libs")
 }
 
+// Blockpilot in the client run, for play tests, when asked for with -Pflatgen.blockpilot=<version>.
+extra["blockpilotConfiguration"] = "runtimeClasspath"
+apply(from = treeDir.resolve("blockpilot.gradle.kts"))
+
 neoForge {
     version = prop("neo_version")
 

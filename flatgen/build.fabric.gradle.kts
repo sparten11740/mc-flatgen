@@ -42,6 +42,10 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("fabric_api_version")}")
 }
 
+// Blockpilot in the client run, for play tests, when asked for with -Pflatgen.blockpilot=<version>.
+extra["blockpilotConfiguration"] = if (loomx.isUnobfuscated) "localRuntime" else "modLocalRuntime"
+apply(from = treeDir.resolve("blockpilot.gradle.kts"))
+
 loom {
     runs {
         named("client") {
