@@ -16,7 +16,6 @@ val treeDir = parent!!.projectDir
 extra["metadataTemplate"] = "fabric.mod.json"
 extra["loaderMetadata"] = mapOf(
     "fabric_loader_min_version" to prop("fabric_loader_min_version"),
-    "fabric_api_version" to prop("fabric_api_version").substringBefore('+'),
     "minecraft_version_range" to prop("minecraft_version_range"),
     "java_version" to prop("java_version"),
 )
@@ -44,7 +43,8 @@ dependencies {
         })
     }
     modImplementation("net.fabricmc:fabric-loader:${prop("fabric_loader_version")}")
-    modImplementation("net.fabricmc.fabric-api:fabric-api:${prop("fabric_api_version")}")
+    // Flatgen does without Fabric API; the dev client runs it for Blockpilot, which needs it.
+    modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${prop("fabric_api_version")}")
 }
 
 // Blockpilot in the client run, for play tests, when asked for with -Pflatgen.blockpilot=<version>.
