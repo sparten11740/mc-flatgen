@@ -1,7 +1,6 @@
 package dev.flatgen.blocks.client;
 
-import dev.flatgen.blocks.BlockMemoryFile;
-import dev.flatgen.blocks.rules.BlockMemory;
+import dev.flatgen.blocks.BlockPicksFile;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
@@ -10,14 +9,12 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.RowLayout;
 import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.platform.ClientPlatform;
+import dev.flatgen.search.rules.PickSections;
+import dev.flatgen.search.rules.Picks;
 import dev.flatgen.search.rules.Search;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -43,14 +40,13 @@ public final class BlockPickerScreen extends FlatgenScreen {
     private final Screen parent;
     private final Consumer<String> onPick;
     private final List<Search.Entry> blocks;
-    private final Map<String, Search.Entry> byId;
     private final List<String> mods;
-    private BlockMemory memory;
+    private Picks picks;
     private String query = "";
     /** The mod the grid is narrowed to, by its place in {@link #mods}; -1 for every mod. */
     private int mod = -1;
     private BlockGrid grid;
-    /** The sections for {@link #sectionsFor}, kept until the search, the mod or the memory changes. */
+    /** The sections for {@link #sectionsFor}, kept until the search, the mod or the picks changes. */
     private List<BlockGrid.Section> sections;
     private List<Object> sectionsFor;
 
@@ -60,9 +56,8 @@ public final class BlockPickerScreen extends FlatgenScreen {
         this.parent = parent;
         this.onPick = onPick;
         this.blocks = BlockCatalog.blocks(enabled);
-        this.byId = blocks.stream().collect(Collectors.toMap(Search.Entry::id, Function.identity(), (a, b) -> a));
         this.mods = blocks.stream().map(Search.Entry::namespace).distinct().sorted().toList();
-        this.memory = BlockMemoryFile.read();
+        this.picks = BlockPicksFile.read();
     }
 
     /** The grid, as last laid out. */
@@ -74,7 +69,7 @@ public final class BlockPickerScreen extends FlatgenScreen {
     protected List<Widget> layOut(int width, int height) {
         RowLayout row = new RowLayout(MARGIN, ROW_TOP, ROW_HEIGHT, GAP);
         grid = new BlockGrid(new Rect(MARGIN, HEADER, width - 2 * MARGIN, height - HEADER - FOOTER), this::sections,
-                id -> memory.starred().contains(id), this::modName, this::pick, this::star);
+                id -> picks.starred().contains(id), this::modName, this::pick, this::star);
         return List.of(
                 new TextField("search", row.next(SEARCH_WIDTH), Component.translatable("flatgen.blocks.search"),
                         query, this::search),
@@ -90,9 +85,9 @@ public final class BlockPickerScreen extends FlatgenScreen {
         minecraft.setScreen(parent);
     }
 
-    /** What the grid shows, worked out again only when the search, the mod or the memory changed. */
+    /** What the grid shows, worked out again only when the search, the mod or the picks changed. */
     private List<BlockGrid.Section> sections() {
-        List<Object> key = List.of(query, mod, memory);
+        List<Object> key = List.of(query, mod, picks);
         if (!key.equals(sectionsFor)) {
             sectionsFor = key;
             sections = workOutSections();
@@ -104,38 +99,24 @@ public final class BlockPickerScreen extends FlatgenScreen {
     private List<BlockGrid.Section> workOutSections() {
         List<Search.Entry> shown = mod < 0 ? blocks
                 : blocks.stream().filter(block -> block.namespace().equals(mods.get(mod))).toList();
-        if (!query.isBlank()) {
-            return List.of(new BlockGrid.Section(Component.translatable("flatgen.blocks.found"),
-                    Search.find(shown, query)));
-        }
-        List<BlockGrid.Section> sections = new ArrayList<>();
-        addUnlessEmpty(sections, "flatgen.blocks.starred", known(memory.starred()));
-        addUnlessEmpty(sections, "flatgen.blocks.recent", known(memory.recent()));
-        sections.add(new BlockGrid.Section(Component.translatable("flatgen.blocks.all"), shown));
-        return sections;
+        return PickSections.of(blocks, shown, query, picks).stream()
+                .map(section -> new BlockGrid.Section(heading(section.kind()), section.entries())).toList();
     }
 
-    private static void addUnlessEmpty(List<BlockGrid.Section> sections, String heading, List<Search.Entry> blocks) {
-        if (!blocks.isEmpty()) {
-            sections.add(new BlockGrid.Section(Component.translatable(heading), blocks));
-        }
-    }
-
-    /** The blocks of these ids the game has, leaving out those of mods no longer installed. */
-    private List<Search.Entry> known(List<String> ids) {
-        return ids.stream().map(byId::get).filter(Objects::nonNull).toList();
+    private static Component heading(PickSections.Kind kind) {
+        return Component.translatable("flatgen.picks." + kind.name().toLowerCase(Locale.ROOT));
     }
 
     private void pick(String block) {
-        memory = memory.used(block);
-        BlockMemoryFile.save(memory);
+        picks = picks.used(block);
+        BlockPicksFile.save(picks);
         onPick.accept(block);
         onClose();
     }
 
     private void star(String block) {
-        memory = memory.toggleStar(block);
-        BlockMemoryFile.save(memory);
+        picks = picks.toggleStar(block);
+        BlockPicksFile.save(picks);
     }
 
     private void search(String text) {
