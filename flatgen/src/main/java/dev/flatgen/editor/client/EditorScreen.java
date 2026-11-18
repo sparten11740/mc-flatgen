@@ -7,7 +7,6 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
-import dev.flatgen.client.gui.rules.RowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
@@ -128,8 +127,9 @@ public final class EditorScreen extends FlatgenScreen {
 
     private List<Widget> footer(int width, int height) {
         int gap = 2 * PanelSizes.GAP;
-        RowLayout row = new RowLayout((width - 3 * FOOTER_BUTTON_WIDTH - 2 * gap) / 2,
-                height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2, PanelSizes.ROW_HEIGHT, gap);
+        int rowWidth = 3 * FOOTER_BUTTON_WIDTH + 2 * gap;
+        FlowLayout row = new FlowLayout(new Rect((width - rowWidth) / 2, height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2,
+                rowWidth, 0), PanelSizes.ROW_HEIGHT, gap);
         return List.of(
                 new TextButton(CommonComponents.GUI_DONE, row.next(FOOTER_BUTTON_WIDTH), this::done),
                 new TextButton(Component.translatable("flatgen.editor.vanilla"), row.next(FOOTER_BUTTON_WIDTH),

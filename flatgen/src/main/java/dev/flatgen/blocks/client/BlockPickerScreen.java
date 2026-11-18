@@ -6,7 +6,7 @@ import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
-import dev.flatgen.client.gui.rules.RowLayout;
+import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.platform.ClientPlatform;
 import dev.flatgen.search.rules.PickSections;
@@ -25,15 +25,16 @@ import net.minecraft.world.flag.FeatureFlagSet;
  * narrowed to one mod. Picking a block hands it on and goes back; the picks and stars are kept for next time.
  */
 public final class BlockPickerScreen extends FlatgenScreen {
-    /** Space above the grid for the title and the search row, in GUI pixels. */
-    private static final int HEADER = 48;
     /** Space below the grid for Cancel, in GUI pixels. */
     private static final int FOOTER = 32;
     private static final int MARGIN = 12;
+    /** Where the search row starts, below the title, in GUI pixels. */
     private static final int ROW_TOP = 22;
     private static final int ROW_HEIGHT = 20;
+    /** Space between the search row's controls, and between it and the grid, in GUI pixels. */
     private static final int GAP = 8;
-    private static final int SEARCH_WIDTH = 160;
+    /** Widths in GUI pixels; the search and the mod button fit side by side on the narrowest screen, 320 wide. */
+    private static final int SEARCH_WIDTH = 148;
     private static final int MOD_WIDTH = 140;
     private static final int CANCEL_WIDTH = 100;
 
@@ -67,14 +68,15 @@ public final class BlockPickerScreen extends FlatgenScreen {
 
     @Override
     protected List<Widget> layOut(int width, int height) {
-        RowLayout row = new RowLayout(MARGIN, ROW_TOP, ROW_HEIGHT, GAP);
-        grid = new BlockGrid(new Rect(MARGIN, HEADER, width - 2 * MARGIN, height - HEADER - FOOTER), this::sections,
+        FlowLayout row = new FlowLayout(new Rect(MARGIN, ROW_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
+        TextField search = new TextField("search", row.next(SEARCH_WIDTH),
+                Component.translatable("flatgen.blocks.search"), query, this::search);
+        TextButton modButton = new TextButton(this::modLabel, row.next(MOD_WIDTH), this::nextMod, () -> true,
+                List::of);
+        int gridTop = row.bottom() + GAP;
+        grid = new BlockGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - FOOTER), this::sections,
                 id -> picks.starred().contains(id), this::modName, this::pick, this::star);
-        return List.of(
-                new TextField("search", row.next(SEARCH_WIDTH), Component.translatable("flatgen.blocks.search"),
-                        query, this::search),
-                new TextButton(this::modLabel, row.next(MOD_WIDTH), this::nextMod, () -> true, List::of),
-                grid,
+        return List.of(search, modButton, grid,
                 new TextButton(CommonComponents.GUI_CANCEL,
                         new Rect((width - CANCEL_WIDTH) / 2, height - (FOOTER + ROW_HEIGHT) / 2, CANCEL_WIDTH,
                                 ROW_HEIGHT), this::onClose));

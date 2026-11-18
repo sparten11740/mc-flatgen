@@ -39,7 +39,7 @@ keys for everything, undo for every change.
   previewed until it is let go; widgets never change the preset themselves. The layer controls are the editor panel
   `LayerPanel`.
 - The toolkit grows: modifier keys, drags, keyboard and typing for the widget that took a click (`FlatgenScreen`),
-  `NumberField`, buttons that can be unusable with a tooltip saying why, `TextLines`, `RowLayout`, and widgets that
+  `NumberField`, buttons that can be unusable with a tooltip saying why, `TextLines`, `FlowLayout`, and widgets that
   describe themselves for Blockpilot's `flatgen:widgets`.
 
 ## Version notes
