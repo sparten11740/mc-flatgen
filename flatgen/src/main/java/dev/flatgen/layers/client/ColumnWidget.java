@@ -16,6 +16,7 @@ import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -42,8 +43,6 @@ public final class ColumnWidget implements Widget {
     private static final int WHEEL_BLOCKS = 1;
     private static final int SHIFT_WHEEL_BLOCKS = 10;
     private static final int CONTROL_WHEEL_BLOCKS = 100;
-    /** The lines drawn across the column, by Y: slime chunks spawn below 40; cool biomes may snow above 80. */
-    private static final List<Marker> MARKERS = List.of(new Marker(40, 0xFF7FD34F), new Marker(80, 0xFF8FD8FF));
     /** Length of each dash of a marker line, and of the gap after it, in GUI pixels. */
     private static final int DASH = 3;
     private static final int BACKGROUND = 0xFF101010;
@@ -53,6 +52,7 @@ public final class ColumnWidget implements Widget {
     private static final int LABEL_COLOR = 0xFFE0E0E0;
 
     private final EditorContext editor;
+    private final Supplier<List<Marker>> markers;
     private final Rect column;
     private final Rect labels;
     private Preset laidOut;
@@ -63,8 +63,13 @@ public final class ColumnWidget implements Widget {
     private int scroll;
     private Drag drag = Drag.NONE;
 
-    /** A line across the column at a Y, in a colour. */
-    private record Marker(int y, int color) {
+    /**
+     * A dashed line across the column at a height that matters, such as where slimes stop spawning.
+     *
+     * @param y     the Y it is drawn at
+     * @param color its colour, ARGB
+     */
+    public record Marker(int y, int color) {
     }
 
     /**
@@ -82,9 +87,14 @@ public final class ColumnWidget implements Widget {
     /** The kinds of {@link Drag}. */
     private enum Mode { NONE, RESIZING, PRESSED, MOVING }
 
-    /** A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it. */
-    public ColumnWidget(EditorContext editor, Rect space) {
+    /**
+     * A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it.
+     *
+     * @param markers the lines to draw across it now, which change with the preset
+     */
+    public ColumnWidget(EditorContext editor, Rect space, Supplier<List<Marker>> markers) {
         this.editor = editor;
+        this.markers = markers;
         this.column = new Rect(space.x(), space.y(), COLUMN_WIDTH, space.height());
         this.labels = new Rect(column.right(), space.y(), space.width() - COLUMN_WIDTH, space.height());
     }
@@ -109,7 +119,7 @@ public final class ColumnWidget implements Widget {
             canvas.blockSide(state.preset().layers().get(index).block(), fluid, bounds.get(index));
             canvas.fill(new Rect(column.x(), bounds.get(index).y(), column.width(), 1), LINE_BETWEEN_LAYERS);
         }
-        MARKERS.forEach(marker -> drawMarker(canvas, marker));
+        markers.get().forEach(marker -> drawMarker(canvas, marker));
         if (state.selected() >= 0) {
             canvas.outline(bounds.get(state.selected()), SELECTION);
         }

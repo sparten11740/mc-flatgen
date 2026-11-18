@@ -1,6 +1,7 @@
 package dev.flatgen.options.rules;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -37,6 +38,23 @@ public final class OptionChoices {
     /** The installed options that are on, in the order given. */
     public static List<WorldOption> on(Map<String, Boolean> chosen, List<WorldOption> installed) {
         return installed.stream().filter(option -> isOn(option, chosen)).toList();
+    }
+
+    /** The game rules the installed options that are on set, by name; a later option's value wins. */
+    public static Map<String, String> gameRules(Map<String, Boolean> chosen, List<WorldOption> installed) {
+        Map<String, String> rules = new LinkedHashMap<>();
+        WorldSetup setup = new WorldSetup() {
+            @Override
+            public void setGameRule(String rule, String value) {
+                rules.put(rule, value);
+            }
+
+            @Override
+            public void addStructureSets(List<String> sets) {
+            }
+        };
+        on(chosen, installed).forEach(option -> option.effects().forEach(effect -> effect.atDone(setup)));
+        return rules;
     }
 
     /** The ids a preset names that no installed option has, in id order. */

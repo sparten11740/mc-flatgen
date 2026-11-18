@@ -24,8 +24,9 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
 - [ ] Surface slimes: when the biome is in `#minecraft:allows_surface_slime_spawns` (swamps) and the surface Y is
   between 51 and 69, at night.
 - [ ] Hostile mobs: when the biome's monster spawn list is not empty and mob spawning is on (F10).
-- [ ] "No slimes": raises the stack so the surface is at Y=40 (adds height to the thickest layer below the top two,
-  one undoable edit), or offers biomes without slimes.
+- [ ] "No slimes": raises the stack so the surface is at Y=40 (adds height to the thickest layer between the bottom and
+  the top one, the bottom one in a stack of two or fewer, one undoable edit), or offers biomes without slimes. (The
+  first rule, the thickest below the top two, made the classic flat world's bedrock 101 deep; tried 2026-11-19.)
 - [ ] Each fact is a picture with a tooltip; marker lines of F03 show only when they matter for the current biome.
 
 ## Design

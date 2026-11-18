@@ -14,6 +14,7 @@ import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.History;
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.facts.client.FactMarkers;
 import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
@@ -94,7 +95,7 @@ public final class EditorScreen extends FlatgenScreen {
     protected List<Widget> layOut(int width, int height) {
         Rect space = new Rect(MARGIN, HEADER, ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH,
                 height - HEADER - FOOTER);
-        column = new ColumnWidget(editor, space);
+        column = new ColumnWidget(editor, space, FactMarkers.of(editor));
         List<Widget> widgets = new ArrayList<>();
         widgets.add(column);
         int left = space.right() + MARGIN;

@@ -68,7 +68,7 @@ public final class BiomePicker {
             canvas.clip(new Rect(place.x(), place.y(), place.width() - STAR_ROOM, place.height()));
             canvas.text(Component.literal(entry.name()), place.x() + PADDING, place.y() + PADDING, NAME_COLOR);
             canvas.unclip();
-            List<Integer> colours = biomes.get(entry.id()).swatches();
+            List<Integer> colours = biomes.get(entry.id()).colours().swatches();
             int y = place.bottom() - PADDING - SWATCH;
             for (int index = 0; index < colours.size(); index++) {
                 Rect swatch = new Rect(place.x() + PADDING + index * (SWATCH + SWATCH_GAP), y, SWATCH, SWATCH);
