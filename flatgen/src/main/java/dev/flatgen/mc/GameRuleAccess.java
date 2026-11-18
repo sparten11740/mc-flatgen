@@ -14,7 +14,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.world.level.GameRules;
 
-/** The game rules of the world on the Create World screen, by name, as this version names and keeps them. */
+/**
+ * The game rules of the world on the Create World screen, by the option format's names, which are Minecraft 1.21.1's
+ * and so this version's own; a later version's tree turns them into its names here.
+ */
 public final class GameRuleAccess {
     /** A whole number as a game rule value is written. */
     private static final String WHOLE_NUMBER = "-?\\d{1,9}";

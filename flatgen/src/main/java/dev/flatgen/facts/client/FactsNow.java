@@ -4,6 +4,7 @@ import dev.flatgen.biomes.rules.BiomeInfo;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.rules.WorldFacts;
 import dev.flatgen.mc.Biomes;
+import dev.flatgen.options.rules.GameRule;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.WorldOption;
 import java.util.List;
@@ -15,9 +16,6 @@ import java.util.Optional;
  * change; none for a biome the world being created lacks. Mob spawning is off when an option that is on says so.
  */
 final class FactsNow {
-    /** The game rule that turns mob spawning off, as 1.21.1 names it. */
-    private static final String MOB_SPAWNING = "doMobSpawning";
-
     private final EditorContext editor;
     private final List<WorldOption> installed;
     private List<Object> factsFor;
@@ -61,7 +59,7 @@ final class FactsNow {
         if (options != spawningFor) {
             spawningFor = options;
             mobSpawning = !"false".equals(OptionChoices.applied(OptionChoices.on(options, installed)).gameRules()
-                    .get(MOB_SPAWNING));
+                    .get(GameRule.MOB_SPAWNING));
         }
         return mobSpawning;
     }

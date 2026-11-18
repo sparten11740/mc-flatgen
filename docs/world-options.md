@@ -61,9 +61,11 @@ Sets a game rule on the Create World screen, as the screen's own game rules list
 { "type": "game_rule", "rule": "doWeatherCycle", "value": false }
 ```
 
-`rule` is the rule's name as this version of the game names it; `value` is `true`, `false` or a whole number. A rule
-the game lacks, or a value it cannot take, is left as it was and logged. Turning the option off again, then pressing
-Done, puts the rule back to the game's default.
+`rule` is the rule's name as Minecraft 1.21.1 names it, such as `doWeatherCycle` or `randomTickSpeed`, on every version
+of the game Flatgen runs on: Flatgen turns it into the name a later version gives the same rule. A rule a mod adds is
+named as that mod names it. `value` is `true`, `false` or a whole number. A rule the game lacks, or a value it cannot
+take, is left as it was and logged. Turning the option off again, then pressing Done, puts the rule back to the game's
+default.
 
 ### `first_start_time`
 

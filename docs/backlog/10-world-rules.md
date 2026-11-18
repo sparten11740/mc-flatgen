@@ -27,7 +27,8 @@ become part of the preset and show under Create World → More → Game Rules as
 ## Design
 
 - Only data: the three option files and their translations. Everything they do is F27's effects.
-- The game rule names in the files are the option format's; `mc/GameRuleAccess` maps them to each version's rules.
+- The game rule names in the files are the option format's, which are Minecraft 1.21.1's (`doDaylightCycle`);
+  `mc/GameRuleAccess` is where a later version's tree turns them into its own names.
 
 ## Version notes
 
