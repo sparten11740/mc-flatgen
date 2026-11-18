@@ -1,0 +1,18 @@
+# Flatgen
+
+A better superflat screen for Minecraft, in early development. Create World → World Type: Superflat → Customize
+will open Flatgen instead of the vanilla screen:
+
+- **Layers you edit where you see them:** drag to reorder, drag an edge to make a layer deeper, undo anything.
+- **Every block and biome**, modded ones included, as pictures you can search.
+- **Know your world before you make it:** rain, snow or sun at your surface, whether slimes and monsters spawn.
+- **Presets:** save your own, star favourites, pick a default that is ready the moment you choose Superflat.
+- **Templates:** a tall flat world, a water world or an airship field from a few sliders.
+- **Always day, always clear:** saved with the preset, no more `/time set day` in every new world.
+
+Worlds made with Flatgen are plain superflat worlds: they open without the mod.
+
+Flatgen is a client mod for Minecraft 1.21.1 on NeoForge and Fabric, with more versions to follow. None of the
+above is released yet; `docs/backlog/` shows what is done and what is next.
+
+Licensed under either of Apache-2.0 or MIT, at your option.
