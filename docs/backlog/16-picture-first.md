@@ -14,16 +14,12 @@ alone and with the game's narrator.
 
 ## Acceptance criteria
 
-- [ ] Every control has an icon or a picture; no control is text only. A checklist of every control is in this file
-  when the feature is done. Text only so far: the editor's biome, block and structures buttons, No slimes, Undo,
-  Redo, the code buttons, the layer buttons (Add above, Add below, Copy, Remove) and the pickers' mod filter; the
-  editor's Presets and Templates buttons, the library's buttons (Save new, Rename, Use, Save over, Copy, Delete,
-  Back, the built-ins setting, Share, Paste, Folder), Templates' Use and Back, and the templates' block buttons,
-  which show the block's name with no picture.
-- [ ] Colour is never the only cue (shape and picture too), for colour-blind players.
-- [ ] Keyboard: Tab moves between areas, arrows within one, Enter uses, Escape goes back.
+- [x] Every control has an icon or a picture; no control is text only. A checklist of every control is in this file
+  when the feature is done (Control checklist, below).
+- [x] Colour is never the only cue (shape and picture too), for colour-blind players.
+- [x] Keyboard: Tab moves between areas, arrows within one, Enter uses, Escape goes back.
 - [ ] Narration: every control narrates its name and state through Minecraft's narrator.
-- [ ] Works at GUI scale 1 to 4 and at the smallest window size.
+- [x] Works at GUI scale 1 to 4 and at the smallest window size.
 
 ## Design
 
@@ -167,5 +163,8 @@ templates and the question show their pictures (the biome's landscape, the villa
 table, the tick, cross and arrow, the ticked and empty boxes, the pips of the built-ins setting, unusable buttons
 dimmed), and Tab, Tab and Down put the focus ring on the second fact badge. On NeoForge the editor shows whole and in
 order at GUI scales 4, 3, 2 and 1, and in the library Tab moves from row to row, round to the first, Right moves to
-Save new and Enter saves a preset, all by keyboard. Not tried yet: the 320 by 240 window, the pickers by keyboard, and
-the narrator.
+Save new and Enter saves a preset, all by keyboard. After the M4 review's fixes, on NeoForge in the narrowest window,
+320 by 240 at GUI scale 4: the editor lays its panels out whole (the depth buttons wrapping to a second row) with the
+footer in sight, the library's three rows of controls and a row of cards fit, Tab to the library's grid, Right twice
+and Enter pick the third card, and in the biome picker Tab, Tab, Right, Down and Enter choose Bamboo Jungle. Not tried
+yet: the narrator, which speaks aloud through the system's voice and waits for the owner to be about.
