@@ -50,6 +50,7 @@ PANELS = {
     "chip": ("#111214b8", "#111214b8", 0.4, 4),
     "warning": ("#f2b33d", "#f2b33d", 0.4, 4),
     "focus": (None, "#ffffff", 0.7, 5),
+    "tooltip": ("#0f1012f2", "#3b4048", 0.4, 4),
 }
 
 INK = "#e8eaed"

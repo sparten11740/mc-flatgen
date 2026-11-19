@@ -29,8 +29,6 @@ public final class BlockPicker {
     private static final int PICTURE = 22;
     /** Space above the picture and between it and the name, in GUI pixels. */
     private static final int SPACING = 4;
-    /** How far above and below its line a name may draw, in GUI pixels, so its letters keep their tails. */
-    private static final int NAME_SLACK = 2;
     /** config/flatgen/blocks.json, the blocks feature's own file: the blocks picked lately and starred. */
     private static final PicksFile PICKS = new PicksFile("blocks.json");
 
@@ -56,9 +54,8 @@ public final class BlockPicker {
             BlockMarks.draw(canvas, entry.id(), picture);
             Rect name = new Rect(place.x() + 1, picture.bottom() + SPACING, place.width() - 2,
                     TextStyle.BODY.lineHeight());
-            canvas.clip(new Rect(name.x(), name.y() - NAME_SLACK, name.width(), name.height() + 2 * NAME_SLACK));
-            canvas.centeredText(Names.block(entry.id()), name, Look.MUTED);
-            canvas.unclip();
+            canvas.centeredText(canvas.fitted(Names.block(entry.id()), name.width(), TextStyle.BODY), name,
+                    Look.MUTED);
         }
 
         @Override

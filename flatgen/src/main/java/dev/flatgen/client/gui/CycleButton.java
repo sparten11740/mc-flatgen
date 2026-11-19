@@ -64,7 +64,7 @@ public final class CycleButton implements Control {
             }
         }
         if (hovered) {
-            canvas.tooltip(tooltip.get(), mouseX, mouseY);
+            canvas.tooltipBelow(tooltip.get(), bounds);
         }
     }
 

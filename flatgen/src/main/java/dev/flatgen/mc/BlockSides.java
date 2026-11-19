@@ -43,12 +43,21 @@ public final class BlockSides {
         static final int FLUID = -1;
     }
 
-    /** Fills the rectangle with the block's side, tiled from its top left corner; the caller clips what spills over. */
+    /**
+     * Fills the rectangle with the block's side, as many tiles across and down as fit nearest a block in the
+     * inventory, each stretched a little so they fill it exactly and nothing spills over to clip.
+     */
     public void draw(GuiGraphics graphics, String block, int fluidColor, int x, int y, int width, int height) {
         List<Face> sides = faces.computeIfAbsent(block, BlockSides::lookUp);
-        for (int tileY = y; tileY < y + height; tileY += TILE) {
-            for (int tileX = x; tileX < x + width; tileX += TILE) {
-                drawTile(graphics, sides, fluidColor, tileX, tileY);
+        int columns = Math.max(1, Math.round(width / (float) TILE));
+        int rows = Math.max(1, Math.round(height / (float) TILE));
+        for (int row = 0; row < rows; row++) {
+            int top = y + height * row / rows;
+            int tileHeight = y + height * (row + 1) / rows - top;
+            for (int column = 0; column < columns; column++) {
+                int left = x + width * column / columns;
+                int tileWidth = x + width * (column + 1) / columns - left;
+                drawTile(graphics, sides, fluidColor, left, top, tileWidth, tileHeight);
             }
         }
     }
@@ -70,13 +79,15 @@ public final class BlockSides {
                         .orElse(ItemStack.EMPTY);
     }
 
-    private static void drawTile(GuiGraphics graphics, List<Face> sides, int fluidColor, int x, int y) {
+    /** Draws a block's faces stretched over a tile. */
+    private static void drawTile(GuiGraphics graphics, List<Face> sides, int fluidColor, int x, int y, int width,
+            int height) {
         for (Face face : sides) {
             int tint = face.tint() == Face.FLUID ? fluidColor : face.tint();
             //? if >=26.1 {
-            /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, face.sprite(), x, y, TILE, TILE, OPAQUE | tint);
+            /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, face.sprite(), x, y, width, height, OPAQUE | tint);
             *///?} else {
-            graphics.blit(x, y, 0, TILE, TILE, face.sprite(),
+            graphics.blit(x, y, 0, width, height, face.sprite(),
                     (tint >> 16 & 0xFF) / 255F, (tint >> 8 & 0xFF) / 255F, (tint & 0xFF) / 255F, 1F);
             //?}
         }

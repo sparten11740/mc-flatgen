@@ -56,7 +56,7 @@ public final class PictureTab implements Control {
                 - TextStyle.BODY.lineHeight()) / 2 + 1, isChosen ? Look.TEXT : Look.MUTED,
                 isChosen ? TextStyle.STRONG : TextStyle.BODY);
         if (hovered) {
-            canvas.tooltip(tooltip.get(), mouseX, mouseY);
+            canvas.tooltipBelow(tooltip.get(), bounds);
         }
     }
 

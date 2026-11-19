@@ -168,7 +168,7 @@ public final class CardGrid implements Control {
             }
         }
         canvas.unclip();
-        cardAt(mouseX, mouseY).ifPresent(card -> canvas.tooltip(describe(card.entry()), mouseX, mouseY));
+        cardAt(mouseX, mouseY).ifPresent(card -> canvas.tooltipBelow(describe(card.entry()), card.place()));
     }
 
     @Override

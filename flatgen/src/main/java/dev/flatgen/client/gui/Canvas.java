@@ -32,6 +32,9 @@ public interface Canvas {
         centeredText(text, area, color, TextStyle.BODY);
     }
 
+    /** The text as it fits in this width in a style: whole, or cut at the end with an ellipsis. */
+    Component fitted(Component text, int width, TextStyle style);
+
     /** How wide text is drawn in a style. */
     int textWidth(Component text, TextStyle style);
 

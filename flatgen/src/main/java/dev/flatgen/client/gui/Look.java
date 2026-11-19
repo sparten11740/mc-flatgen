@@ -43,6 +43,8 @@ public final class Look {
     public static final String CHIP = sprite("chip");
     /** A yellow pill behind a warning's picture, such as a block that falls. */
     public static final String WARNING = sprite("warning");
+    /** Behind a tooltip's words. */
+    public static final String TOOLTIP = sprite("tooltip");
     /** The ring around what has the keyboard's focus. */
     public static final String FOCUS = sprite("focus");
     /** The track of segmented choices, such as the dimensions. */

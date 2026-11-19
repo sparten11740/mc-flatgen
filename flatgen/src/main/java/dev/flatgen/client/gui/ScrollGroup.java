@@ -12,6 +12,8 @@ import java.util.Optional;
  * scrolled by the wheel no widget takes, with a bar beside the window showing how far while there is more to see.
  */
 public final class ScrollGroup implements Widget {
+    /** How far inside the window's top and bottom the content starts and ends, in GUI pixels. */
+    private static final int INSET = 2;
     /** The bar's width and its distance from the window, in GUI pixels. */
     private static final int BAR_WIDTH = 2;
     private static final int BAR_GAP = 2;
@@ -146,11 +148,12 @@ public final class ScrollGroup implements Widget {
     }
 
     /** Places the widgets for the scroll, which moves them up. */
+    /** Lays the content out a little inside the window's top, so its first border never touches the clip. */
     private void layOut() {
-        int top = window.y() - scroll;
+        int top = window.y() - scroll + INSET;
         Laid laid = content.layOut(top);
         widgets = new WidgetGroup(laid.widgets());
-        contentHeight = laid.bottom() - top;
+        contentHeight = laid.bottom() - top + 2 * INSET;
     }
 
     /** How much of the widgets the window cannot show at once, in GUI pixels. */

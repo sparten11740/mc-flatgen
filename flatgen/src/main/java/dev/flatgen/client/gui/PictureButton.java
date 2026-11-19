@@ -53,7 +53,7 @@ public final class PictureButton implements Control {
             canvas.dim(picture);
         }
         if (hovered) {
-            canvas.tooltip(tooltip.get(), mouseX, mouseY);
+            canvas.tooltipBelow(tooltip.get(), bounds);
         }
     }
 

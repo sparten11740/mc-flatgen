@@ -43,7 +43,7 @@ public final class Badge implements Control {
         canvas.fill(bounds, TILE);
         now.get().icon().draw(canvas, bounds.x() + BORDER, bounds.y() + BORDER);
         if (bounds.contains(mouseX, mouseY)) {
-            canvas.tooltip(now.get().tooltip(), mouseX, mouseY);
+            canvas.tooltipBelow(now.get().tooltip(), bounds);
         }
     }
 

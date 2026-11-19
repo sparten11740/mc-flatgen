@@ -35,6 +35,17 @@ public record LayoutScale(int pixelsPerUnit, int width, int height, float gameUn
         return new Rect(toGame(area.x()), toGame(area.y()), toGame(area.width()), toGame(area.height()));
     }
 
+    /**
+     * The smallest area in whole game GUI pixels that holds an area of the screen, as a clip must be so that it never
+     * cuts what lies at the area's edges.
+     */
+    public Rect toGameOutward(Rect area) {
+        int left = (int) Math.floor(area.x() * gameUnit);
+        int top = (int) Math.floor(area.y() * gameUnit);
+        return new Rect(left, top, (int) Math.ceil(area.right() * gameUnit) - left,
+                (int) Math.ceil(area.bottom() * gameUnit) - top);
+    }
+
     /** Where a coordinate the game gives in its GUI pixels, such as the mouse's, is on the screen. */
     public double fromGame(double coordinate) {
         return coordinate / gameUnit;

@@ -27,6 +27,12 @@ class LayoutScaleTest {
     }
 
     @Test
+    void roundsAClipOutwardToWholeGamePixels() {
+        LayoutScale scale = LayoutScale.of(1708, 960, 4);
+        assertEquals(new Rect(50, 10, 11, 6), scale.toGameOutward(new Rect(101, 21, 20, 11)));
+    }
+
+    @Test
     void convertsBetweenTheScreensPixelsAndTheGames() {
         LayoutScale scale = LayoutScale.of(1920, 1080, 4);
         assertEquals(new Rect(75, 15, 30, 8), scale.toGame(new Rect(100, 20, 40, 10)));

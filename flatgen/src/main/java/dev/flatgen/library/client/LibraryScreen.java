@@ -12,6 +12,7 @@ import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
 import dev.flatgen.client.gui.TextLines;
+import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
@@ -447,9 +448,8 @@ public final class LibraryScreen extends FlatgenScreen {
             if (warned) {
                 Icon.MISSING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
             }
-            canvas.clip(new Rect(place.x(), place.y(), place.width(), place.height()));
-            canvas.text(Component.literal(card.name()), x, y + PICTURE_HEIGHT + PADDING, Look.TEXT);
-            canvas.unclip();
+            canvas.text(canvas.fitted(Component.literal(card.name()), place.width() - 2 * PADDING, TextStyle.BODY), x,
+                    y + PICTURE_HEIGHT + PADDING, Look.TEXT);
         }
 
         @Override
