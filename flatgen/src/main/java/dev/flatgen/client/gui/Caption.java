@@ -16,7 +16,7 @@ import net.minecraft.network.chat.Component;
  */
 public record Caption(Supplier<Component> text, Rect bounds, TextStyle style, int color, boolean centered)
         implements Widget {
-    /** How far above and below its rectangle a caption may draw, in GUI pixels, so tall letters keep their tops. */
+    /** How far beyond its rectangle a caption may draw, in GUI pixels, so letters keep their edges and tails. */
     private static final int CLIP_SLACK = 2;
 
     /** Words at the left of the rectangle. */
@@ -27,7 +27,8 @@ public record Caption(Supplier<Component> text, Rect bounds, TextStyle style, in
     /** The words, cut off at the rectangle's edges so a long name never runs over what is beside it. */
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        canvas.clip(new Rect(bounds.x(), bounds.y() - CLIP_SLACK, bounds.width(), bounds.height() + 2 * CLIP_SLACK));
+        canvas.clip(new Rect(bounds.x() - CLIP_SLACK, bounds.y() - CLIP_SLACK, bounds.width() + CLIP_SLACK,
+                bounds.height() + 2 * CLIP_SLACK));
         if (centered) {
             canvas.centeredText(text.get(), bounds, color, style);
         } else {

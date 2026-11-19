@@ -61,7 +61,7 @@ public final class Toggle implements Control {
         }
         int stateX = bounds.right() - 2 * PADDING - SWITCH_WIDTH;
         int labelX = iconX + Icon.SIZE + PADDING;
-        canvas.clip(new Rect(labelX, bounds.y(), stateX - labelX, bounds.height()));
+        canvas.clip(new Rect(labelX - PADDING, bounds.y(), stateX - labelX + PADDING, bounds.height()));
         canvas.text(label, labelX, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1,
                 canUse ? Look.TEXT : Look.DISABLED);
         canvas.unclip();
