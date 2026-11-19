@@ -14,6 +14,7 @@ import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import java.util.Map;
+import java.util.Optional;
 import java.util.WeakHashMap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
@@ -22,27 +23,39 @@ import net.minecraft.core.RegistryAccess;
 /**
  * The default preset (F12): on a new world's Create World screen, when Superflat is chosen while its settings are still
  * the game's own default flat world, the player's default preset is applied as Done would apply it, world options
- * included; with "start on Superflat" on, such a screen opens with Superflat chosen. When Superflat is left again, the
- * game rules Flatgen's options set go back to their defaults. A world being re-created is left as it is. It only
- * listens to the screen, through the public methods of its state, and never changes the screen itself.
+ * included; with "start on Superflat" on, such a screen opens with Superflat chosen. When a world type Flatgen edits
+ * is left for one it does not, the game rules Flatgen's options set go back to their defaults. A world being
+ * re-created is left as it is. It only listens to the screen, through the public methods of its state, and never
+ * changes the screen itself.
  */
 public final class DefaultPresets {
     /**
-     * Each Create World screen listened to, with whether Superflat was chosen when it last changed, so the default is
-     * applied when Superflat is chosen, not again when applying it changes the screen; a screen closed is forgotten.
+     * Each Create World screen listened to, with its world type as it was when it last changed, so the default is
+     * applied when Superflat is chosen, not again when applying it changes the screen, and options are taken back when
+     * a type Flatgen edits is left; a screen closed is forgotten.
      */
-    private static final Map<CreateWorldScreen, Boolean> SUPERFLAT = new WeakHashMap<>();
+    private static final Map<CreateWorldScreen, Chosen> CHOSEN = new WeakHashMap<>();
+
+    /**
+     * What a screen's world type is, as the default and the options need it.
+     *
+     * @param superflat whether it is Superflat, which the default is for
+     * @param edited    whether Flatgen's editor can have set its settings, Superflat or a type superflat underneath
+     */
+    private record Chosen(boolean superflat, boolean edited) {
+        static final Chosen NOTHING = new Chosen(false, false);
+    }
 
     private DefaultPresets() {
     }
 
     /** A screen has opened, told by the loader's platform half: a Create World screen is listened to, once. */
     public static void screenOpened(Screen screen) {
-        if (!(screen instanceof CreateWorldScreen createWorld) || SUPERFLAT.containsKey(createWorld)) {
+        if (!(screen instanceof CreateWorldScreen createWorld) || CHOSEN.containsKey(createWorld)) {
             return;
         }
         boolean fresh = WorldCreation.isFresh(createWorld);
-        SUPERFLAT.put(createWorld, !fresh && isSuperflat(createWorld));
+        CHOSEN.put(createWorld, fresh ? Chosen.NOTHING : chosen(createWorld));
         WorldCreation.listen(createWorld, context -> ClientTasks.later(() -> worldChanged(createWorld)));
         if (fresh && ChoicesFile.read().startOnSuperflat()) {
             PresetEditors.EDITED.stream().findFirst().ifPresent(type -> WorldCreation.chooseWorldType(createWorld,
@@ -53,17 +66,26 @@ public final class DefaultPresets {
 
     /**
      * The world on the screen changed: applies the default when Superflat has just been chosen, and takes Flatgen's
-     * world options back when it has just been left. It runs after the screen's listeners have been told, as either
-     * changes the screen and may add a listener.
+     * world options back when a type Flatgen edits has just been left. It runs after the screen's listeners have been
+     * told, as either changes the screen and may add a listener.
      */
     private static void worldChanged(CreateWorldScreen screen) {
-        boolean superflat = isSuperflat(screen);
-        boolean was = Boolean.TRUE.equals(SUPERFLAT.put(screen, superflat));
-        if (superflat && !was) {
+        Chosen now = chosen(screen);
+        Chosen was = Optional.ofNullable(CHOSEN.put(screen, now)).orElse(Chosen.NOTHING);
+        if (now.superflat() && !was.superflat()) {
             chosenSuperflat(screen);
-        } else if (!superflat && was) {
+        }
+        if (!now.edited() && was.edited()) {
             OptionsAtDone.withdraw(screen, InstalledOptions.load());
         }
+    }
+
+    /** What the screen's world type is now. */
+    private static Chosen chosen(CreateWorldScreen screen) {
+        RegistryAccess registries = WorldCreation.context(screen).worldgenLoadContext();
+        boolean edited = WorldCreation.worldType(screen)
+                .filter(type -> PresetEditors.mayHaveEdited(type, registries)).isPresent();
+        return new Chosen(isSuperflat(screen), edited);
     }
 
     /** Superflat was just chosen: applies the default while the settings are still the game's default flat world. */

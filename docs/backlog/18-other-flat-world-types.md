@@ -29,6 +29,8 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
 - `editor/client/PresetEditors.editorFor` decides: Flatgen's editor for Superflat, and for a type with no editor of
   its own that `mc/WorldTypes.onlyFlatOverworld` finds superflat underneath and nothing more (a flat overworld, and
   every other dimension written as the Default world type writes it); else the editor the game found.
+- World options Done set on such a type are taken back when the screen leaves it for a type Flatgen does not edit, as
+  they are when it leaves Superflat (F12's watcher asks `PresetEditors.mayHaveEdited`).
 
 ## Tests
 

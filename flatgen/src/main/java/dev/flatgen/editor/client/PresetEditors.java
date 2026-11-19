@@ -45,4 +45,12 @@ public final class PresetEditors {
         boolean flatUnderneath = found.isEmpty() && WorldTypes.onlyFlatOverworld(type, registries);
         return edits(type) || flatUnderneath ? Optional.of(EDITOR) : found;
     }
+
+    /**
+     * Whether Flatgen's editor can have set this world type's settings, world options included: Superflat, or a type
+     * superflat underneath.
+     */
+    public static boolean mayHaveEdited(Holder<WorldPreset> type, HolderLookup.Provider registries) {
+        return edits(type) || WorldTypes.onlyFlatOverworld(type, registries);
+    }
 }

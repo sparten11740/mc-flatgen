@@ -122,8 +122,12 @@ public final class WorldCreation {
 
     /** Whether the Create World screen has this world type chosen. */
     public static boolean hasWorldType(CreateWorldScreen screen, ResourceKey<WorldPreset> worldType) {
-        Holder<WorldPreset> chosen = screen.getUiState().getWorldType().preset();
-        return chosen != null && chosen.is(worldType);
+        return worldType(screen).filter(chosen -> chosen.is(worldType)).isPresent();
+    }
+
+    /** The world type the Create World screen has chosen; none for a world being re-created whose type is unknown. */
+    public static Optional<Holder<WorldPreset>> worldType(CreateWorldScreen screen) {
+        return Optional.ofNullable(screen.getUiState().getWorldType().preset());
     }
 
     /** The game's own default superflat settings, which a new Superflat world starts with. */
