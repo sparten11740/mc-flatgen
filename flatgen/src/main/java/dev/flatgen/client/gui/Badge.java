@@ -58,6 +58,12 @@ public final class Badge implements Control {
         return look.get().map(now -> Narration.said(now.tooltip()));
     }
 
+    /** A badge takes the focus only while it shows a fact, so the ring never goes round nothing. */
+    @Override
+    public List<Widget> focusables() {
+        return look.get().isPresent() ? List.of(this) : List.of();
+    }
+
     @Override
     public Rect bounds() {
         return bounds;

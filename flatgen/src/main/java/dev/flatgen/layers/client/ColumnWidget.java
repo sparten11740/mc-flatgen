@@ -154,6 +154,14 @@ public final class ColumnWidget implements Widget {
         return Optional.of(Narration.entry(LayerText.describe(editor.shown(), editor.world(), selected)));
     }
 
+    /** The layer under the mouse, as its tooltip says it. */
+    @Override
+    public Optional<Narration> narrationAt(double x, double y) {
+        OptionalInt layer = hoveredLayer(x, y);
+        return layer.isEmpty() ? Optional.empty()
+                : Optional.of(Narration.entry(LayerText.describe(editor.shown(), editor.world(), layer.getAsInt())));
+    }
+
     /** The focus ring goes round the selected layer, or the column when it has none. */
     @Override
     public Optional<Rect> focusArea() {

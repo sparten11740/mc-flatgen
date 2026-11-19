@@ -161,7 +161,7 @@ public abstract class FlatgenScreen extends Screen {
     public boolean keyPressed(int keyCode, int scanCode, int modifierBits) {
         if (keyCode == GLFW.GLFW_KEY_TAB) {
             boolean forward = !hasShiftDown();
-            moveFocus(focus.isEmpty() && forward ? firstPlace() : FocusOrder.tab(counts(), focus, forward));
+            moveFocus(focus.isEmpty() ? firstPlace(forward) : FocusOrder.tab(counts(), focus, forward));
             return true;
         }
         if (focusKey(keyCode)) {
@@ -228,9 +228,12 @@ public abstract class FlatgenScreen extends Screen {
         }
     }
 
-    /** Where the focus starts: on the screen's first focus if it has one, or else on the first control. */
-    private Optional<FocusOrder.Place> firstPlace() {
-        return firstFocus().flatMap(this::placeOf).or(() -> FocusOrder.tab(counts(), Optional.empty(), true));
+    /**
+     * Where the focus starts, by Tab or Shift with Tab: on the screen's first focus if it has one, or else on the first
+     * area's first control, or the last area's going back.
+     */
+    private Optional<FocusOrder.Place> firstPlace(boolean forward) {
+        return firstFocus().flatMap(this::placeOf).or(() -> FocusOrder.tab(counts(), Optional.empty(), forward));
     }
 
     /** A control's place among the areas' controls; none when it is not one of them. */

@@ -55,7 +55,11 @@ public final class Toggle implements Control {
         boolean hovered = bounds.contains(mouseX, mouseY);
         canvas.button(bounds, hovered, canUse);
         int iconX = bounds.x() + PADDING;
-        icon.draw(canvas, iconX, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
+        Rect picture = new Rect(iconX, bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
+        icon.draw(canvas, picture.x(), picture.y());
+        if (!canUse) {
+            canvas.dim(picture);
+        }
         int stateX = bounds.right() - PADDING - Icon.SIZE;
         int labelX = iconX + Icon.SIZE + PADDING;
         canvas.clip(new Rect(labelX, bounds.y(), stateX - labelX, bounds.height()));
