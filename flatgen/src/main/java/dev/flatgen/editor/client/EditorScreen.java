@@ -22,6 +22,7 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
+import dev.flatgen.editor.client.panel.PanelSizes;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.History;
@@ -69,7 +70,7 @@ public final class EditorScreen extends FlatgenScreen {
     private static final int ASIDE_WIDTH = 152;
     /** Space between the bar above the layers and the layers, in GUI pixels. */
     private static final int BAR_GAP = 7;
-    /** Space inside the world's panel below the column, in GUI pixels. */
+    /** Space inside the world's panel beside and below the column, in GUI pixels. */
     private static final int WORLD_PADDING = 8;
     /** The icon of the preset the editor starts from, which the world's settings do not carry. */
     private static final String ICON = "minecraft:grass_block";
@@ -166,9 +167,8 @@ public final class EditorScreen extends FlatgenScreen {
     /** The world's panel with the column below the chips over it, or what a dimension without layers shows there. */
     private List<Widget> worldWidgets(Rect world, EditorLayout laid) {
         List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.PANEL, world)));
-        int columnWidth = ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH;
         int columnTop = world.y() + Chip.clearBelow();
-        Rect space = new Rect(world.x() + (world.width() - columnWidth) / 2, columnTop, columnWidth,
+        Rect space = new Rect(world.x() + WORLD_PADDING, columnTop, world.width() - 2 * WORLD_PADDING,
                 world.bottom() - WORLD_PADDING - columnTop);
         column = new ColumnWidget(editor, space, FactMarkers.of(editor));
         if (editor.shown().stack().isPresent()) {
@@ -223,12 +223,13 @@ public final class EditorScreen extends FlatgenScreen {
             advanced = new Rect(width - PageFrame.MARGIN - switchWidth, controlTop, switchWidth, DimensionTabs.HEIGHT);
             int tabsWidth = DimensionTabs.width(editor);
             int titleRight = PageFrame.MARGIN + Icon.SIZE + TITLE_GAP + textWidth(title, TextStyle.TITLE);
-            int latest = advanced.x() - PageFrame.GAP - headerToolsWidth() - PageFrame.GAP - tabsWidth;
+            int toolsX = Math.max(titleRight + tabsWidth + 2 * PageFrame.GAP,
+                    advanced.x() - PanelSizes.GAP - headerToolsWidth());
+            int latest = toolsX - PageFrame.GAP - tabsWidth;
             int tabsX = Math.max(titleRight + PageFrame.GAP, Math.min((width - tabsWidth) / 2, latest));
             tabs = new Rect(tabsX, controlTop, tabsWidth, DimensionTabs.HEIGHT);
-            int toolsX = tabs.right() + PageFrame.GAP;
             areas.put(EditorRegion.HEADER, new Rect(toolsX, (PageFrame.HEADER - EditorRegion.HEADER.rowHeight()) / 2,
-                    advanced.x() - PageFrame.GAP - toolsX, 0));
+                    advanced.x() - PanelSizes.GAP - toolsX, 0));
             int barHeight = EditorRegion.LAYERS_BAR.rowHeight();
             int barX = layers.x() + textWidth(Component.translatable("flatgen.editor.layers"), TextStyle.TITLE)
                     + PageFrame.GAP;
@@ -266,7 +267,7 @@ public final class EditorScreen extends FlatgenScreen {
             }
             EditorLayout layout = new EditorLayout(unbounded, EditorScreen.this::textWidth);
             shownPanels().forEach(panel -> panel.layOut(editor, layout));
-            return Math.max(0, layout.flow(EditorRegion.HEADER).rest().x() - PageFrame.GAP);
+            return Math.max(0, layout.flow(EditorRegion.HEADER).rest().x() - PanelSizes.GAP);
         }
 
         /** The aside's widgets with its top here, as it scrolls. */

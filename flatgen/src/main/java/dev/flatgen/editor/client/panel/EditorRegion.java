@@ -8,7 +8,7 @@ import dev.flatgen.client.gui.rules.PageFrame;
  */
 public enum EditorRegion {
     /** The header's tools, after the dimensions: Presets, Templates. */
-    HEADER(16),
+    HEADER(20),
     /** The bar above the layers: adding a layer; in Advanced the ground's Y and the codes. */
     LAYERS_BAR(16),
     /** The middle: the layers, or what a dimension without its own layers shows. */

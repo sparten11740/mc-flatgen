@@ -102,13 +102,14 @@ class ColumnLayoutTest {
     }
 
     @Test
-    void drawsAThinStackAsItsShareOfTheWorldButEachLayerAtLeastItsSmallestShare() {
-        assertEquals(64, ColumnLayout.stackSpace(400, 16, 4, 384, 4, 16));
-        assertEquals(200, ColumnLayout.stackSpace(400, 16, 192, 384, 2, 16));
+    void drawsAThinStackAsItsShareOfTheWorldButAtLeastWhatItIsGiven() {
+        assertEquals(64, ColumnLayout.stackSpace(400, 16, 4, 384, new ColumnLayout.Least(64, 0)));
+        assertEquals(220, ColumnLayout.stackSpace(400, 16, 4, 384, new ColumnLayout.Least(64, 220)));
+        assertEquals(300, ColumnLayout.stackSpace(400, 16, 288, 384, new ColumnLayout.Least(32, 220)));
     }
 
     @Test
     void keepsHeadroomAboveAStackThatWouldFillTheColumn() {
-        assertEquals(384, ColumnLayout.stackSpace(400, 16, 384, 384, 3, 16));
+        assertEquals(384, ColumnLayout.stackSpace(400, 16, 384, 384, new ColumnLayout.Least(48, 220)));
     }
 }

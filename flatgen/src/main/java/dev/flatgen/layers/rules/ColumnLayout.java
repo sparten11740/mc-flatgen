@@ -49,20 +49,27 @@ public record ColumnLayout(List<Span> spans, int contentHeight) {
 
     /**
      * How tall a stack is drawn in a column: its share of the world's height, so the air above it shows as the world
-     * has it, but no less than {@code smallestShare} for each layer and no more than the column less the headroom
-     * kept above the stack.
+     * has it, but no less than the least it is given and no more than the column less the headroom kept above it.
      *
-     * @param column        the column's height, in pixels
-     * @param headroom      the pixels kept free above the stack when it would fill the column
-     * @param blocks        how many blocks the stack has, all layers together
-     * @param worldHeight   how many blocks tall the world is
-     * @param layers        how many layers the stack has
-     * @param smallestShare the least pixels a layer gets
+     * @param column      the column's height, in pixels
+     * @param headroom    the pixels kept free above the stack when it would fill the column
+     * @param blocks      how many blocks the stack has, all layers together
+     * @param worldHeight how many blocks tall the world is
+     * @param least       the least pixels the stack takes
      */
-    public static int stackSpace(int column, int headroom, int blocks, int worldHeight, int layers,
-            int smallestShare) {
+    public static int stackSpace(int column, int headroom, int blocks, int worldHeight, Least least) {
         int share = (int) ((long) column * blocks / Math.max(1, worldHeight));
-        return Math.min(column - headroom, Math.max(share, layers * smallestShare));
+        return Math.min(column - headroom, Math.max(share, Math.max(least.forLayers(), least.forGround())));
+    }
+
+    /**
+     * The least a stack takes of its column, in pixels: enough for each layer to show, and enough that the ground is a
+     * good share of the picture however thin the stack.
+     *
+     * @param forLayers the least for its layers together
+     * @param forGround the least share of the column
+     */
+    public record Least(int forLayers, int forGround) {
     }
 
     /** The layer drawn at this pixel from the column's top, if any. */

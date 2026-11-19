@@ -36,8 +36,8 @@ public final class ColumnWidget implements Widget {
     private static final int THINNEST_LAYER = 8;
     /** The least height of the column each layer gets, in GUI pixels, so a thin stack is still drawn large enough. */
     private static final int SMALLEST_SHARE = 16;
-    /** How wide the layers are drawn, in GUI pixels: three blocks. */
-    public static final int COLUMN_WIDTH = 48;
+    /** The least share of the column the ground takes, in percent, so the world shows more ground than sky. */
+    private static final int GROUND_PERCENT = 55;
     /** How wide the space for the Y numbers beside the column is, in GUI pixels. */
     public static final int LABEL_WIDTH = 30;
     /** Space between the column and its Y numbers, in GUI pixels. */
@@ -94,15 +94,15 @@ public final class ColumnWidget implements Widget {
     private enum Mode { NONE, RESIZING, PRESSED, MOVING }
 
     /**
-     * A column drawing what the editor shows, at the left of this space with its Y numbers to the right of it.
+     * A column drawing what the editor shows, filling this space but for its Y numbers at the right.
      *
      * @param markers the lines to draw across it now, which change with the preset
      */
     public ColumnWidget(EditorContext editor, Rect space, Supplier<List<Marker>> markers) {
         this.editor = editor;
         this.markers = markers;
-        this.column = new Rect(space.x(), space.y(), COLUMN_WIDTH, space.height());
-        this.labels = new Rect(column.right(), space.y(), space.width() - COLUMN_WIDTH, space.height());
+        this.column = new Rect(space.x(), space.y(), space.width() - LABEL_WIDTH, space.height());
+        this.labels = new Rect(column.right(), space.y(), LABEL_WIDTH, space.height());
     }
 
     /** Where each layer is drawn on the screen, bottom first; partly or wholly outside the column when scrolled. */
@@ -256,7 +256,8 @@ public final class ColumnWidget implements Widget {
     /** How tall the stack is drawn ({@link ColumnLayout#stackSpace}), with room for the figure standing on it. */
     private int stackSpace(List<Layer> layers) {
         return ColumnLayout.stackSpace(column.height(), StandingFigure.HEIGHT,
-                layers.stream().mapToInt(Layer::height).sum(), editor.world().height(), layers.size(), SMALLEST_SHARE);
+                layers.stream().mapToInt(Layer::height).sum(), editor.world().height(),
+                new ColumnLayout.Least(layers.size() * SMALLEST_SHARE, column.height() * GROUND_PERCENT / 100));
     }
 
     /** Where the stack's top is drawn: below the air over it. */
