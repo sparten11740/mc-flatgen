@@ -1,6 +1,6 @@
 # F16 Works without reading
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: todo · Depends on: F03 to F15
+Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F03 to F15
 
 ## Why
 
@@ -109,3 +109,11 @@ action pictures, as beside the column they would read as layers.
 ## Tests
 
 - Dev client screenshots of every screen at GUI scales 1 to 4 on both nodes; keyboard-only run through the main flows.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot, at GUI scale 4 in a 427 by 240 window: the editor, the library, the
+templates and the question show their pictures (the biome's landscape, the village house, the bookshelf and crafting
+table, the tick, cross and arrow, the ticked and empty boxes, the pips of the built-ins setting, unusable buttons
+dimmed), and Tab, Tab and Down put the focus ring on the second fact badge. Not tried yet: GUI scales 1 to 3 and the
+320 by 240 window, a keyboard-only run through the editor, the pickers and the library, and the narrator.

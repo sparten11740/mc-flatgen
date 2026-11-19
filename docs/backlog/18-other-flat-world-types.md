@@ -37,3 +37,10 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
 - Dev client: the fixture's "Airship Ready" (in the dev runs' world types) → Customize opens Flatgen, and the created
   world keeps the type with Flatgen's layers; its "End Sea" keeps Customize greyed. With Create Aeronautics, in the
   test instance (F20).
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: cycling World Type reaches the fixture's "Airship Ready", and Customize
+opens Flatgen's editor on its own layers (bedrock, three stone, grass). Not tried yet: creating that world and finding
+its type kept, the fixture's "End Sea" with Customize greyed (the GameTest tells it apart), and Create Aeronautics'
+own Airship Ready in the test instance (F20).
