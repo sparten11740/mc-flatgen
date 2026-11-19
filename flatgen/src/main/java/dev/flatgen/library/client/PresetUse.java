@@ -1,5 +1,6 @@
 package dev.flatgen.library.client;
 
+import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.library.rules.MissingParts;
@@ -26,7 +27,7 @@ final class PresetUse {
             applied(editor, preset);
             return;
         }
-        editor.open(new QuestionScreen(asker, Component.translatable("flatgen.library.missing_title"),
+        editor.open(new QuestionScreen(asker, Icon.MISSING, Component.translatable("flatgen.library.missing_title"),
                 List.of(Component.translatable("flatgen.library.missing_question", listed(lacking))),
                 () -> applied(editor, MissingParts.replaced(preset, lacking))));
     }

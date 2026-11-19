@@ -18,9 +18,6 @@ import net.minecraft.network.chat.Component;
 
 /** The editor's biome control: a button showing the world's biome, which opens the biome picker. */
 public final class BiomePanel implements EditorPanel {
-    /** A biome the world being created lacks: the picture of what is missing. */
-    private static final Icon MISSING = Icon.item("minecraft:barrier");
-
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();
@@ -34,7 +31,8 @@ public final class BiomePanel implements EditorPanel {
 
     /** A biome's landscape in its colours, worked out once per biome while the editor is open. */
     private static Icon picture(String biome, EditorContext editor) {
-        return Biomes.info(biome, editor.registries()).<Icon>map(info -> new BiomeIcon(info.colours())).orElse(MISSING);
+        return Biomes.info(biome, editor.registries()).<Icon>map(info -> new BiomeIcon(info.colours()))
+                .orElse(Icon.MISSING);
     }
 
     private static void pick(EditorContext editor) {

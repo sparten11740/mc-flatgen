@@ -15,6 +15,8 @@ public interface Icon {
     Icon TICK = own("tick");
     /** No, cancel: the picture of every button that throws away what was being done. */
     Icon CROSS = own("cross");
+    /** Something the game lacks or cannot read: the barrier. */
+    Icon MISSING = item("minecraft:barrier");
     /** Back to where the player came from, keeping what was done: a left arrow. */
     Icon BACK = own("back");
     /** Text leaving the game for the clipboard: paper with an arrow out. */

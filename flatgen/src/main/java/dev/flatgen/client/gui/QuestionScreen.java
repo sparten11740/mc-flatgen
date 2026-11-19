@@ -13,7 +13,8 @@ import net.minecraft.network.chat.Style;
  * goes back, unless doing it showed another screen; No and Escape go back without.
  */
 public final class QuestionScreen extends FlatgenScreen {
-    /** Where the words start, below the title, in GUI pixels. */
+    /** Where the picture and the words start, below the title, in GUI pixels. */
+    private static final int PICTURE_TOP = 20;
     private static final int WORDS_TOP = 40;
     private static final int BUTTON_WIDTH = 100;
     private static final int BUTTON_HEIGHT = 20;
@@ -22,13 +23,18 @@ public final class QuestionScreen extends FlatgenScreen {
     private static final int MARGIN = 24;
 
     private final Screen parent;
+    private final Icon picture;
     private final List<Component> words;
     private final Runnable yes;
 
-    /** Asks a question titled so, in these words, running {@code yes} and going back to {@code parent} on Yes. */
-    public QuestionScreen(Screen parent, Component title, List<Component> words, Runnable yes) {
+    /**
+     * Asks a question titled so, in these words, running {@code yes} and going back to {@code parent} on Yes; the
+     * picture of what Yes does stands above the words, so a player who cannot read knows what they agree to.
+     */
+    public QuestionScreen(Screen parent, Icon picture, Component title, List<Component> words, Runnable yes) {
         super(title);
         this.parent = parent;
+        this.picture = picture;
         this.words = List.copyOf(words);
         this.yes = yes;
     }
@@ -41,9 +47,11 @@ public final class QuestionScreen extends FlatgenScreen {
         FlowLayout row = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2, buttonsY,
                 2 * BUTTON_WIDTH + GAP, 0), BUTTON_HEIGHT, GAP);
         return List.of(
+                new Label(picture, Component.empty(), new Rect((width - Icon.SIZE) / 2, PICTURE_TOP, Icon.SIZE,
+                        Icon.SIZE)),
                 new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> lines),
-                new TextButton(CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes),
-                new TextButton(CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose));
+                new TextButton(Icon.TICK, CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes),
+                new TextButton(Icon.CROSS, CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose));
     }
 
     /** The question's words in lines no wider than this. */

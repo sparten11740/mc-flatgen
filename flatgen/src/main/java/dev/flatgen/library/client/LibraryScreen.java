@@ -76,6 +76,9 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
     /** A preset of the player's own, written in: with a plus, saved as a new one; with a circular arrow, over one. */
     private static final Icon BOOK_TO_WRITE = Icon.item("minecraft:writable_book");
+    /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
+    private static final Icon SAVE_OVER = Icon.badged(BOOK_TO_WRITE, "badge_swap");
+    private static final Icon DELETE = Icon.own("trash");
     /** The built-ins setting's states, in its order: all shown, the game's hidden, all hidden. */
     private static final List<Icon> BUILT_INS = List.of(BUILT_IN, Icon.struck(Icon.item("minecraft:grass_block")),
             Icon.struck(BUILT_IN));
@@ -138,9 +141,8 @@ public final class LibraryScreen extends FlatgenScreen {
                         + choices.builtIns().name().toLowerCase(Locale.ROOT)),
                         Component.translatable("flatgen.library.built_ins_tip"))));
         rows.next(DANGER_GAP);
-        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_swap"), "flatgen.library.overwrite", rows,
-                this::overwrite, this::pickedIsPlayers));
-        widgets.add(picture(Icon.own("trash"), "flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
+        widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
+        widgets.add(picture(DELETE, "flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
         rows.newRow();
         widgets.add(new Toggle(DEFAULT, Component.translatable("flatgen.library.default"), rows.next(TOGGLE_WIDTH),
                 () -> picked.isPresent() && picked.equals(choices.defaultFile()),
@@ -216,7 +218,7 @@ public final class LibraryScreen extends FlatgenScreen {
     private void overwrite() {
         String file = picked.get();
         String shownName = entry(file).map(PresetLibrary.Entry::name).orElse(file);
-        ask("flatgen.library.overwrite_question", shownName, () -> overwritten(file, shownName));
+        ask(SAVE_OVER, "flatgen.library.overwrite_question", shownName, () -> overwritten(file, shownName));
     }
 
     /** Saves the editor's preset over a file, under its name; when it could not be written, the player is told. */
@@ -228,7 +230,7 @@ public final class LibraryScreen extends FlatgenScreen {
 
     private void delete() {
         String file = picked.get();
-        ask("flatgen.library.delete_question", entry(file).map(PresetLibrary.Entry::name).orElse(file),
+        ask(DELETE, "flatgen.library.delete_question", entry(file).map(PresetLibrary.Entry::name).orElse(file),
                 () -> deleted(file));
     }
 
@@ -239,9 +241,12 @@ public final class LibraryScreen extends FlatgenScreen {
         PresetUse.use(editor, this, preset);
     }
 
-    /** Asks before something that cannot be undone, about a preset of this name, then reads the presets again. */
-    private void ask(String key, String presetName, Runnable yes) {
-        minecraft.setScreen(new QuestionScreen(this, Component.translatable("flatgen.library.title"),
+    /**
+     * Asks before something that cannot be undone, showing its picture, about a preset of this name, then reads the
+     * presets again.
+     */
+    private void ask(Icon picture, String key, String presetName, Runnable yes) {
+        minecraft.setScreen(new QuestionScreen(this, picture, Component.translatable("flatgen.library.title"),
                 List.of(Component.translatable(key, presetName)), () -> afterwards(yes)));
     }
 
