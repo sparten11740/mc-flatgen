@@ -86,6 +86,7 @@ public final class PresetStore implements PresetSource {
     public boolean delete(String file) {
         try {
             Files.deleteIfExists(folder.resolve(file));
+            LibraryChanges.changed();
             return true;
         } catch (IOException exception) {
             Flatgen.LOGGER.warn("Could not delete {}", folder.resolve(file), exception);
@@ -94,6 +95,7 @@ public final class PresetStore implements PresetSource {
     }
 
     private boolean write(String file, Preset preset) {
+        LibraryChanges.changed();
         return ConfigFiles.write(folder.resolve(file), PresetJson.write(preset));
     }
 

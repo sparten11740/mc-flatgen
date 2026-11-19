@@ -17,6 +17,7 @@ public final class ChoicesFile {
 
     /** Keeps the choices in the file. */
     public static void save(Choices choices) {
+        LibraryChanges.changed();
         ConfigFiles.write(ConfigFiles.file(FILE_NAME), choices.toJson());
     }
 }

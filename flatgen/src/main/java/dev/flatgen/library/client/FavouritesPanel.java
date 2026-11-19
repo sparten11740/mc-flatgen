@@ -7,6 +7,7 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.library.ChoicesFile;
+import dev.flatgen.library.LibraryChanges;
 import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.preset.rules.Preset;
@@ -19,9 +20,9 @@ import net.minecraft.network.chat.Component;
  * library is where they are starred.
  */
 public final class FavouritesPanel implements EditorPanel {
-    /** The favourites as last found, and the keys they were found for, kept until the player's favourites change. */
-    private List<String> foundFor = List.of();
+    /** The favourites as last found, kept until the player's presets or choices change, and the change they follow. */
     private List<Favourite> found = List.of();
+    private int foundAt = -1;
 
     /**
      * A favourite preset found among the library's sources.
@@ -46,11 +47,11 @@ public final class FavouritesPanel implements EditorPanel {
         return widgets;
     }
 
-    /** The player's favourites, found again among the library's sources only when they changed. */
+    /** The player's favourites, found again among the library's sources only after the library changed. */
     private List<Favourite> favourites(EditorContext editor) {
-        List<String> starred = ChoicesFile.read().picks().starred();
-        if (!starred.equals(foundFor)) {
-            foundFor = starred;
+        if (foundAt != LibraryChanges.count()) {
+            foundAt = LibraryChanges.count();
+            List<String> starred = ChoicesFile.read().picks().starred();
             List<PresetLibrary.Entry> entries = starred.isEmpty() ? List.of()
                     : LibrarySources.entries(editor.registries());
             found = starred.stream().flatMap(key -> entries.stream().filter(entry -> entry.key().equals(key))
