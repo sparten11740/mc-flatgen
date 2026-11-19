@@ -160,6 +160,11 @@ final class McCanvas implements Canvas {
     }
 
     @Override
+    public void markOver(String id, Rect area) {
+        overItems(() -> sprite(id, area));
+    }
+
+    @Override
     public void count(Component number, Rect pill) {
         overItems(() -> drawCount(number, pill));
     }

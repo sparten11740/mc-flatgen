@@ -126,6 +126,11 @@ public final class ScrollGroup implements Widget {
     }
 
     /** Scrolls so that a part of the widgets is in the window, as far as it fits. */
+    /** Scrolls so an area of the content, as it lies with the content scrolled to its top, is in sight. */
+    public void revealContent(Rect area) {
+        reveal(new Rect(area.x(), area.y() - scroll, area.width(), area.height()));
+    }
+
     @Override
     public void reveal(Rect area) {
         int scrolled = Scrolling.showing(scroll, area, window, hidden());

@@ -66,6 +66,9 @@ public interface Canvas {
     /** Draws a block's item, 16 GUI pixels square, with its top left corner here; a block with no item, its side. */
     void blockIcon(String block, int x, int y);
 
+    /** Draws a sprite over what is drawn there, items too, such as a mark on a block's picture. */
+    void markOver(String id, Rect area);
+
     /** Draws a number on a dark pill over what is drawn there, items too, as the game draws a stack's count. */
     void count(Component number, Rect pill);
 

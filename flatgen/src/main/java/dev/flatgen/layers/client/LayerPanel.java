@@ -4,7 +4,6 @@ import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
-import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
@@ -33,22 +32,17 @@ public final class LayerPanel implements EditorPanel {
         return state.stack().isPresent();
     }
 
-    /**
-     * The cards in the layers' place, scrolled to show the chosen one, as they are laid out again whenever a layer is
-     * added or removed; the bar's controls above them.
-     */
+    /** The cards in the layers' place ({@link LayerCards#list}); the bar's controls above them. */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
         if (editor.advanced()) {
             layout.add(EditorRegion.LAYERS_BAR, groundRow(editor, layout.flow(EditorRegion.LAYERS_BAR)));
         }
-        layout.button(EditorRegion.LAYERS_BAR, Icon.line("plus"), Component.translatable("flatgen.editor.add_on_top"),
-                () -> addOnTop(editor), () -> LayerText.roomLeft(editor.shown(), editor.world()) > 0,
+        layout.button(EditorRegion.LAYERS_BAR, Icon.line("add_layer"),
+                Component.translatable("flatgen.editor.add_on_top"), () -> addOnTop(editor),
+                () -> LayerText.roomLeft(editor.shown(), editor.world()) > 0,
                 () -> LayerText.whyFull(editor.shown(), editor.world())).kind(Look.ButtonKind.ACCENT);
-        Rect area = layout.area(EditorRegion.LAYERS);
-        ScrollGroup cards = new ScrollGroup(area, top -> LayerCards.layOut(editor, area, top));
-        LayerCards.chosen(editor, area).ifPresent(cards::reveal);
-        layout.add(EditorRegion.LAYERS, cards);
+        layout.add(EditorRegion.LAYERS, LayerCards.list(editor, layout.area(EditorRegion.LAYERS)));
     }
 
     @Override

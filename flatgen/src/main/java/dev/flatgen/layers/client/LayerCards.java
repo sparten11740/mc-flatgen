@@ -1,6 +1,7 @@
 package dev.flatgen.layers.client;
 
 import dev.flatgen.blocks.client.BlockChoice;
+import dev.flatgen.blocks.client.BlockMarks;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Caption;
 import dev.flatgen.client.gui.Icon;
@@ -10,6 +11,7 @@ import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.rules.ListSlots;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
@@ -54,34 +56,48 @@ final class LayerCards {
     private LayerCards() {
     }
 
+    /**
+     * The cards in this area, scrolling when they do not fit, scrolled to show the chosen layer's card and kept so as
+     * the chosen layer changes, by a click, a key or an edit.
+     */
+    static List<Widget> list(EditorContext editor, Rect area) {
+        ScrollGroup cards = new ScrollGroup(area, top -> layOut(editor, area, top));
+        chosen(editor, area).ifPresent(cards::revealContent);
+        return List.of(cards, new FollowChosen(editor, area, cards));
+    }
+
     /** Every layer's card, top first, in this area with the first card's top here, as the list scrolls. */
-    static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top) {
-        int count = editor.shown().layers().size();
+    private static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top) {
+        ListSlots slots = slots(editor, new Rect(area.x(), top, area.width(), 0));
         List<Widget> widgets = new ArrayList<>();
-        for (int place = 0; place < count; place++) {
-            Rect card = new Rect(area.x(), top + place * (CARD_HEIGHT + CARD_GAP), area.width(), CARD_HEIGHT);
-            widgets.addAll(card(editor, count - 1 - place, card, top));
+        for (int place = 0; place < slots.count(); place++) {
+            widgets.addAll(card(editor, slots.count() - 1 - place, slots.at(place), slots));
         }
-        return new ScrollGroup.Laid(widgets, top + count * (CARD_HEIGHT + CARD_GAP) - CARD_GAP);
+        return new ScrollGroup.Laid(widgets, slots.bottom());
+    }
+
+    /** The cards' slots, the top layer's first, from this area's top. */
+    private static ListSlots slots(EditorContext editor, Rect area) {
+        return new ListSlots(area, editor.shown().layers().size(), CARD_HEIGHT, CARD_GAP);
     }
 
     /** Where the chosen layer's card is with the list at its top, if a layer is chosen. */
-    static Optional<Rect> chosen(EditorContext editor, Rect area) {
-        int count = editor.shown().layers().size();
+    private static Optional<Rect> chosen(EditorContext editor, Rect area) {
+        ListSlots slots = slots(editor, area);
         int selected = editor.shown().selected();
-        return selected < 0 ? Optional.empty() : Optional.of(new Rect(area.x(),
-                area.y() + (count - 1 - selected) * (CARD_HEIGHT + CARD_GAP), area.width(), CARD_HEIGHT));
+        return selected < 0 ? Optional.empty() : Optional.of(slots.at(slots.count() - 1 - selected));
     }
 
     /** One layer's card: its background, which selects it and is dragged by its grip, and its controls. */
-    private static List<Widget> card(EditorContext editor, int index, Rect card, int listTop) {
+    private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Background(editor, index, card, listTop));
+        widgets.add(new Background(editor, index, card, slots));
         Rect tile = new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
         widgets.add(new PictureButton(blockPicture(editor, index), tile, () -> pick(editor, index),
-                () -> List.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
-                        Component.translatable("flatgen.editor.pick_block"))));
+                () -> Stream.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
+                        Component.translatable("flatgen.editor.pick_block"))
+                        .filter(line -> !line.getString().isEmpty()).toList()));
         int right = card.right() - PADDING;
         Rect remove = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
         widgets.add(button(editor, index, "trash", "flatgen.editor.remove", remove, new LayerEdits.Remove(),
@@ -99,8 +115,9 @@ final class LayerCards {
         right = thicker.x();
         if (editor.advanced()) {
             Rect field = new Rect(right - SPACING - FIELD, middle, FIELD, BUTTON);
-            widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field"), field,
-                    () -> height(editor, index), height -> act(editor, index, new LayerEdits.SetHeight(height))));
+            widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
+                    .append(" · ").append(Names.block(block(editor, index))), field, () -> height(editor, index),
+                    height -> act(editor, index, new LayerEdits.SetHeight(height))));
             right = field.x();
         }
         Rect thinner = new Rect(right - SPACING - BUTTON, middle, BUTTON, BUTTON);
@@ -130,13 +147,14 @@ final class LayerCards {
     }
 
     /**
-     * One of a card's picture buttons: its picture, the edit it makes on the card's layer, and its tooltip, its name
-     * and then why it cannot be used.
+     * One of a card's picture buttons: its picture, the edit it makes on the card's layer, and its tooltip: its name,
+     * the layer's block, so the narrator tells the cards apart, then why it cannot be used.
      */
     private static PictureButton button(EditorContext editor, int index, String icon, String name, Rect place,
             Edit edit, BooleanSupplier usable, Supplier<List<Component>> why) {
         return new PictureButton(Icon.line(icon), place, () -> act(editor, index, edit), usable,
-                () -> Stream.concat(Stream.of(Component.translatable(name)), why.get().stream()).toList());
+                () -> Stream.concat(Stream.of(Component.translatable(name), Names.block(block(editor, index))),
+                        why.get().stream()).toList());
     }
 
     /** The layer's block, filling the tile, with how many blocks thick the layer is on a pill at its corner. */
@@ -149,7 +167,9 @@ final class LayerCards {
         if (index >= editor.shown().layers().size()) {
             return;
         }
-        canvas.blockIcon(block(editor, index), new Rect(x, y, PICTURE, PICTURE));
+        Rect picture = new Rect(x, y, PICTURE, PICTURE);
+        canvas.blockIcon(block(editor, index), picture);
+        BlockMarks.draw(canvas, block(editor, index), picture);
         Component count = Component.literal(Integer.toString(height(editor, index)));
         int width = Math.max(COUNT_HEIGHT, canvas.textWidth(count, TextStyle.STRONG) + 2 * COUNT_PADDING);
         Rect pill = new Rect(x + PICTURE - width + COUNT_PADDING, y + PICTURE - COUNT_HEIGHT + COUNT_PADDING, width,
@@ -189,14 +209,15 @@ final class LayerCards {
         private final EditorContext editor;
         private final int index;
         private final Rect card;
-        private final int listTop;
+        /** The cards' slots as laid out with this one, which a drag finds its place among. */
+        private final ListSlots slots;
         private boolean dragging;
 
-        Background(EditorContext editor, int index, Rect card, int listTop) {
+        Background(EditorContext editor, int index, Rect card, ListSlots slots) {
             this.editor = editor;
             this.index = index;
             this.card = card;
-            this.listTop = listTop;
+            this.slots = slots;
         }
 
         @Override
@@ -220,7 +241,7 @@ final class LayerCards {
         @Override
         public void drag(double x, double y) {
             if (dragging) {
-                editor.preview(new LayerEdits.Move(placeAt(y)));
+                editor.preview(new LayerEdits.Move(slots.count() - 1 - slots.placeAt(y)));
             }
         }
 
@@ -231,12 +252,32 @@ final class LayerCards {
                 dragging = false;
             }
         }
+    }
 
-        /** The layer whose card is at this height of the list, the top or bottom one beyond the list's ends. */
-        private int placeAt(double y) {
-            int count = editor.shown().layers().size();
-            int place = (int) Math.floor((y - listTop) / (CARD_HEIGHT + CARD_GAP));
-            return count - 1 - Math.max(0, Math.min(count - 1, place));
+    /**
+     * Keeps the chosen layer's card in sight: when the chosen layer changes, by a click, the arrow keys or an edit, the
+     * list scrolls to its card. It draws nothing of its own.
+     */
+    private static final class FollowChosen implements Widget {
+        private final EditorContext editor;
+        private final Rect area;
+        private final ScrollGroup cards;
+        private int followed;
+
+        FollowChosen(EditorContext editor, Rect area, ScrollGroup cards) {
+            this.editor = editor;
+            this.area = area;
+            this.cards = cards;
+            this.followed = editor.shown().selected();
+        }
+
+        @Override
+        public void draw(Canvas canvas, int mouseX, int mouseY) {
+            int selected = editor.shown().selected();
+            if (selected != followed) {
+                followed = selected;
+                chosen(editor, area).ifPresent(cards::revealContent);
+            }
         }
     }
 }

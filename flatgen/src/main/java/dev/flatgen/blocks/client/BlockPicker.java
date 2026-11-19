@@ -19,8 +19,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlagSet;
 
 /**
- * The block picker (F05): every block the world allows, each a card with its picture, its name and a mark when it falls
- * with nothing under it; picks and stars kept in blocks.json.
+ * The block picker (F05): every block the world allows, each a card with its picture and its marks ({@link
+ * BlockMarks}) and its name; picks and stars kept in blocks.json.
  */
 public final class BlockPicker {
     /** A block's card, and the picture of the block on it, in GUI pixels. */
@@ -31,9 +31,6 @@ public final class BlockPicker {
     private static final int SPACING = 4;
     /** How far above and below its line a name may draw, in GUI pixels, so its letters keep their tails. */
     private static final int NAME_SLACK = 2;
-    /** The mark of a block that falls: its size, and the picture inside its yellow pill, in GUI pixels. */
-    private static final int MARK = 10;
-    private static final int MARK_PICTURE = 8;
     /** config/flatgen/blocks.json, the blocks feature's own file: the blocks picked lately and starred. */
     private static final PicksFile PICKS = new PicksFile("blocks.json");
 
@@ -50,19 +47,13 @@ public final class BlockPicker {
                 onPick);
     }
 
-    /** A block's card: its picture, the mark when it falls beside it, and its name below. */
+    /** A block's card: its picture with its marks, and its name below. */
     private static final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry entry, Rect place) {
             Rect picture = new Rect(place.x() + (place.width() - PICTURE) / 2, place.y() + SPACING, PICTURE, PICTURE);
             canvas.blockIcon(entry.id(), picture);
-            if (BlockCatalog.traits(entry.id()).falls()) {
-                Rect mark = new Rect(picture.right() + 1, picture.y(), MARK, MARK);
-                canvas.sprite(Look.WARNING, mark);
-                int inset = (MARK - MARK_PICTURE) / 2;
-                canvas.sprite(Look.icon("falls"), new Rect(mark.x() + inset, mark.y() + inset, MARK_PICTURE,
-                        MARK_PICTURE));
-            }
+            BlockMarks.draw(canvas, entry.id(), picture);
             Rect name = new Rect(place.x() + 1, picture.bottom() + SPACING, place.width() - 2,
                     TextStyle.BODY.lineHeight());
             canvas.clip(new Rect(name.x(), name.y() - NAME_SLACK, name.width(), name.height() + 2 * NAME_SLACK));

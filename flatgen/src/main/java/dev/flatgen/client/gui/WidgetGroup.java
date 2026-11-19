@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,5 +117,16 @@ public final class WidgetGroup implements Widget {
         List<WidgetDescription> descriptions = new ArrayList<>();
         widgets.forEach(widget -> descriptions.addAll(widget.describe()));
         return descriptions;
+    }
+
+    /** Passes on to the widget holding the control at that area, so a scrolling group inside scrolls to it. */
+    @Override
+    public void reveal(Rect area) {
+        for (Widget widget : widgets) {
+            if (widget.focusables().stream()
+                    .anyMatch(control -> control.focusArea().filter(area::equals).isPresent())) {
+                widget.reveal(area);
+            }
+        }
     }
 }

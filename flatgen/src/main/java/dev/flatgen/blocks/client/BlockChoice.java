@@ -24,11 +24,8 @@ public final class BlockChoice {
                 block -> editor.apply(new SetBlock(block))));
     }
 
-    /** A layer's hints (falls, not a whole block, keeps data), each a few words, on one line; none for no layer. */
+    /** A layer's hints (falls, not a whole block, keeps data), each a few words, on one line; empty for none. */
     public static Component hints(EditorContext editor, int index) {
-        if (index < 0) {
-            return Component.empty();
-        }
         List<Layer> layers = editor.shown().layers();
         Optional<LayerHints.Traits> below = index > 0
                 ? Optional.of(BlockCatalog.traits(layers.get(index - 1).block())) : Optional.empty();
