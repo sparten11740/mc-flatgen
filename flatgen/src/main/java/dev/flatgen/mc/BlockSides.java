@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -14,6 +15,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -78,10 +80,17 @@ public final class BlockSides {
         }
     }
 
+    /**
+     * The faces a block shows from the side; none for air, as a layer of nothing (the game's void preset) is empty,
+     * and the game's missing texture for a block it lacks.
+     */
     private static List<Face> lookUp(String block) {
         ResourceLocation location = ResourceLocation.tryParse(block);
-        BlockState state = (location == null ? Blocks.AIR
-                : BuiltInRegistries.BLOCK.getOptional(location).orElse(Blocks.AIR)).defaultBlockState();
+        Optional<Block> found = location == null ? Optional.empty() : BuiltInRegistries.BLOCK.getOptional(location);
+        if (found.filter(known -> known.defaultBlockState().isAir()).isPresent()) {
+            return List.of();
+        }
+        BlockState state = found.orElse(Blocks.AIR).defaultBlockState();
         Minecraft minecraft = Minecraft.getInstance();
         BakedModel model = minecraft.getBlockRenderer().getBlockModel(state);
         List<Face> sides = new ArrayList<>();
