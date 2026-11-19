@@ -1,8 +1,11 @@
 package dev.flatgen.biomes.client;
 
 import dev.flatgen.biomes.rules.SetBiome;
+import dev.flatgen.client.gui.Caption;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.TextButton;
+import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -33,12 +36,14 @@ public final class BiomePanel implements EditorPanel {
     }
 
     private List<Widget> content(EditorContext editor, FlowLayout flow) {
-                Map<String, Icon> pictures = new HashMap<>();
+        Map<String, Icon> pictures = new HashMap<>();
         Icon picture = (canvas, x, y) -> pictures.computeIfAbsent(editor.shown().biome(),
                 biome -> picture(biome, editor)).draw(canvas, x, y);
-        return List.of(new TextButton(picture, () -> Names.biome(editor.shown().biome()),
-                flow.line(EditorRegion.ASIDE.rowHeight()), () -> pick(editor), () -> true,
-                () -> List.of(Component.translatable("flatgen.editor.pick_biome"))));
+        return List.of(new Caption(() -> Component.translatable("flatgen.editor.biome"),
+                        flow.line(TextStyle.BODY.lineHeight()), TextStyle.BODY, Look.MUTED),
+                new TextButton(picture, () -> Names.biome(editor.shown().biome()),
+                        flow.line(EditorRegion.ASIDE.rowHeight()), () -> pick(editor), () -> true,
+                        () -> List.of(Component.translatable("flatgen.editor.pick_biome"))));
     }
 
     /** A biome's landscape in its colours, worked out once per biome while the editor is open. */

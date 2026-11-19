@@ -33,6 +33,7 @@
   "flatgen.editor.advanced": "Erweitert",
   "flatgen.editor.advanced_tip": "Zeigt alles: Y-Werte, Codes, Dicken zum Eintippen, Bauwerke und den Editor des Spiels",
   "flatgen.editor.air": "%s Blöcke Luft, bis Y %s",
+  "flatgen.editor.biome": "Biom",
   "flatgen.editor.duplicate": "Kopieren",
   "flatgen.editor.empty": "Keine Schichten: eine leere Welt",
   "flatgen.editor.full": "Die Welt ist %s Blöcke hoch: Für mehr ist kein Platz",

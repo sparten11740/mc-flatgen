@@ -33,6 +33,7 @@
   "flatgen.editor.advanced": "Advanced",
   "flatgen.editor.advanced_tip": "Shows everything: Ys, codes, thicknesses to type, structures and the game's own editor",
   "flatgen.editor.air": "%s blocks of air, up to Y %s",
+  "flatgen.editor.biome": "Biome",
   "flatgen.editor.duplicate": "Copy",
   "flatgen.editor.empty": "No layers: an empty world",
   "flatgen.editor.full": "The world is %s blocks tall: there is no room for more",
