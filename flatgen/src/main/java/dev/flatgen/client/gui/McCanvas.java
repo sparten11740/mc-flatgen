@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-//? if >=26.1 {
+//? if >=1.21.11 {
 /*import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.FontDescription;
 *///?}
@@ -18,11 +18,11 @@ import net.minecraft.resources.ResourceLocation;
 
 /**
  * A {@link Canvas} drawing through the game's GUI graphics, one frame at a time, in {@link Look}'s sprites and the
- * fonts of {@link TextStyle}. Up to 1.21.x what is drawn over an item is lifted toward the player; from 26.1 on, where
- * the game draws items after the rest of a layer, it starts a layer of its own.
+ * fonts of {@link TextStyle}. Up to 1.21.1 what is drawn over an item is lifted toward the player; from 1.21.11 on,
+ * where the game draws items after the rest of a layer, it starts a layer of its own.
  */
 final class McCanvas implements Canvas {
-    /** How far toward the player what is drawn over items is lifted, as the game lifts an item's count (to 1.21.x). */
+    /** How far toward the player what is drawn over items is lifted, as the game lifts an item's count (to 1.21.1). */
     private static final float OVER_ITEMS = 200;
     /** What ends text cut to fit. */
     private static final String ELLIPSIS = "\u2026";
@@ -34,7 +34,7 @@ final class McCanvas implements Canvas {
     private static final int TOOLTIP_GAP = 4;
     /** Space inside a tooltip's box around its words, in GUI pixels. */
     private static final int TOOLTIP_PADDING = 4;
-    /** How far toward the player a tooltip is lifted, over everything else (to 1.21.x). */
+    /** How far toward the player a tooltip is lifted, over everything else (to 1.21.1). */
     private static final float OVER_TOOLTIPS = 400;
     /** How far the focus ring stands out around what has the focus, in GUI pixels. */
     private static final int RING_SPREAD = 2;
@@ -44,7 +44,7 @@ final class McCanvas implements Canvas {
     private final BlockSides blockSides;
     /** The screen's own GUI pixels, whose window pixels pick the sharp fonts and which some calls convert. */
     private final LayoutScale scale;
-    /** Whether an item was drawn in the layer drawn into now, which anything meant to be over it leaves (26.1). */
+    /** Whether an item was drawn in the layer drawn into now, which what goes over it leaves (from 1.21.11). */
     private boolean itemsInLayer;
     private List<Component> tooltip = List.of();
     private int tooltipX;
@@ -60,7 +60,7 @@ final class McCanvas implements Canvas {
     /** The style of text in a text style's font at this many window pixels per GUI pixel. */
     static Style style(TextStyle textStyle, int pixelsPerUnit) {
         ResourceLocation id = ResourceLocation.parse(textStyle.font(pixelsPerUnit));
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*return Style.EMPTY.withFont(new FontDescription.Resource(id));
         *///?} else {
         return Style.EMPTY.withFont(id);
@@ -126,7 +126,7 @@ final class McCanvas implements Canvas {
     }
 
     private void sprite(ResourceLocation sprite, Rect area) {
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, area.x(), area.y(), area.width(), area.height());
         *///?} else {
         graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
@@ -147,7 +147,7 @@ final class McCanvas implements Canvas {
     @Override
     public void blockIcon(String block, Rect area) {
         float factor = area.width() / (float) Icon.SIZE;
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*graphics.pose().pushMatrix();
         graphics.pose().translate(area.x(), area.y());
         graphics.pose().scale(factor);
@@ -206,7 +206,7 @@ final class McCanvas implements Canvas {
 
     /** Draws above the items drawn so far. */
     private void overItems(Runnable draw) {
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*if (itemsInLayer) {
             graphics.nextStratum();
             itemsInLayer = false;
@@ -226,7 +226,7 @@ final class McCanvas implements Canvas {
     }
 
     private void blitIcon(ResourceLocation texture, int x, int y) {
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
         *///?} else {
         graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
@@ -235,12 +235,12 @@ final class McCanvas implements Canvas {
 
     /**
      * Clips to the area rounded outward to whole game GUI pixels, which a scissor is set in, so it never cuts a border
-     * at the area's edge: up to 1.21.x by converting it here, from 26.1, where the game converts it with the pose, by
-     * widening it by a game pixel.
+     * at the area's edge: up to 1.21.1 by converting it here, from 1.21.11, where the game converts it with the pose,
+     * by widening it by a game pixel.
      */
     @Override
     public void clip(Rect area) {
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*int slack = (int) Math.ceil(1 / scale.gameUnit());
         graphics.enableScissor(area.x() - slack, area.y() - slack, area.right() + slack, area.bottom() + slack);
         *///?} else {
@@ -279,7 +279,7 @@ final class McCanvas implements Canvas {
         int width = tooltip.stream().mapToInt(line -> textWidth(line, TextStyle.BODY)).max().orElse(0);
         int height = tooltip.size() * TextStyle.BODY.lineHeight();
         Rect box = inScreen(new Rect(tooltipX, tooltipY, width + 2 * TOOLTIP_PADDING, height + 2 * TOOLTIP_PADDING));
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*graphics.nextStratum();
         drawTooltip(box);
         *///?} else {

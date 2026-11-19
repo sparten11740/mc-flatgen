@@ -35,8 +35,8 @@ stonecutter parameters {
     // 26.3 names the server's structure templates for what they are.
     rename("26.3", "getStructureManager()", "getStructureTemplateManager()")
     rename("1.21.11", "world.level.GameRules;", "world.level.gamerules.GameRules;")
-    rename("26.1", "import net.minecraft.Util;", "import net.minecraft.util.Util;")
-    rename("26.1", "Minecraft.getInstance().tell(", "Minecraft.getInstance().schedule(")
+    rename("1.21.11", "import net.minecraft.Util;", "import net.minecraft.util.Util;")
+    rename("1.21.11", "Minecraft.getInstance().tell(", "Minecraft.getInstance().schedule(")
     rename("26.1", ".getBlockHolder()", ".typeHolder()")
     // The game's GUI graphics became an extractor of what to draw in 26.1, its calls renamed with it.
     rename("26.1", "client.gui.GuiGraphics;", "client.gui.GuiGraphicsExtractor;")

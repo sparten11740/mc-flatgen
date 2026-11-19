@@ -13,7 +13,7 @@ import net.minecraft.WorldVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.packs.PackType;
-//? if >=26.1 {
+//? if >=1.21.11 {
 /*import net.minecraft.server.packs.metadata.pack.PackFormat;
 *///?}
 import net.minecraft.world.level.dimension.LevelStem;
@@ -34,7 +34,7 @@ public final class Exports {
     /** This version's resource and data pack formats, as the game itself gives them. */
     public static DatapackFiles.PackFormats packFormats() {
         WorldVersion version = SharedConstants.getCurrentVersion();
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*PackFormat data = version.packVersion(PackType.SERVER_DATA);
         return new DatapackFiles.PackFormats(version.packVersion(PackType.CLIENT_RESOURCES).major(), data.major(),
                 data.minor());

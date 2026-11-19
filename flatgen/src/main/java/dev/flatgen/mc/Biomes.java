@@ -10,7 +10,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
-//? if >=26.1 {
+//? if >=1.21.11 {
 /*import net.minecraft.world.attribute.EnvironmentAttributes;
 *///?}
 import net.minecraft.world.entity.EntityType;
@@ -66,7 +66,7 @@ public final class Biomes {
         List<EntityType<?>> monsters = spawns.getMobsToSpawn(MobCategory.MONSTER).unwrap().stream()
                 .<EntityType<?>>map(spawn -> spawn.value().type()).toList();
         int sky = rgb(biome.getAttributes().applyModifier(EnvironmentAttributes.SKY_COLOR, vector(OVERWORLD_SKY)));
-        *///?} else if >=26.1 {
+        *///?} else if >=1.21.11 {
         /*List<EntityType<?>> monsters = biome.getMobSettings().getMobs(MobCategory.MONSTER).unwrap().stream()
                 .<EntityType<?>>map(spawn -> spawn.value().type()).toList();
         int sky = biome.getAttributes().applyModifier(EnvironmentAttributes.SKY_COLOR, OVERWORLD_SKY);

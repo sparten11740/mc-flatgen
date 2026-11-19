@@ -123,7 +123,7 @@ public final class WorldCreation {
      */
     public static CreateWorldScreen openWithWorldType(Minecraft minecraft, Screen lastScreen,
             ResourceKey<WorldPreset> worldType) {
-        //? if >=26.1 {
+        //? if >=1.21.11 {
         /*CreateWorldScreen.openFresh(minecraft, () -> Screens.show(lastScreen));
         *///?} else {
         CreateWorldScreen.openFresh(minecraft, lastScreen);

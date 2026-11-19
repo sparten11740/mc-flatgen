@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphics;
-//? if >=26.1 {
+//? if >=1.21.11 {
 /*import net.minecraft.client.renderer.RenderPipelines;
 *///?}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -26,7 +26,7 @@ public final class BlockSides {
     public static final int TILE = 16;
     /** White, the tint of a face the game does not tint. */
     static final int UNTINTED = 0xFFFFFF;
-    /** The alpha a tint is drawn with, opaque (26.1). */
+    /** The alpha a tint is drawn with, opaque (from 1.21.11). */
     private static final int OPAQUE = 0xFF000000;
 
     private final Map<String, List<Face>> faces = new HashMap<>();
@@ -84,7 +84,7 @@ public final class BlockSides {
             int height) {
         for (Face face : sides) {
             int tint = face.tint() == Face.FLUID ? fluidColor : face.tint();
-            //? if >=26.1 {
+            //? if >=1.21.11 {
             /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, face.sprite(), x, y, width, height, OPAQUE | tint);
             *///?} else {
             graphics.blit(x, y, 0, width, height, face.sprite(),
