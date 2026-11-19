@@ -57,6 +57,13 @@ fabricApi {
         enableClientGameTests = false
     }
 }
+// From 1.21.5 the GameTest annotation is Fabric API's own: a node marked `fabric_gametest_api=true` compiles its
+// GameTests against that module, which the run has with the rest of Fabric API.
+if (findProperty("fabric_gametest_api")?.toString() == "true") {
+    dependencies {
+        "gametestCompileOnly"(fabricApi.module("fabric-gametest-api-v1", prop("fabric_api_version")))
+    }
+}
 loom.runs.named("gameTest") {
     property("flatgen.played", extra["gameTestPlayedFile"].toString())
 }

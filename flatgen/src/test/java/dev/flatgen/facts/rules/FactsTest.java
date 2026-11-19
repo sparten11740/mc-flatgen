@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 
 /** What each world fact shows, and the lines it draws across the column. */
 class FactsTest {
+    /** Where the climates of these tests cool from: 1.21.1's Y 80, which their heights are reckoned for. */
+    private static final int COOLING_START_Y = 80;
     private static final BiomeInfo.Colours COLOURS = new BiomeInfo.Colours(0, 0, 0, 0);
     private static final BiomeInfo PLAINS = biome(0.8f, true, true);
     private static final BiomeInfo DESERT = biome(2.0f, false, true);
@@ -54,7 +56,7 @@ class FactsTest {
     }
 
     private static BiomeInfo biome(float temperature, boolean precipitation, boolean monsters) {
-        return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation),
+        return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation, COOLING_START_Y),
                 new BiomeInfo.Spawns(monsters, monsters, false));
     }
 }

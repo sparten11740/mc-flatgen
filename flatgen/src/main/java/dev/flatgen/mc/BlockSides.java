@@ -1,19 +1,16 @@
 package dev.flatgen.mc;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.block.model.BakedQuad;
+//? if >=26.1 {
+/*import net.minecraft.client.renderer.RenderPipelines;
+*///?}
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -28,17 +25,20 @@ public final class BlockSides {
     /** The size a block is drawn at, in GUI pixels, as in the inventory. */
     public static final int TILE = 16;
     /** White, the tint of a face the game does not tint. */
-    private static final int UNTINTED = 0xFFFFFF;
-    /** What the game's block colours answer for a block with no colour of its own, without a world to ask. */
-    private static final int NO_COLOR = -1;
-    /** The seed the faces are picked with, so a block with random variants always looks the same. */
-    private static final long SEED = 42L;
+    static final int UNTINTED = 0xFFFFFF;
+    /** The alpha a tint is drawn with, opaque (26.1). */
+    private static final int OPAQUE = 0xFF000000;
 
     private final Map<String, List<Face>> faces = new HashMap<>();
     private final Map<String, ItemStack> items = new HashMap<>();
 
-    /** A sprite with the tint it is drawn in, RGB, or {@link #FLUID} for the fluid colour given when drawing. */
-    private record Face(TextureAtlasSprite sprite, int tint) {
+    /**
+     * A sprite with the tint it is drawn in.
+     *
+     * @param sprite the sprite
+     * @param tint   its tint, RGB, or {@link #FLUID} for the fluid colour given when drawing
+     */
+    record Face(TextureAtlasSprite sprite, int tint) {
         /** The tint that stands for the fluid colour the caller gives. */
         static final int FLUID = -1;
     }
@@ -75,8 +75,12 @@ public final class BlockSides {
     private static void drawTile(GuiGraphics graphics, List<Face> sides, int fluidColor, int x, int y) {
         for (Face face : sides) {
             int tint = face.tint() == Face.FLUID ? fluidColor : face.tint();
+            //? if >=26.1 {
+            /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, face.sprite(), x, y, TILE, TILE, OPAQUE | tint);
+            *///?} else {
             graphics.blit(x, y, 0, TILE, TILE, face.sprite(),
                     (tint >> 16 & 0xFF) / 255F, (tint >> 8 & 0xFF) / 255F, (tint & 0xFF) / 255F, 1F);
+            //?}
         }
     }
 
@@ -91,17 +95,10 @@ public final class BlockSides {
             return List.of();
         }
         BlockState state = found.orElse(Blocks.AIR).defaultBlockState();
-        Minecraft minecraft = Minecraft.getInstance();
-        BakedModel model = minecraft.getBlockRenderer().getBlockModel(state);
-        List<Face> sides = new ArrayList<>();
-        for (BakedQuad quad : model.getQuads(state, Direction.NORTH, RandomSource.create(SEED))) {
-            int tint = quad.isTinted()
-                    ? minecraft.getBlockColors().getColor(state, null, null, quad.getTintIndex()) : UNTINTED;
-            sides.add(new Face(quad.getSprite(), tint == NO_COLOR ? UNTINTED : tint));
+        List<Face> sides = BlockModels.northFaces(state);
+        if (!sides.isEmpty()) {
+            return sides;
         }
-        if (sides.isEmpty()) {
-            sides.add(new Face(model.getParticleIcon(), state.getFluidState().isEmpty() ? UNTINTED : Face.FLUID));
-        }
-        return sides;
+        return List.of(new Face(BlockModels.particle(state), state.getFluidState().isEmpty() ? UNTINTED : Face.FLUID));
     }
 }

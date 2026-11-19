@@ -12,6 +12,9 @@ import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
+//? if >=1.21.5 {
+/*import net.minecraft.network.chat.Component;
+*///?}
 
 /**
  * Flatgen's GameTests, the same on every node. Each loader's glue ({@code FlatgenGameTests} in
@@ -61,7 +64,7 @@ public final class FlatgenTests {
         leaveWordThatTheyPlayed();
         if (!failures.isEmpty()) {
             String said = String.join("; ", failures);
-            throw new GameTestAssertException(said.length() > SAID_AT_MOST ? said.substring(0, SAID_AT_MOST) : said);
+            throw failure(said.length() > SAID_AT_MOST ? said.substring(0, SAID_AT_MOST) : said);
         }
         helper.succeed();
     }
@@ -69,8 +72,17 @@ public final class FlatgenTests {
     /** Fails the test with this message unless the condition holds. */
     static void check(boolean condition, String message) {
         if (!condition) {
-            throw new GameTestAssertException(message);
+            throw failure(message);
         }
+    }
+
+    /** The exception a GameTest fails with, saying this. */
+    static GameTestAssertException failure(String message) {
+        //? if >=1.21.5 {
+        /*return new GameTestAssertException(Component.literal(message), 0);
+        *///?} else {
+        return new GameTestAssertException(message);
+        //?}
     }
 
     private static void play(String name, Consumer<GameTestHelper> test, GameTestHelper helper, List<String> failures) {

@@ -30,7 +30,7 @@ final class FactGameTests {
     private static final List<String> BIOMES = List.of("minecraft:plains", "minecraft:desert",
             "minecraft:snowy_plains", "minecraft:swamp", "minecraft:mushroom_fields", "minecraft:windswept_hills");
     /** The surface heights F08 names, and one above the windswept hills' snow line. */
-    private static final List<Integer> HEIGHTS = List.of(39, 40, 60, 100, 150);
+    private static final List<Integer> HEIGHTS = List.of(-10, -2, 39, 40, 60, 100, 150);
     /** The salt the game mixes into a slime chunk's seed (1.21.1). */
     private static final long SLIME_SALT = 987234911L;
 
@@ -47,15 +47,19 @@ final class FactGameTests {
     private static void weather(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         for (String id : BIOMES) {
-            Biome biome = level.registryAccess().registryOrThrow(Registries.BIOME)
-                    .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(id)));
+            Biome biome = level.registryAccess().lookupOrThrow(Registries.BIOME)
+                    .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(id))).value();
             HEIGHTS.forEach(y -> weatherAgrees(level, id, biome, y));
         }
     }
 
     private static void weatherAgrees(ServerLevel level, String id, Biome biome, int y) {
         WorldFacts facts = WorldFacts.of(Biomes.info(id, level.registryAccess()).orElseThrow(), y, true);
+        //? if >=1.21.2 {
+        /*String game = biome.getPrecipitationAt(new BlockPos(0, y, 0), level.getSeaLevel()).name();
+        *///?} else {
         String game = biome.getPrecipitationAt(new BlockPos(0, y, 0)).name();
+        //?}
         check(facts.weather().name().equals(game), id + " at Y " + y + ": " + facts.weather() + ", the game " + game);
     }
 

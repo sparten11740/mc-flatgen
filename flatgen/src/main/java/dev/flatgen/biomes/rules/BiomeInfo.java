@@ -32,12 +32,13 @@ public record BiomeInfo(String id, Colours colours, Climate climate, Spawns spaw
     }
 
     /**
-     * A biome's weather.
+     * A biome's weather in a superflat world.
      *
      * @param temperature   its base temperature, before height cools it
      * @param precipitation whether it rains or snows in it at all
+     * @param coolingStartY the Y above which height cools it, as the game's version reckons it for a superflat world
      */
-    public record Climate(float temperature, boolean precipitation) {
+    public record Climate(float temperature, boolean precipitation, int coolingStartY) {
     }
 
     /**

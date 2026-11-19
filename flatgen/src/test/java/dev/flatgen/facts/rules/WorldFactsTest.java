@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 
 /** What a world will be like at its surface, for the biomes F08 names, at the heights that matter. */
 class WorldFactsTest {
+    /** Where the climates of these tests cool from: 1.21.1's Y 80, which their heights are reckoned for. */
+    private static final int COOLING_START_Y = 80;
     private static final BiomeInfo.Colours COLOURS = new BiomeInfo.Colours(0, 0, 0, 0);
     private static final BiomeInfo PLAINS = biome(0.8f, true, true, true, false);
     private static final BiomeInfo DESERT = biome(2.0f, false, true, true, false);
@@ -59,7 +61,7 @@ class WorldFactsTest {
 
     private static BiomeInfo biome(float temperature, boolean precipitation, boolean monsters, boolean slimes,
             boolean surfaceSlimes) {
-        return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation),
+        return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation, COOLING_START_Y),
                 new BiomeInfo.Spawns(monsters, slimes, surfaceSlimes));
     }
 }

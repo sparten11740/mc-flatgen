@@ -27,7 +27,7 @@ public final class ServerFirstStart implements FirstStart {
 
     @Override
     public void setTime(long dayTime) {
-        server.overworld().setDayTime(dayTime);
+        Overworld.setDayTime(server.overworld(), dayTime);
     }
 
     /** Places the template on the top layer at the spawn; a template the game lacks is logged and left out. */
@@ -40,7 +40,7 @@ public final class ServerFirstStart implements FirstStart {
             return;
         }
         ServerLevel level = server.overworld();
-        BlockPos spawn = level.getSharedSpawnPos();
+        BlockPos spawn = Overworld.spawn(level);
         int surface = level.getHeight(Heightmap.Types.WORLD_SURFACE, spawn.getX(), spawn.getZ());
         Vec3i size = template.get().getSize();
         PlaceAtSpawn.Placement placement = effect.place(new Position(size.getX(), size.getY(), size.getZ()),
@@ -50,7 +50,7 @@ public final class ServerFirstStart implements FirstStart {
         StructurePlaceSettings settings = new StructurePlaceSettings()
                 .setRotation(Rotation.valueOf(effect.rotation().name()));
         template.get().placeInWorld(level, origin, origin, settings, level.getRandom(), Block.UPDATE_CLIENTS);
-        placement.spawn().ifPresent(moved -> level.setDefaultSpawnPos(blockPos(moved), level.getSharedSpawnAngle()));
+        placement.spawn().ifPresent(moved -> Overworld.moveSpawn(level, blockPos(moved)));
     }
 
     private static BlockPos blockPos(Position position) {

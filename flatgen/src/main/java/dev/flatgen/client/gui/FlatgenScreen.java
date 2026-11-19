@@ -4,23 +4,20 @@ import dev.flatgen.client.gui.rules.FocusOrder;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import dev.flatgen.mc.BlockSides;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * The one class of Flatgen's that is a game screen: it lays out a screen's {@link Widget}s for its size, draws them
- * through a {@link Canvas} under its title, and hands them the mouse and the keyboard as {@link Widget} describes. Each
- * Flatgen screen extends it, so when the game's screens change between versions only this class and {@link McCanvas}
- * follow (docs/plan.md 3.3).
+ * The base of every Flatgen screen: it lays out a screen's {@link Widget}s for its size, draws them through a
+ * {@link Canvas} under its title, and hands them the mouse and the keyboard as {@link Widget} describes. The game's
+ * screen reaches it through {@link GameScreen}, one class per version tree, so when the game's screens change between
+ * versions only that class and {@code McCanvas} follow (docs/plan.md 3.3).
  */
-public abstract class FlatgenScreen extends Screen {
+public abstract class FlatgenScreen extends GameScreen {
     /** Where the title's line starts, from the top, in GUI pixels. */
     private static final int TITLE_TOP = 8;
     /** White, the colour of a screen's title as the game draws it. */
@@ -34,7 +31,6 @@ public abstract class FlatgenScreen extends Screen {
     /** Where the mouse was when the screen was last drawn, for the narration of what is under it. */
     private int mouseX;
     private int mouseY;
-    private BlockSides blockSides = new BlockSides();
     /** Whether a widget took the click whose button is held, which then hears the drag and the release. */
     private boolean pressed;
     /** The button held for {@link #pressed}; the others are ignored until it is let go. */
@@ -70,7 +66,7 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     protected void init() {
-        blockSides = new BlockSides();
+        super.init();
         areas = layOut(width, height);
         widgets = new WidgetGroup(areas);
         pressed = false;
@@ -79,9 +75,7 @@ public abstract class FlatgenScreen extends Screen {
     }
 
     @Override
-    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        super.render(graphics, mouseX, mouseY, partialTick);
-        McCanvas canvas = new McCanvas(graphics, font, blockSides);
+    protected void draw(Canvas canvas, int mouseX, int mouseY) {
         canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
         Optional<Widget> focused = focused();
         Optional<Rect> ring = focused.flatMap(Widget::focusArea);
@@ -90,43 +84,37 @@ public abstract class FlatgenScreen extends Screen {
         ring.ifPresent(canvas::focusRing);
         this.mouseX = mouseX;
         this.mouseY = mouseY;
-        canvas.finish();
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    protected boolean click(double x, double y, int button) {
         if (pressed) {
             return true;
         }
         moveFocus(Optional.empty());
-        pressed = widgets.click(mouseX, mouseY, button, modifiers());
+        pressed = widgets.click(x, y, button, modifiers());
         pressedButton = button;
         keyboard = widgets.takesKeyboard();
         widgets.keyboard(keyboard);
-        return pressed || super.mouseClicked(mouseX, mouseY, button);
+        return pressed;
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (pressed) {
-            if (button == pressedButton) {
-                widgets.drag(mouseX, mouseY);
-            }
-            return true;
+    protected boolean drag(double x, double y, int button) {
+        if (pressed && button == pressedButton) {
+            widgets.drag(x, y);
         }
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        return pressed;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (pressed) {
-            if (button == pressedButton) {
-                widgets.release(mouseX, mouseY);
-                pressed = false;
-            }
+    protected boolean release(double x, double y, int button) {
+        if (pressed && button == pressedButton) {
+            widgets.release(x, y);
+            pressed = false;
             return true;
         }
-        return super.mouseReleased(mouseX, mouseY, button);
+        return pressed;
     }
 
     /**
@@ -135,13 +123,11 @@ public abstract class FlatgenScreen extends Screen {
      * has the keyboard from a click keeps it.
      */
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        double amount = scrollY != 0 ? scrollY : scrollX;
+    protected boolean scroll(double x, double y, double horizontal, double vertical) {
         if (focus.isPresent()) {
             moveFocus(Optional.empty());
         }
-        return widgets.scroll(mouseX, mouseY, amount, modifiers())
-                || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return widgets.scroll(x, y, vertical != 0 ? vertical : horizontal, modifiers());
     }
 
     /**
@@ -162,9 +148,9 @@ public abstract class FlatgenScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifierBits) {
+    protected boolean key(int keyCode) {
         if (keyCode == GLFW.GLFW_KEY_TAB) {
-            boolean forward = !hasShiftDown();
+            boolean forward = !modifiers().shift();
             moveFocus(focus.isEmpty() ? firstPlace(forward) : FocusOrder.tab(counts(), focus, forward));
             return true;
         }
@@ -179,16 +165,16 @@ public abstract class FlatgenScreen extends Screen {
         if (keyboard && widgets.key(keyCode, modifiers())) {
             return true;
         }
-        return shortcut(keyCode, modifiers()) || super.keyPressed(keyCode, scanCode, modifierBits);
+        return shortcut(keyCode, modifiers());
     }
 
     @Override
-    public boolean charTyped(char character, int modifierBits) {
+    protected boolean type(char character) {
         Optional<Widget> focused = focused();
         if (focused.isPresent()) {
-            return focused.get().type(character) || super.charTyped(character, modifierBits);
+            return focused.get().type(character);
         }
-        return (keyboard && widgets.type(character)) || super.charTyped(character, modifierBits);
+        return keyboard && widgets.type(character);
     }
 
     /** A key for the control that has the focus; an arrow it does not take moves the focus within its area. */
@@ -247,9 +233,5 @@ public abstract class FlatgenScreen extends Screen {
     private Optional<Widget> focused() {
         return focus.flatMap(place -> FocusOrder.within(counts(), place))
                 .map(place -> areas.get(place.area()).focusables().get(place.control()));
-    }
-
-    private static Modifiers modifiers() {
-        return new Modifiers(hasShiftDown(), hasControlDown(), hasAltDown());
     }
 }

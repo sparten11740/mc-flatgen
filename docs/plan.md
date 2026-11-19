@@ -81,6 +81,8 @@ and fully qualified names alike, and fails on a reference against this table (F0
   dependency rules.
 - A plain rename between versions is a rename rule in `stonecutter.gradle.kts`, naming the release that introduced it;
   a small difference is a `//? if` block; anything larger is a tree class.
+- The GameTests (`src/gametest`) have no version trees: their loaders' glue, a whole different registration from 1.21.5
+  on, is a `//? if` block as Glowline's is, the one place a difference that large is not a tree class.
 - Loader code lives in `platform/<loader>/`; each loader's build excludes the others' folders. Shared code names no
   loader; `//? if neoforge` and friends appear only in build-adjacent code where a tree class would be heavier.
 
@@ -89,11 +91,14 @@ and fully qualified names alike, and fails on a reference against this table (F0
 Flatgen's screens are built from widgets of its own (`client/gui/Widget`) that draw through `client/gui/Canvas` (fill,
 outline, text, a button's face, a field's box, a block's side, clipping, tooltips) and hear the mouse through the
 widget's own methods; `WidgetGroup` hands input to a screen's widgets or to a part of a screen, as `ScrollGroup` does.
-`McCanvas` implements `Canvas` over the game's `GuiGraphics`, and `FlatgenScreen` is the one class extending
-Minecraft's `Screen`, turning the game's callbacks into widget calls, the keyboard's focus (F16) included, and handing
-widgets' `Narration` to the game's narrator, which only `Narration` itself writes to. Features' widgets therefore
-compile unchanged on every version; when a version's GUI differs, these classes (and `mc/BlockSides`) move into the
-version trees (3.2), and nothing else changes.
+`FlatgenScreen`, the base of every Flatgen screen, turns plain calls into widget calls, the keyboard's focus (F16)
+included, and hands widgets' `Narration` to the game's narrator, which only `Narration` itself writes to. The game
+reaches it through `GameScreen`, the one class extending Minecraft's `Screen`, one per version tree (3.2), as the game's
+screens take different callbacks in each (26.1 passes input events and extracts what to draw). Everything is drawn
+through `McCanvas`, which implements `Canvas` over the game's GUI graphics, and `mc/BlockSides`; both stay in
+`src/main`, the drawing calls that only changed names as rename rules and the few that work otherwise as `//? if`
+blocks, and the block models they read come from `mc/BlockModels` in each tree. Features' widgets therefore compile
+unchanged on every version.
 
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
 biome pickers; the grid also the preset library), `Toggle` (world options, structures, templates), `PictureButton`,

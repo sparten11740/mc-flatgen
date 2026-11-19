@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 /** A datapack's files: the world preset under Flatgen's namespace, listed among the World Types, and its name. */
 class DatapackFilesTest {
-    private static final DatapackFiles.Pack PACK = new DatapackFiles.Pack(new DatapackFiles.PackFormats(34, 48),
-            "tall_flat", "Tall flat", "{\"dimensions\":{}}");
+    private static final DatapackFiles.Pack PACK = new DatapackFiles.Pack(
+            new DatapackFiles.PackFormats(34, 48, 0), "tall_flat", "Tall flat", "{\"dimensions\":{}}");
 
     @Test
     void holdsThePackItsPresetTheTagAndTheName() {
@@ -32,6 +32,16 @@ class DatapackFilesTest {
         assertEquals(48, about.get("pack_format").getAsInt());
         assertEquals("[34,48]", about.get("supported_formats").toString());
         assertEquals("Tall flat", about.get("description").getAsString());
+    }
+
+    @Test
+    void namesItsFormatsAsARangeForAVersionThatReadsOne() {
+        DatapackFiles.Pack ranged = new DatapackFiles.Pack(new DatapackFiles.PackFormats(84, 101, 1),
+                PACK.id(), PACK.name(), PACK.preset());
+        JsonObject about = json(DatapackFiles.of(ranged), "pack.mcmeta").getAsJsonObject("pack");
+        assertEquals(84, about.get("min_format").getAsInt());
+        assertEquals("[101,1]", about.get("max_format").toString());
+        assertEquals(null, about.get("pack_format"));
     }
 
     private static JsonObject json(Map<String, String> files, String path) {

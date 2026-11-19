@@ -10,6 +10,30 @@ stonecutter parameters {
     // the 1.20.1 nodes (docs/backlog/24-port-1-20-1.md).
     constants.match(current.project.substringAfterLast('-'), "fabric", "neoforge")
 
-    // Plain renames between Minecraft versions go here as they are needed, as Blockpilot's do: each names the earliest
-    // release with the new name and keeps its new text out of the code every node compiles (docs/plan.md 3.2).
+    // Plain renames between Minecraft versions, as Blockpilot's are: each names the earliest release known to have the
+    // new name and swaps it in for the nodes from that release on. src/main and src/1.21.1 keep the names of the node
+    // they are checked in for (1.21.1), src/26.1 those of 26.1; rules run over all of them, so a new text must not
+    // appear in the code the nodes share (docs/plan.md 3.2).
+    fun rename(since: String, from: String, to: String) =
+        replacements.string(current.parsed >= since) { replace(from, to) }
+
+    rename("1.21.2", ".getMinBuildHeight()", ".getMinY()")
+    rename("1.21.2", "MobSpawnType", "EntitySpawnReason")
+    // With the type's context, so a local named location keeps its name.
+    rename("1.21.11", "resources.ResourceLocation;", "resources.Identifier;")
+    rename("1.21.11", "ResourceLocation ", "Identifier ")
+    rename("1.21.11", "ResourceLocation.", "Identifier.")
+    rename("1.21.11", "ResourceLocation,", "Identifier,")
+    // A registry key's id: Flatgen's code calls only ResourceKey's location().
+    rename("1.21.11", ".location()", ".identifier()")
+    rename("1.21.11", "world.level.GameRules;", "world.level.gamerules.GameRules;")
+    rename("26.1", "import net.minecraft.Util;", "import net.minecraft.util.Util;")
+    rename("26.1", "Minecraft.getInstance().tell(", "Minecraft.getInstance().schedule(")
+    rename("26.1", ".getBlockHolder()", ".typeHolder()")
+    // The game's GUI graphics became an extractor of what to draw in 26.1, its calls renamed with it.
+    rename("26.1", "client.gui.GuiGraphics;", "client.gui.GuiGraphicsExtractor;")
+    rename("26.1", "GuiGraphics graphics", "GuiGraphicsExtractor graphics")
+    rename("26.1", "graphics.drawString(", "graphics.text(")
+    rename("26.1", "graphics.renderOutline(", "graphics.outline(")
+    rename("26.1", "graphics.renderItem(", "graphics.item(")
 }

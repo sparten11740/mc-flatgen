@@ -7,10 +7,17 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+//? if >=26.1 {
+/*import net.minecraft.client.renderer.RenderPipelines;
+*///?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-/** A {@link Canvas} drawing through this version's {@link GuiGraphics}, one frame at a time. */
+/**
+ * A {@link Canvas} drawing through the game's GUI graphics, one frame at a time. Up to 1.21.x what is drawn over an
+ * item is lifted toward the player; from 26.1 on, where the game draws items after the rest of a layer, it starts a
+ * layer of its own.
+ */
 final class McCanvas implements Canvas {
     private static final ResourceLocation BUTTON = ResourceLocation.withDefaultNamespace("widget/button");
     private static final ResourceLocation LIT_BUTTON =
@@ -19,7 +26,7 @@ final class McCanvas implements Canvas {
     private static final ResourceLocation FIELD = ResourceLocation.withDefaultNamespace("widget/text_field");
     private static final ResourceLocation LIT_FIELD =
             ResourceLocation.withDefaultNamespace("widget/text_field_highlighted");
-    /** How far toward the player what is drawn over items is lifted, as the game lifts an item's count. */
+    /** How far toward the player what is drawn over items is lifted, as the game lifts an item's count (to 1.21.x). */
     private static final float OVER_ITEMS = 200;
     /** The shade laid over a control that cannot be used, ARGB. */
     private static final int DIM = 0x90000000;
@@ -34,6 +41,8 @@ final class McCanvas implements Canvas {
     private final GuiGraphics graphics;
     private final Font font;
     private final BlockSides blockSides;
+    /** Whether an item was drawn in the layer drawn into now, which anything meant to be over it leaves (26.1). */
+    private boolean itemsInLayer;
     private List<Component> tooltip = List.of();
     private int tooltipX;
     private int tooltipY;
@@ -87,7 +96,11 @@ final class McCanvas implements Canvas {
     }
 
     private void sprite(ResourceLocation sprite, Rect area) {
+        //? if >=26.1 {
+        /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, area.x(), area.y(), area.width(), area.height());
+        *///?} else {
         graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
+        //?}
     }
 
     @Override
@@ -98,22 +111,24 @@ final class McCanvas implements Canvas {
     @Override
     public void blockIcon(String block, int x, int y) {
         blockSides.drawIcon(graphics, block, x, y);
+        itemsInLayer = true;
     }
 
     @Override
     public void itemIcon(String item, int x, int y) {
         graphics.renderItem(Items.stack(item), x, y);
+        itemsInLayer = true;
     }
 
     @Override
     public void sprite(String id, int x, int y) {
-        Optional.ofNullable(ResourceLocation.tryParse(id)).ifPresent(sprite -> overItems(() ->
-                graphics.blitSprite(sprite, x, y, Icon.SIZE, Icon.SIZE)));
+        Optional.ofNullable(ResourceLocation.tryParse(id))
+                .ifPresent(sprite -> overItems(() -> sprite(sprite, new Rect(x, y, Icon.SIZE, Icon.SIZE))));
     }
 
     @Override
     public void dim(Rect area) {
-        overItems(() -> graphics.fill(area.x(), area.y(), area.right(), area.bottom(), DIM));
+        overItems(() -> fill(area, DIM));
     }
 
     @Override
@@ -128,16 +143,31 @@ final class McCanvas implements Canvas {
 
     /** Draws above the items drawn so far. */
     private void overItems(Runnable draw) {
+        //? if >=26.1 {
+        /*if (itemsInLayer) {
+            graphics.nextStratum();
+            itemsInLayer = false;
+        }
+        draw.run();
+        *///?} else {
         graphics.pose().pushPose();
         graphics.pose().translate(0, 0, OVER_ITEMS);
         draw.run();
         graphics.pose().popPose();
+        //?}
     }
 
     @Override
     public void texture(String location, int x, int y) {
-        Optional.ofNullable(ResourceLocation.tryParse(location)).ifPresent(texture ->
-                graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE));
+        Optional.ofNullable(ResourceLocation.tryParse(location)).ifPresent(texture -> blitIcon(texture, x, y));
+    }
+
+    private void blitIcon(ResourceLocation texture, int x, int y) {
+        //? if >=26.1 {
+        /*graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
+        *///?} else {
+        graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
+        //?}
     }
 
     @Override
@@ -164,8 +194,13 @@ final class McCanvas implements Canvas {
 
     /** Draws the tooltip a widget asked for, over everything else. */
     void finish() {
-        if (!tooltip.isEmpty()) {
-            graphics.renderTooltip(font, tooltip, Optional.empty(), tooltipX, tooltipY);
+        if (tooltip.isEmpty()) {
+            return;
         }
+        //? if >=26.1 {
+        /*graphics.setComponentTooltipForNextFrame(font, tooltip, tooltipX, tooltipY);
+        *///?} else {
+        graphics.renderTooltip(font, tooltip, Optional.empty(), tooltipX, tooltipY);
+        //?}
     }
 }

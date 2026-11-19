@@ -35,10 +35,11 @@ export function treeProperties() {
   return readProperties(join(TREE, "gradle.properties"));
 }
 
-/** The jar a node's build leaves in build/libs, for the mod's version now. */
+/** The jar a node's build leaves in build/libs, for the mod's version now, named for its Minecraft version (26.1.2). */
 export function jarOf(node) {
   const tree = treeProperties();
-  return join(ROOT, "build", "libs", `${tree.mod_id}-${tree.mod_version}+${node}.jar`);
+  const minecraft = nodeProperties(node).minecraft_version;
+  return join(ROOT, "build", "libs", `${tree.mod_id}-${tree.mod_version}+${minecraft}-${loaderOf(node)}.jar`);
 }
 
 /** A gradle.properties file as a map, comments left out. */

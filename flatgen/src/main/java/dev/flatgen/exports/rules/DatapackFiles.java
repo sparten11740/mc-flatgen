@@ -14,6 +14,11 @@ import java.util.Map;
 public final class DatapackFiles {
     /** The namespace the world presets are in. */
     public static final String NAMESPACE = "flatgen";
+    /**
+     * The first data pack format whose game reads the formats a pack takes as a range, {@code min_format} to {@code
+     * max_format}, rather than {@code pack_format} with {@code supported_formats}.
+     */
+    static final int RANGED_FROM_DATA_FORMAT = 82;
 
     private DatapackFiles() {
     }
@@ -32,10 +37,11 @@ public final class DatapackFiles {
     /**
      * A version's pack formats.
      *
-     * @param resources the resource pack format
-     * @param data      the data pack format
+     * @param resources the resource pack format, its major version
+     * @param data      the data pack format, its major version
+     * @param dataMinor the data pack format's minor version, 0 for a version before formats had them
      */
-    public record PackFormats(int resources, int data) {
+    public record PackFormats(int resources, int data, int dataMinor) {
     }
 
     /** The pack's files, by path, in the order a zip lists them. */
@@ -50,13 +56,23 @@ public final class DatapackFiles {
         return files;
     }
 
+    /** The pack's description and the formats it takes, from the resource pack's to the data pack's. */
     private static JsonObject mcmeta(Pack pack) {
-        JsonArray formats = new JsonArray();
-        formats.add(Math.min(pack.formats().resources(), pack.formats().data()));
-        formats.add(Math.max(pack.formats().resources(), pack.formats().data()));
+        PackFormats formats = pack.formats();
         JsonObject about = new JsonObject();
-        about.addProperty("pack_format", pack.formats().data());
-        about.add("supported_formats", formats);
+        if (formats.data() >= RANGED_FROM_DATA_FORMAT) {
+            JsonArray top = new JsonArray();
+            top.add(formats.data());
+            top.add(formats.dataMinor());
+            about.addProperty("min_format", formats.resources());
+            about.add("max_format", top);
+        } else {
+            JsonArray supported = new JsonArray();
+            supported.add(Math.min(formats.resources(), formats.data()));
+            supported.add(Math.max(formats.resources(), formats.data()));
+            about.addProperty("pack_format", formats.data());
+            about.add("supported_formats", supported);
+        }
         about.addProperty("description", pack.name());
         JsonObject mcmeta = new JsonObject();
         mcmeta.add("pack", about);

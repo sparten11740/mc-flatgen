@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -121,7 +120,7 @@ final class DimensionGameTests {
 
     private static void checkFlat(LevelStem stem, Stack stack, RegistryAccess registries, String name) {
         if (!(stem.generator() instanceof FlatLevelSource flat)) {
-            throw new GameTestAssertException(name + " is not superflat");
+            throw FlatgenTests.failure(name + " is not superflat");
         }
         List<String> layers = flat.settings().getLayersInfo().stream().map(FlatLayerInfo::toString).toList();
         List<String> wanted = FlatSettings.toSettings(stack, registries).getLayersInfo().stream()

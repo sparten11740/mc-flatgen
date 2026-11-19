@@ -2,6 +2,7 @@ package dev.flatgen.gametest;
 
 import static dev.flatgen.gametest.FlatgenTests.check;
 
+import dev.flatgen.mc.Overworld;
 import dev.flatgen.options.FirstStarts;
 import dev.flatgen.options.rules.FirstStartTime;
 import dev.flatgen.options.rules.PlaceAtSpawn;
@@ -51,8 +52,8 @@ final class OptionGameTests {
         ServerLevel level = helper.getLevel();
         Restore restore = Restore.of(level);
         BlockPos site = helper.absolutePos(new BlockPos(0, 0, 0));
-        level.setDefaultSpawnPos(site, 0);
-        level.setDayTime(MORNING);
+        Overworld.moveSpawn(level, site);
+        Overworld.setDayTime(level, MORNING);
         PlaceAtSpawn.Placement placement = PLACE_PAD.place(PAD_SIZE, site.getX(), site.getZ(),
                 OptionalInt.of(level.getHeight(Heightmap.Types.WORLD_SURFACE, site.getX(), site.getZ())));
         BlockPos origin = blockPos(placement.origin());
@@ -61,27 +62,27 @@ final class OptionGameTests {
         check(level.getBlockState(origin).is(Blocks.BLACK_CONCRETE), "the pad's corner is not at " + origin);
         check(level.getBlockState(origin.offset(2, 0, 2)).is(Blocks.YELLOW_CONCRETE), "the pad's middle is missing");
         check(level.getBlockState(origin.above()).is(Blocks.LANTERN), "the pad's lantern is missing");
-        check(level.getSharedSpawnPos().equals(blockPos(placement.spawn().orElseThrow())),
-                "the spawn is " + level.getSharedSpawnPos() + ", not on the pad");
-        check(level.getDayTime() == NOON, "the time is " + level.getDayTime() + ", not noon");
+        check(Overworld.spawn(level).equals(blockPos(placement.spawn().orElseThrow())),
+                "the spawn is " + Overworld.spawn(level) + ", not on the pad");
+        check(Overworld.dayTime(level) == NOON, "the time is " + Overworld.dayTime(level) + ", not noon");
         level.setBlockAndUpdate(origin, Blocks.AIR.defaultBlockState());
-        level.setDayTime(MORNING);
+        Overworld.setDayTime(level, MORNING);
         FirstStarts.serverStarted(level.getServer());
-        check(level.getBlockState(origin).isAir() && level.getDayTime() == MORNING, "the effects ran twice");
+        check(level.getBlockState(origin).isAir() && Overworld.dayTime(level) == MORNING, "the effects ran twice");
         restore.run();
     }
 
     private static void onlyTheWorldExpected(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         Restore restore = Restore.of(level);
-        level.setDayTime(MORNING);
+        Overworld.setDayTime(level, MORNING);
         RegistryAccess registries = level.registryAccess();
         ChunkGenerator another = new FlatLevelSource(FlatLevelGeneratorSettings.getDefault(
                 registries.lookupOrThrow(Registries.BIOME), registries.lookupOrThrow(Registries.STRUCTURE_SET),
                 registries.lookupOrThrow(Registries.PLACED_FEATURE)));
         FirstStarts.expect(another, "", List.of(new FirstStartTime(NOON)));
         FirstStarts.serverStarted(level.getServer());
-        check(level.getDayTime() == MORNING, "the effects ran on a world with another generator");
+        check(Overworld.dayTime(level) == MORNING, "the effects ran on a world with another generator");
         restore.run();
     }
 
@@ -94,15 +95,15 @@ final class OptionGameTests {
     }
 
     /** The spawn and time a test found, to put back. */
-    private record Restore(ServerLevel level, BlockPos spawn, float angle, long time) implements Runnable {
+    private record Restore(ServerLevel level, BlockPos spawn, long time) implements Runnable {
         static Restore of(ServerLevel level) {
-            return new Restore(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), level.getDayTime());
+            return new Restore(level, Overworld.spawn(level), Overworld.dayTime(level));
         }
 
         @Override
         public void run() {
-            level.setDefaultSpawnPos(spawn, angle);
-            level.setDayTime(time);
+            Overworld.moveSpawn(level, spawn);
+            Overworld.setDayTime(level, time);
         }
     }
 }

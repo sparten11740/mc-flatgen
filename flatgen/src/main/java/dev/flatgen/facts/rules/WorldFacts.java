@@ -23,9 +23,7 @@ public record WorldFacts(int surfaceY, Weather weather, OptionalInt snowLine, bo
     private static final int SURFACE_SLIME_ABOVE_MAX = 70;
     /** It snows where the temperature is below this, and rains elsewhere (1.21.1). */
     private static final float SNOW_BELOW = 0.15f;
-    /** Above this Y the temperature drops with height (1.21.1). */
-    private static final int COOLING_START_Y = 80;
-    /** How much the temperature drops for each block above {@link #COOLING_START_Y} (1.21.1: 0.05 per 40 blocks). */
+    /** How much the temperature drops for each block above the climate's cooling start (0.05 per 40 blocks). */
     private static final float COOLING_PER_BLOCK = 0.05f / 40;
     /** How far the game's temperature noise moves the snow line either way, in blocks, at most. */
     private static final int SNOW_LINE_NOISE = 8;
@@ -56,7 +54,7 @@ public record WorldFacts(int surfaceY, Weather weather, OptionalInt snowLine, bo
         if (!climate.precipitation()) {
             return Weather.NONE;
         }
-        float cooling = Math.max(0, y - COOLING_START_Y) * COOLING_PER_BLOCK;
+        float cooling = Math.max(0, y - climate.coolingStartY()) * COOLING_PER_BLOCK;
         return climate.temperature() - cooling < SNOW_BELOW ? Weather.SNOW : Weather.RAIN;
     }
 
@@ -65,7 +63,7 @@ public record WorldFacts(int surfaceY, Weather weather, OptionalInt snowLine, bo
         if (!climate.precipitation() || climate.temperature() < SNOW_BELOW) {
             return OptionalInt.empty();
         }
-        return OptionalInt.of(COOLING_START_Y + (int) Math.ceil((climate.temperature() - SNOW_BELOW)
+        return OptionalInt.of(climate.coolingStartY() + (int) Math.ceil((climate.temperature() - SNOW_BELOW)
                 / COOLING_PER_BLOCK));
     }
 }
