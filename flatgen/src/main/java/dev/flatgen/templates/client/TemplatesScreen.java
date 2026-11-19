@@ -15,8 +15,8 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.client.FactPictures;
+import dev.flatgen.facts.client.FactsNow;
 import dev.flatgen.facts.rules.Facts;
-import dev.flatgen.facts.rules.Situation;
 import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
@@ -27,7 +27,6 @@ import dev.flatgen.templates.rules.Templates;
 import dev.flatgen.templates.rules.Values;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -50,17 +49,19 @@ public final class TemplatesScreen extends FlatgenScreen {
     private static final int FOOTER = 32;
 
     private final EditorContext editor;
+    /** The world the template makes now, as the facts need it. */
+    private final FactsNow facts;
     private Template template = Templates.ALL.get(0);
     private Values values = Values.defaults(template.parameters());
     /** What the template made for the values it was last asked with, kept until the template or a value changes. */
     private List<Object> madeFor = List.of();
     private Preset made;
-    private Optional<Situation> situation = Optional.empty();
 
     /** The templates, for the editor that opened them. */
     public TemplatesScreen(EditorContext editor) {
         super(Component.translatable("flatgen.templates.title"));
         this.editor = editor;
+        this.facts = new FactsNow(editor, this::made);
     }
 
     @Override
@@ -79,7 +80,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         int controlsX = MARGIN + PREVIEW_WIDTH + 2 * MARGIN;
         FlowLayout controls = new FlowLayout(new Rect(controlsX, top, width - controlsX - MARGIN, 0), ROW_HEIGHT, GAP);
         Facts.ALL.forEach(fact -> widgets.add(new Badge(controls.next(Badge.SIZE),
-                () -> situation().map(world -> new Badge.Look(FactPictures.icon(fact.show(world)),
+                () -> facts.get().map(world -> new Badge.Look(FactPictures.icon(fact.show(world)),
                         FactPictures.words(fact.show(world)))))));
         template.parameters().forEach(parameter -> widgets.add(parameter.accept(new Control(controls))));
         FlowLayout footer = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2,
@@ -112,16 +113,8 @@ public final class TemplatesScreen extends FlatgenScreen {
         if (!key.equals(madeFor)) {
             madeFor = key;
             made = template.make(values, editor.world());
-            situation = Biomes.info(made.biome(), editor.registries())
-                    .map(biome -> Situation.of(biome, editor.world().floor() + made.height(), true));
         }
         return made;
-    }
-
-    /** The world the template makes now, as the facts need it; none for a biome the game lacks. */
-    private Optional<Situation> situation() {
-        made();
-        return situation;
     }
 
     /** The column the template makes now, drawn small. */
