@@ -65,8 +65,8 @@ v3 and v4 may swap; both come after v2.
 | F11 | [Preset library](11-preset-library.md) | done | F02, F03 |
 | F12 | [Favourites and default](12-favourites-and-default.md) | done | F11 |
 | F13 | [Built-in presets](13-built-in-presets.md) | done | F11 |
-| F14 | [Templates](14-templates.md) | doing | F11 |
-| F15 | [Sharing preset files](15-preset-files.md) | doing | F11 |
+| F14 | [Templates](14-templates.md) | done | F11 |
+| F15 | [Sharing preset files](15-preset-files.md) | done | F11 |
 
 **M4, finish and release v1**
 

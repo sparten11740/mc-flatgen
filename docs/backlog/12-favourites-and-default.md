@@ -54,3 +54,8 @@ Both loaders, in dev clients with Blockpilot: a right click stars a card, which 
 row; Default and Start on Superflat are kept in library.json; leaving to the title and opening Create World starts on
 Superflat with the default preset applied, as Customize shows. Not tried in game: choosing Superflat by hand after
 changing the settings (never replaced; unit-tested), and unstarring.
+
+After the M3 review's fixes, both loaders: a default equal to the game's own flat world but for No mobs is applied
+once on a new world's Create World screen, the client answering throughout (before, it was applied again forever), and
+the world made has mob spawning off; switching that screen to Large Biomes takes the option back, its world spawning
+mobs; re-creating a world leaves its type alone, with Start on Superflat on.

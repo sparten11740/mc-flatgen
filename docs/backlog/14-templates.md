@@ -1,6 +1,6 @@
 # F14 Templates
 
-Milestone: M3 presets · Release: v1 · Status: doing · Depends on: F11
+Milestone: M3 presets · Release: v1 · Status: done · Depends on: F11
 
 ## Why
 
@@ -14,13 +14,13 @@ Use turns the result into the editor's layers, to change further or save.
 
 ## Acceptance criteria
 
-- [ ] Tall flat: ground height (surface Y), top block, filler block.
-- [ ] Airship field: deep ground to a chosen height with a grass top, no structures, always clear (Create Aeronautics
+- [x] Tall flat: ground height (surface Y), top block, filler block.
+- [x] Airship field: deep ground to a chosen height with a grass top, no structures, always clear (Create Aeronautics
   style, without needing that mod).
-- [ ] Water world: water depth, floor block, floor depth.
-- [ ] Void with platform: the void biome with its start platform.
-- [ ] Test layers: a chosen number of alternating layers of chosen blocks, for testing machines and contraptions.
-- [ ] Live preview through the column and the facts; Use is one undoable edit.
+- [x] Water world: water depth, floor block, floor depth.
+- [x] Void with platform: the void biome with its start platform.
+- [x] Test layers: a chosen number of alternating layers of chosen blocks, for testing machines and contraptions.
+- [x] Live preview through the column and the facts; Use is one undoable edit.
 
 ## Design
 
@@ -33,3 +33,12 @@ Use turns the result into the editor's layers, to change further or save.
 
 - Unit: each template's output for its edge values; every result validates (F02).
 - Dev client: each template's sliders on both nodes.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: the templates screen shows the templates as pictures, the column's
+preview and the facts beside the settings; the tall flat's height slider moves by a click and the wheel (Y 214, then
+216), Use puts bedrock, 278 stone and grass in the editor with the surface at Y 216 as one step, and Undo takes it back;
+the water world puts sand 5 deep under 30 of water in an ocean, and test layers eight alternating concrete layers. Not
+tried in game: the airship field and the void with platform (unit-tested), and choosing the top and filler blocks
+through the block picker.
