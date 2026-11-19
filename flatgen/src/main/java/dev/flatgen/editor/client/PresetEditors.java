@@ -37,12 +37,13 @@ public final class PresetEditors {
     }
 
     /**
-     * The editor a world type's Customize button opens: Flatgen's for Superflat, and for a type superflat underneath
-     * with no editor of its own; else the one the game found, none when it found none.
+     * The editor a world type's Customize button opens: Flatgen's for Superflat, and, while Flatgen is on, for a type
+     * superflat underneath with no editor of its own; else the one the game found, none when it found none.
      */
     public static Optional<PresetEditor> editorFor(Holder<WorldPreset> type, Optional<PresetEditor> found,
             HolderLookup.Provider registries) {
-        boolean flatUnderneath = found.isEmpty() && WorldTypes.onlyFlatOverworld(type, registries);
+        boolean flatUnderneath = found.isEmpty() && SettingsFile.read().enabled()
+                && WorldTypes.onlyFlatOverworld(type, registries);
         return edits(type) || flatUnderneath ? Optional.of(EDITOR) : found;
     }
 
