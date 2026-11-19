@@ -21,6 +21,9 @@ import org.lwjgl.glfw.GLFW;
  * The game's {@link Screen} as this version calls it, with input events and a drawing state to extract into, turned
  * into the calls {@link FlatgenScreen} answers alike on every version: drawing through a {@link Canvas}, and the mouse,
  * the wheel, keys and typed characters as plain values. What a call does not take goes on to the game's own handling.
+ *
+ * <p>A Flatgen screen counts in GUI pixels of its own ({@link LayoutScale}): its {@code width} and {@code height}
+ * are set in them as it is laid out, it draws scaled from them to the game's, and the mouse comes to it in them.
  */
 abstract class GameScreen extends Screen {
     /** The blocks' sides drawn on this screen, looked up afresh each time it is laid out. */
@@ -103,8 +106,8 @@ abstract class GameScreen extends Screen {
         graphics.pose().scale(scale.gameUnit());
         McCanvas canvas = new McCanvas(graphics, font, blockSides, scale);
         draw(canvas, (int) scale.fromGame(mouseX), (int) scale.fromGame(mouseY));
-        graphics.pose().popMatrix();
         canvas.finish();
+        graphics.pose().popMatrix();
     }
 
     /**

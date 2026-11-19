@@ -8,13 +8,18 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 //? if >=26.1 {
-/*import net.minecraft.client.renderer.RenderPipelines;
+/*import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.FontDescription;
 *///?}
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
+import org.joml.Vector2i;
+import org.joml.Vector2ic;
 
 /**
  * A {@link Canvas} drawing through the game's GUI graphics, one frame at a time, in {@link Look}'s sprites and the
@@ -26,9 +31,9 @@ final class McCanvas implements Canvas {
     private static final float OVER_ITEMS = 200;
     /** The shade over a control that cannot be used, ARGB: the face of a disabled button, see-through. */
     private static final int DIM = 0xA01B1D21;
-    /** How far the game draws a tooltip right of and above the point it is shown at, in the game's GUI pixels. */
-    private static final int TOOLTIP_OFFSET = 12;
-    /** Space between a rectangle and a tooltip shown below it, in the game's GUI pixels. */
+    /** How far right of and above the mouse a tooltip is drawn, in GUI pixels. */
+    private static final int TOOLTIP_OFFSET = 8;
+    /** Space between a tooltip and what it is shown below, or the screen's edge, in GUI pixels. */
     private static final int TOOLTIP_GAP = 4;
     /** How far the focus ring stands out around what has the focus, in GUI pixels. */
     private static final int RING_SPREAD = 2;
@@ -131,17 +136,17 @@ final class McCanvas implements Canvas {
 
     @Override
     public void blockIcon(String block, Rect area) {
-        float scale = area.width() / (float) Icon.SIZE;
+        float factor = area.width() / (float) Icon.SIZE;
         //? if >=26.1 {
         /*graphics.pose().pushMatrix();
         graphics.pose().translate(area.x(), area.y());
-        graphics.pose().scale(scale);
+        graphics.pose().scale(factor);
         blockIcon(block, 0, 0);
         graphics.pose().popMatrix();
         *///?} else {
         graphics.pose().pushPose();
         graphics.pose().translate(area.x(), area.y(), 0);
-        graphics.pose().scale(scale, scale, 1);
+        graphics.pose().scale(factor, factor, 1);
         blockIcon(block, 0, 0);
         graphics.pose().popPose();
         //?}
@@ -236,26 +241,42 @@ final class McCanvas implements Canvas {
     @Override
     public void tooltipBelow(List<Component> lines, Rect area) {
         tooltip = List.copyOf(lines);
-        tooltipX = scale.toGame(area.x()) - TOOLTIP_OFFSET;
-        tooltipY = scale.toGame(area.bottom()) + TOOLTIP_GAP + TOOLTIP_OFFSET;
+        tooltipX = area.x() + TOOLTIP_GAP;
+        tooltipY = area.bottom() + 2 * TOOLTIP_GAP;
     }
 
     @Override
     public void tooltip(List<Component> lines, int x, int y) {
         tooltip = List.copyOf(lines);
-        tooltipX = scale.toGame(x);
-        tooltipY = scale.toGame(y);
+        tooltipX = x + TOOLTIP_OFFSET;
+        tooltipY = y - TOOLTIP_OFFSET;
     }
 
-    /** Draws the tooltip a widget asked for over everything else, once the screen's own scale is undone. */
+    /**
+     * Draws the tooltip a widget asked for over everything else, in the screen's own scale and its body text, kept
+     * inside the screen.
+     */
     void finish() {
         if (tooltip.isEmpty()) {
             return;
         }
+        List<FormattedCharSequence> lines = tooltip.stream()
+                .map(line -> styled(line, TextStyle.BODY, scale.pixelsPerUnit()).getVisualOrderText()).toList();
+        ClientTooltipPositioner inScreen = (screenWidth, screenHeight, x, y, width, height) -> inScreen(x, y, width,
+                height);
         //? if >=26.1 {
-        /*graphics.setComponentTooltipForNextFrame(font, tooltip, tooltipX, tooltipY);
+        /*graphics.nextStratum();
+        graphics.tooltip(font, lines.stream().map(ClientTooltipComponent::create).toList(), tooltipX, tooltipY,
+                inScreen, null);
         *///?} else {
-        graphics.renderTooltip(font, tooltip, Optional.empty(), tooltipX, tooltipY);
+        graphics.renderTooltip(font, lines, inScreen, tooltipX, tooltipY);
         //?}
+    }
+
+    /** Where a tooltip this big wanting its top left corner here goes so it stays inside the screen. */
+    private Vector2ic inScreen(int x, int y, int width, int height) {
+        int left = Math.max(TOOLTIP_GAP, Math.min(x, scale.width() - width - 2 * TOOLTIP_GAP));
+        int top = Math.max(TOOLTIP_GAP, Math.min(y, scale.height() - height - 2 * TOOLTIP_GAP));
+        return new Vector2i(left, top);
     }
 }

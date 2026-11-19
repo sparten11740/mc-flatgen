@@ -97,8 +97,8 @@ abstract class GameScreen extends Screen {
         graphics.pose().scale(scale.gameUnit(), scale.gameUnit(), 1);
         McCanvas canvas = new McCanvas(graphics, font, blockSides, scale);
         draw(canvas, (int) scale.fromGame(mouseX), (int) scale.fromGame(mouseY));
-        graphics.pose().popPose();
         canvas.finish();
+        graphics.pose().popPose();
     }
 
     /**
