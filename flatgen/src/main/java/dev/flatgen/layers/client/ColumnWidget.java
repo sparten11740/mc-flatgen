@@ -16,6 +16,7 @@ import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
@@ -135,6 +136,18 @@ public final class ColumnWidget implements Widget {
         if (drag.mode() == Mode.NONE && hovered.isPresent()) {
             canvas.tooltip(LayerText.describe(editor.shown(), editor.world(), hovered.getAsInt()), mouseX, mouseY);
         }
+    }
+
+    @Override
+    public List<Widget> focusables() {
+        return List.of(this);
+    }
+
+    /** The focus ring goes round the selected layer, or the column when it has none. */
+    @Override
+    public Optional<Rect> focusArea() {
+        int selected = editor.shown().selected();
+        return Optional.of(selected >= 0 ? layerBounds().get(selected) : column);
     }
 
     @Override

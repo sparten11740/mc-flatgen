@@ -1,11 +1,13 @@
 package dev.flatgen.client.gui;
 
+import dev.flatgen.client.gui.rules.FocusOrder;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.BlockSides;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -24,6 +26,10 @@ public abstract class FlatgenScreen extends Screen {
     private static final int TITLE_COLOR = 0xFFFFFFFF;
 
     private WidgetGroup widgets = new WidgetGroup(List.of());
+    /** The screen's widgets as laid out, each an area the keyboard's focus moves between with Tab. */
+    private List<Widget> areas = List.of();
+    /** The control that has the keyboard's focus, by its place; none before Tab or after a click. */
+    private Optional<FocusOrder.Place> focus = Optional.empty();
     private BlockSides blockSides = new BlockSides();
     /** Whether a widget took the click whose button is held, which then hears the drag and the release. */
     private boolean pressed;
@@ -43,6 +49,11 @@ public abstract class FlatgenScreen extends Screen {
     protected void filesDropped(List<Path> files) {
     }
 
+    /** The control the focus starts on when Tab is first pressed; the first control by default. */
+    protected Optional<Widget> firstFocus() {
+        return Optional.empty();
+    }
+
     /** A key no widget took: the screen's own shortcuts; whether it was one. */
     protected boolean shortcut(int keyCode, Modifiers modifiers) {
         return false;
@@ -56,9 +67,11 @@ public abstract class FlatgenScreen extends Screen {
     @Override
     protected void init() {
         blockSides = new BlockSides();
-        widgets = new WidgetGroup(layOut(width, height));
+        areas = layOut(width, height);
+        widgets = new WidgetGroup(areas);
         pressed = false;
         keyboard = false;
+        focused().ifPresent(control -> control.keyboard(true));
     }
 
     @Override
@@ -67,6 +80,7 @@ public abstract class FlatgenScreen extends Screen {
         McCanvas canvas = new McCanvas(graphics, font, blockSides);
         canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
         widgets.draw(canvas, mouseX, mouseY);
+        focused().flatMap(Widget::focusArea).ifPresent(canvas::focusRing);
         canvas.finish();
     }
 
@@ -75,6 +89,7 @@ public abstract class FlatgenScreen extends Screen {
         if (pressed) {
             return true;
         }
+        moveFocus(Optional.empty());
         pressed = widgets.click(mouseX, mouseY, button, modifiers());
         pressedButton = button;
         keyboard = widgets.takesKeyboard();
@@ -120,6 +135,14 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifierBits) {
+        if (keyCode == GLFW.GLFW_KEY_TAB) {
+            boolean forward = !hasShiftDown();
+            moveFocus(focus.isEmpty() && forward ? firstPlace() : FocusOrder.tab(counts(), focus, forward));
+            return true;
+        }
+        if (focusKey(keyCode)) {
+            return true;
+        }
         if (keyboard && keyCode == GLFW.GLFW_KEY_ESCAPE) {
             keyboard = false;
             widgets.keyboard(false);
@@ -133,7 +156,66 @@ public abstract class FlatgenScreen extends Screen {
 
     @Override
     public boolean charTyped(char character, int modifierBits) {
+        Optional<Widget> focused = focused();
+        if (focused.isPresent()) {
+            return focused.get().type(character) || super.charTyped(character, modifierBits);
+        }
         return (keyboard && widgets.type(character)) || super.charTyped(character, modifierBits);
+    }
+
+    /** A key for the control that has the focus; an arrow it does not take moves the focus within its area. */
+    private boolean focusKey(int keyCode) {
+        Optional<Widget> focused = focused();
+        if (focused.isEmpty()) {
+            return false;
+        }
+        if (focused.get().key(keyCode, modifiers())) {
+            return true;
+        }
+        Optional<FocusOrder.Place> next = Keys.isArrow(keyCode)
+                ? focus.flatMap(place -> FocusOrder.step(counts(), place, Keys.forward(keyCode))) : Optional.empty();
+        next.ifPresent(place -> moveFocus(next));
+        return next.isPresent();
+    }
+
+    /**
+     * Gives the focus to the control at a place, or to none: the control that had it, and one that had the keyboard
+     * from a click, let go of the keyboard, and the new one takes it, scrolled into view.
+     */
+    private void moveFocus(Optional<FocusOrder.Place> to) {
+        focused().ifPresent(control -> control.keyboard(false));
+        keyboard = false;
+        widgets.keyboard(false);
+        focus = to;
+        focus.ifPresent(place -> focused().flatMap(Widget::focusArea).ifPresent(areas.get(place.area())::reveal));
+        focused().ifPresent(control -> control.keyboard(true));
+    }
+
+    /** Where the focus starts: on the screen's first focus if it has one, or else on the first control. */
+    private Optional<FocusOrder.Place> firstPlace() {
+        return firstFocus().flatMap(this::placeOf).or(() -> FocusOrder.tab(counts(), Optional.empty(), true));
+    }
+
+    /** A control's place among the areas' controls; none when it is not one of them. */
+    private Optional<FocusOrder.Place> placeOf(Widget control) {
+        for (int area = 0; area < areas.size(); area++) {
+            int index = areas.get(area).focusables().indexOf(control);
+            if (index >= 0) {
+                return Optional.of(new FocusOrder.Place(area, index));
+            }
+        }
+        return Optional.empty();
+    }
+
+    /** How many controls each area has now. */
+    private List<Integer> counts() {
+        return areas.stream().map(area -> area.focusables().size()).toList();
+    }
+
+    /** The control that has the focus, as the areas are laid out now. */
+    private Optional<Widget> focused() {
+        return focus.flatMap(place -> FocusOrder.within(counts(), place))
+                .map(place -> areas.get(place.area()).focusables().get(place.control()));
     }
 
     private static Modifiers modifiers() {

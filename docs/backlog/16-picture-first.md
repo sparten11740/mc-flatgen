@@ -92,10 +92,13 @@ action pictures, as beside the column they would read as layers.
 - Shapes beside colours: the toggle's light becomes an on or off picture, a button that cannot be used dims its
   picture and says so, the "no" sign (a circle and slash with a dark rim) replaces the red stroke, the card star is an
   outlined star, and the column's fact lines end in their fact's picture.
-- Keyboard focus lives where the keyboard does, in `WidgetGroup`: each widget says whether it takes focus and where its
-  focus is; Tab moves between the screen's areas (its top-level groups), arrows within one, Enter uses, Escape goes
-  back, and a click hides the focus ring. The order is pure (`client/gui/rules/FocusOrder`) and tested. The ring is
-  drawn once by `FlatgenScreen`, black then white, a shape not a colour.
+- Keyboard focus: each widget gives the controls the focus can move to (`Widget.focusables`, a group its widgets',
+  a `Control` itself) and where its ring goes; `FlatgenScreen` keeps the focus as a place, an area (one of its
+  top-level widgets) and a control within it, so a panel that lays itself out again as it scrolls keeps it. Tab moves
+  between areas, the arrows within one when the control does not take them, Enter or Space uses, Escape goes back, a
+  click hides the ring; a scrolling area scrolls the focused control into view. The order is pure
+  (`client/gui/rules/FocusOrder`) and tested. The ring is drawn once by `FlatgenScreen`, white then black, a shape
+  not a colour.
 - Narration: each widget describes itself as a `Narration` (kind, name, state, whether usable); `FlatgenScreen` turns
   the focused or hovered one into the game's narration, so no feature touches the game's narration API.
 

@@ -9,12 +9,13 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * A whole number from a range, set by pressing or dragging along it or by turning the wheel over it (one a notch, ten
  * with Shift), with its name and value written on it, as the game's own sliders look.
  */
-public final class Slider implements Widget {
+public final class Slider implements Control {
     /** The width of the handle, in GUI pixels. */
     private static final int HANDLE = 8;
     /** How far a notch of the wheel moves the value, alone and with Shift. */
@@ -76,9 +77,29 @@ public final class Slider implements Widget {
         if (!bounds.contains(x, y)) {
             return false;
         }
-        int step = modifiers.shift() ? SHIFT_WHEEL_STEP : WHEEL_STEP;
-        onChange.accept(within(value.getAsInt() + (int) Math.signum(amount) * step));
+        move((int) Math.signum(amount), modifiers);
         return true;
+    }
+
+    /** Left and Right move it while it has the focus, as the wheel does; Up and Down move the focus on. */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        int direction = keyCode == GLFW.GLFW_KEY_RIGHT ? 1 : keyCode == GLFW.GLFW_KEY_LEFT ? -1 : 0;
+        if (direction != 0) {
+            move(direction, modifiers);
+        }
+        return direction != 0;
+    }
+
+    /** Moves the value a step up or down, ten with Shift. */
+    private void move(int direction, Modifiers modifiers) {
+        int step = modifiers.shift() ? SHIFT_WHEEL_STEP : WHEEL_STEP;
+        onChange.accept(within(value.getAsInt() + direction * step));
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

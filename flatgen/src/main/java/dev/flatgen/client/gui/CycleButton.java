@@ -4,7 +4,6 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import dev.flatgen.mc.UiSounds;
 import java.util.List;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -15,7 +14,7 @@ import net.minecraft.network.chat.Component;
  * for each state, the one it is in filled and the others hollow, so how many there are and which is on show without
  * words or colour; its tooltip names the state.
  */
-public final class CycleButton implements Widget {
+public final class CycleButton implements Control {
     /** The border around the picture, and the size of a pip and the space before it, in GUI pixels. */
     private static final int BORDER = 2;
     private static final int PIP = 4;
@@ -71,12 +70,18 @@ public final class CycleButton implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
-            return false;
-        }
-        UiSounds.click();
-        next.run();
-        return true;
+        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(() -> true, next);
+    }
+
+    /** Enter or Space uses it while it has the focus, as a click does. */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        return Keys.uses(keyCode) && Control.use(() -> true, next);
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

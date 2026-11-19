@@ -13,6 +13,7 @@ import dev.flatgen.client.gui.TextField;
 import dev.flatgen.client.gui.TextLines;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -113,6 +114,27 @@ public final class LibraryScreen extends FlatgenScreen {
     protected List<Widget> layOut(int width, int height) {
         FlowLayout rows = new FlowLayout(new Rect(MARGIN, ROWS_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
         List<Widget> widgets = new ArrayList<>();
+        widgets.add(new WidgetGroup(nameRow(rows)));
+        rows.newRow();
+        widgets.add(new WidgetGroup(actionRow(rows)));
+        rows.newRow();
+        widgets.add(new WidgetGroup(switchRow(rows)));
+        widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
+        int gridTop = rows.bottom() + GAP;
+        widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
+                CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
+                file -> choose(choices.toggleFavourite(file))));
+        return widgets;
+    }
+
+    @Override
+    public void onClose() {
+        minecraft.setScreen(editor.screen());
+    }
+
+    /** The first row, an area of its own: the name, saving and renaming, then Use and Back. */
+    private List<Widget> nameRow(FlowLayout rows) {
+        List<Widget> widgets = new ArrayList<>();
         widgets.add(new Label(Icon.item("minecraft:name_tag"), Component.empty(), rows.next(Icon.SIZE)));
         nameField = new TextField("name", rows.next(NAME_WIDTH), Component.translatable("flatgen.library.name"), name,
                 text -> name = text);
@@ -126,7 +148,12 @@ public final class LibraryScreen extends FlatgenScreen {
                 () -> List.of(Component.translatable("flatgen.library.apply_tip"))));
         widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"),
                 rows.next(BUTTON_WIDTH), this::onClose));
-        rows.newRow();
+        return widgets;
+    }
+
+    /** The second row: copying, sharing, pasting, the folder, the built-ins, then what cannot be undone. */
+    private List<Widget> actionRow(FlowLayout rows) {
+        List<Widget> widgets = new ArrayList<>();
         widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate", rows,
                 this::duplicate, () -> pickedPreset().isPresent()));
         widgets.add(picture(Icon.TO_CLIPBOARD, "flatgen.library.share", rows, this::share,
@@ -142,7 +169,12 @@ public final class LibraryScreen extends FlatgenScreen {
         rows.next(DANGER_GAP);
         widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
         widgets.add(picture(DELETE, "flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
-        rows.newRow();
+        return widgets;
+    }
+
+    /** The third row: the default and starting on Superflat. */
+    private List<Widget> switchRow(FlowLayout rows) {
+        List<Widget> widgets = new ArrayList<>();
         widgets.add(new Toggle(DEFAULT, Component.translatable("flatgen.library.default"), rows.next(TOGGLE_WIDTH),
                 () -> picked.isPresent() && picked.equals(choices.defaultFile()),
                 () -> choose(choices.toggleDefault(picked.get())), () -> pickedPreset().isPresent(),
@@ -150,17 +182,7 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
                 rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
                 () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
-        widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
-        int gridTop = rows.bottom() + GAP;
-        widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
-                CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
-                file -> choose(choices.toggleFavourite(file))));
         return widgets;
-    }
-
-    @Override
-    public void onClose() {
-        minecraft.setScreen(editor.screen());
     }
 
     /** A picture button, its tooltip its name and what it does. */

@@ -1,13 +1,16 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A part of a Flatgen screen: it draws through a {@link Canvas} and hears the mouse in screen coordinates. A screen
  * hands a click to its widgets topmost first until one takes it; that widget then hears the drag and the release. A
- * widget that can take the keyboard has it after it took a click, until another widget takes a click.
+ * widget that can take the keyboard has it after it took a click, until another widget takes a click. A control can
+ * also have the keyboard's focus, moved to it with Tab and the arrows; it then hears the keys, Enter using it.
  */
 public interface Widget {
     /** Draws the widget, knowing where the mouse is. */
@@ -48,6 +51,23 @@ public interface Widget {
     /** A character typed while the widget has the keyboard; whether the widget took it. */
     default boolean type(char character) {
         return false;
+    }
+
+    /**
+     * The controls the keyboard's focus can move to, in order: the widget itself for a control, its widgets' for a
+     * group, none by default.
+     */
+    default List<Widget> focusables() {
+        return List.of();
+    }
+
+    /** Where the focus ring is drawn while the widget has the focus; none for a widget that never has it. */
+    default Optional<Rect> focusArea() {
+        return Optional.empty();
+    }
+
+    /** Brings this part of the screen into view, a group that scrolls scrolling to it; nothing by default. */
+    default void reveal(Rect area) {
     }
 
     /**

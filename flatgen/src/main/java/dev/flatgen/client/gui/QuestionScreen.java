@@ -3,6 +3,7 @@ package dev.flatgen.client.gui;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -26,6 +27,8 @@ public final class QuestionScreen extends FlatgenScreen {
     private final Icon picture;
     private final List<Component> words;
     private final Runnable yes;
+    /** The No button as last laid out, where the keyboard's focus starts, so Enter alone does nothing for good. */
+    private Widget no;
 
     /**
      * Asks a question titled so, in these words, running {@code yes} and going back to {@code parent} on Yes; the
@@ -46,12 +49,18 @@ public final class QuestionScreen extends FlatgenScreen {
         int buttonsY = WORDS_TOP + wordsHeight + 2 * GAP;
         FlowLayout row = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2, buttonsY,
                 2 * BUTTON_WIDTH + GAP, 0), BUTTON_HEIGHT, GAP);
+        Widget answerYes = new TextButton(Icon.TICK, CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes);
+        no = new TextButton(Icon.CROSS, CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose);
         return List.of(
                 new Label(picture, Component.empty(), new Rect((width - Icon.SIZE) / 2, PICTURE_TOP, Icon.SIZE,
                         Icon.SIZE)),
                 new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> lines),
-                new TextButton(Icon.TICK, CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes),
-                new TextButton(Icon.CROSS, CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose));
+                new WidgetGroup(List.of(answerYes, no)));
+    }
+
+    @Override
+    protected Optional<Widget> firstFocus() {
+        return Optional.ofNullable(no);
     }
 
     /** The question's words in lines no wider than this. */

@@ -23,6 +23,9 @@ final class McCanvas implements Canvas {
     private static final float OVER_ITEMS = 200;
     /** The shade laid over a control that cannot be used, ARGB. */
     private static final int DIM = 0x90000000;
+    /** The focus ring's colours, outside and inside. */
+    private static final int RING_OUTSIDE = 0xFFFFFFFF;
+    private static final int RING_INSIDE = 0xFF000000;
 
     private final GuiGraphics graphics;
     private final Font font;
@@ -107,6 +110,16 @@ final class McCanvas implements Canvas {
     @Override
     public void dim(Rect area) {
         overItems(() -> graphics.fill(area.x(), area.y(), area.right(), area.bottom(), DIM));
+    }
+
+    @Override
+    public void focusRing(Rect area) {
+        overItems(() -> drawRing(area));
+    }
+
+    private void drawRing(Rect area) {
+        outline(new Rect(area.x() - 1, area.y() - 1, area.width() + 2, area.height() + 2), RING_OUTSIDE);
+        outline(area, RING_INSIDE);
     }
 
     /** Draws above the items drawn so far. */

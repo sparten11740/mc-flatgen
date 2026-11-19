@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
  * replace it, and Enter hands the new number on, while Escape or a click elsewhere, which take the keyboard away,
  * leave it as it was.
  */
-public final class NumberField implements Widget {
+public final class NumberField implements Control {
     /** The most characters typed, enough for any Y or height with its sign. */
     private static final int MOST_CHARACTERS = 6;
 
@@ -79,6 +79,11 @@ public final class NumberField implements Widget {
     @Override
     public boolean type(char character) {
         return typed.type(character);
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

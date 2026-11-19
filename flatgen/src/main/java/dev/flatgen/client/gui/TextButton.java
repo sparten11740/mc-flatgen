@@ -4,7 +4,6 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import dev.flatgen.mc.UiSounds;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
@@ -16,7 +15,7 @@ import net.minecraft.network.chat.Component;
  * picture before the label that says the same to a player who cannot read. It can be unusable for a while, drawn so,
  * with a tooltip saying why.
  */
-public final class TextButton implements Widget {
+public final class TextButton implements Control {
     private static final int LABEL_COLOR = 0xFFFFFFFF;
     private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
     /** Space between the button's edge and its picture, and between the picture and the label, in GUI pixels. */
@@ -98,14 +97,18 @@ public final class TextButton implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
-            return false;
-        }
-        if (active.getAsBoolean()) {
-            UiSounds.click();
-            action.run();
-        }
-        return true;
+        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(active, action);
+    }
+
+    /** Enter or Space uses it while it has the focus, as a click does. */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        return Keys.uses(keyCode) && Control.use(active, action);
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

@@ -69,9 +69,9 @@ public final class TemplatesScreen extends FlatgenScreen {
     protected List<Widget> layOut(int width, int height) {
         FlowLayout row = new FlowLayout(new Rect(MARGIN, ROWS_TOP, width - 2 * MARGIN, 0), PictureButton.SIZE, GAP);
         List<Widget> widgets = new ArrayList<>();
-        Templates.ALL.forEach(choice -> widgets.add(new PictureButton(Icon.item(choice.icon()),
-                row.next(PictureButton.SIZE), () -> choose(choice),
-                () -> List.of(Component.translatable(choice.name())))));
+        widgets.add(new WidgetGroup(Templates.ALL.stream().<Widget>map(choice -> new PictureButton(
+                Icon.item(choice.icon()), row.next(PictureButton.SIZE), () -> choose(choice),
+                () -> List.of(Component.translatable(choice.name())))).toList()));
         int top = row.bottom() + GAP;
         widgets.add(new Label(Icon.item(template.icon()), Component.translatable(template.name()),
                 new Rect(MARGIN, top, width - 2 * MARGIN, Label.height())));
@@ -80,16 +80,19 @@ public final class TemplatesScreen extends FlatgenScreen {
         widgets.add(new Preview(new Rect(MARGIN, top, PREVIEW_WIDTH, previewHeight)));
         int controlsX = MARGIN + PREVIEW_WIDTH + 2 * MARGIN;
         FlowLayout controls = new FlowLayout(new Rect(controlsX, top, width - controlsX - MARGIN, 0), ROW_HEIGHT, GAP);
-        Facts.ALL.forEach(fact -> widgets.add(new Badge(controls.next(Badge.SIZE),
+        List<Widget> settings = new ArrayList<>();
+        Facts.ALL.forEach(fact -> settings.add(new Badge(controls.next(Badge.SIZE),
                 () -> facts.get().map(world -> new Badge.Look(FactPictures.icon(fact.show(world)),
                         FactPictures.words(fact.show(world)))))));
-        template.parameters().forEach(parameter -> widgets.add(parameter.accept(new Control(controls))));
+        template.parameters().forEach(parameter -> settings.add(parameter.accept(new Control(controls))));
+        widgets.add(new WidgetGroup(settings));
         FlowLayout footer = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2,
                 height - (FOOTER + ROW_HEIGHT) / 2, 2 * BUTTON_WIDTH + GAP, 0), ROW_HEIGHT, GAP);
-        widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.templates.use"),
-                footer.next(BUTTON_WIDTH), this::use, () -> true,
-                () -> List.of(Component.translatable("flatgen.templates.use_tip"))));
-        widgets.add(new TextButton(Icon.BACK, CommonComponents.GUI_BACK, footer.next(BUTTON_WIDTH), this::onClose));
+        widgets.add(new WidgetGroup(List.of(
+                new TextButton(Icon.TICK, () -> Component.translatable("flatgen.templates.use"),
+                        footer.next(BUTTON_WIDTH), this::use, () -> true,
+                        () -> List.of(Component.translatable("flatgen.templates.use_tip"))),
+                new TextButton(Icon.BACK, CommonComponents.GUI_BACK, footer.next(BUTTON_WIDTH), this::onClose))));
         return widgets;
     }
 

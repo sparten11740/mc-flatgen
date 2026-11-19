@@ -51,6 +51,12 @@ public interface Canvas {
      */
     void sprite(String id, int x, int y);
 
+    /**
+     * Draws the ring around the control that has the keyboard's focus, white outside and black inside, so it shows on
+     * any background by its shape; above items.
+     */
+    void focusRing(Rect area);
+
     /** Darkens what is drawn in a rectangle, an item there too, as a control that cannot be used is drawn. */
     void dim(Rect area);
 

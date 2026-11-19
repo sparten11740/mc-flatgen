@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
@@ -108,7 +109,7 @@ public final class EditorScreen extends FlatgenScreen {
         int left = space.right() + MARGIN;
         Rect panelSpace = new Rect(left, HEADER, width - left - MARGIN, space.height());
         widgets.add(new ScrollGroup(panelSpace, top -> panels(new Rect(left, top, panelSpace.width(), 0))));
-        widgets.addAll(footer(width, height));
+        widgets.add(new WidgetGroup(footer(width, height)));
         return widgets;
     }
 

@@ -11,7 +11,7 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /** A box to type text into, such as a search, which hands on the text as it changes; empty, it shows a hint. */
-public final class TextField implements Widget {
+public final class TextField implements Control {
     /** The most characters typed. */
     private static final int MOST_CHARACTERS = 64;
     /** The first character a player can type; those below are controls. */
@@ -85,6 +85,11 @@ public final class TextField implements Widget {
         }
         onChange.accept(typed.text());
         return true;
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

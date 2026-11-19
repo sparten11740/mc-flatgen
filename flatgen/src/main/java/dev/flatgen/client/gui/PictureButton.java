@@ -4,7 +4,6 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import dev.flatgen.mc.UiSounds;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -14,7 +13,7 @@ import net.minecraft.network.chat.Component;
  * A button showing a picture in place of words, as the game's buttons look and sound; its tooltip says what it is.
  * It can be unusable for a while, its picture then dimmed, its tooltip saying why.
  */
-public final class PictureButton implements Widget {
+public final class PictureButton implements Control {
     /** The border around the picture, in GUI pixels. */
     private static final int BORDER = 2;
     /** A picture button's size, in GUI pixels: a picture and its border. */
@@ -59,14 +58,18 @@ public final class PictureButton implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
-            return false;
-        }
-        if (usable.getAsBoolean()) {
-            UiSounds.click();
-            action.run();
-        }
-        return true;
+        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(usable, action);
+    }
+
+    /** Enter or Space uses it while it has the focus, as a click does. */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        return Keys.uses(keyCode) && Control.use(usable, action);
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

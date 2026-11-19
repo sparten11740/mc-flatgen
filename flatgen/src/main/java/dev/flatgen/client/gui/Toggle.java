@@ -4,7 +4,6 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
-import dev.flatgen.mc.UiSounds;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
@@ -15,7 +14,7 @@ import net.minecraft.network.chat.Component;
  * cannot read, or tells no green from grey, sees both what it is and whether it is on. A click turns it over; its
  * tooltip says what it does. It can be unusable, drawn greyed, with the tooltip saying why.
  */
-public final class Toggle implements Widget {
+public final class Toggle implements Control {
     /** Space around the icon and the state's picture, and between the icon and the name, in GUI pixels. */
     private static final int PADDING = 2;
     /** Whether it is on, as a shape and not a colour alone: a ticked box, or an empty one. */
@@ -71,14 +70,18 @@ public final class Toggle implements Widget {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
-            return false;
-        }
-        if (usable.getAsBoolean()) {
-            UiSounds.click();
-            turnOver.run();
-        }
-        return true;
+        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(usable, turnOver);
+    }
+
+    /** Enter or Space uses it while it has the focus, as a click does. */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        return Keys.uses(keyCode) && Control.use(usable, turnOver);
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 
     @Override

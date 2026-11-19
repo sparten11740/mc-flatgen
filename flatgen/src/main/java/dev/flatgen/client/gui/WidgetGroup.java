@@ -94,6 +94,11 @@ public final class WidgetGroup implements Widget {
     }
 
     @Override
+    public List<Widget> focusables() {
+        return widgets.stream().flatMap(widget -> widget.focusables().stream()).toList();
+    }
+
+    @Override
     public List<WidgetDescription> describe() {
         List<WidgetDescription> descriptions = new ArrayList<>();
         widgets.forEach(widget -> descriptions.addAll(widget.describe()));
