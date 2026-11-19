@@ -9,7 +9,7 @@ import net.minecraft.network.chat.Component;
 
 /**
  * A question before something that cannot be undone, as deleting a preset: its words, and Yes and No. Yes does it and
- * goes back; No, Escape and Cancel go back without.
+ * goes back, unless doing it showed another screen; No and Escape go back without.
  */
 public final class QuestionScreen extends FlatgenScreen {
     /** Where the words start, below the title, in GUI pixels. */
@@ -49,8 +49,11 @@ public final class QuestionScreen extends FlatgenScreen {
         minecraft.setScreen(parent);
     }
 
+    /** Does what was asked, then goes back, unless doing it already showed another screen. */
     private void answerYes() {
         yes.run();
-        onClose();
+        if (minecraft.screen == this) {
+            onClose();
+        }
     }
 }
