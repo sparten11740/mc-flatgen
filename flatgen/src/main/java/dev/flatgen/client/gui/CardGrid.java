@@ -1,5 +1,6 @@
 package dev.flatgen.client.gui;
 
+import dev.flatgen.client.gui.rules.GridSteps;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
@@ -8,6 +9,7 @@ import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -18,7 +20,7 @@ import net.minecraft.network.chat.Component;
  * wheel a row of cards at a time. A left click picks a card's entry; in a grid with stars a right click stars or
  * unstars it and a starred card has a mark. What a card shows comes from {@link Cards}.
  */
-public final class CardGrid implements Widget {
+public final class CardGrid implements Control {
     /** Space above a section's heading, in GUI pixels. */
     private static final int SECTION_GAP = 4;
     /** The height of a section's heading, in GUI pixels: a line of text and a little space under it. */
@@ -37,6 +39,8 @@ public final class CardGrid implements Widget {
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
     private int scroll;
+    /** The card the keyboard is on while the grid has the focus, by its place among the cards; the first at first. */
+    private int focusedCard;
     /** The sections {@link #placed} was laid out for, at the scroll it had, and that layout. */
     private List<Section> placedSections;
     private int placedScroll;
@@ -100,6 +104,7 @@ public final class CardGrid implements Widget {
     }
 
     /** Where the grid is drawn: the part of it in sight. */
+    @Override
     public Rect bounds() {
         return bounds;
     }
@@ -118,6 +123,9 @@ public final class CardGrid implements Widget {
     private Placed placed() {
         List<Section> current = sections.get();
         if (current != placedSections || scroll != placedScroll) {
+            if (current != placedSections) {
+                focusedCard = 0;
+            }
             placedSections = current;
             placedScroll = scroll;
             placed = layOut(current);
@@ -172,9 +180,52 @@ public final class CardGrid implements Widget {
         if (!bounds.contains(x, y)) {
             return false;
         }
-        int bottom = cards().stream().mapToInt(card -> card.place().bottom()).max().orElse(bounds.y()) + scroll;
-        scroll = Scrolling.scrolled(scroll, amount, cardHeight, bottom - bounds.bottom());
+        scroll = Scrolling.scrolled(scroll, amount, cardHeight, hidden());
         return true;
+    }
+
+    /**
+     * The keys while the grid has the focus: the arrows move from card to card, Enter picks the card and Shift with
+     * Enter stars it, as the mouse's buttons do.
+     */
+    @Override
+    public boolean key(int keyCode, Modifiers modifiers) {
+        List<Card> all = cards();
+        if (all.isEmpty()) {
+            return false;
+        }
+        if (Keys.uses(keyCode)) {
+            (modifiers.shift() ? onStar : onPick).accept(focused(all).entry().id());
+            return true;
+        }
+        OptionalInt next = GridSteps.next(all.stream().map(Card::place).toList(), focusedCard, Keys.across(keyCode),
+                Keys.down(keyCode));
+        next.ifPresent(this::moveTo);
+        return Keys.isArrow(keyCode);
+    }
+
+    /** The ring goes round the card the keyboard is on, or the grid while it shows none. */
+    @Override
+    public Optional<Rect> focusArea() {
+        List<Card> all = cards();
+        return Optional.of(all.isEmpty() ? bounds : focused(all).place());
+    }
+
+    /** Puts the keyboard on a card, scrolling it into sight. */
+    private void moveTo(int card) {
+        focusedCard = card;
+        scroll = Scrolling.showing(scroll, cards().get(card).place(), bounds, hidden());
+    }
+
+    /** The card the keyboard is on, of these cards, the grid shows. */
+    private Card focused(List<Card> all) {
+        return all.get(Math.min(focusedCard, all.size() - 1));
+    }
+
+    /** How far the cards reach below the grid's window when it is scrolled to the top, in GUI pixels. */
+    private int hidden() {
+        int bottom = cards().stream().mapToInt(card -> card.place().bottom()).max().orElse(bounds.y()) + scroll;
+        return Math.max(0, bottom - bounds.bottom());
     }
 
     private void drawCard(Canvas canvas, Card card, boolean hovered) {

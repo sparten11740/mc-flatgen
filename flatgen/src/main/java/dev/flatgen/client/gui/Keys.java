@@ -22,4 +22,14 @@ final class Keys {
     static boolean forward(int keyCode) {
         return keyCode == GLFW.GLFW_KEY_DOWN || keyCode == GLFW.GLFW_KEY_RIGHT;
     }
+
+    /** Which way an arrow moves across: 1 for Right, -1 for Left, 0 for any other key. */
+    static int across(int keyCode) {
+        return keyCode == GLFW.GLFW_KEY_RIGHT ? 1 : keyCode == GLFW.GLFW_KEY_LEFT ? -1 : 0;
+    }
+
+    /** Which way an arrow moves up or down: 1 for Down, -1 for Up, 0 for any other key. */
+    static int down(int keyCode) {
+        return keyCode == GLFW.GLFW_KEY_DOWN ? 1 : keyCode == GLFW.GLFW_KEY_UP ? -1 : 0;
+    }
 }

@@ -122,10 +122,7 @@ public final class ScrollGroup implements Widget {
     /** Scrolls so that a part of the widgets is in the window, as far as it fits. */
     @Override
     public void reveal(Rect area) {
-        int above = window.y() - area.y();
-        int below = area.bottom() - window.bottom();
-        int moved = above > 0 ? scroll - above : below > 0 ? scroll + below : scroll;
-        int scrolled = Math.max(0, Math.min(hidden(), moved));
+        int scrolled = Scrolling.showing(scroll, area, window, hidden());
         if (scrolled != scroll) {
             scroll = scrolled;
             layOut();

@@ -9,7 +9,6 @@ import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * A whole number from a range, set by pressing or dragging along it or by turning the wheel over it (one a notch, ten
@@ -84,7 +83,7 @@ public final class Slider implements Control {
     /** Left and Right move it while it has the focus, as the wheel does; Up and Down move the focus on. */
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
-        int direction = keyCode == GLFW.GLFW_KEY_RIGHT ? 1 : keyCode == GLFW.GLFW_KEY_LEFT ? -1 : 0;
+        int direction = Keys.across(keyCode);
         if (direction != 0) {
             move(direction, modifiers);
         }
