@@ -47,6 +47,11 @@ public final class Badge implements Control {
         }
     }
 
+    @Override
+    public List<Component> tooltip() {
+        return look.get().map(Look::tooltip).orElse(List.of());
+    }
+
     /** Its words, as its tooltip shows them. */
     @Override
     public Optional<Narration> narration() {

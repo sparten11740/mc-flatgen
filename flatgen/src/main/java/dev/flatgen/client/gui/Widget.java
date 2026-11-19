@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.network.chat.Component;
 
 /**
  * A part of a Flatgen screen: it draws through a {@link Canvas} and hears the mouse in screen coordinates. A screen
@@ -64,6 +65,11 @@ public interface Widget {
     /** Where the focus ring is drawn while the widget has the focus; none for a widget that never has it. */
     default Optional<Rect> focusArea() {
         return Optional.empty();
+    }
+
+    /** The tooltip the widget shows, under the mouse and, by the screen, while it has the focus; none by default. */
+    default List<Component> tooltip() {
+        return List.of();
     }
 
     /** What the widget says to the game's narrator while it has the focus; nothing by default. */

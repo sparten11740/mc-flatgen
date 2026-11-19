@@ -69,6 +69,11 @@ public final class PictureButton implements Control {
     }
 
     @Override
+    public List<Component> tooltip() {
+        return tooltip.get();
+    }
+
+    @Override
     public Optional<Narration> narration() {
         return Optional.of(Narration.button(tooltip.get(), usable.getAsBoolean()));
     }

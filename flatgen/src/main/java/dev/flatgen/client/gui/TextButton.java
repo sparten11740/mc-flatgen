@@ -107,6 +107,11 @@ public final class TextButton implements Control {
     }
 
     @Override
+    public List<Component> tooltip() {
+        return tooltip.get();
+    }
+
+    @Override
     public Optional<Narration> narration() {
         Component name = label.get();
         return Optional.of(name.getString().isEmpty() ? Narration.button(tooltip.get(), active.getAsBoolean())

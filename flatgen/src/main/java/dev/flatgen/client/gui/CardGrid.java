@@ -204,6 +204,13 @@ public final class CardGrid implements Control {
         return Keys.isArrow(keyCode);
     }
 
+    /** The tooltip of the card the keyboard is on. */
+    @Override
+    public List<Component> tooltip() {
+        List<Card> all = cards();
+        return all.isEmpty() ? List.of() : describe(focused(all).entry());
+    }
+
     /** The card the keyboard is on: its name, what its tooltip says, and whether it is starred. */
     @Override
     public Optional<Narration> narration() {
