@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.preset.rules.PresetJson;
 import dev.flatgen.preset.rules.TestPresets;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +43,16 @@ class PresetStoreTest {
         assertEquals("minecraft:desert", store.load().get(1).preset().orElseThrow().biome());
         assertTrue(store.delete("towering.json"));
         assertEquals(List.of("tall_flat_2.json"), files(store));
+    }
+
+    @Test
+    void keepsAFileWhoseNameDiffersOnlyInCaseAndNeverTakesOneSoNamed() throws IOException {
+        PresetStore store = new PresetStore(folder);
+        Files.writeString(folder.resolve("Skyblock.json"), PresetJson.write(TALL
+                .withName("Skyblock")));
+        assertEquals(Optional.of("Skyblock.json"), store.rename("Skyblock.json", TALL, "Skyblock"));
+        assertEquals(List.of("Skyblock.json"), files(store));
+        assertEquals(Optional.of("skyblock_2.json"), store.saveNew(TALL.withName("skyblock")));
     }
 
     @Test

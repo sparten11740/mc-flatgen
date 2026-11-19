@@ -60,6 +60,7 @@ class PresetLibraryTest {
     void keepsAPresetInAFileNamedAfterIt() {
         assertEquals("tall_flat.json", PresetLibrary.fileName("Tall Flat!", Set.of()));
         assertEquals("tall_flat_2.json", PresetLibrary.fileName("tall flat", Set.of("tall_flat.json")));
+        assertEquals("tall_flat_2.json", PresetLibrary.fileName("tall flat", Set.of("Tall_Flat.json")));
         assertEquals("preset.json", PresetLibrary.fileName("!!!", Set.of()));
         assertEquals("uberwelt.json", PresetLibrary.fileName("Überwelt", Set.of()));
     }

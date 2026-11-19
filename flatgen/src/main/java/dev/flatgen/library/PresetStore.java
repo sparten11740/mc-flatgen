@@ -60,12 +60,13 @@ public final class PresetStore implements PresetSource {
     }
 
     /**
-     * Gives a file's preset another name, in a file named after it; the new file's name, none when it could not be
-     * written, in which case the old file stays.
+     * Gives a file's preset another name, in a file named after it, or in its own when the new file's name differs only
+     * in case; the file's name, none when it could not be written, in which case the old file stays.
      */
     public Optional<String> rename(String file, Preset preset, String name) {
         List<String> others = files().stream().filter(other -> !other.equals(file)).toList();
-        String renamed = PresetLibrary.fileName(name, others);
+        String named = PresetLibrary.fileName(name, others);
+        String renamed = named.equalsIgnoreCase(file) ? file : named;
         if (!write(renamed, preset.withName(name))) {
             return Optional.empty();
         }

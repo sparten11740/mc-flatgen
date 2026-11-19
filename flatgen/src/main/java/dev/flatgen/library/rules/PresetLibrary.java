@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The presets of the library: the player's own (F11), files of config/flatgen/presets, and the built-in ones (F13) of
@@ -105,15 +106,17 @@ public final class PresetLibrary {
     /**
      * A file name for a preset's name not taken yet: its words in plain lower case letters joined by underscores, as
      * {@code tall_flat.json} ("Überwelt" becomes {@code uberwelt.json}), with the first free number when taken, as
-     * {@code tall_flat_2.json}.
+     * {@code tall_flat_2.json}. A name is taken whatever its case, as on the file systems that ignore it.
      */
     public static String fileName(String presetName, Collection<String> takenFiles) {
+        Set<String> taken = takenFiles.stream().map(file -> file.toLowerCase(Locale.ROOT))
+                .collect(Collectors.toSet());
         String plainLetters = Normalizer.normalize(presetName, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
         String words = plainLetters.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", WORD_JOIN)
                 .replaceAll("^" + WORD_JOIN + "+|" + WORD_JOIN + "+$", "");
         String base = words.isEmpty() ? UNNAMED : words;
         String file = base + JSON;
-        for (int number = 2; takenFiles.contains(file); number++) {
+        for (int number = 2; taken.contains(file); number++) {
             file = base + WORD_JOIN + number + JSON;
         }
         return file;
