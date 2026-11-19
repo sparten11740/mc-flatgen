@@ -60,6 +60,8 @@ import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
  * screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
+    /** The width of a region without an end, in GUI pixels, for measuring what panels place in it. */
+    private static final int UNBOUNDED = 100_000;
     /** Space between the header's picture and the title, in GUI pixels. */
     private static final int TITLE_GAP = 4;
     /** How wide the world on the left and the settings on the right are, in GUI pixels. */
@@ -218,10 +220,13 @@ public final class EditorScreen extends FlatgenScreen {
             layers = new Rect(world.right() + PageFrame.GAP, body.y(), aside.x() - 2 * PageFrame.GAP - world.right(),
                     body.height());
             int controlTop = (PageFrame.HEADER - DimensionTabs.HEIGHT) / 2;
-            int tabsWidth = DimensionTabs.width(editor);
-            tabs = new Rect((width - tabsWidth) / 2, controlTop, tabsWidth, DimensionTabs.HEIGHT);
             int switchWidth = Toggle.width(textWidth(Component.translatable("flatgen.editor.advanced")));
             advanced = new Rect(width - PageFrame.MARGIN - switchWidth, controlTop, switchWidth, DimensionTabs.HEIGHT);
+            int tabsWidth = DimensionTabs.width(editor);
+            int titleRight = PageFrame.MARGIN + Icon.SIZE + TITLE_GAP + textWidth(title, TextStyle.TITLE);
+            int latest = advanced.x() - PageFrame.GAP - headerToolsWidth() - PageFrame.GAP - tabsWidth;
+            int tabsX = Math.max(titleRight + PageFrame.GAP, Math.min((width - tabsWidth) / 2, latest));
+            tabs = new Rect(tabsX, controlTop, tabsWidth, DimensionTabs.HEIGHT);
             int toolsX = tabs.right() + PageFrame.GAP;
             areas.put(EditorRegion.HEADER, new Rect(toolsX, (PageFrame.HEADER - EditorRegion.HEADER.rowHeight()) / 2,
                     advanced.x() - PageFrame.GAP - toolsX, 0));
@@ -249,6 +254,20 @@ public final class EditorScreen extends FlatgenScreen {
                         Component.translatable("flatgen.editor.vanilla"), place, EditorScreen.this::openVanilla));
             }
             return layout;
+        }
+
+        /**
+         * How wide the panels' tools in the header are, measured by laying the panels out once in regions without an
+         * end, so the dimensions can make room for them on a narrow screen.
+         */
+        private int headerToolsWidth() {
+            Map<EditorRegion, Rect> unbounded = new EnumMap<>(EditorRegion.class);
+            for (EditorRegion region : EditorRegion.values()) {
+                unbounded.put(region, new Rect(0, 0, UNBOUNDED, 0));
+            }
+            EditorLayout layout = new EditorLayout(unbounded, EditorScreen.this::textWidth);
+            shownPanels().forEach(panel -> panel.layOut(editor, layout));
+            return Math.max(0, layout.flow(EditorRegion.HEADER).rest().x() - PageFrame.GAP);
         }
 
         /** The aside's widgets with its top here, as it scrolls. */

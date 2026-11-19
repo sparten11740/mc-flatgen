@@ -60,13 +60,16 @@ public final class EditorLayout {
     }
 
     /**
-     * Adds a button with a picture and its name to a region, after what is there, as wide as the name needs; its
-     * tooltip is its name, then what {@code more} says. Returns it, to be drawn as another kind.
+     * Adds a button with a picture and its name to a region, after what is there, as wide as the name needs, or only
+     * its picture, square, when the rest of the row has no room for the name; its tooltip is its name, then what
+     * {@code more} says. Returns it, to be drawn as another kind.
      */
     public TextButton button(EditorRegion region, Icon icon, Component name, Runnable action, BooleanSupplier usable,
             Supplier<List<Component>> more) {
-        TextButton button = new TextButton(icon, () -> name, flow(region).next(TextButton.width(
-                textWidth.applyAsInt(name))), action, usable,
+        FlowLayout flow = flow(region);
+        int named = TextButton.width(textWidth.applyAsInt(name));
+        int width = flow.rest().width() >= named ? named : region.rowHeight();
+        TextButton button = new TextButton(icon, () -> name, flow.next(width), action, usable,
                 () -> Stream.concat(Stream.of(name), more.get().stream()).toList());
         add(region, button);
         return button;
