@@ -16,8 +16,6 @@ import dev.flatgen.editor.rules.History;
 import dev.flatgen.editor.rules.World;
 import dev.flatgen.facts.client.FactMarkers;
 import dev.flatgen.layers.client.ColumnWidget;
-import dev.flatgen.library.PresetImports;
-import dev.flatgen.library.PresetStore;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
@@ -131,12 +129,14 @@ public final class EditorScreen extends FlatgenScreen {
         return false;
     }
 
-    /** Preset files dropped on the editor go to the player's presets; the panel says what was imported. */
+    /** Files dropped on the editor go to the first panel that takes them. */
     @Override
     protected void filesDropped(List<Path> files) {
-        PresetImports.Outcome outcome = PresetImports.fromFiles(files, PresetStore.player());
-        editor.say(Component.translatable("flatgen.editor.imported", outcome.imported().size(),
-                outcome.skipped().size()));
+        for (EditorPanel panel : EditorPanels.ALL) {
+            if (panel.filesDropped(editor, files)) {
+                return;
+            }
+        }
     }
 
     @Override

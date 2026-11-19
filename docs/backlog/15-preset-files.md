@@ -16,8 +16,8 @@ presets folder.
 
 - [ ] Copy preset: its JSON to the clipboard. Paste preset: reads JSON or a vanilla superflat code (F06) from the
   clipboard into a new library preset.
-- [ ] Dropping one or more `.json` preset files on Flatgen's screens imports them, with a summary of what was
-  imported and what was skipped and why.
+- [ ] Dropping one or more `.json` preset files on Flatgen's editor or its library imports them, with a summary of
+  what was imported and what was skipped and why (the editor takes them through its panels, `EditorPanel`).
 - [ ] Open presets folder opens `config/flatgen/presets/` in the system's file browser.
 - [ ] Imported names that clash get a number ("Tall flat 2"); nothing is overwritten without asking.
 

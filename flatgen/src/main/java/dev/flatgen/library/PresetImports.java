@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -47,7 +48,7 @@ public final class PresetImports {
         List<String> skipped = new ArrayList<>();
         for (Path file : files) {
             String name = file.getFileName().toString();
-            if (!name.endsWith(JSON)) {
+            if (!name.toLowerCase(Locale.ROOT).endsWith(JSON)) {
                 skipped.add(name + ": not a preset file");
                 continue;
             }

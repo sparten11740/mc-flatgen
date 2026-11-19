@@ -230,14 +230,7 @@ public final class LibraryScreen extends FlatgenScreen {
 
     /** Shows what an import did, and the presets as they are now. */
     private void said(PresetImports.Outcome outcome) {
-        List<String> parts = new ArrayList<>();
-        if (!outcome.imported().isEmpty()) {
-            parts.add(Component.translatable("flatgen.library.imported", String.join(", ", outcome.imported()))
-                    .getString());
-        }
-        outcome.skipped().forEach(skipped -> parts.add(Component.translatable("flatgen.library.skipped", skipped)
-                .getString()));
-        message = Component.literal(String.join(" · ", parts));
+        message = ImportSummary.of(outcome);
         reload();
     }
 

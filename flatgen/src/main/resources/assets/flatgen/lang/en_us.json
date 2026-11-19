@@ -22,7 +22,6 @@
   "flatgen.editor.duplicate": "Copy",
   "flatgen.editor.empty": "No layers: an empty world",
   "flatgen.editor.full": "The world is %s blocks tall: there is no room for more",
-  "flatgen.editor.imported": "Added %s presets to your presets, left out %s",
   "flatgen.editor.pick_biome": "Pick the world's biome",
   "flatgen.editor.pick_block": "Pick the layer's block",
   "flatgen.editor.redo": "Redo",
