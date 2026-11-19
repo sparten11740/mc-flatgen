@@ -45,7 +45,7 @@ public final class BiomePicker {
     private static final int SWATCH = 12;
     private static final int SWATCH_GAP = 3;
     /** Space left at a card's right for the grid's star mark, in GUI pixels. */
-    private static final int STAR_ROOM = 6;
+    private static final int STAR_ROOM = 8;
     private static final int CARD_BACKGROUND = 0x50000000;
     private static final int SWATCH_RIM = 0xFF000000;
     private static final int NAME_COLOR = 0xFFFFFFFF;

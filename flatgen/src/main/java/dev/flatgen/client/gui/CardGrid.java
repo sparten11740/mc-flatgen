@@ -25,9 +25,8 @@ public final class CardGrid implements Widget {
     private static final int HEADING_HEIGHT = 12;
     private static final int HEADING_COLOR = 0xFFA0A0A0;
     private static final int HOVER = 0x60FFFFFF;
-    private static final int STAR = 0xFFFFD040;
-    /** The size of the mark on a starred card, in GUI pixels. */
-    private static final int STAR_SIZE = 3;
+    /** The mark on a starred card, an outlined star in its top right corner. */
+    private static final Icon STAR = Icon.own("star");
 
     private final Rect bounds;
     private final int cardWidth;
@@ -185,7 +184,7 @@ public final class CardGrid implements Widget {
         }
         cards.draw(canvas, card.entry(), place);
         if (starred.test(card.entry().id())) {
-            canvas.fill(new Rect(place.right() - STAR_SIZE - 1, place.y() + 1, STAR_SIZE, STAR_SIZE), STAR);
+            STAR.draw(canvas, place.right() - Icon.SIZE, place.y());
         }
     }
 
