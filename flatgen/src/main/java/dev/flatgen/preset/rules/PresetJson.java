@@ -46,7 +46,7 @@ public final class PresetJson {
         if (format > FORMAT) {
             problems.add("written by a later Flatgen (format " + format + "), so what is new in it was left out");
         }
-        List<Layer> layers = readLayers(root, problems);
+        List<Layer> layers = readLayers(root, "the world", problems);
         Preset preset = new Preset(
                 JsonFields.text(root, NAME, "", problems),
                 JsonFields.text(root, ICON, topBlock(layers), problems),
@@ -90,9 +90,8 @@ public final class PresetJson {
     }
 
     private static Stack readStack(JsonObject stack, Dimension dimension, List<String> problems) {
-        List<Layer> layers = JsonFields.array(stack, LAYERS, problems).map(array -> LayerJson.read(array, problems))
-                .orElse(List.of());
-        return new Stack(layers, JsonFields.text(stack, BIOME, dimension.defaultBiome(), problems));
+        return new Stack(readLayers(stack, "the " + dimension.key(), problems),
+                JsonFields.text(stack, BIOME, dimension.defaultBiome(), problems));
     }
 
     private static JsonObject writeStack(Stack stack) {
@@ -107,10 +106,11 @@ public final class PresetJson {
         return layers.isEmpty() ? DEFAULT_ICON : layers.get(layers.size() - 1).block();
     }
 
-    private static List<Layer> readLayers(JsonObject root, List<String> problems) {
+    /** A stack's layers, noting when there are none, which leaves {@code what}, as "the nether", empty. */
+    private static List<Layer> readLayers(JsonObject root, String what, List<String> problems) {
         Optional<JsonArray> layers = JsonFields.array(root, LAYERS, problems);
         if (layers.isEmpty()) {
-            problems.add("no layers, so the world is empty");
+            problems.add("no layers, so " + what + " is empty");
         }
         return layers.map(array -> LayerJson.read(array, problems)).orElse(List.of());
     }

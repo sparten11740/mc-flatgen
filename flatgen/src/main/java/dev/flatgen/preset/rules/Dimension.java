@@ -7,7 +7,7 @@ import java.util.List;
  * only when the preset says so, and are otherwise as the game makes them.
  */
 public enum Dimension {
-    OVERWORLD("overworld", "minecraft:plains"),
+    OVERWORLD("overworld", Preset.DEFAULT_BIOME),
     NETHER("nether", "minecraft:nether_wastes"),
     END("end", "minecraft:the_end");
 

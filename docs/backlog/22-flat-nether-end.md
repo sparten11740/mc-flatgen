@@ -1,6 +1,6 @@
 # F22 Flat Nether and End
 
-Milestone: after v1 · Release: v1.x · Status: done · Depends on: F20
+Milestone: after v1 · Release: 1.0.0 while it is unreleased · Status: done · Depends on: F20
 
 ## Why
 
@@ -26,10 +26,11 @@ Optional stacks for the Nether and the End in the same editor, each with its own
 
 - The preset's `nether` and `end` parts (`preset/rules/Stack`: layers and biome) are optional; `Preset.stack(Dimension)`
   gives the overworld's from the preset's own layers and biome, so everything that reads those keeps working.
-- Done replaces the Nether's and the End's generators with superflat ones of their stacks (no structures, decorations
-  or lakes) and keeps their dimension types, so portals, the dragon fight and the dimensions' sky stay the game's; a
-  dimension without a stack gets its world type's generator back, undoing an earlier Done. Reopening Customize reads the
-  stacks back from the screen. A datapack export (F21) carries them too.
+- Done replaces the Nether's and the End's generators with superflat ones of their stacks (the structures their biome
+  allows, as the game's default is, so a flat Nether keeps the fortresses whose blazes give Eyes of Ender; no
+  decorations or lakes) and keeps their dimension types, so portals, the dragon fight and the dimensions' sky stay the
+  game's; a dimension without a stack gets its world type's generator back, undoing an earlier Done. Reopening Customize
+  reads the stacks back from the screen. A datapack export (F21) carries them too.
 - The editor (decided by a panel of a user-experience expert and an engineer): three tabs above the column, a grass
   block, a lit Nether portal (Flatgen's own picture) and an Eye of Ender, the chosen one raised as the creative
   inventory's tabs are, choose the dimension the column, the layer, block and biome controls, the summary and the facts
@@ -54,6 +55,10 @@ Optional stacks for the Nether and the End in the same editor, each with its own
   fight's data.
 - The game puts a player arriving in the End on its obsidian platform at Y 48 (X 100, Z 0), so an End stack 49 blocks
   tall from Y 0 meets it flush.
+- End cities need End Highlands or Midlands ground at Y 60 or higher, so the End's first stack, flush with the arrival
+  platform at Y 48 and in The End's biome, has none; a player after elytra makes the End taller in one of those biomes.
+- A data pack that makes the Nether or the End itself wins over the screen's generator in 1.21.1, so for such a
+  dimension the editor says a data pack makes it, in its tab's tooltip and in place of "Make flat".
 - The game calls a world with a Nether or End not its own "experimental" and asks once, when the world is created
   (loading it again does not ask); Flatgen leaves that question alone, as it leaves the Create World screen.
 
@@ -84,5 +89,8 @@ first, Yes left the End as the game makes it, and Undo brought its stack back. T
 tab. Saving to the library wrote the `nether` and `end` parts. Fabric: the same tabs and first stacks, and Done with
 Create New World made a world whose Nether is bedrock and 31 netherrack and whose End is bedrock and end stone. After
 the review's fixes, NeoForge: "Make the Nether flat" pressed with Enter left the focus on the panel, so a second Enter
-asked to give it back rather than pressing Done, and the Water world template kept the flat Nether. Not tried: the
-narrator on the tabs.
+asked to give it back rather than pressing Done, and the Water world template kept the flat Nether.
+
+After the group's review, NeoForge: a world from a preset with a flat Nether had a fortress (`/locate` found it 316
+blocks away, built of nether bricks with blaze spawners) and a bastion; with a data pack's own `the_end.json` loaded,
+the End tab said a data pack makes it and offered no Make flat. Not tried: the narrator on the tabs.

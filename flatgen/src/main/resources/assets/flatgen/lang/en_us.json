@@ -27,6 +27,7 @@
   "flatgen.dimension.make_flat_tip": "Gives it layers of its own, as the overworld has; the portals keep working",
   "flatgen.dimension.nether": "Nether",
   "flatgen.dimension.overworld": "Overworld",
+  "flatgen.dimension.pack_decides": "A data pack makes this dimension in this world",
   "flatgen.editor.add_above": "Add above",
   "flatgen.editor.add_below": "Add below",
   "flatgen.editor.duplicate": "Copy",

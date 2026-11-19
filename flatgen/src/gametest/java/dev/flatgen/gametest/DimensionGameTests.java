@@ -5,9 +5,11 @@ import static dev.flatgen.gametest.FlatgenTests.check;
 import com.google.gson.JsonParser;
 import dev.flatgen.mc.Exports;
 import dev.flatgen.mc.FlatSettings;
+import dev.flatgen.mc.WorldTypes;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
+import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.Stack;
 import java.util.LinkedHashMap;
@@ -48,6 +50,9 @@ final class DimensionGameTests {
                 DimensionGameTests::worldPresetKeepsStacks);
         tests.put("a world preset without stacks leaves the Nether and the End as the game makes them",
                 DimensionGameTests::worldPresetWithoutStacks);
+        tests.put("giving a flat Nether back puts its world type's generator back",
+                DimensionGameTests::givingBackAfterDone);
+        tests.put("parts the Nether and the End lack in this game are found", DimensionGameTests::missingIdsInStacks);
         return tests;
     }
 
@@ -82,6 +87,27 @@ final class DimensionGameTests {
                 registries);
         check(!(dimensions.get(LevelStem.NETHER).generator() instanceof FlatLevelSource), "the Nether is superflat");
         check(!(dimensions.get(LevelStem.END).generator() instanceof FlatLevelSource), "the End is superflat");
+    }
+
+    private static void givingBackAfterDone(GameTestHelper helper) {
+        RegistryAccess registries = helper.getLevel().registryAccess();
+        Map<ResourceKey<LevelStem>, LevelStem> normal = WorldTypes.defaultDimensions(registries).orElseThrow();
+        Map<ResourceKey<LevelStem>, LevelStem> flat = WorldTypes.withOtherDimensions(normal, normal,
+                FlatSettings.otherDimensions(BOTH, registries));
+        check(flat.get(LevelStem.NETHER).generator() instanceof FlatLevelSource, "Done left the Nether as it was");
+        Map<ResourceKey<LevelStem>, LevelStem> givenBack = WorldTypes.withOtherDimensions(flat, normal,
+                Map.of(Dimension.NETHER, Optional.empty()));
+        check(givenBack.get(LevelStem.NETHER) == normal.get(LevelStem.NETHER),
+                "the Nether given back is not its world type's");
+        check(givenBack.get(LevelStem.END).generator() instanceof FlatLevelSource, "the End lost its stack");
+    }
+
+    private static void missingIdsInStacks(GameTestHelper helper) {
+        Preset modded = BOTH.withStack(Dimension.NETHER, Optional.of(new Stack(List.of(new Layer("nomod:ash", 2)),
+                "nomod:ash_wastes")));
+        MissingIds missing = FlatSettings.missingIds(modded, helper.getLevel().registryAccess());
+        check(missing.blocks().equals(List.of("nomod:ash")), "missing blocks were " + missing.blocks());
+        check(missing.biomes().equals(List.of("nomod:ash_wastes")), "missing biomes were " + missing.biomes());
     }
 
     private static Map<ResourceKey<LevelStem>, LevelStem> dimensions(Preset preset,

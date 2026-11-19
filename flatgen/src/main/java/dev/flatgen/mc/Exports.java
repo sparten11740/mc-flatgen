@@ -3,12 +3,16 @@ package dev.flatgen.mc;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.flatgen.exports.rules.DatapackFiles;
+import dev.flatgen.json.rules.JsonFields;
 import dev.flatgen.preset.rules.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import net.minecraft.SharedConstants;
+import net.minecraft.WorldVersion;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.packs.PackType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
@@ -19,12 +23,16 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
  * preset of them, and the pack formats a datapack of this version says it is.
  */
 public final class Exports {
-    /** This version's resource and data pack formats, 1.21.1's. */
-    public static final DatapackFiles.PackFormats PACK_FORMATS = new DatapackFiles.PackFormats(34, 48);
     private static final Gson COMPACT = new GsonBuilder().disableHtmlEscaping().create();
-    private static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private Exports() {
+    }
+
+    /** This version's resource and data pack formats, as the game itself gives them. */
+    public static DatapackFiles.PackFormats packFormats() {
+        WorldVersion version = SharedConstants.getCurrentVersion();
+        return new DatapackFiles.PackFormats(version.getPackVersion(PackType.CLIENT_RESOURCES),
+                version.getPackVersion(PackType.SERVER_DATA));
     }
 
     /** Superflat settings as one line of JSON, as a server's {@code generator-settings} reads them. */
@@ -45,10 +53,10 @@ public final class Exports {
         Map<ResourceKey<LevelStem>, LevelStem> normal = WorldTypes.defaultDimensions(registries)
                 .orElseThrow(() -> new IllegalStateException("the game has no Default world type"));
         Map<ResourceKey<LevelStem>, LevelStem> dimensions = new LinkedHashMap<>(
-                WorldCreation.withOtherDimensions(normal, normal, others));
+                WorldTypes.withOtherDimensions(normal, normal, others));
         LevelStem overworld = dimensions.get(LevelStem.OVERWORLD);
         dimensions.put(LevelStem.OVERWORLD, new LevelStem(overworld.type(), new FlatLevelSource(settings)));
-        return PRETTY.toJson(WorldPreset.DIRECT_CODEC.encodeStart(FlatSettings.ops(registries),
+        return JsonFields.PRETTY.toJson(WorldPreset.DIRECT_CODEC.encodeStart(FlatSettings.ops(registries),
                 new WorldPreset(dimensions)).getOrThrow());
     }
 }

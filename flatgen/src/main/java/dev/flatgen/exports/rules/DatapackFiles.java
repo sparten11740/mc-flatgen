@@ -1,9 +1,8 @@
 package dev.flatgen.exports.rules;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import dev.flatgen.json.rules.JsonFields;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,7 +14,6 @@ import java.util.Map;
 public final class DatapackFiles {
     /** The namespace the world presets are in. */
     public static final String NAMESPACE = "flatgen";
-    private static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private DatapackFiles() {
     }
@@ -43,12 +41,12 @@ public final class DatapackFiles {
     /** The pack's files, by path, in the order a zip lists them. */
     public static Map<String, String> of(Pack pack) {
         Map<String, String> files = new LinkedHashMap<>();
-        files.put("pack.mcmeta", PRETTY.toJson(mcmeta(pack)));
+        files.put("pack.mcmeta", JsonFields.PRETTY.toJson(mcmeta(pack)));
         files.put("data/" + NAMESPACE + "/worldgen/world_preset/" + pack.id() + ".json", pack.preset());
-        files.put("data/minecraft/tags/worldgen/world_preset/normal.json", PRETTY.toJson(tag(pack.id())));
+        files.put("data/minecraft/tags/worldgen/world_preset/normal.json", JsonFields.PRETTY.toJson(tag(pack.id())));
         JsonObject words = new JsonObject();
         words.addProperty("generator." + NAMESPACE + "." + pack.id(), pack.name());
-        files.put("assets/" + NAMESPACE + "/lang/en_us.json", PRETTY.toJson(words));
+        files.put("assets/" + NAMESPACE + "/lang/en_us.json", JsonFields.PRETTY.toJson(words));
         return files;
     }
 

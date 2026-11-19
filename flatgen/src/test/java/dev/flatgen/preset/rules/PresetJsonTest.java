@@ -54,10 +54,13 @@ class PresetJsonTest {
     }
 
     @Test
-    void readsAFileWithoutTheNetherOrTheEndAsTheOverworldAlone() {
+    void readsAnEndAloneWithItsOwnBiomeAndNotesANetherWithoutLayers() {
         PresetReading reading = PresetJson.read("{\"layers\": [{\"block\": \"minecraft:sand\", \"height\": 3}],"
-                + " \"end\": {\"layers\": [{\"block\": \"minecraft:end_stone\", \"height\": 1}]}}");
-        assertEquals(Optional.empty(), reading.preset().stack(Dimension.NETHER));
+                + " \"end\": {\"layers\": [{\"block\": \"minecraft:end_stone\", \"height\": 1}]},"
+                + " \"nether\": {\"biome\": \"minecraft:basalt_deltas\"}}");
+        assertEquals(Optional.of(new Stack(List.of(), "minecraft:basalt_deltas")),
+                reading.preset().stack(Dimension.NETHER));
+        assertEquals(List.of("no layers, so the nether is empty"), reading.problems());
         assertEquals(Optional.of(new Stack(List.of(new Layer("minecraft:end_stone", 1)), "minecraft:the_end")),
                 reading.preset().stack(Dimension.END));
     }

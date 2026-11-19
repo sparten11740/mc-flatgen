@@ -66,14 +66,14 @@ public final class FlatSettings {
     }
 
     /**
-     * The superflat settings of a Nether or End stack (F22): its layers and biome, with no structures, decorations or
-     * lakes.
+     * The superflat settings of a Nether or End stack (F22): its layers and biome, with the structures the biome
+     * allows, as the game's default is, so a flat Nether keeps its fortresses, and no decorations or lakes.
      *
      * @throws IllegalStateException when the game refuses the settings, as it does an unknown block
      */
     public static FlatLevelGeneratorSettings toSettings(Stack stack, HolderLookup.Provider registries) {
-        return toSettings(new Preset("", "", stack.layers(), stack.biome(), Optional.of(List.of()), false, false,
-                Map.of()), registries);
+        return toSettings(new Preset("", "", stack.layers(), stack.biome(), Optional.empty(), false, false, Map.of()),
+                registries);
     }
 
     /** The Nether's and the End's superflat settings a preset gives, each none when it leaves that dimension alone. */

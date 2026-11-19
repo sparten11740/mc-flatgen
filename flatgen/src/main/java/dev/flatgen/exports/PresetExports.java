@@ -56,7 +56,7 @@ public final class PresetExports {
             List<WorldOption> installed) {
         String worldPreset = Exports.worldPreset(OptionsAtDone.settings(preset, registries, installed),
                 FlatSettings.otherDimensions(preset, registries), registries);
-        Map<String, String> files = DatapackFiles.of(new DatapackFiles.Pack(Exports.PACK_FORMATS, id, preset.name(),
+        Map<String, String> files = DatapackFiles.of(new DatapackFiles.Pack(Exports.packFormats(), id, preset.name(),
                 worldPreset));
         Path zip = folder().resolve(id + ZIP);
         return ConfigFiles.write(zip, zipped(files)) ? Optional.of(zip) : Optional.empty();

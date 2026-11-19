@@ -38,10 +38,17 @@ public final class DimensionTabs {
         return tabs;
     }
 
-    /** A tab's tooltip: the dimension's name, then whether it is flat or as the game makes it. */
+    /** A tab's tooltip: the dimension's name, then whether it is flat, made by a data pack or as the game makes it. */
     private static List<Component> tooltip(EditorContext editor, Dimension dimension) {
-        return List.of(DimensionPictures.name(dimension), Component.translatable(hasOwnStack(editor, dimension)
-                ? "flatgen.dimension.flat" : "flatgen.dimension.game_made"));
+        return List.of(DimensionPictures.name(dimension), Component.translatable(stateKey(editor, dimension)));
+    }
+
+    /** The words for a dimension's state on its tab, as a translation key. */
+    private static String stateKey(EditorContext editor, Dimension dimension) {
+        if (dimension != Dimension.OVERWORLD && editor.packDecides(dimension)) {
+            return "flatgen.dimension.pack_decides";
+        }
+        return hasOwnStack(editor, dimension) ? "flatgen.dimension.flat" : "flatgen.dimension.game_made";
     }
 
     /** Whether the Nether or End has a stack of its own; the overworld always has, and wears no badge for it. */

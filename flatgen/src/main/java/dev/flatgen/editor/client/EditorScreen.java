@@ -74,8 +74,8 @@ public final class EditorScreen extends FlatgenScreen {
     /** What the last copy or paste said, until the next change; null for nothing. */
     private Component message;
     private ColumnWidget column;
-    /** What the widgets were last laid out for: the edited dimension and whether it has a stack. */
-    private List<Object> laidOutFor = List.of();
+    /** What the widgets were last laid out for. */
+    private Layout laidOutFor;
 
     public EditorScreen(CreateWorldScreen parent, WorldCreationContext context) {
         super(Component.translatable("flatgen.editor.title"));
@@ -175,9 +175,9 @@ public final class EditorScreen extends FlatgenScreen {
         return worlds.get(history.current().edited());
     }
 
-    /** What decides the widgets: the edited dimension, and whether it has a stack. */
-    private List<Object> layoutKey() {
-        return List.of(history.current().edited(), history.current().stack().isPresent());
+    /** What decides the widgets now. */
+    private Layout layoutKey() {
+        return new Layout(history.current().edited(), history.current().stack().isPresent(), shownPanels());
     }
 
     /**
@@ -216,6 +216,13 @@ public final class EditorScreen extends FlatgenScreen {
                 WorldCreation.withFlatSettings(context, edited)));
     }
 
+    /**
+     * What decides the editor's widgets: the edited dimension, whose panels name it, whether it has a stack, which
+     * decides the column, and the panels that show.
+     */
+    private record Layout(Dimension edited, boolean stack, List<EditorPanel> panels) {
+    }
+
     /** What the column and the panels see of the editor: its history, with a dragged change shown until let go. */
     private final class Context implements EditorContext {
         @Override
@@ -231,6 +238,11 @@ public final class EditorScreen extends FlatgenScreen {
         @Override
         public World world(Dimension dimension) {
             return worlds.get(dimension);
+        }
+
+        @Override
+        public boolean packDecides(Dimension dimension) {
+            return WorldCreation.packDecides(context, dimension);
         }
 
         @Override

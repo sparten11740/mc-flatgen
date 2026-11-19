@@ -17,8 +17,8 @@ import java.util.function.Predicate;
  * wrong kind keeps it too and is noted in a list of problems for the log or the player.
  */
 public final class JsonFields {
-    /** Writes JSON as Flatgen's files keep it: one key a line, indented. */
-    public static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().create();
+    /** Writes JSON as Flatgen's files keep it: one key a line, indented, characters such as {@code <} as they are. */
+    public static final Gson PRETTY = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private JsonFields() {
     }

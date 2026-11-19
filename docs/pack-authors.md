@@ -46,7 +46,7 @@ resources do.
 | `decorations` | `false` | Whether the biome's trees, flowers and ores generate. |
 | `lakes` | `false` | Whether lakes generate. |
 | `options` | none | World options set otherwise than their default, by id (see world-options.md). |
-| `nether`, `end` | none | That dimension's own superflat stack: an object of `layers` and `biome`, as above. Left out, the dimension is as the game makes it. |
+| `nether`, `end` | none | That dimension's own superflat stack: an object of `layers` (bottom first, as above, within the dimension's 256 blocks) and `biome` (by default the dimension's own, `minecraft:nether_wastes` or `minecraft:the_end`), with the structures that biome allows. Left out, the dimension is as the game makes it. |
 | `format` | `1` | The version of this format; a file of a later one is read as far as this Flatgen knows it. |
 
 The easiest way to make one is in the game: build it in Flatgen's editor, save it, and copy the file from

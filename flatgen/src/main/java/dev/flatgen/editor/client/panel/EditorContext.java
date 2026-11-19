@@ -30,6 +30,9 @@ public interface EditorContext {
     /** The world a dimension's stack stands in. */
     World world(Dimension dimension);
 
+    /** Whether a data pack makes this dimension, so a stack Flatgen gives it does not take (F22). */
+    boolean packDecides(Dimension dimension);
+
     /** Makes an edit, a step to undo. Every change, undo and redo too, clears the message. */
     void apply(Edit edit);
 

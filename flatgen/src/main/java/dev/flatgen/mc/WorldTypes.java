@@ -3,6 +3,8 @@ package dev.flatgen.mc;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
+import dev.flatgen.preset.rules.Dimension;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
@@ -12,6 +14,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 
@@ -49,5 +52,28 @@ public final class WorldTypes {
                 LevelStem.CODEC.encodeStart(ops, stem).result()));
         written.remove(LevelStem.OVERWORLD.location().toString());
         return written;
+    }
+
+    /**
+     * Dimensions with the Nether's and the End's generators as the settings say: superflat ones, or for a dimension
+     * with none, its generator among {@code own}.
+     */
+    public static Map<ResourceKey<LevelStem>, LevelStem> withOtherDimensions(
+            Map<ResourceKey<LevelStem>, LevelStem> dimensions, Map<ResourceKey<LevelStem>, LevelStem> own,
+            Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings) {
+        Map<ResourceKey<LevelStem>, LevelStem> changed = new LinkedHashMap<>(dimensions);
+        settings.forEach((dimension, flat) -> changed.computeIfPresent(stemKey(dimension),
+                (key, stem) -> flat.map(chosen -> new LevelStem(stem.type(), new FlatLevelSource(chosen)))
+                        .orElse(own.getOrDefault(key, stem))));
+        return changed;
+    }
+
+    /** The key of a dimension's stem among a world's dimensions. */
+    public static ResourceKey<LevelStem> stemKey(Dimension dimension) {
+        return switch (dimension) {
+            case OVERWORLD -> LevelStem.OVERWORLD;
+            case NETHER -> LevelStem.NETHER;
+            case END -> LevelStem.END;
+        };
     }
 }
