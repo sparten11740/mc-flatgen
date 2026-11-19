@@ -41,6 +41,24 @@ class ChoicesTest {
     }
 
     @Test
+    void readsTheLibraryFileAPackShipsAsPackAuthorsMdShowsIt() {
+        Choices shipped = Choices.fromJson("""
+                {
+                  "default": "pack:skyislands:start",
+                  "start_on_superflat": true,
+                  "built_ins": "no_game",
+                  "starred": ["pack:skyislands:start"],
+                  "pack_version": 3
+                }
+                """);
+        assertEquals(Optional.of("pack:skyislands:start"), shipped.defaultFile());
+        assertEquals(true, shipped.startOnSuperflat());
+        assertEquals(PresetLibrary.BuiltIns.NO_GAME, shipped.builtIns());
+        assertEquals(List.of("pack:skyislands:start"), shipped.picks().starred());
+        assertEquals(PresetLibrary.BuiltIns.SHOWN, Choices.fromJson("{\"built_ins\": \"some\"}").builtIns());
+    }
+
+    @Test
     void readsWhatItWritesAndAFileWithoutADefault() {
         Choices chosen = Choices.NONE.toggleFavourite("tall.json").toggleDefault("water.json")
                 .toggleStartOnSuperflat().nextBuiltIns();

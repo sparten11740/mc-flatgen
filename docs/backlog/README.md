@@ -73,7 +73,7 @@ v3 and v4 may swap; both come after v2.
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
 | F16 | [Works without reading](16-picture-first.md) | todo | F03 to F15 |
-| F17 | [Pack author support](17-pack-authors.md) | todo | F12, F13 |
+| F17 | [Pack author support](17-pack-authors.md) | doing | F12, F13 |
 | F18 | [Other flat world types](18-other-flat-world-types.md) | todo | F01 |
 | F19 | [English and German](19-translations.md) | todo | F16 |
 | F20 | [Release v1](20-release-v1.md) | todo | F00 to F19 |
