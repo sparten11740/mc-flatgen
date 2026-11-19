@@ -1,6 +1,6 @@
 # F21 Exports for servers and datapacks
 
-Milestone: after v1 · Release: v1.x · Status: done · Depends on: F20
+Milestone: after v1 · Release: 1.0.0 while it is unreleased · Status: done · Depends on: F20
 
 ## Why
 
@@ -24,11 +24,14 @@ preset as a World Type.
 
 - The library's second row has two more picture buttons for the picked preset: Server (a server rack, Flatgen's own
   picture) puts the lines on the clipboard, and Datapack (a bundle) writes `config/flatgen/exports/<name>.zip`,
-  replacing an earlier export of that name, and opens the folder.
+  replacing an earlier export of that name, and opens the folder. A player's preset's zip is named after its file
+  (`glass_2.zip`), a built-in's after its name.
 - Both make the world Done would: `OptionsAtDone.settings`, the preset's superflat settings with the structure sets its
-  world options add, the parts the game lacks standing in as when the preset is used (the library puts them in and
-  names the zip after the preset's file, so `exports` knows nothing of the library). Options' game rules and
-  first-start effects are not part of a world's generator, so neither export carries them.
+  world options add. A preset naming parts the game lacks asks first, as Use does, whether to go on with stand-ins
+  (the library asks and names the zip, so `exports` knows nothing of the library). Options' game rules and first-start
+  effects are not part of a world's generator, so neither export carries them, as both buttons' tooltips say.
+- `server.properties` makes the overworld only; the datapack carries a flat Nether and End (F22) too, and copying the
+  server lines of a preset that has them says so and points to Datapack.
 - `exports/rules` (pure, tested): `ServerProperties` writes the two lines, the value escaped as `java.util.Properties`
   reads it back; `DatapackFiles` lays out the pack: `pack.mcmeta` with the data pack format and `supported_formats`
   spanning the resource one too, the world preset at `data/flatgen/worldgen/world_preset/<name>.json`, the

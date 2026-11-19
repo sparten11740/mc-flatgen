@@ -24,12 +24,12 @@ import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.PresetImports;
 import dev.flatgen.library.PresetStore;
 import dev.flatgen.library.rules.Choices;
-import dev.flatgen.library.rules.MissingParts;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.SystemFiles;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.PresetJson;
@@ -322,30 +322,48 @@ public final class LibraryScreen extends FlatgenScreen {
         message = Component.translatable("flatgen.library.shared");
     }
 
-    /** Puts the lines a server's server.properties needs for the picked preset on the clipboard (F21). */
+    /**
+     * Puts the lines a server's server.properties needs for the picked preset on the clipboard (F21), asking first
+     * when it names parts this game lacks; the message says when the lines leave a flat Nether or End behind.
+     */
     private void server() {
-        pickedPreset().map(this::madeHere).ifPresent(preset -> Clipboard.set(PresetExports.serverLines(preset,
-                editor.registries(), editor.worldOptions())));
-        message = Component.translatable("flatgen.library.server_copied");
+        pickedPreset().ifPresent(preset -> PresetUse.madeHere(editor, this, preset, this::copyServerLines));
     }
 
-    /** Saves the picked preset as a datapack in the exports folder, which opens to show it (F21). */
+    private void copyServerLines(Preset preset) {
+        Clipboard.set(PresetExports.serverLines(preset, editor.registries(), editor.worldOptions()));
+        boolean othersLeft = Dimension.OTHERS.stream().anyMatch(dimension -> preset.stack(dimension).isPresent());
+        message = Component.translatable(othersLeft ? "flatgen.library.server_copied_overworld"
+                : "flatgen.library.server_copied");
+    }
+
+    /**
+     * Saves the picked preset as a datapack in the exports folder, which opens to show it (F21), asking first when it
+     * names parts this game lacks.
+     */
     private void datapack() {
-        Optional<Path> written = pickedPreset().map(this::madeHere).flatMap(preset -> PresetExports.datapack(preset,
-                exportName(preset), editor.registries(), editor.worldOptions()));
+        Optional<String> name = picked.flatMap(this::entry).map(LibraryScreen::exportName);
+        pickedPreset().ifPresent(preset -> PresetUse.madeHere(editor, this, preset,
+                made -> saveDatapack(made, name.orElseThrow())));
+    }
+
+    private void saveDatapack(Preset preset, String exportName) {
+        Optional<Path> written = PresetExports.datapack(preset, exportName, editor.registries(),
+                editor.worldOptions());
         message = written.<Component>map(file -> Component.translatable("flatgen.library.datapack_saved",
                 file.getFileName().toString())).orElse(Component.translatable("flatgen.library.datapack_not_saved"));
         written.ifPresent(file -> SystemFiles.openFolder(PresetExports.folder()));
     }
 
-    /** A preset as this game can make it, the parts it lacks standing in, as when the preset is used. */
-    private Preset madeHere(Preset preset) {
-        return MissingParts.replaced(preset, FlatSettings.missingIds(preset, editor.registries()));
-    }
-
-    /** A datapack's name for a preset: its file's name without the ending, as {@code tall_flat}. */
-    private static String exportName(Preset preset) {
-        String file = PresetLibrary.fileName(preset.name(), List.of());
+    /**
+     * A datapack's name for a library entry: a player's preset's file name without the ending, as {@code glass_2},
+     * or a built-in's name made into one, letters, digits and underscores only.
+     */
+    private static String exportName(PresetLibrary.Entry entry) {
+        String base = entry.isPlayers() && entry.key().endsWith(PresetLibrary.FILE_ENDING)
+                ? entry.key().substring(0, entry.key().length() - PresetLibrary.FILE_ENDING.length())
+                : entry.name();
+        String file = PresetLibrary.fileName(base, List.of());
         return file.substring(0, file.length() - PresetLibrary.FILE_ENDING.length());
     }
 
