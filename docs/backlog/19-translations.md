@@ -1,6 +1,6 @@
 # F19 English and German
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: todo · Depends on: F16
+Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F16
 
 ## Why
 
@@ -8,8 +8,21 @@ Flatgen's first players speak German; most players on Modrinth and CurseForge re
 
 ## Acceptance criteria
 
-- [ ] Every text through a translation key in `assets/flatgen/lang/en_us.json` and `de_de.json`; no text in code.
-- [ ] A unit test fails when a key used in code is missing from either file, or a file has a key no code uses.
+- [x] Every text through a translation key in `assets/flatgen/lang/en_us.json` and `de_de.json`; no text in code.
+- [x] A unit test fails when a key used in code is missing from either file, or a file has a key no code uses.
+
+## Design
+
+- German uses the game's own German words where the game has them: Flachland for Superflat, Vorlagen for presets as
+  the game's superflat screen names them, Bauwerke for structures, Schleimchunks; Flatgen's templates are Baupläne.
+  The words stay plain, for children.
+- What players read that is not Flatgen's own stays as the game or the mod gives it: block, biome and mod names, and
+  the reader's problems with a file, which go to the log, a card saying in the player's language that it could not be
+  read in full. Symbols (the depth buttons' − and + and numbers) are not words.
+- `LanguageFilesTest` reads the Java sources and Flatgen's data files: a key is named whole, by a beginning ending in a
+  dot that code ends with a name of its own, or as a button's key with `_tip` after it; Flatgen's options are named by
+  their files (`option.flatgen.<file>` and its `.description`, and `option_group.<namespace>.<path>`). Both files
+  must have exactly the keys named, and the same keys.
 
 ## Tests
 
