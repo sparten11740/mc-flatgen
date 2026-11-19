@@ -95,9 +95,11 @@ action pictures, as beside the column they would read as layers.
 - Keyboard focus: each widget gives the controls the focus can move to (`Widget.focusables`, a group its widgets',
   a `Control` itself) and where its ring goes; `FlatgenScreen` keeps the focus as a place, an area (one of its
   top-level widgets) and a control within it, so a panel that lays itself out again as it scrolls keeps it. Tab moves
-  between areas, the arrows within one when the control does not take them, Enter or Space uses, Escape goes back, a
-  click hides the ring; a scrolling area scrolls the focused control into view. In a grid of cards the arrows move
-  from card to card (`client/gui/rules/GridSteps`), Enter picks and Shift with Enter stars, as the mouse's buttons do.
+  between areas, the arrows within one when the control does not take them, Enter or Space uses, Escape goes back (a
+  number field being typed in first drops what was typed), a click or the wheel ends the focus; a scrolling area
+  scrolls the focused control into view. In a grid of cards the arrows move from card to card
+  (`client/gui/rules/GridSteps`), the keyboard staying on its entry's card as the grid changes, Enter picks and Shift
+  with Enter stars, as the mouse's buttons do.
   The order is pure (`client/gui/rules/FocusOrder`) and tested. The ring is drawn once by `FlatgenScreen`, white then
   black, a shape not a colour.
 - Narration: each widget describes itself as a `Narration` in the game's own words for its kind (a button, a

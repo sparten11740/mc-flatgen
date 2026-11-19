@@ -13,9 +13,9 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * A box holding a whole number. It shows the number it is given; clicked, it takes the keyboard and the typed digits
- * replace it, and Enter hands the new number on, while Escape or a click elsewhere, which take the keyboard away,
- * leave it as it was.
+ * A box holding a whole number. It shows the number it is given; clicked or given the keyboard's focus, it takes the
+ * keyboard and the typed digits replace it, and Enter hands the new number on, while Escape, which drops what was
+ * typed, or a click elsewhere leave it as it was.
  */
 public final class NumberField implements Control {
     /** The most characters typed, enough for any Y or height with its sign. */
@@ -75,6 +75,10 @@ public final class NumberField implements Control {
         }
         if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
             typed.backspace();
+            return true;
+        }
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && !typed.text().isEmpty()) {
+            typed.clear();
             return true;
         }
         return keyCode == GLFW.GLFW_KEY_DELETE;
