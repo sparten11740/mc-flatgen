@@ -53,8 +53,8 @@ public final class OptionsAtDone {
     }
 
     /**
-     * The world type left Superflat: the game rules Flatgen's options set there go back to the game's defaults, and
-     * no world waits for first-start effects, so a world of another type gets nothing of them.
+     * The screen left a world type Flatgen edits for one it does not: the game rules Flatgen's options set go back to
+     * the game's defaults, and no world waits for first-start effects, so a world of another type gets nothing of them.
      */
     public static void withdraw(CreateWorldScreen screen, List<WorldOption> installed) {
         if (!OptionSessions.has(screen)) {
