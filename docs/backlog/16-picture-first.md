@@ -110,6 +110,52 @@ action pictures, as beside the column they would read as layers.
   the game's narrator, so no feature touches the game's narration API. Fact badges take the focus to be heard, and a
   question says its words as it opens.
 
+## Control checklist
+
+Every control and what shows it besides words; a word alone is never all (checked against the code on 2026-11-19).
+
+| Screen | Control | Picture |
+|---|---|---|
+| Editor | the column, each layer | the layer's block side; the selected one outlined, the focus ring round it |
+| Editor | fact badges | each fact's item, under the "no" sign for no; the snow and slime lines end in theirs |
+| Editor | No slimes | slime ball under the "no" sign |
+| Editor | favourites row | each favourite's top block |
+| Editor | Presets, Templates | bookshelf, crafting table |
+| Editor | Biome | the biome's landscape in its colours, and its name |
+| Editor | Structures | village house, and how they are chosen |
+| Editor | Block | the selected layer's block, and its name |
+| Editor | depth − + and its numbers, the depth field | a layer between two arrows before them; − + and numbers are symbols |
+| Editor | Surface at Y | ladder |
+| Editor | Add above, Add below, Copy layer, Remove layer | own: layer bar with plus above, below, the block with a copy badge, bar with minus |
+| Editor | Undo, Redo | own: hooked arrows |
+| Editor | Copy code, Paste code | paper with an arrow out, in |
+| Editor | world options | each option's own picture, a ticked or empty box; a missing one the barrier |
+| Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
+| Pickers | search | compass |
+| Pickers | mod filter | four small cubes for all, else the mod's first block or biome |
+| Pickers | cards | the block, or the biome's colours and facts; starred ones a gold star |
+| Pickers | Cancel | cross |
+| Structures | the three ways to choose | grass block, barrier, chest, each with its box |
+| Structures | Decorations, Lakes | poppy, lava bucket |
+| Structures | each structure set | its own picture, under the "no" sign where it cannot appear |
+| Structures | Done | tick |
+| Library | name field | name tag |
+| Library | Save new, Rename | writable book with a plus badge, anvil |
+| Library | Use, Back | tick, left arrow, with their words |
+| Library | Copy, Share, Paste, Folder | the picked preset with a copy badge, paper out, paper in, folder |
+| Library | built-ins setting | book; grass block or book under the "no" sign; pips for its states |
+| Library | Save over, Delete | writable book with a circular-arrow badge, trash can; apart at the row's end |
+| Library | Default, Start on Superflat | nether star, grass block, each with its box |
+| Library | cards | the preset's column and top block; marks for default (nether star), built in (book), missing parts (barrier), starred (gold star) |
+| Templates | the templates | each template's item |
+| Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider |
+| Templates | block settings | the block |
+| Templates | switches | the switch's item, with its box |
+| Templates | fact badges | as the editor's |
+| Templates | Use, Back | tick, left arrow, with their words |
+| Question | what Yes does | its picture above the words: trash can, writable book with a circular arrow, barrier |
+| Question | Yes, No | tick, cross, with their words |
+
 ## Tests
 
 - Dev client screenshots of every screen at GUI scales 1 to 4 on both nodes; keyboard-only run through the main flows.
