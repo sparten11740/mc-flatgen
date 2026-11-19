@@ -24,7 +24,7 @@ public final class PresetText {
      * Text read as a preset.
      *
      * @param preset   the preset; none when the text is neither a preset nor a code
-     * @param problems what could not be read
+     * @param problems what could not be read, for the log
      */
     public record Reading(Optional<Preset> preset, List<String> problems) {
         public Reading {

@@ -17,8 +17,15 @@ final class ImportSummary {
             parts.add(Component.translatable("flatgen.library.imported", String.join(", ", outcome.imported()))
                     .getString());
         }
-        outcome.skipped().forEach(skipped -> parts.add(Component.translatable("flatgen.library.skipped", skipped)
-                .getString()));
+        outcome.skipped().forEach(skipped -> parts.add(skippedLine(skipped)));
         return Component.literal(String.join(" · ", parts));
+    }
+
+    /** What was left out and why, the pasted text named as such. */
+    private static String skippedLine(PresetImports.Skipped skipped) {
+        Component what = skipped.file().<Component>map(Component::literal)
+                .orElse(Component.translatable("flatgen.library.pasted_text"));
+        return Component.translatable("flatgen.library.skipped", what, Component.translatable(skipped.reason().key()))
+                .getString();
     }
 }

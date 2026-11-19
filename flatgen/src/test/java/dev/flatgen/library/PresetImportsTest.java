@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -23,6 +24,8 @@ class PresetImportsTest {
         assertEquals(new PresetImports.Outcome(List.of("Tall"), List.of()), PresetImports.fromText(json, store));
         assertEquals(new PresetImports.Outcome(List.of("Tall 2"), List.of()), PresetImports.fromText(json, store));
         assertEquals(List.of("Pasted"), PresetImports.fromText("minecraft:stone;minecraft:plains", store).imported());
+        assertEquals(List.of(new PresetImports.Skipped(Optional.empty(), PresetImports.Reason.NOT_A_PRESET)),
+                PresetImports.fromText("hello, world!", store).skipped());
     }
 
     @Test
@@ -34,6 +37,8 @@ class PresetImportsTest {
         Path broken = Files.writeString(folder.resolve("broken.json"), "{ not json");
         PresetImports.Outcome outcome = PresetImports.fromFiles(List.of(preset, picture, broken), store);
         assertEquals(List.of("Tall"), outcome.imported());
-        assertEquals(List.of("tall.png: not a preset file", "broken.json: the text is not JSON"), outcome.skipped());
+        assertEquals(List.of(new PresetImports.Skipped(Optional.of("tall.png"), PresetImports.Reason.NOT_A_PRESET_FILE),
+                new PresetImports.Skipped(Optional.of("broken.json"), PresetImports.Reason.NOT_A_PRESET)),
+                outcome.skipped());
     }
 }
