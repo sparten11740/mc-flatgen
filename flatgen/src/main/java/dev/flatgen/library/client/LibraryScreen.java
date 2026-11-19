@@ -7,6 +7,7 @@ import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
+import dev.flatgen.client.gui.TextLines;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -15,15 +16,20 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.library.ChoicesFile;
 import dev.flatgen.library.LibrarySources;
+import dev.flatgen.library.PresetImports;
 import dev.flatgen.library.PresetStore;
 import dev.flatgen.library.rules.Choices;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Biomes;
+import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
+import dev.flatgen.mc.SystemFiles;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.preset.rules.PresetJson;
 import dev.flatgen.search.rules.Search;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,8 +67,9 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
     private static final Icon BUILT_IN = Icon.item("minecraft:book");
-    /** The width of a switch, in GUI pixels. */
+    /** The width of a switch, and of the button choosing which built-ins show, in GUI pixels. */
     private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
+    private static final int BUILT_INS_WIDTH = 100;
     /** The name a new preset starts with, numbered when taken. */
     private static final String NEW_NAME = "Preset";
 
@@ -76,6 +83,8 @@ public final class LibraryScreen extends FlatgenScreen {
     private Optional<String> picked = Optional.empty();
     private String name = "";
     private TextField nameField;
+    /** What the last share, paste or import said; nothing before one. */
+    private Component message = Component.empty();
 
     /** The library of the player's presets, for the editor that opened it. */
     public LibraryScreen(EditorContext editor) {
@@ -111,9 +120,16 @@ public final class LibraryScreen extends FlatgenScreen {
                 rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
                 () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
         widgets.add(new TextButton(() -> Component.translatable("flatgen.library.built_ins."
-                + choices.builtIns().name().toLowerCase(Locale.ROOT)), rows.next(TOGGLE_WIDTH),
+                + choices.builtIns().name().toLowerCase(Locale.ROOT)), rows.next(BUILT_INS_WIDTH),
                 () -> choose(choices.nextBuiltIns()), () -> true,
                 () -> List.of(Component.translatable("flatgen.library.built_ins_tip"))));
+        rows.newRow();
+        widgets.add(button("flatgen.library.share", rows, this::share, () -> pickedPreset().isPresent()));
+        widgets.add(button("flatgen.library.paste", rows, this::paste, () -> true));
+        widgets.add(button("flatgen.library.folder", rows, () -> SystemFiles.openFolder(store.folder()), () -> true));
+        Rect said = rows.next(width - 2 * MARGIN - 3 * (BUTTON_WIDTH + GAP) - GAP);
+        widgets.add(new TextLines(new Rect(said.x(), said.y() + (said.height() - font.lineHeight) / 2, said.width(),
+                font.lineHeight), () -> List.of(message)));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
                 CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
@@ -196,6 +212,35 @@ public final class LibraryScreen extends FlatgenScreen {
     private void reloadPicking(String file) {
         reload();
         pick(file);
+    }
+
+    @Override
+    protected void filesDropped(List<Path> files) {
+        said(PresetImports.fromFiles(files, store));
+    }
+
+    /** Puts the picked preset on the clipboard as its file's text, to paste into another game or a message. */
+    private void share() {
+        pickedPreset().ifPresent(preset -> Clipboard.set(PresetJson.write(preset)));
+        message = Component.translatable("flatgen.library.shared");
+    }
+
+    /** Adds the preset or superflat code on the clipboard to the player's presets. */
+    private void paste() {
+        said(PresetImports.fromText(Clipboard.get(), store));
+    }
+
+    /** Shows what an import did, and the presets as they are now. */
+    private void said(PresetImports.Outcome outcome) {
+        List<String> parts = new ArrayList<>();
+        if (!outcome.imported().isEmpty()) {
+            parts.add(Component.translatable("flatgen.library.imported", String.join(", ", outcome.imported()))
+                    .getString());
+        }
+        outcome.skipped().forEach(skipped -> parts.add(Component.translatable("flatgen.library.skipped", skipped)
+                .getString()));
+        message = Component.literal(String.join(" · ", parts));
+        reload();
     }
 
     private void deleted(String file) {

@@ -4,6 +4,7 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import dev.flatgen.mc.BlockSides;
+import java.nio.file.Path;
 import java.util.List;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -37,6 +38,10 @@ public abstract class FlatgenScreen extends Screen {
 
     /** The screen's widgets, placed for a screen this wide and tall; asked again whenever its size changes. */
     protected abstract List<Widget> layOut(int width, int height);
+
+    /** Files the player dropped on the game's window while this screen is open; nothing by default. */
+    protected void filesDropped(List<Path> files) {
+    }
 
     /** A key no widget took: the screen's own shortcuts; whether it was one. */
     protected boolean shortcut(int keyCode, Modifiers modifiers) {
@@ -106,6 +111,11 @@ public abstract class FlatgenScreen extends Screen {
         double amount = scrollY != 0 ? scrollY : scrollX;
         return widgets.scroll(mouseX, mouseY, amount, modifiers())
                 || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    @Override
+    public void onFilesDrop(List<Path> files) {
+        filesDropped(files);
     }
 
     @Override

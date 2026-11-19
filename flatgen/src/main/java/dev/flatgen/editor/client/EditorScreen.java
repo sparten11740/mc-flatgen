@@ -16,6 +16,8 @@ import dev.flatgen.editor.rules.History;
 import dev.flatgen.editor.rules.World;
 import dev.flatgen.facts.client.FactMarkers;
 import dev.flatgen.layers.client.ColumnWidget;
+import dev.flatgen.library.PresetImports;
+import dev.flatgen.library.PresetStore;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
@@ -23,6 +25,7 @@ import dev.flatgen.options.OptionSessions;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.gui.screens.Screen;
@@ -126,6 +129,14 @@ public final class EditorScreen extends FlatgenScreen {
             }
         }
         return false;
+    }
+
+    /** Preset files dropped on the editor go to the player's presets; the panel says what was imported. */
+    @Override
+    protected void filesDropped(List<Path> files) {
+        PresetImports.Outcome outcome = PresetImports.fromFiles(files, PresetStore.player());
+        editor.say(Component.translatable("flatgen.editor.imported", outcome.imported().size(),
+                outcome.skipped().size()));
     }
 
     @Override

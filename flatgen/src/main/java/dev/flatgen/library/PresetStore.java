@@ -28,6 +28,11 @@ public final class PresetStore implements PresetSource {
         this.folder = folder;
     }
 
+    /** The folder the presets are kept in. */
+    public Path folder() {
+        return folder;
+    }
+
     /** The player's own store, config/flatgen/presets. */
     public static PresetStore player() {
         return new PresetStore(ConfigFiles.file(FOLDER));

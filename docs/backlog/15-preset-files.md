@@ -1,6 +1,6 @@
 # F15 Sharing preset files
 
-Milestone: M3 presets · Release: v1 · Status: todo · Depends on: F11
+Milestone: M3 presets · Release: v1 · Status: doing · Depends on: F11
 
 ## Why
 
