@@ -14,17 +14,23 @@ import org.junit.jupiter.api.Test;
 /** What each template makes, at its defaults and its edges. */
 class TemplatesTest {
     private static final World OVERWORLD = new World(-64, 384);
+    /** A world as short as the Nether, in which every template must still fit. */
+    private static final World SHORT = new World(0, 128);
 
     @Test
     void everyTemplateMakesAPresetThatFitsTheWorldAtItsDefaultsAndEdges() {
-        for (Template template : Templates.ALL) {
-            Values defaults = Values.defaults(template.parameters());
-            assertFits(template.make(defaults, OVERWORLD), template.name());
-            for (Parameter parameter : template.parameters()) {
-                if (parameter instanceof Parameter.Number number) {
-                    assertFits(template.make(defaults.with(number, number.min()), OVERWORLD), template.name());
-                    assertFits(template.make(defaults.with(number, number.max()), OVERWORLD), template.name());
-                }
+        for (World world : List.of(OVERWORLD, SHORT)) {
+            Templates.ALL.forEach(template -> assertFitsAtDefaultsAndEdges(template, world));
+        }
+    }
+
+    private static void assertFitsAtDefaultsAndEdges(Template template, World world) {
+        Values defaults = Values.defaults(template.parameters());
+        assertFits(template.make(defaults, world), world, template.name());
+        for (Parameter parameter : template.parameters()) {
+            if (parameter instanceof Parameter.Number number) {
+                assertFits(template.make(defaults.with(number, number.min()), world), world, template.name());
+                assertFits(template.make(defaults.with(number, number.max()), world), world, template.name());
             }
         }
     }
@@ -55,8 +61,8 @@ class TemplatesTest {
         assertEquals("minecraft:black_concrete", made.layers().get(2).block());
     }
 
-    private static void assertFits(Preset preset, String template) {
-        assertTrue(preset.fitsWorld(OVERWORLD.height()), template + " is too tall: " + preset.height());
+    private static void assertFits(Preset preset, World world, String template) {
+        assertTrue(preset.fitsWorld(world.height()), template + " is too tall: " + preset.height());
         assertTrue(preset.layers().stream().allMatch(layer -> layer.height() >= 1), template + " has an empty layer");
     }
 }
