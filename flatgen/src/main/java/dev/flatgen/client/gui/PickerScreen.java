@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.search.rules.PickSections;
 import dev.flatgen.search.rules.Picks;
 import dev.flatgen.search.rules.Search;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -92,7 +93,7 @@ public final class PickerScreen extends FlatgenScreen {
         int gridTop = row.bottom() + GAP;
         grid = new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - FOOTER),
                 picker.cardWidth(), picker.cardHeight(), this::sections, id -> picks.starred().contains(id),
-                picker.cards(), picker.modName(), this::pick, this::star);
+                new IdAndMod(), this::pick, this::star);
         return List.of(search, modButton, grid,
                 new TextButton(CommonComponents.GUI_CANCEL,
                         new Rect((width - CANCEL_WIDTH) / 2, height - (FOOTER + ROW_HEIGHT) / 2, CANCEL_WIDTH,
@@ -120,6 +121,22 @@ public final class PickerScreen extends FlatgenScreen {
                 : picker.entries().stream().filter(entry -> entry.namespace().equals(mods.get(mod))).toList();
         return PickSections.of(picker.entries(), shown, query, picks).stream()
                 .map(section -> new CardGrid.Section(heading(section.kind()), section.entries())).toList();
+    }
+
+    /** A picker's cards, their tooltips saying each entry's id and mod before what the picker's cards add. */
+    private final class IdAndMod implements CardGrid.Cards {
+        @Override
+        public void draw(Canvas canvas, Search.Entry entry, Rect place) {
+            picker.cards().draw(canvas, entry, place);
+        }
+
+        @Override
+        public List<Component> describe(Search.Entry entry) {
+            List<Component> lines = new ArrayList<>(List.of(Component.literal(entry.id()),
+                    Component.literal(picker.modName().apply(entry.namespace()))));
+            lines.addAll(picker.cards().describe(entry));
+            return lines;
+        }
     }
 
     private Component heading(PickSections.Kind kind) {

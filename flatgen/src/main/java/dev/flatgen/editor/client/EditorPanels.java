@@ -5,6 +5,7 @@ import dev.flatgen.blocks.client.BlockPanel;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.facts.client.FactsPanel;
 import dev.flatgen.layers.client.LayerPanel;
+import dev.flatgen.library.client.LibraryPanel;
 import dev.flatgen.options.client.OptionsPanel;
 import dev.flatgen.structures.client.StructuresPanel;
 import java.util.List;
@@ -17,6 +18,7 @@ final class EditorPanels {
             new FactsPanel(),
             new BiomePanel(),
             new StructuresPanel(),
+            new LibraryPanel(),
             new BlockPanel(),
             new LayerPanel(),
             new HistoryPanel(),

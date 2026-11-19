@@ -38,6 +38,13 @@ public final class TextField implements Widget {
         text.chars().forEach(character -> typed.type((char) character));
     }
 
+    /** Shows this text in place of what was typed, as when the player picks something to name. */
+    public void show(String text) {
+        typed.clear();
+        text.chars().forEach(character -> typed.type((char) character));
+        onChange.accept(typed.text());
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         String text = typed.text() + (keyboard ? "_" : "");

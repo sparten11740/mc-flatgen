@@ -10,6 +10,9 @@ import java.util.List;
  * @param structureSets structure sets or tags of them
  */
 public record MissingIds(List<String> blocks, List<String> biomes, List<String> structureSets) {
+    /** Nothing missing: the game has every id. */
+    public static final MissingIds NONE = new MissingIds(List.of(), List.of(), List.of());
+
     public MissingIds {
         blocks = List.copyOf(blocks);
         biomes = List.copyOf(biomes);
