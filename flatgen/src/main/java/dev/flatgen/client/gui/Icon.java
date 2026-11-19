@@ -10,7 +10,7 @@ public interface Icon {
     /** Something the game lacks or cannot read: the barrier. */
     Icon MISSING = item("minecraft:barrier");
     /** Back to where the player came from, keeping what was done: a left arrow. */
-    Icon BACK = own("back");
+    Icon BACK = line("arrow_left");
     /** Text leaving the game for the clipboard: paper with an arrow out. */
     Icon TO_CLIPBOARD = badged(item("minecraft:paper"), "badge_out");
     /** Text coming in from the clipboard: paper with an arrow in. */
@@ -30,18 +30,43 @@ public interface Icon {
     }
 
     /**
-     * This picture under the "no" sign, a red ring and slash with a dark rim, saying "no" by its shape on any picture,
-     * green ones too.
+     * This picture dimmed, with a small "no" sign, a red ring and slash, at its bottom right corner where an item's
+     * count goes: what it shows does not happen, while the picture can still be told apart from the others.
      */
     static Icon struck(Icon icon) {
-        Icon no = own("no");
-        return (canvas, x, y) -> drawOver(icon, no, canvas, x, y);
+        return (canvas, x, y) -> drawStruck(icon, canvas, x, y);
+    }
+
+    private static void drawStruck(Icon icon, Canvas canvas, int x, int y) {
+        icon.draw(canvas, x, y);
+        canvas.dim(new Rect(x, y, SIZE, SIZE));
+        drawMark(canvas, "no", x, y);
+    }
+
+    /** This picture with one of the look's line drawings small at its bottom right corner, such as an up arrow. */
+    static Icon marked(Icon icon, String line) {
+        return (canvas, x, y) -> drawMarked(icon, line, canvas, x, y);
+    }
+
+    private static void drawMarked(Icon icon, String line, Canvas canvas, int x, int y) {
+        icon.draw(canvas, x, y);
+        drawMark(canvas, line, x, y);
+    }
+
+    /** A line drawing small on a dark pill at an icon's bottom right corner, over what is drawn there. */
+    private static void drawMark(Canvas canvas, String line, int x, int y) {
+        Rect mark = new Rect(x + SIZE - NO_MARK, y + SIZE - NO_MARK, NO_MARK, NO_MARK);
+        canvas.markOver(Look.COUNT, mark);
+        canvas.markOver(Look.icon(line), mark);
     }
 
     /** A sprite of the game's GUI atlas, by its id, such as {@code flatgen:icon/undo}. */
     static Icon sprite(String id) {
         return (canvas, x, y) -> canvas.sprite(id, x, y);
     }
+
+    /** The size of a mark at a picture's corner, such as the "no" sign of a struck one, in GUI pixels. */
+    int NO_MARK = 9;
 
     /** How far a line drawing sits inside an icon's square, in GUI pixels, so it matches the size of text beside it. */
     int LINE_INSET = 3;

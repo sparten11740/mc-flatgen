@@ -72,9 +72,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         Rect body = frame.body();
         FlowLayout row = new FlowLayout(new Rect(body.x(), body.y(), body.width(), 0), PictureButton.SIZE, GAP);
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new WidgetGroup(Templates.ALL.stream().<Widget>map(choice -> new PictureButton(
-                Icon.item(choice.icon()), row.next(PictureButton.SIZE), () -> choose(choice),
-                () -> List.of(Component.translatable(choice.name())))).toList()));
+        widgets.add(new WidgetGroup(Templates.ALL.stream().map(choice -> templateButton(choice, row)).toList()));
         int top = row.bottom() + GAP;
         widgets.add(new Label(Icon.item(template.icon()), Component.translatable(template.name()),
                 new Rect(body.x(), top, body.width(), Label.height())));
@@ -106,6 +104,15 @@ public final class TemplatesScreen extends FlatgenScreen {
     @Override
     public void onClose() {
         minecraft.setScreen(editor.screen());
+    }
+
+    /** A template's picture button, ringed in blue while it is the chosen one. */
+    private Widget templateButton(Template choice, FlowLayout row) {
+        Rect place = row.next(PictureButton.SIZE);
+        Widget button = new PictureButton(Icon.item(choice.icon()), place, () -> choose(choice),
+                () -> List.of(Component.translatable(choice.name())));
+        return choice != template ? button : new WidgetGroup(List.of(button, new Surface(Look.CHOSEN_RING,
+                new Rect(place.x() - 1, place.y() - 1, place.width() + 2, place.height() + 2))));
     }
 
     private void choose(Template chosen) {

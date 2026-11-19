@@ -23,7 +23,7 @@ import net.minecraft.network.chat.Component;
  */
 public final class FactsPanel implements EditorPanel {
     /** The picture of the no-slimes button: the slime fact's own, as it makes that fact true. */
-    private static final Icon NO_SLIMES = Icon.struck(Icon.item("minecraft:slime_ball"));
+    private static final Icon NO_SLIMES = Icon.marked(Icon.item("minecraft:slime_ball"), "arrow_up");
 
     /** Shown for every dimension the preset gives a stack of its own (F22). */
     @Override

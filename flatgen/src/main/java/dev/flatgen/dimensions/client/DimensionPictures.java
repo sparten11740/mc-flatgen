@@ -19,7 +19,7 @@ public final class DimensionPictures {
         return switch (dimension) {
             case OVERWORLD -> Icon.block("minecraft:grass_block");
             case NETHER -> Icon.own("nether_portal");
-            case END -> Icon.item("minecraft:ender_eye");
+            case END -> Icon.block("minecraft:end_stone");
         };
     }
 

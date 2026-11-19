@@ -26,7 +26,7 @@ class FactsTest {
                 new Fact.Shown("minecraft:water_bucket", false, List.of(Fact.Words.of("flatgen.facts.weather.rain"))),
                 new Fact.Shown("minecraft:slime_ball", false, List.of(new Fact.Words("flatgen.facts.slime_chunks",
                         List.of(40)))),
-                new Fact.Shown("minecraft:zombie_head", false, List.of(Fact.Words.of("flatgen.facts.monsters")))),
+                new Fact.Shown("minecraft:skeleton_skull", false, List.of(Fact.Words.of("flatgen.facts.monsters")))),
                 Facts.ALL.stream().map(fact -> fact.show(classic)).toList());
     }
 

@@ -37,7 +37,7 @@ public final class PickerScreen extends FlatgenScreen {
     private static final int SEARCH_WIDTH = 150;
     private static final int MOD_WIDTH = 130;
     /** The search field's picture, as the creative inventory's search tab has it. */
-    private static final Icon SEARCH = Icon.item("minecraft:compass");
+    private static final Icon SEARCH = Icon.item("minecraft:spyglass");
     /** The mod filter's picture while it shows every mod. */
     private static final Icon ALL_MODS = Icon.own("all_mods");
 

@@ -29,8 +29,9 @@ public final class Look {
     public static final String PANEL = sprite("panel");
     /** A surface over the rest of the screen, such as a picker. */
     public static final String SHEET = sprite("sheet");
-    /** A card that is chosen. */
+    /** A card that is chosen, and the ring around a picture button that is. */
     public static final String CHOSEN = sprite("card_chosen");
+    public static final String CHOSEN_RING = sprite("ring_chosen");
     /** A plain button's face, and its face while the mouse is over it. */
     public static final String BUTTON = sprite("button");
     public static final String BUTTON_LIT = sprite("button_lit");
@@ -82,7 +83,9 @@ public final class Look {
         /** One that adds, such as a new layer. */
         ACCENT("button_accent", ON_ACCENT),
         /** The one thing to do on an otherwise empty screen, such as making a dimension flat. */
-        VIVID("button_vivid", ON_VIVID);
+        VIVID("button_vivid", ON_VIVID),
+        /** One that does what cannot be undone, such as deleting, after asking. */
+        DANGER("button_danger", ON_VIVID);
 
         private final String sprite;
         private final int label;

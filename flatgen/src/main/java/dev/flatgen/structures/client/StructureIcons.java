@@ -13,7 +13,7 @@ final class StructureIcons {
             Map.entry("minecraft:end_cities", "minecraft:purpur_block"),
             Map.entry("minecraft:igloos", "minecraft:snow_block"),
             Map.entry("minecraft:jungle_temples", "minecraft:mossy_cobblestone"),
-            Map.entry("minecraft:mineshafts", "minecraft:rail"),
+            Map.entry("minecraft:mineshafts", "minecraft:minecart"),
             Map.entry("minecraft:nether_complexes", "minecraft:nether_bricks"),
             Map.entry("minecraft:nether_fossils", "minecraft:bone_block"),
             Map.entry("minecraft:ocean_monuments", "minecraft:prismarine"),

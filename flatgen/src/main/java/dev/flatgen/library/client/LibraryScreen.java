@@ -67,7 +67,7 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int PICTURE_HEIGHT = 40;
     private static final int PADDING = 4;
     /** The mark of the default preset, the one Superflat starts with. */
-    private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
+    private static final Icon DEFAULT = Icon.item("minecraft:red_bed");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
     private static final Icon BUILT_IN = Icon.item("minecraft:book");
     /**
@@ -79,7 +79,7 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final Icon BOOK_TO_WRITE = Icon.item("minecraft:writable_book");
     /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
     private static final Icon SAVE_OVER = Icon.badged(BOOK_TO_WRITE, "badge_swap");
-    private static final Icon DELETE = Icon.own("trash");
+    private static final Icon DELETE = Icon.line("trash");
     /** The built-ins setting's states, in its order: all shown, the game's hidden, all hidden. */
     private static final List<Icon> BUILT_INS = List.of(BUILT_IN, Icon.struck(Icon.item("minecraft:grass_block")),
             Icon.struck(BUILT_IN));

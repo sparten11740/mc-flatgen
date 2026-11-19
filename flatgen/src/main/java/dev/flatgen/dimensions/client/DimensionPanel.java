@@ -29,6 +29,8 @@ import net.minecraft.network.chat.Component;
  * data pack makes the dimension, it says so in place of making it flat, as the pack's dimension would win.
  */
 public final class DimensionPanel implements EditorPanel {
+    /** The picture of making a dimension flat: bumpy ground, an arrow, flat stripes. */
+    private static final Icon MAKE_FLAT = Icon.own("make_flat");
     /** The picture of giving a dimension back to the game: flat stripes, an arrow, bumpy ground. */
     private static final Icon GIVE_BACK = Icon.own("give_back");
     /** The picture of a data pack, as the library's Datapack button has it. */
@@ -88,7 +90,7 @@ public final class DimensionPanel implements EditorPanel {
                         Look.TEXT, true),
                 new Caption(() -> Component.translatable("flatgen.dimension.make_flat_tip"), line, TextStyle.BODY,
                         Look.MUTED, true),
-                new TextButton(Icon.line("flat"), () -> makeFlatName(dimension), button,
+                new TextButton(MAKE_FLAT, () -> makeFlatName(dimension), button,
                         () -> makeFlat(editor, dimension), () -> true, () -> List.of(makeFlatName(dimension)))
                         .kind(Look.ButtonKind.VIVID));
     }

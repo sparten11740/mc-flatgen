@@ -98,7 +98,7 @@ public final class Facts {
         @Override
         public Shown show(Situation situation) {
             boolean monsters = situation.facts().hostileMobs();
-            return new Shown("minecraft:zombie_head", !monsters,
+            return new Shown("minecraft:skeleton_skull", !monsters,
                     List.of(Words.of(monsters ? "flatgen.facts.monsters" : "flatgen.facts.no_monsters")));
         }
     }
