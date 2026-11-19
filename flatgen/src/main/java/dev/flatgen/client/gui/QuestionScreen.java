@@ -19,8 +19,7 @@ public final class QuestionScreen extends FlatgenScreen {
     /** Space inside the dialog's edges, and between its parts, in GUI pixels. */
     private static final int PADDING = 14;
     private static final int GAP = 8;
-    /** The No and Yes buttons, in GUI pixels. */
-    private static final int BUTTON_WIDTH = 90;
+    /** The height of No and Yes, in GUI pixels. */
     private static final int BUTTON_HEIGHT = 19;
 
     private final Screen parent;
@@ -54,11 +53,13 @@ public final class QuestionScreen extends FlatgenScreen {
         int titleTop = dialog.y() + PADDING + Icon.SIZE + GAP;
         int wordsTop = titleTop + TextStyle.TITLE.lineHeight() + GAP;
         int buttonsY = wordsTop + wordsHeight + GAP;
-        int doneX = dialog.right() - PADDING - BUTTON_WIDTH;
-        Widget answerYes = new TextButton(Icon.line("check"), CommonComponents.GUI_YES, new Rect(doneX, buttonsY,
-                BUTTON_WIDTH, BUTTON_HEIGHT), this::answerYes).kind(Look.ButtonKind.PRIMARY);
-        no = new TextButton(Icon.line("cross"), CommonComponents.GUI_NO, new Rect(doneX - GAP - BUTTON_WIDTH, buttonsY,
-                BUTTON_WIDTH, BUTTON_HEIGHT), this::onClose);
+        int yesWidth = actionWidth(CommonComponents.GUI_YES);
+        int noWidth = actionWidth(CommonComponents.GUI_NO);
+        int yesX = dialog.right() - PADDING - yesWidth;
+        Widget answerYes = new TextButton(Icon.line("check"), CommonComponents.GUI_YES, new Rect(yesX, buttonsY,
+                yesWidth, BUTTON_HEIGHT), this::answerYes).kind(Look.ButtonKind.PRIMARY);
+        no = new TextButton(Icon.line("cross"), CommonComponents.GUI_NO, new Rect(yesX - GAP - noWidth, buttonsY,
+                noWidth, BUTTON_HEIGHT), this::onClose);
         return List.of(new Surface(Look.SHEET, dialog),
                 new Label(picture, Component.empty(), new Rect(dialog.x() + PADDING, dialog.y() + PADDING, Icon.SIZE,
                         Icon.SIZE)),

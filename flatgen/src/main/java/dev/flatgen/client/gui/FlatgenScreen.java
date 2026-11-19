@@ -79,6 +79,11 @@ public abstract class FlatgenScreen extends GameScreen {
         return font.width(McCanvas.styled(text, style, pixelsPerUnit()));
     }
 
+    /** How wide one of the footer's actions with a picture and these words is: wide enough for both, never narrow. */
+    protected int actionWidth(Component label) {
+        return Math.max(PageFrame.MIN_ACTION_WIDTH, TextButton.width(textWidth(label)));
+    }
+
     /** Body text in lines no wider than this, as this screen draws it. */
     protected List<Component> wrapped(Component text, int lineWidth) {
         return font.getSplitter().splitLines(text, lineWidth, McCanvas.style(TextStyle.BODY, pixelsPerUnit())).stream()

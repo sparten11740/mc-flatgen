@@ -49,8 +49,6 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** The settings' box: its widest, and the space inside it, in GUI pixels. */
     private static final int PADDING = 8;
     private static final int CONTROLS_WIDTH = CONTROL_WIDTH + 2 * PADDING;
-    /** How wide Back and Use are, in GUI pixels. */
-    private static final int BUTTON_WIDTH = 70;
 
     private final EditorContext editor;
     /** The world the template makes now, as the facts need it. */
@@ -94,7 +92,8 @@ public final class TemplatesScreen extends FlatgenScreen {
                         FactPictures.words(fact.show(world)))))));
         template.parameters().forEach(parameter -> settings.add(parameter.accept(new Control(controls))));
         widgets.add(new WidgetGroup(settings));
-        List<Rect> actions = frame.actions(BUTTON_WIDTH, BUTTON_WIDTH);
+        List<Rect> actions = frame.actions(actionWidth(CommonComponents.GUI_BACK),
+                actionWidth(Component.translatable("flatgen.templates.use")));
         widgets.add(new WidgetGroup(List.of(
                 new TextButton(Icon.BACK, CommonComponents.GUI_BACK, actions.get(0), this::onClose),
                 new TextButton(Icon.line("check"), () -> Component.translatable("flatgen.templates.use"),

@@ -56,8 +56,6 @@ public final class LibraryScreen extends FlatgenScreen {
     /** A row of controls, in GUI pixels. */
     private static final int ROW_HEIGHT = 20;
     private static final int GAP = 4;
-    /** The width of Back and Use, in GUI pixels. */
-    private static final int BUTTON_WIDTH = 66;
     private static final int NAME_WIDTH = 100;
     /** Space keeping Save over and Delete, which cannot be undone, apart from the other buttons, in GUI pixels. */
     private static final int DANGER_GAP = 8;
@@ -129,7 +127,8 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new CardGrid(new Rect(body.x(), gridTop, body.width(), body.bottom() - gridTop), CARD_WIDTH,
                 CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
                 file -> choose(choices.toggleFavourite(file))));
-        List<Rect> actions = frame.actions(BUTTON_WIDTH, BUTTON_WIDTH);
+        List<Rect> actions = frame.actions(actionWidth(Component.translatable("flatgen.library.back")),
+                actionWidth(Component.translatable("flatgen.library.apply")));
         widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"), actions.get(0),
                 this::onClose));
         widgets.add(new TextButton(Icon.line("check"), () -> Component.translatable("flatgen.library.apply"),

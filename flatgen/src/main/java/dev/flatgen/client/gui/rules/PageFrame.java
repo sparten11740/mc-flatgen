@@ -19,6 +19,8 @@ public record PageFrame(int width, int height) {
     public static final int GAP = 11;
     /** The height of the footer's buttons, and the space between them, in GUI pixels. */
     public static final int ACTION_HEIGHT = 19;
+    /** The narrowest a footer action is, in GUI pixels, so short words still make a button easy to hit. */
+    public static final int MIN_ACTION_WIDTH = 66;
     private static final int ACTION_GAP = 4;
 
     /** Where the body is, between the header and the footer, inside the margins. */

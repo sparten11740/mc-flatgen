@@ -69,8 +69,6 @@ public final class EditorScreen extends FlatgenScreen {
     private static final int ASIDE_WIDTH = 152;
     /** Space between the bar above the layers and the layers, in GUI pixels. */
     private static final int BAR_GAP = 7;
-    /** How wide the footer's Cancel and Done are, in GUI pixels. */
-    private static final int FOOTER_BUTTON_WIDTH = 66;
     /** Space inside the world's panel below the column, in GUI pixels. */
     private static final int WORLD_PADDING = 8;
     /** The icon of the preset the editor starts from, which the world's settings do not carry. */
@@ -192,7 +190,8 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** Undo, redo and what the panels place at the left; Cancel and Done at the right. */
     private List<Widget> footer(Frame frame, EditorLayout laid) {
-        List<Rect> actions = frame.page.actions(FOOTER_BUTTON_WIDTH, FOOTER_BUTTON_WIDTH);
+        List<Rect> actions = frame.page.actions(actionWidth(CommonComponents.GUI_CANCEL),
+                actionWidth(CommonComponents.GUI_DONE));
         Rect cancel = actions.get(0);
         Rect done = actions.get(1);
         List<Widget> widgets = new ArrayList<>(laid.widgets(EditorRegion.FOOTER));

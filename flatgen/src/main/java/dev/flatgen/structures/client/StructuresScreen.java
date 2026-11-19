@@ -38,8 +38,6 @@ import net.minecraft.network.chat.Component;
  * to undo in the editor.
  */
 public final class StructuresScreen extends FlatgenScreen {
-    /** How wide Done is, in GUI pixels. */
-    private static final int DONE_WIDTH = 66;
     /** How many of the biomes a set needs its tooltip names. */
     private static final int BIOMES_NAMED = 3;
     private static final Map<StructureChoice.Mode, Icon> MODE_ICONS = Map.of(
@@ -71,8 +69,9 @@ public final class StructuresScreen extends FlatgenScreen {
         Rect body = frame.body();
         return List.of(
                 new ScrollGroup(body, top -> content(new Rect(body.x(), top, body.width(), 0))),
-                new TextButton(Icon.line("check"), CommonComponents.GUI_DONE, frame.actions(DONE_WIDTH).get(0),
-                        this::onClose).kind(Look.ButtonKind.PRIMARY));
+                new TextButton(Icon.line("check"), CommonComponents.GUI_DONE,
+                        frame.actions(actionWidth(CommonComponents.GUI_DONE)).get(0), this::onClose)
+                        .kind(Look.ButtonKind.PRIMARY));
     }
 
     @Override
