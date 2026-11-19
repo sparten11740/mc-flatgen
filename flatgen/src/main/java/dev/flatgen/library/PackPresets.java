@@ -19,6 +19,9 @@ public final class PackPresets implements PresetSource {
     private static final String FOLDER = "flatgen/presets";
     /** How a pack preset's key begins in the library, before its id. */
     private static final String KEY_PREFIX = "pack:";
+    /** Built in, after the game's, hidden only when every built-in is. */
+    private static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(2, false,
+            Optional.of(PresetLibrary.BuiltIns.HIDDEN));
 
     @Override
     public List<PresetLibrary.Entry> presets() {
@@ -30,10 +33,10 @@ public final class PackPresets implements PresetSource {
         try {
             PresetReading reading = PresetJson.read(file.getValue());
             String name = Component.translatable(reading.preset().name()).getString();
-            return new PresetLibrary.Entry(key, PresetLibrary.Origin.PACK,
+            return new PresetLibrary.Entry(key, KIND,
                     Optional.of(reading.preset().withName(name)), reading.problems());
         } catch (IllegalArgumentException exception) {
-            return new PresetLibrary.Entry(key, PresetLibrary.Origin.PACK, Optional.empty(),
+            return new PresetLibrary.Entry(key, KIND, Optional.empty(),
                     List.of(String.valueOf(exception.getMessage())));
         }
     }

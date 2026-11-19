@@ -27,7 +27,7 @@ class PresetStoreTest {
     void keepsAPresetInAFileNamedAfterItAndReadsItBack() {
         PresetStore store = new PresetStore(folder.resolve("presets"));
         assertEquals(Optional.of("tall_flat.json"), store.saveNew(TALL));
-        assertEquals(List.of(new PresetLibrary.Entry("tall_flat.json", PresetLibrary.Origin.PLAYER, Optional.of(TALL),
+        assertEquals(List.of(new PresetLibrary.Entry("tall_flat.json", PresetLibrary.Kind.PLAYERS, Optional.of(TALL),
                 List.of())), store.load());
     }
 

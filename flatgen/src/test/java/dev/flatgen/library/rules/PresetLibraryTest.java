@@ -11,15 +11,19 @@ import org.junit.jupiter.api.Test;
 
 /** The order, names and files of the player's saved presets. */
 class PresetLibraryTest {
+    private static final PresetLibrary.Kind GAME = new PresetLibrary.Kind(1, false,
+            Optional.of(PresetLibrary.BuiltIns.NO_GAME));
+    private static final PresetLibrary.Kind PACK = new PresetLibrary.Kind(2, false,
+            Optional.of(PresetLibrary.BuiltIns.HIDDEN));
     private static final PresetLibrary.Entry WATER = entry("water.json", "Water World");
     private static final PresetLibrary.Entry TALL = entry("tall.json", "tall flat");
     private static final PresetLibrary.Entry SKY = entry("sky.json", "Sky Grid");
     private static final PresetLibrary.Entry BROKEN = new PresetLibrary.Entry("broken.json",
-            PresetLibrary.Origin.PLAYER, Optional.empty(), List.of("not JSON"));
+            PresetLibrary.Kind.PLAYERS, Optional.empty(), List.of("not JSON"));
     private static final PresetLibrary.Entry CLASSIC = new PresetLibrary.Entry("game:minecraft:classic_flat",
-            PresetLibrary.Origin.GAME, Optional.of(TestPresets.TALL_FLAT.withName("Classic Flat")), List.of());
+            GAME, Optional.of(TestPresets.TALL_FLAT.withName("Classic Flat")), List.of());
     private static final PresetLibrary.Entry STARTER = new PresetLibrary.Entry("pack:flatgen:tall_flat",
-            PresetLibrary.Origin.PACK, Optional.of(TestPresets.TALL_FLAT.withName("A tall flat")), List.of());
+            PACK, Optional.of(TestPresets.TALL_FLAT.withName("A tall flat")), List.of());
 
     @Test
     void ordersFavouritesThenTheLatestUsedThenByName() {
@@ -67,6 +71,6 @@ class PresetLibraryTest {
 
     private static PresetLibrary.Entry entry(String file, String name) {
         Preset preset = TestPresets.TALL_FLAT.withName(name);
-        return new PresetLibrary.Entry(file, PresetLibrary.Origin.PLAYER, Optional.of(preset), List.of());
+        return new PresetLibrary.Entry(file, PresetLibrary.Kind.PLAYERS, Optional.of(preset), List.of());
     }
 }

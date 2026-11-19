@@ -25,17 +25,20 @@ public final class PresetLibrary {
     private PresetLibrary() {
     }
 
-    /** Where a preset of the library comes from, in the order the library shows them after the favourites. */
-    public enum Origin {
-        /** The player's own, a file of config/flatgen/presets, which they may change. */
-        PLAYER,
-        /** The game's or a data pack's flat world presets, built in. */
-        GAME,
-        /** Flatgen's starters and those mods and resource packs add, built in. */
-        PACK
+    /**
+     * What the presets of a source are like in the library, as each source says: a new source chooses its own, and
+     * the library needs no change.
+     *
+     * @param rank       where they come in the library's order after the favourites and recent ones, lowest first
+     * @param editable   whether the player may rename, save over and delete them, as their own
+     * @param hiddenFrom the least of the built-ins settings that hides them; none when no setting does
+     */
+    public record Kind(int rank, boolean editable, Optional<BuiltIns> hiddenFrom) {
+        /** The player's own presets, first and theirs to change. */
+        public static final Kind PLAYERS = new Kind(0, true, Optional.empty());
     }
 
-    /** Which built-in presets the library shows. */
+    /** Which built-in presets the library shows, each setting hiding more than the one before. */
     public enum BuiltIns {
         /** All of them. */
         SHOWN,
@@ -50,11 +53,11 @@ public final class PresetLibrary {
      *
      * @param key      how the library names it: a player's file name, such as {@code tall_flat.json}, or a built-in's
      *                 id, such as {@code game:minecraft:classic_flat}
-     * @param origin   where it comes from
+     * @param kind     what its source's presets are like in the library
      * @param preset   the preset; none when it cannot be read at all
      * @param problems what in it could not be read, for a warning on its card and the log
      */
-    public record Entry(String key, Origin origin, Optional<Preset> preset, List<String> problems) {
+    public record Entry(String key, Kind kind, Optional<Preset> preset, List<String> problems) {
         public Entry {
             problems = List.copyOf(problems);
         }
@@ -66,19 +69,19 @@ public final class PresetLibrary {
 
         /** Whether it is the player's own, which they may rename, save over and delete; built-ins they may not. */
         public boolean isPlayers() {
-            return origin == Origin.PLAYER;
+            return kind.editable();
         }
     }
 
     /** The entries the library shows with these built-ins shown. */
     public static List<Entry> shown(List<Entry> entries, BuiltIns builtIns) {
-        return entries.stream().filter(entry -> entry.isPlayers() || builtIns == BuiltIns.SHOWN
-                || (builtIns == BuiltIns.NO_GAME && entry.origin() == Origin.PACK)).toList();
+        return entries.stream().filter(entry -> entry.kind().hiddenFrom()
+                .map(from -> builtIns.ordinal() < from.ordinal()).orElse(true)).toList();
     }
 
     /**
      * The entries in the order the library shows them: favourites first, then those used lately, the latest first,
-     * then the rest by where they come from (the player's, the game's, then packs') and by name.
+     * then the rest by their source's rank (the player's, the game's, then packs') and by name.
      *
      * @param favourites the keys of the favourite presets (F12)
      * @param recent     the keys of the presets used lately, the latest first
@@ -90,7 +93,8 @@ public final class PresetLibrary {
         recent.forEach(key -> entries.stream()
                 .filter(entry -> entry.key().equals(key) && !ordered.contains(entry)).forEach(ordered::add));
         entries.stream().filter(entry -> !ordered.contains(entry))
-                .sorted(Comparator.comparing(Entry::origin).thenComparing(byName)).forEach(ordered::add);
+                .sorted(Comparator.comparingInt((Entry entry) -> entry.kind().rank()).thenComparing(byName))
+                .forEach(ordered::add);
         return ordered;
     }
 

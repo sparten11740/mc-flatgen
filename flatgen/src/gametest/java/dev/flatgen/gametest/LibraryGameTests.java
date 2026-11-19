@@ -2,10 +2,9 @@ package dev.flatgen.gametest;
 
 import static dev.flatgen.gametest.FlatgenTests.check;
 
-import dev.flatgen.library.rules.PresetLibrary;
+import dev.flatgen.preset.rules.PresetReading;
 import dev.flatgen.mc.FlatPresets;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -22,10 +21,8 @@ final class LibraryGameTests {
     }
 
     private static void gamePresets(GameTestHelper helper) {
-        List<PresetLibrary.Entry> presets = FlatPresets.visible(helper.getLevel().registryAccess());
-        check(presets.stream().anyMatch(entry -> entry.key().equals("game:minecraft:classic_flat")),
-                "Classic Flat is missing from " + presets.stream().map(PresetLibrary.Entry::key).toList());
-        presets.forEach(entry -> check(entry.problems().isEmpty() && entry.preset().isPresent(),
-                entry.key() + ": " + entry.problems()));
+        Map<String, PresetReading> presets = FlatPresets.visible(helper.getLevel().registryAccess());
+        check(presets.containsKey("minecraft:classic_flat"), "Classic Flat is missing from " + presets.keySet());
+        presets.forEach((id, reading) -> check(reading.problems().isEmpty(), id + ": " + reading.problems()));
     }
 }

@@ -104,11 +104,11 @@ public final class PresetStore implements PresetSource {
         try {
             PresetReading reading = PresetJson.read(Files.readString(path));
             reading.problems().forEach(problem -> Flatgen.LOGGER.warn("Preset {}: {}", path, problem));
-            return new PresetLibrary.Entry(file, PresetLibrary.Origin.PLAYER, Optional.of(reading.preset()),
+            return new PresetLibrary.Entry(file, PresetLibrary.Kind.PLAYERS, Optional.of(reading.preset()),
                     reading.problems());
         } catch (IOException | IllegalArgumentException exception) {
             Flatgen.LOGGER.warn("Could not read the preset {}", path, exception);
-            return new PresetLibrary.Entry(file, PresetLibrary.Origin.PLAYER, Optional.empty(),
+            return new PresetLibrary.Entry(file, PresetLibrary.Kind.PLAYERS, Optional.empty(),
                     List.of(String.valueOf(exception.getMessage())));
         }
     }

@@ -27,7 +27,9 @@ and duplicated, not changed or deleted.
 
 - Built-ins are sources behind the same `library/PresetSource` interface the player's folder (`PresetStore`) uses,
   listed in `LibrarySources`, so the library lists sources without knowing their kind; a new source is a new class
-  there, not a change to the library. Each preset has a key: a player's file name, `game:<id>` for the game's and
+  there, not a change to the library. Each source gives its presets a kind (`PresetLibrary.Kind`): where they rank,
+  whether the player may change them, and which built-ins setting hides them, so the library never asks which source
+  a preset came from. Each preset has a key: a player's file name, `game:<id>` for the game's and
   data packs' (`GamePresets`), `pack:<id>` for files of mods and resource packs (`PackPresets`, Flatgen's starters
   among them, their names translation keys); favourites and the default name presets by key, so built-ins can be
   either.
