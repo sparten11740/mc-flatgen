@@ -47,6 +47,24 @@ public record ColumnLayout(List<Span> spans, int contentHeight) {
         return new ColumnLayout(spans, contentHeight);
     }
 
+    /**
+     * How tall a stack is drawn in a column: its share of the world's height, so the air above it shows as the world
+     * has it, but no less than {@code smallestShare} for each layer and no more than the column less the headroom
+     * kept above the stack.
+     *
+     * @param column        the column's height, in pixels
+     * @param headroom      the pixels kept free above the stack when it would fill the column
+     * @param blocks        how many blocks the stack has, all layers together
+     * @param worldHeight   how many blocks tall the world is
+     * @param layers        how many layers the stack has
+     * @param smallestShare the least pixels a layer gets
+     */
+    public static int stackSpace(int column, int headroom, int blocks, int worldHeight, int layers,
+            int smallestShare) {
+        int share = (int) ((long) column * blocks / Math.max(1, worldHeight));
+        return Math.min(column - headroom, Math.max(share, layers * smallestShare));
+    }
+
     /** The layer drawn at this pixel from the column's top, if any. */
     public OptionalInt layerAt(int pixel) {
         for (int index = 0; index < spans.size(); index++) {

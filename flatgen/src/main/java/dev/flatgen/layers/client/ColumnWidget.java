@@ -253,14 +253,10 @@ public final class ColumnWidget implements Widget {
         return layout;
     }
 
-    /**
-     * How tall the stack is drawn: its share of the world's height, so the air above it shows as the world has it, but
-     * no less than {@link #SMALLEST_SHARE} for each layer and no more than the column.
-     */
+    /** How tall the stack is drawn ({@link ColumnLayout#stackSpace}), with room for the figure standing on it. */
     private int stackSpace(List<Layer> layers) {
-        int blocks = layers.stream().mapToInt(Layer::height).sum();
-        int share = (int) ((long) column.height() * blocks / Math.max(1, editor.world().height()));
-        return Math.min(column.height(), Math.max(share, layers.size() * SMALLEST_SHARE));
+        return ColumnLayout.stackSpace(column.height(), StandingFigure.HEIGHT,
+                layers.stream().mapToInt(Layer::height).sum(), editor.world().height(), layers.size(), SMALLEST_SHARE);
     }
 
     /** Where the stack's top is drawn: below the air over it. */

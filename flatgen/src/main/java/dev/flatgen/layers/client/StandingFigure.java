@@ -12,6 +12,8 @@ final class StandingFigure {
     private static final int HEAD = 4;
     private static final int BODY = 6;
     private static final int LEGS = 6;
+    /** How tall the figure is, in GUI pixels. */
+    static final int HEIGHT = HEAD + BODY + LEGS;
     /** How far each arm stands out beside the body, in GUI pixels. */
     private static final int ARM = 1;
     /** The figure's colours: skin, hair, shirt, trousers. ARGB. */

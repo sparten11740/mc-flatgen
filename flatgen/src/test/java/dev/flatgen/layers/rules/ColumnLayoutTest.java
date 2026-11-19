@@ -100,4 +100,15 @@ class ColumnLayoutTest {
             assertEquals(layout.spans().get(index - 1).top(), layout.spans().get(index).bottom());
         }
     }
+
+    @Test
+    void drawsAThinStackAsItsShareOfTheWorldButEachLayerAtLeastItsSmallestShare() {
+        assertEquals(64, ColumnLayout.stackSpace(400, 16, 4, 384, 4, 16));
+        assertEquals(200, ColumnLayout.stackSpace(400, 16, 192, 384, 2, 16));
+    }
+
+    @Test
+    void keepsHeadroomAboveAStackThatWouldFillTheColumn() {
+        assertEquals(384, ColumnLayout.stackSpace(400, 16, 384, 384, 3, 16));
+    }
 }
