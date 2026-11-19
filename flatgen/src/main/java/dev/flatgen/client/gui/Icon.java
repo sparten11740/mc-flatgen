@@ -11,6 +11,10 @@ public interface Icon {
     int STRIKE = 0xFFE03030;
     /** The thickness of that stroke, in GUI pixels. */
     int STROKE = 2;
+    /** Yes, use this, done: the picture of every button that accepts. */
+    Icon TICK = own("tick");
+    /** No, cancel: the picture of every button that throws away what was being done. */
+    Icon CROSS = own("cross");
 
     /** Draws the picture with its top left corner here. */
     void draw(Canvas canvas, int x, int y);

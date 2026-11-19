@@ -2,6 +2,7 @@ package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -150,10 +151,10 @@ public final class EditorScreen extends FlatgenScreen {
         FlowLayout row = new FlowLayout(new Rect((width - rowWidth) / 2, height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2,
                 rowWidth, 0), PanelSizes.ROW_HEIGHT, gap);
         return List.of(
-                new TextButton(CommonComponents.GUI_DONE, row.next(FOOTER_BUTTON_WIDTH), this::done),
-                new TextButton(Component.translatable("flatgen.editor.vanilla"), row.next(FOOTER_BUTTON_WIDTH),
-                        this::openVanilla),
-                new TextButton(CommonComponents.GUI_CANCEL, row.next(FOOTER_BUTTON_WIDTH), this::onClose));
+                new TextButton(Icon.TICK, CommonComponents.GUI_DONE, row.next(FOOTER_BUTTON_WIDTH), this::done),
+                new TextButton(Icon.item("minecraft:command_block"), Component.translatable("flatgen.editor.vanilla"),
+                        row.next(FOOTER_BUTTON_WIDTH), this::openVanilla),
+                new TextButton(Icon.CROSS, CommonComponents.GUI_CANCEL, row.next(FOOTER_BUTTON_WIDTH), this::onClose));
     }
 
     private void done() {
