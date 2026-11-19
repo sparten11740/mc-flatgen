@@ -38,6 +38,12 @@ public final class PresetStore {
         return paths().stream().map(this::read).toList();
     }
 
+    /** The preset a file holds; none when the file is missing or cannot be read. */
+    public Optional<Preset> read(String file) {
+        Path path = folder.resolve(file);
+        return Files.isRegularFile(path) ? read(path).preset() : Optional.empty();
+    }
+
     /** Keeps a preset in a new file named after it; the file's name, none when it could not be written. */
     public Optional<String> saveNew(Preset preset) {
         String file = PresetLibrary.fileName(preset.name(), files());

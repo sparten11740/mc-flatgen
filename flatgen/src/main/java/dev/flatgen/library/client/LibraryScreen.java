@@ -7,14 +7,15 @@ import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
+import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.layers.client.ColumnPicture;
+import dev.flatgen.library.ChoicesFile;
 import dev.flatgen.library.PresetStore;
-import dev.flatgen.library.rules.ApplyPreset;
-import dev.flatgen.library.rules.MissingParts;
+import dev.flatgen.library.rules.Choices;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.FlatSettings;
@@ -29,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -55,11 +55,16 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int SELECTED = 0xFFFFFFFF;
     private static final int NAME_COLOR = 0xFFFFFFFF;
     private static final Icon WARNING = Icon.item("minecraft:barrier");
+    /** The mark of the default preset, the one Superflat starts with. */
+    private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
+    /** The width of a switch, in GUI pixels. */
+    private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
     /** The name a new preset starts with, numbered when taken. */
     private static final String NEW_NAME = "Preset";
 
     private final EditorContext editor;
     private final PresetStore store;
+    private Choices choices;
     private List<PresetLibrary.Entry> entries = List.of();
     /** The parts each preset names that the game lacks, by file, worked out as the presets are read. */
     private final Map<String, MissingIds> missing = new HashMap<>();
@@ -73,6 +78,7 @@ public final class LibraryScreen extends FlatgenScreen {
         super(Component.translatable("flatgen.library.title"));
         this.editor = editor;
         this.store = PresetStore.player();
+        this.choices = ChoicesFile.read();
         reload();
         this.name = PresetLibrary.newName(NEW_NAME, names());
     }
@@ -93,9 +99,18 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(button("flatgen.library.delete", rows, this::delete, () -> picked.isPresent()));
         widgets.add(new TextButton(Component.translatable("flatgen.library.back"), rows.next(BUTTON_WIDTH),
                 this::onClose));
+        rows.newRow();
+        widgets.add(new Toggle(DEFAULT, Component.translatable("flatgen.library.default"), rows.next(TOGGLE_WIDTH),
+                () -> picked.isPresent() && picked.equals(choices.defaultFile()),
+                () -> choose(choices.toggleDefault(picked.get())), () -> pickedPreset().isPresent(),
+                () -> List.of(Component.translatable("flatgen.library.default_tip"))));
+        widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
+                rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
+                () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
-                CARD_WIDTH, CARD_HEIGHT, this::sections, new Cards(), this::pick));
+                CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
+                file -> choose(choices.toggleFavourite(file))));
         return widgets;
     }
 
@@ -124,8 +139,15 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private void rename() {
-        pickedPreset().ifPresent(preset -> store.rename(picked.get(), preset, name.strip())
-                .ifPresent(this::reloadPicking));
+        String file = picked.get();
+        pickedPreset().flatMap(preset -> store.rename(file, preset, name.strip()))
+                .ifPresent(renamed -> renamedTo(file, renamed));
+    }
+
+    /** The choices follow a preset whose file was renamed, and it stays picked. */
+    private void renamedTo(String file, String renamed) {
+        choose(choices.renamed(file, renamed));
+        reloadPicking(renamed);
     }
 
     private void duplicate() {
@@ -142,34 +164,14 @@ public final class LibraryScreen extends FlatgenScreen {
     private void delete() {
         String file = picked.get();
         ask("flatgen.library.delete_question", entry(file).map(PresetLibrary.Entry::name).orElse(file),
-                () -> store.delete(file));
+                () -> deleted(file));
     }
 
-    /** Applies the preset picked, asking first to replace the parts the game lacks; then back to the editor. */
+    /** Uses the preset picked in the editor, asking first about parts the game lacks; it counts as used lately. */
     private void apply() {
         Preset preset = pickedPreset().orElseThrow();
-        MissingIds lacking = missing.getOrDefault(picked.get(), MissingIds.NONE);
-        if (lacking.isEmpty()) {
-            applyAndReturn(preset);
-            return;
-        }
-        minecraft.setScreen(new QuestionScreen(this, Component.translatable("flatgen.library.missing_title"),
-                List.of(Component.translatable("flatgen.library.missing_question", listed(lacking))),
-                () -> applyAndReturn(MissingParts.replaced(preset, lacking))));
-    }
-
-    private void applyAndReturn(Preset preset) {
-        editor.apply(new ApplyPreset(preset));
-        if (!preset.fitsWorld(editor.world().height())) {
-            editor.say(Component.translatable("flatgen.library.too_tall", editor.world().height()));
-        }
-        minecraft.setScreen(editor.screen());
-    }
-
-    /** The ids a preset names that the game lacks, in a line. */
-    private static String listed(MissingIds lacking) {
-        return String.join(", ", Stream.of(lacking.blocks(), lacking.biomes(), lacking.structureSets())
-                .flatMap(List::stream).toList());
+        choose(choices.used(picked.get()));
+        PresetUse.use(editor, this, preset);
     }
 
     /** Asks before something that cannot be undone, about a preset of this name, then reads the presets again. */
@@ -189,8 +191,21 @@ public final class LibraryScreen extends FlatgenScreen {
         pick(file);
     }
 
+    private void deleted(String file) {
+        if (store.delete(file)) {
+            choose(choices.deleted(file));
+        }
+    }
+
+    /** Keeps the player's choices, and shows the presets in their order. */
+    private void choose(Choices chosen) {
+        choices = chosen;
+        ChoicesFile.save(chosen);
+        reload();
+    }
+
     private void reload() {
-        entries = PresetLibrary.ordered(store.load(), Set.of(), List.of());
+        entries = PresetLibrary.ordered(store.load(), Set.copyOf(choices.picks().starred()), choices.picks().recent());
         missing.clear();
         entries.forEach(entry -> entry.preset().ifPresent(preset -> missing.put(entry.file(),
                 FlatSettings.missingIds(preset, editor.registries()))));
@@ -226,6 +241,9 @@ public final class LibraryScreen extends FlatgenScreen {
                     Biomes.waterColor(found.biome(), editor.registries()), new Rect(x, y, PICTURE_WIDTH,
                             PICTURE_HEIGHT)));
             preset.ifPresent(found -> canvas.blockIcon(found.icon(), x + PICTURE_WIDTH + PADDING, y));
+            if (choices.defaultFile().filter(card.id()::equals).isPresent()) {
+                DEFAULT.draw(canvas, x + PICTURE_WIDTH + Icon.SIZE + 2 * PADDING, y);
+            }
             boolean warned = preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty();
             if (warned) {
                 WARNING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
@@ -245,7 +263,7 @@ public final class LibraryScreen extends FlatgenScreen {
                     Component.literal(problem))));
             MissingIds lacking = missing.getOrDefault(card.id(), MissingIds.NONE);
             if (!lacking.isEmpty()) {
-                lines.add(Component.translatable("flatgen.library.missing", listed(lacking)));
+                lines.add(Component.translatable("flatgen.library.missing", PresetUse.listed(lacking)));
             }
             return lines;
         }

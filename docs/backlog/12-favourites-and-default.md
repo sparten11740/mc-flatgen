@@ -15,7 +15,8 @@ already applied.
 
 ## Acceptance criteria
 
-- [ ] Star and unstar on cards and in the editor; favourites shown first in the library and as a row in the editor.
+- [ ] Star and unstar on the library's cards (a right click); favourites shown first in the library and as a row of
+  pictures in the editor that uses one in a click.
 - [ ] One default at most; pinning another moves the pin.
 - [ ] When the World Type changes to Superflat and its settings are still vanilla's default flat settings, the
   default preset is applied (layers, biome, structures, decorations, lakes and world options). Settings the player has
@@ -27,10 +28,15 @@ already applied.
 
 ## Design
 
-- `library/rules/Choices` (pure): favourites, default, recents, and when a default may be applied.
-- Watching the World Type uses `WorldCreationUiState.addListener`, a public method, from a screen-opened hook; the
-  hook is the loader-specific piece: NeoForge's `ScreenEvent.Init.Post`, Fabric's `ScreenEvents.AFTER_INIT`, both
-  behind `ClientPlatform.onScreenOpened`. A listener runs once per screen and guards against its own change.
+- `library/rules/Choices` (pure): favourites and recents (the pickers' `search/rules/Picks`), the default, "start on
+  Superflat" (in library.json, as plan 3.5 has it), and when a default may be applied (the world's settings still the
+  game's own default flat world).
+- Watching the World Type uses `WorldCreationUiState.addListener`, a public method, from a screen-opened hook
+  (`library/client/DefaultPresets`); the hook is the loader-specific piece: NeoForge's `ScreenEvent.Init.Post`, and on
+  Fabric, which Flatgen uses without Fabric API, a mixin at the return of `Minecraft.setScreen`. As with F27's server
+  start, the platform halves call the feature directly. A listener is added once per screen and guards against its
+  own change; the default is applied as Done applies a preset, world options included, with parts the game lacks
+  replaced and logged.
 
 ## Tests
 

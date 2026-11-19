@@ -1,12 +1,14 @@
 package dev.flatgen.mc;
 
 import com.google.gson.JsonElement;
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
@@ -28,11 +30,7 @@ public final class WorldCreation {
         if (context.selectedDimensions().overworld() instanceof FlatLevelSource flat) {
             return flat.settings();
         }
-        RegistryAccess registries = context.worldgenLoadContext();
-        return FlatLevelGeneratorSettings.getDefault(
-                registries.lookupOrThrow(Registries.BIOME),
-                registries.lookupOrThrow(Registries.STRUCTURE_SET),
-                registries.lookupOrThrow(Registries.PLACED_FEATURE));
+        return defaultFlatSettings(context.worldgenLoadContext());
     }
 
     /**
@@ -93,12 +91,33 @@ public final class WorldCreation {
         if (!(minecraft.screen instanceof CreateWorldScreen screen)) {
             throw new IllegalStateException("the Create World screen did not open");
         }
-        WorldCreationUiState state = screen.getUiState();
-        WorldCreationUiState.WorldTypeEntry entry = state.getNormalPresetList().stream()
-                .filter(type -> type.preset() != null && type.preset().is(worldType))
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("Create World offers no " + worldType.location()));
-        state.setWorldType(entry);
+        if (!chooseWorldType(screen, worldType)) {
+            throw new IllegalStateException("Create World offers no " + worldType.location());
+        }
         return screen;
+    }
+
+    /** Chooses a world type on the Create World screen, as its World Type button does; whether it offers it. */
+    public static boolean chooseWorldType(CreateWorldScreen screen, ResourceKey<WorldPreset> worldType) {
+        WorldCreationUiState state = screen.getUiState();
+        Optional<WorldCreationUiState.WorldTypeEntry> entry = state.getNormalPresetList().stream()
+                .filter(type -> type.preset() != null && type.preset().is(worldType))
+                .findFirst();
+        entry.ifPresent(state::setWorldType);
+        return entry.isPresent();
+    }
+
+    /** Whether the Create World screen has this world type chosen. */
+    public static boolean hasWorldType(CreateWorldScreen screen, ResourceKey<WorldPreset> worldType) {
+        Holder<WorldPreset> chosen = screen.getUiState().getWorldType().preset();
+        return chosen != null && chosen.is(worldType);
+    }
+
+    /** The game's own default superflat settings, which a new Superflat world starts with. */
+    public static FlatLevelGeneratorSettings defaultFlatSettings(RegistryAccess registries) {
+        return FlatLevelGeneratorSettings.getDefault(
+                registries.lookupOrThrow(Registries.BIOME),
+                registries.lookupOrThrow(Registries.STRUCTURE_SET),
+                registries.lookupOrThrow(Registries.PLACED_FEATURE));
     }
 }
