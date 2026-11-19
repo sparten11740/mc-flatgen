@@ -23,9 +23,6 @@ import net.minecraft.network.chat.Component;
  * for each option the preset names that is no longer installed, kept as it is.
  */
 public final class OptionsPanel implements EditorPanel {
-    /** The picture of an option that is not installed. */
-    private static final Icon MISSING = Icon.item("minecraft:barrier");
-
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         List<WorldOption> installed = editor.worldOptions();
@@ -39,7 +36,7 @@ public final class OptionsPanel implements EditorPanel {
         }
         List<String> missing = OptionChoices.missing(editor.shown().preset().options(), installed);
         if (!missing.isEmpty()) {
-            widgets.add(new Label(MISSING, Component.translatable("flatgen.options.missing"),
+            widgets.add(new Label(Icon.MISSING, Component.translatable("flatgen.options.missing"),
                     flow.line(Label.height())));
             missing.forEach(id -> widgets.add(missingToggle(editor, id, flow)));
         }
@@ -63,7 +60,7 @@ public final class OptionsPanel implements EditorPanel {
 
     /** A switch for an option that is not installed: it shows how the preset keeps it, and cannot be turned over. */
     private static Toggle missingToggle(EditorContext editor, String id, FlowLayout flow) {
-        return new Toggle(MISSING, Component.literal(id), flow.next(PanelSizes.DOUBLE_WIDTH),
+        return new Toggle(Icon.MISSING, Component.literal(id), flow.next(PanelSizes.DOUBLE_WIDTH),
                 () -> editor.shown().preset().options().getOrDefault(id, false), () -> { }, () -> false,
                 () -> List.of(Component.translatable("flatgen.options.not_installed", id)));
     }

@@ -67,7 +67,6 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int PADDING = 4;
     private static final int SELECTED = 0xFFFFFFFF;
     private static final int NAME_COLOR = 0xFFFFFFFF;
-    private static final Icon WARNING = Icon.item("minecraft:barrier");
     /** The mark of the default preset, the one Superflat starts with. */
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
@@ -344,7 +343,7 @@ public final class LibraryScreen extends FlatgenScreen {
             }
             boolean warned = preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty();
             if (warned) {
-                WARNING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
+                Icon.MISSING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
             }
             canvas.clip(new Rect(place.x(), place.y(), place.width(), place.height()));
             canvas.text(Component.literal(card.name()), x, y + PICTURE_HEIGHT + PADDING, NAME_COLOR);
