@@ -72,8 +72,11 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
     private static final Icon BUILT_IN = Icon.item("minecraft:book");
-    /** The width of a switch, in GUI pixels: its picture, its name and its box, two across the narrowest screen. */
-    private static final int TOGGLE_WIDTH = 140;
+    /**
+     * The width of a switch, in GUI pixels: its picture, its name and its box, the German "Mit Flachland starten" the
+     * longest; two fill the narrowest screen's 296 pixels between the margins.
+     */
+    private static final int TOGGLE_WIDTH = 146;
     /** A preset of the player's own, written in: with a plus, saved as a new one; with a circular arrow, over one. */
     private static final Icon BOOK_TO_WRITE = Icon.item("minecraft:writable_book");
     /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
