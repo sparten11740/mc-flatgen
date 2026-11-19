@@ -130,12 +130,15 @@ public abstract class FlatgenScreen extends Screen {
 
     /**
      * The wheel, vertical or, as macOS turns Shift with the wheel, horizontal, which then counts the same. As a click
-     * does, it ends the keyboard's focus, as what it scrolls may take the focused control out of sight.
+     * does, it ends the keyboard's focus, as what it scrolls may take the focused control out of sight; a field that
+     * has the keyboard from a click keeps it.
      */
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
         double amount = scrollY != 0 ? scrollY : scrollX;
-        moveFocus(Optional.empty());
+        if (focus.isPresent()) {
+            moveFocus(Optional.empty());
+        }
         return widgets.scroll(mouseX, mouseY, amount, modifiers())
                 || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
