@@ -1,9 +1,11 @@
 package dev.flatgen.editor.client.panel;
 
+import dev.flatgen.editor.rules.ApplyPreset;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
 import dev.flatgen.options.rules.WorldOption;
+import dev.flatgen.preset.rules.Preset;
 import java.util.List;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.HolderLookup;
@@ -47,6 +49,17 @@ public interface EditorContext {
 
     /** Shows a message in the panel until the next change. */
     void say(Component message);
+
+    /**
+     * Puts a whole preset in the editor as one step to undo, a saved one or one a template made; one taller than the
+     * world is left out, and the editor's line says so.
+     */
+    default void use(Preset preset) {
+        apply(new ApplyPreset(preset));
+        if (!preset.fitsWorld(world().height())) {
+            say(Component.translatable("flatgen.editor.too_tall", world().height()));
+        }
+    }
 
     /** The message shown now, if any; null for none. */
     Component message();

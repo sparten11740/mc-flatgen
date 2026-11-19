@@ -1,13 +1,10 @@
-package dev.flatgen.library.rules;
+package dev.flatgen.editor.rules;
 
-import dev.flatgen.editor.rules.Edit;
-import dev.flatgen.editor.rules.EditorState;
-import dev.flatgen.editor.rules.World;
 import dev.flatgen.preset.rules.Preset;
 
 /**
- * Puts a saved preset in the editor in place of what it holds, its top layer selected, as one step to undo; a preset
- * taller than the world is left out, the editor as it was.
+ * Puts a whole preset in the editor in place of what it holds, a saved one or one a template made, its top layer
+ * selected, as one step to undo; a preset taller than the world is left out, the editor as it was.
  *
  * @param preset the preset
  */

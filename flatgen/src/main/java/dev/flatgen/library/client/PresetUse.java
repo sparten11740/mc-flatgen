@@ -2,7 +2,6 @@ package dev.flatgen.library.client;
 
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.editor.client.panel.EditorContext;
-import dev.flatgen.library.rules.ApplyPreset;
 import dev.flatgen.library.rules.MissingParts;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.preset.rules.MissingIds;
@@ -39,10 +38,7 @@ final class PresetUse {
     }
 
     private static void applied(EditorContext editor, Preset preset) {
-        editor.apply(new ApplyPreset(preset));
-        if (!preset.fitsWorld(editor.world().height())) {
-            editor.say(Component.translatable("flatgen.library.too_tall", editor.world().height()));
-        }
+        editor.use(preset);
         editor.open(editor.screen());
     }
 }

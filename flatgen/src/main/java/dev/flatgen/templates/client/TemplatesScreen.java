@@ -18,7 +18,6 @@ import dev.flatgen.facts.client.FactPictures;
 import dev.flatgen.facts.rules.Facts;
 import dev.flatgen.facts.rules.Situation;
 import dev.flatgen.layers.client.ColumnPicture;
-import dev.flatgen.library.rules.ApplyPreset;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
 import dev.flatgen.preset.rules.Preset;
@@ -103,7 +102,7 @@ public final class TemplatesScreen extends FlatgenScreen {
     }
 
     private void use() {
-        editor.apply(new ApplyPreset(made()));
+        editor.use(made());
         onClose();
     }
 
