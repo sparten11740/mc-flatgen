@@ -30,7 +30,7 @@ final class OpenEditor {
             throw new CommandException("in_world", "leave the world first");
         }
         CreateWorldScreen screen = WorldCreation.openWithWorldType(minecraft, minecraft.screen, WorldPresets.FLAT);
-        minecraft.setScreen(PresetEditors.EDITOR.createEditScreen(screen, screen.getUiState().getSettings()));
+        minecraft.setScreen(PresetEditors.EDITOR.createEditScreen(screen, WorldCreation.context(screen)));
         return Result::ok;
     }
 }
