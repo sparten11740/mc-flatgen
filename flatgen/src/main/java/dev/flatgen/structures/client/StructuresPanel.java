@@ -11,18 +11,11 @@ import dev.flatgen.mc.Structures;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.structures.rules.StructureChoice;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
 
 /** The editor's structures control: a button saying how the world chooses its structures, which opens their screen. */
 public final class StructuresPanel implements EditorPanel {
-    /** The button's words for each way of choosing structures, by their translation keys. */
-    private static final Map<StructureChoice.Mode, String> LABELS = Map.of(
-            StructureChoice.Mode.BIOME, "flatgen.structures.button.biome",
-            StructureChoice.Mode.NONE, "flatgen.structures.button.none",
-            StructureChoice.Mode.CHOSEN, "flatgen.structures.button.chosen");
-
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
@@ -34,7 +27,12 @@ public final class StructuresPanel implements EditorPanel {
     /** "Structures: the biome's", "Structures: none" or "Structures: 5 chosen". */
     private static Component label(Optional<List<String>> sets) {
         StructureChoice.Mode mode = StructureChoice.mode(sets);
-        return Component.translatable(LABELS.get(mode), sets.map(List::size).orElse(0));
+        String key = switch (mode) {
+            case BIOME -> "flatgen.structures.button.biome";
+            case NONE -> "flatgen.structures.button.none";
+            case CHOSEN -> "flatgen.structures.button.chosen";
+        };
+        return Component.translatable(key, sets.map(List::size).orElse(0));
     }
 
     private static void open(EditorContext editor) {

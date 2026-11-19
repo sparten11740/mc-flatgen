@@ -38,19 +38,23 @@ public final class Facts {
                 WorldFacts.Weather.NONE, "minecraft:sunflower",
                 WorldFacts.Weather.RAIN, "minecraft:water_bucket",
                 WorldFacts.Weather.SNOW, SNOWBALL);
-        /** The words of each weather, by their translation keys. */
-        private static final Map<WorldFacts.Weather, String> WORDS = Map.of(
-                WorldFacts.Weather.NONE, "flatgen.facts.weather.none",
-                WorldFacts.Weather.RAIN, "flatgen.facts.weather.rain",
-                WorldFacts.Weather.SNOW, "flatgen.facts.weather.snow");
 
         @Override
         public Shown show(Situation situation) {
             WorldFacts facts = situation.facts();
             List<Words> words = new ArrayList<>();
-            words.add(Words.of(WORDS.get(facts.weather())));
+            words.add(Words.of(words(facts.weather())));
             facts.snowLine().ifPresent(y -> words.add(new Words("flatgen.facts.snow_line", List.of(y))));
             return new Shown(ICONS.get(facts.weather()), false, words);
+        }
+
+        /** A weather's words, by their translation key; the compiler holds every weather to having some. */
+        private static String words(WorldFacts.Weather weather) {
+            return switch (weather) {
+                case NONE -> "flatgen.facts.weather.none";
+                case RAIN -> "flatgen.facts.weather.rain";
+                case SNOW -> "flatgen.facts.weather.snow";
+            };
         }
 
         /** Where the biome's rain turns to snow, when it does. */

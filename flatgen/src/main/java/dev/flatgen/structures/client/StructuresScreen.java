@@ -46,15 +46,6 @@ public final class StructuresScreen extends FlatgenScreen {
             StructureChoice.Mode.BIOME, Icon.item("minecraft:grass_block"),
             StructureChoice.Mode.NONE, Icon.item("minecraft:barrier"),
             StructureChoice.Mode.CHOSEN, Icon.item("minecraft:chest"));
-    /** Each way of choosing structures' name and what it does, by their translation keys. */
-    private static final Map<StructureChoice.Mode, String> MODE_NAMES = Map.of(
-            StructureChoice.Mode.BIOME, "flatgen.structures.mode.biome",
-            StructureChoice.Mode.NONE, "flatgen.structures.mode.none",
-            StructureChoice.Mode.CHOSEN, "flatgen.structures.mode.chosen");
-    private static final Map<StructureChoice.Mode, String> MODE_TIPS = Map.of(
-            StructureChoice.Mode.BIOME, "flatgen.structures.mode.biome_tip",
-            StructureChoice.Mode.NONE, "flatgen.structures.mode.none_tip",
-            StructureChoice.Mode.CHOSEN, "flatgen.structures.mode.chosen_tip");
 
     private final EditorContext editor;
     private final List<StructureSetInfo> sets;
@@ -123,10 +114,28 @@ public final class StructuresScreen extends FlatgenScreen {
     }
 
     private Toggle modeToggle(StructureChoice.Mode mode, Rect place) {
-        return new Toggle(MODE_ICONS.get(mode), Component.translatable(MODE_NAMES.get(mode)), place,
+        return new Toggle(MODE_ICONS.get(mode), Component.translatable(modeName(mode)), place,
                 () -> StructureChoice.mode(preset().structureSets()) == mode,
                 () -> editor.apply(new SetStructures(StructureChoice.withMode(preset().structureSets(), mode, every))),
-                () -> true, tip(MODE_TIPS.get(mode)));
+                () -> true, tip(modeTip(mode)));
+    }
+
+    /** A way of choosing structures' name, by its translation key. */
+    private static String modeName(StructureChoice.Mode mode) {
+        return switch (mode) {
+            case BIOME -> "flatgen.structures.mode.biome";
+            case NONE -> "flatgen.structures.mode.none";
+            case CHOSEN -> "flatgen.structures.mode.chosen";
+        };
+    }
+
+    /** What a way of choosing structures does, by its translation key. */
+    private static String modeTip(StructureChoice.Mode mode) {
+        return switch (mode) {
+            case BIOME -> "flatgen.structures.mode.biome_tip";
+            case NONE -> "flatgen.structures.mode.none_tip";
+            case CHOSEN -> "flatgen.structures.mode.chosen_tip";
+        };
     }
 
     /** A set's switch: locked on when an option adds it, struck through when it cannot appear in the biome. */

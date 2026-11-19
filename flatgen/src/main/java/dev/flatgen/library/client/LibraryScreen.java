@@ -81,11 +81,6 @@ public final class LibraryScreen extends FlatgenScreen {
     /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
     private static final Icon SAVE_OVER = Icon.badged(BOOK_TO_WRITE, "badge_swap");
     private static final Icon DELETE = Icon.own("trash");
-    /** The built-ins setting's states' names. */
-    private static final Map<PresetLibrary.BuiltIns, String> BUILT_INS_NAMES = Map.of(
-            PresetLibrary.BuiltIns.SHOWN, "flatgen.library.built_ins.shown",
-            PresetLibrary.BuiltIns.NO_GAME, "flatgen.library.built_ins.no_game",
-            PresetLibrary.BuiltIns.HIDDEN, "flatgen.library.built_ins.hidden");
     /** The built-ins setting's states, in its order: all shown, the game's hidden, all hidden. */
     private static final List<Icon> BUILT_INS = List.of(BUILT_IN, Icon.struck(Icon.item("minecraft:grass_block")),
             Icon.struck(BUILT_IN));
@@ -172,7 +167,7 @@ public final class LibraryScreen extends FlatgenScreen {
                 () -> SystemFiles.openFolder(store.folder()), () -> true));
         widgets.add(new CycleButton(BUILT_INS, () -> choices.builtIns().ordinal(),
                 rows.next(CycleButton.width(BUILT_INS.size())), () -> choose(choices.nextBuiltIns()),
-                () -> List.of(Component.translatable(BUILT_INS_NAMES.get(choices.builtIns())),
+                () -> List.of(Component.translatable(builtInsName(choices.builtIns())),
                         Component.translatable("flatgen.library.built_ins_tip"))));
         rows.next(DANGER_GAP);
         widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", "flatgen.library.overwrite_tip", rows,
@@ -194,6 +189,15 @@ public final class LibraryScreen extends FlatgenScreen {
                 () -> choose(choices.toggleStartOnSuperflat()), () -> true,
                 () -> List.of(Component.translatable("flatgen.library.start_tip"))));
         return widgets;
+    }
+
+    /** The built-ins setting's name for a state, by its translation key. */
+    private static String builtInsName(PresetLibrary.BuiltIns builtIns) {
+        return switch (builtIns) {
+            case SHOWN -> "flatgen.library.built_ins.shown";
+            case NO_GAME -> "flatgen.library.built_ins.no_game";
+            case HIDDEN -> "flatgen.library.built_ins.hidden";
+        };
     }
 
     /** A picture button, its tooltip its name and what it does, by their translation keys. */

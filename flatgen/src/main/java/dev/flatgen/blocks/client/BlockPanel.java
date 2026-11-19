@@ -13,17 +13,12 @@ import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.mc.Names;
 import dev.flatgen.preset.rules.Layer;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
 /** The editor's block controls: a button showing the selected layer's block, which opens the picker, and its hints. */
 public final class BlockPanel implements EditorPanel {
-    /** Each hint's words, by their translation keys. */
-    private static final Map<LayerHints.Hint, String> HINTS = Map.of(LayerHints.Hint.FALLS, "flatgen.hint.falls",
-            LayerHints.Hint.NOT_WHOLE, "flatgen.hint.not_whole", LayerHints.Hint.KEEPS_DATA, "flatgen.hint.keeps_data");
-
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
@@ -56,8 +51,17 @@ public final class BlockPanel implements EditorPanel {
         MutableComponent line = Component.empty();
         for (LayerHints.Hint hint : LayerHints.of(BlockCatalog.traits(layers.get(selected).block()), below)) {
             line.append(line.getSiblings().isEmpty() ? Component.empty() : Component.literal(" · "))
-                    .append(Component.translatable(HINTS.get(hint)));
+                    .append(Component.translatable(words(hint)));
         }
         return line;
+    }
+
+    /** A hint's words, by their translation key; the compiler holds every hint to having some. */
+    private static String words(LayerHints.Hint hint) {
+        return switch (hint) {
+            case FALLS -> "flatgen.hint.falls";
+            case NOT_WHOLE -> "flatgen.hint.not_whole";
+            case KEEPS_DATA -> "flatgen.hint.keeps_data";
+        };
     }
 }
