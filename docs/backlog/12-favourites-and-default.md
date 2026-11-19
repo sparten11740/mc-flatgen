@@ -1,6 +1,6 @@
 # F12 Favourites and default
 
-Milestone: M3 presets · Release: v1 · Status: todo · Depends on: F11
+Milestone: M3 presets · Release: v1 · Status: done · Depends on: F11
 
 ## Why
 
@@ -15,15 +15,15 @@ already applied.
 
 ## Acceptance criteria
 
-- [ ] Star and unstar on the library's cards (a right click); favourites shown first in the library and as a row of
+- [x] Star and unstar on the library's cards (a right click); favourites shown first in the library and as a row of
   pictures in the editor that uses one in a click.
-- [ ] One default at most; pinning another moves the pin.
-- [ ] When the World Type changes to Superflat and its settings are still vanilla's default flat settings, the
+- [x] One default at most; pinning another moves the pin.
+- [x] When the World Type changes to Superflat and its settings are still vanilla's default flat settings, the
   default preset is applied (layers, biome, structures, decorations, lakes and world options). Settings the player has
   already changed are never replaced.
-- [ ] Option "Start Create World on Superflat": the World Type is Superflat with the default applied when the screen
+- [x] Option "Start Create World on Superflat": the World Type is Superflat with the default applied when the screen
   opens.
-- [ ] Favourites, the default and recently used presets live in `config/flatgen/library.json`, by preset file name,
+- [x] Favourites, the default and recently used presets live in `config/flatgen/library.json`, by preset file name,
   so preset files stay free of personal choices and can be shared as they are.
 
 ## Design
@@ -43,3 +43,10 @@ already applied.
 - Unit: `Choices`, including "never replace changed settings".
 - Dev client: set a default, open Create World, choose Superflat, create the world, check its layers; with the option
   on, the screen opens on Superflat.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: a right click stars a card, which then shows in the editor's favourites
+row; Default and Start on Superflat are kept in library.json; leaving to the title and opening Create World starts on
+Superflat with the default preset applied, as Customize shows. Not tried in game: choosing Superflat by hand after
+changing the settings (never replaced; unit-tested), and unstarring.

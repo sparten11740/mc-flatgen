@@ -1,6 +1,6 @@
 # F13 Built-in presets
 
-Milestone: M3 presets · Release: v1 · Status: todo · Depends on: F11
+Milestone: M3 presets · Release: v1 · Status: done · Depends on: F11
 
 ## Why
 
@@ -15,13 +15,13 @@ and duplicated, not changed or deleted.
 
 ## Acceptance criteria
 
-- [ ] Vanilla's and datapacks' flat presets from the registry of the world being created
+- [x] Vanilla's and datapacks' flat presets from the registry of the world being created
   (`flat_level_generator_preset`, those in `#minecraft:visible`), with their own icons and names.
-- [ ] Flatgen's starters from resources at `assets/<namespace>/flatgen/presets/*.json`, so mods and resource packs can
+- [x] Flatgen's starters from resources at `assets/<namespace>/flatgen/presets/*.json`, so mods and resource packs can
   add their own (used by F17): "Tall flat, no slimes" (bedrock 1, stone 100, dirt 2, grass 1), "Airship field",
   "Glass floor" and "Void with platform".
-- [ ] Built-ins marked as such; duplicate makes an editable copy in the library.
-- [ ] A setting hides built-ins (all, or vanilla's only).
+- [x] Built-ins marked as such; duplicate makes an editable copy in the library.
+- [x] A setting hides built-ins (all, or vanilla's only).
 
 ## Design
 
@@ -41,3 +41,11 @@ and duplicated, not changed or deleted.
 
 - Unit: sources merged in order, read-only built-ins.
 - GameTest: every registry flat preset converts without problems.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: the library lists the game's flat presets (Classic Flat, Bottomless Pit,
+Desert, Overworld, Redstone Ready and the rest, the void preset's air left empty) with their items and book marks
+after the player's own. Not tried in game: Flatgen's starters, further down the grid than the screenshots reached
+(a unit test reads them), copying a built-in, the Built-ins button's other settings, and a mod's or resource pack's
+own presets.

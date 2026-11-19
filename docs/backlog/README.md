@@ -54,17 +54,17 @@ v3 and v4 may swap; both come after v2.
 |---|---|---|---|
 | F27 | [World options from other mods](27-world-options.md) | done | F02, F01 |
 | F07 | [Biome picker](07-biome-picker.md) | done | F03 |
-| F08 | [World facts](08-world-facts.md) | doing | F07 |
-| F09 | [Structures and decorations](09-structures-and-decorations.md) | doing | F03 |
-| F10 | [Time, weather and mob options](10-world-rules.md) | doing | F27 |
+| F08 | [World facts](08-world-facts.md) | done | F07 |
+| F09 | [Structures and decorations](09-structures-and-decorations.md) | done | F03 |
+| F10 | [Time, weather and mob options](10-world-rules.md) | done | F27 |
 
 **M3, presets**
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F11 | [Preset library](11-preset-library.md) | doing | F02, F03 |
-| F12 | [Favourites and default](12-favourites-and-default.md) | todo | F11 |
-| F13 | [Built-in presets](13-built-in-presets.md) | todo | F11 |
+| F11 | [Preset library](11-preset-library.md) | done | F02, F03 |
+| F12 | [Favourites and default](12-favourites-and-default.md) | done | F11 |
+| F13 | [Built-in presets](13-built-in-presets.md) | done | F11 |
 | F14 | [Templates](14-templates.md) | todo | F11 |
 | F15 | [Sharing preset files](15-preset-files.md) | todo | F11 |
 
