@@ -6,6 +6,7 @@ import dev.flatgen.library.ChoicesFile;
 import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.rules.Choices;
 import dev.flatgen.library.rules.MissingParts;
+import dev.flatgen.mc.ClientTasks;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
@@ -40,15 +41,18 @@ public final class DefaultPresets {
         if (!(screen instanceof CreateWorldScreen createWorld) || !WATCHED.add(createWorld)) {
             return;
         }
-        WorldCreation.listen(createWorld, context -> worldChanged(createWorld));
+        WorldCreation.listen(createWorld, context -> ClientTasks.later(() -> worldChanged(createWorld)));
         if (ChoicesFile.read().startOnSuperflat()) {
             PresetEditors.EDITED.stream().findFirst().ifPresent(type -> WorldCreation.chooseWorldType(createWorld,
                     type));
         }
-        worldChanged(createWorld);
+        ClientTasks.later(() -> worldChanged(createWorld));
     }
 
-    /** The world on the screen changed: applies the default when Superflat is chosen with the game's own settings. */
+    /**
+     * The world on the screen changed: applies the default when Superflat is chosen with the game's own settings. It
+     * runs after the screen's listeners have been told, as applying the default changes the screen and may add one.
+     */
     private static void worldChanged(CreateWorldScreen screen) {
         boolean superflat = PresetEditors.EDITED.stream().anyMatch(type -> WorldCreation.hasWorldType(screen, type));
         if (applying || !superflat) {
