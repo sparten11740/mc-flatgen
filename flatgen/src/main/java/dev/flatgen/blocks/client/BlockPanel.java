@@ -9,6 +9,7 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.mc.Names;
 import dev.flatgen.preset.rules.Layer;
@@ -19,6 +20,12 @@ import net.minecraft.network.chat.MutableComponent;
 
 /** The editor's block controls: a button showing the selected layer's block, which opens the picker, and its hints. */
 public final class BlockPanel implements EditorPanel {
+
+    /** Shown for every dimension the preset gives a stack of its own (F22). */
+    @Override
+    public boolean shows(EditorState state) {
+        return state.stack().isPresent();
+    }
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
@@ -45,7 +52,7 @@ public final class BlockPanel implements EditorPanel {
         if (selected < 0) {
             return Component.empty();
         }
-        List<Layer> layers = editor.shown().preset().layers();
+        List<Layer> layers = editor.shown().layers();
         Optional<LayerHints.Traits> below = selected > 0
                 ? Optional.of(BlockCatalog.traits(layers.get(selected - 1).block())) : Optional.empty();
         MutableComponent line = Component.empty();

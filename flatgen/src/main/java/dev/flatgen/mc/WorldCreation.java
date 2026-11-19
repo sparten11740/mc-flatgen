@@ -122,9 +122,13 @@ public final class WorldCreation {
         screen.getUiState().addListener(state -> listener.accept(state.getSettings()));
     }
 
-    /** The world's overworld type, which says where its floor is and how tall it is. */
-    public static DimensionType overworldType(WorldCreationContext context) {
-        return context.selectedDimensions().dimensions().get(LevelStem.OVERWORLD).type().value();
+    /**
+     * A dimension's type in the world on the screen, which says where its floor is and how tall it is; the overworld's
+     * for a dimension the world lacks.
+     */
+    public static DimensionType dimensionType(WorldCreationContext context, Dimension dimension) {
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = context.selectedDimensions().dimensions();
+        return dimensions.getOrDefault(stemKey(dimension), dimensions.get(LevelStem.OVERWORLD)).type().value();
     }
 
     /**

@@ -27,8 +27,8 @@ final class ColumnQuery {
             return Result.ok(new Fields().put("open", false));
         }
         ColumnWidget column = editor.column();
-        List<Row> rows = ColumnRows.of(editor.preset(), editor.worldBottom(), column.layerBounds(), editor.selected())
-                .stream().map(WidgetsQuery::toRow).toList();
+        List<Row> rows = ColumnRows.of(editor.shown(), editor.worldBottom(), column.layerBounds()).stream()
+                .map(WidgetsQuery::toRow).toList();
         return Result.ok(new Fields().put("open", true)).withRows(rows);
     }
 }

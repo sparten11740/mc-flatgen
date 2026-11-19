@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.TestPresets;
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class LayerEditsTest {
     private static final World OVERWORLD = new World(-64, 384);
     /** The tall flat with its stone selected. */
-    private static final EditorState STONE = new EditorState(TestPresets.TALL_FLAT, 1);
+    private static final EditorState STONE = new EditorState(TestPresets.TALL_FLAT, Dimension.OVERWORLD, 1);
 
     @Test
     void addsALayerOfTheSelectedBlockAboveOrBelowAndSelectsIt() {
@@ -30,7 +31,7 @@ class LayerEditsTest {
 
     @Test
     void addsStoneToAnEmptyStack() {
-        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), -1);
+        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, -1);
         EditorState added = new LayerEdits.Add(true).apply(empty, OVERWORLD);
         assertEquals(List.of(new Layer(LayerEdits.FIRST_BLOCK, 1)), added.preset().layers());
         assertEquals(0, added.selected());
@@ -105,7 +106,7 @@ class LayerEditsTest {
 
     @Test
     void leavesAnEmptyStackAsItIs() {
-        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), -1);
+        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, -1);
         assertSame(empty, new LayerEdits.Remove().apply(empty, OVERWORLD));
         assertSame(empty, new LayerEdits.SetHeight(3).apply(empty, OVERWORLD));
         assertSame(empty, new LayerEdits.Duplicate().apply(empty, OVERWORLD));

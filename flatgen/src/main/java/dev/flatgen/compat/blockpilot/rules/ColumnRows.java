@@ -1,8 +1,8 @@
 package dev.flatgen.compat.blockpilot.rules;
 
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.preset.rules.Layer;
-import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -17,13 +17,13 @@ public final class ColumnRows {
     private ColumnRows() {
     }
 
-    /** The rows for a preset's layers, in a world whose floor is at this Y, drawn in these rectangles. */
-    public static List<ReportRow> of(Preset preset, int floor, List<Rect> bounds, int selected) {
+    /** The rows for the edited stack's layers, in a world whose floor is at this Y, drawn in these rectangles. */
+    public static List<ReportRow> of(EditorState state, int floor, List<Rect> bounds) {
         List<ReportRow> rows = new ArrayList<>();
         int bottomY = floor;
-        for (int index = 0; index < preset.layers().size(); index++) {
-            Layer layer = preset.layers().get(index);
-            rows.add(0, row(index, layer, bottomY, bounds.get(index), index == selected));
+        for (int index = 0; index < state.layers().size(); index++) {
+            Layer layer = state.layers().get(index);
+            rows.add(0, row(index, layer, bottomY, bounds.get(index), index == state.selected()));
             bottomY += layer.height();
         }
         return rows;

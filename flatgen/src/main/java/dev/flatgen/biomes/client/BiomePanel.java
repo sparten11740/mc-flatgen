@@ -8,6 +8,7 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.client.FactsNow;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
@@ -18,13 +19,19 @@ import net.minecraft.network.chat.Component;
 
 /** The editor's biome control: a button showing the world's biome, which opens the biome picker. */
 public final class BiomePanel implements EditorPanel {
+    /** Shown for every dimension the preset gives a stack of its own (F22). */
+    @Override
+    public boolean shows(EditorState state) {
+        return state.stack().isPresent();
+    }
+
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();
         Map<String, Icon> pictures = new HashMap<>();
-        Icon picture = (canvas, x, y) -> pictures.computeIfAbsent(editor.shown().preset().biome(),
+        Icon picture = (canvas, x, y) -> pictures.computeIfAbsent(editor.shown().biome(),
                 biome -> picture(biome, editor)).draw(canvas, x, y);
-        return List.of(new TextButton(picture, () -> Names.biome(editor.shown().preset().biome()),
+        return List.of(new TextButton(picture, () -> Names.biome(editor.shown().biome()),
                 flow.next(PanelSizes.DOUBLE_WIDTH), () -> pick(editor), () -> true,
                 () -> List.of(Component.translatable("flatgen.editor.pick_biome"))));
     }

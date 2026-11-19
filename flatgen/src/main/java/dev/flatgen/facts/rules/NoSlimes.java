@@ -16,16 +16,16 @@ import java.util.List;
 public record NoSlimes() implements Edit {
     @Override
     public EditorState apply(EditorState state, World world) {
-        List<Layer> layers = new ArrayList<>(state.preset().layers());
-        int surface = world.floor() + state.preset().height();
-        int room = world.height() - state.preset().height();
+        List<Layer> layers = new ArrayList<>(state.layers());
+        int surface = world.floor() + state.height();
+        int room = world.height() - state.height();
         int added = Math.min(room, WorldFacts.SLIME_CHUNK_MAX_Y - surface);
         if (layers.isEmpty() || added <= 0) {
             return state;
         }
         int thickest = thickestInBetween(layers);
         layers.set(thickest, new Layer(layers.get(thickest).block(), layers.get(thickest).height() + added));
-        return new EditorState(state.preset().withLayers(layers), state.selected());
+        return state.withLayers(layers, state.selected());
     }
 
     /** The thickest layer between the bottom and the top one, the lowest of equals; else the bottom one. */

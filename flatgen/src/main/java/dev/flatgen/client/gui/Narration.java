@@ -33,8 +33,17 @@ public record Narration(Component title, List<Component> more, Optional<Componen
 
     /** A button that shows a picture alone, named by its tooltip's first line, the rest said after. */
     public static Narration button(List<Component> tooltip, boolean usable) {
-        return button(tooltip.isEmpty() ? Component.empty() : tooltip.get(0), usable,
-                tooltip.isEmpty() ? List.of() : tooltip.subList(1, tooltip.size()));
+        return button(name(tooltip), usable, more(tooltip));
+    }
+
+    /** The name of a control that shows a picture alone: its tooltip's first line, or nothing. */
+    public static Component name(List<Component> tooltip) {
+        return tooltip.isEmpty() ? Component.empty() : tooltip.get(0);
+    }
+
+    /** What such a control says after its name: the rest of its tooltip. */
+    public static List<Component> more(List<Component> tooltip) {
+        return tooltip.isEmpty() ? List.of() : tooltip.subList(1, tooltip.size());
     }
 
     /** A switch of this name, on or off, with more to say, unusable now or not. */

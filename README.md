@@ -9,6 +9,7 @@ will open Flatgen instead of the vanilla screen:
 - **Presets:** save your own, star favourites, pick a default that is ready the moment you choose Superflat.
 - **Templates:** a tall flat world, a water world or an airship field from a few sliders.
 - **Always day, always clear:** saved with the preset, no more `/time set day` in every new world.
+- **A flat Nether and End too,** with their own layers and biome; portals and the dragon work as always.
 - **Works without reading:** every button is a picture; the keyboard and the game's narrator work too. In English and
   German.
 

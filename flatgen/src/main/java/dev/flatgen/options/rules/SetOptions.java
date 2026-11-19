@@ -13,6 +13,6 @@ import java.util.Map;
 public record SetOptions(Map<String, Boolean> options) implements Edit {
     @Override
     public EditorState apply(EditorState state, World world) {
-        return new EditorState(state.preset().withOptions(options), state.selected());
+        return state.withPreset(state.preset().withOptions(options));
     }
 }

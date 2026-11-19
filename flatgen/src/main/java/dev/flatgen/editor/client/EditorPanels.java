@@ -2,6 +2,7 @@ package dev.flatgen.editor.client;
 
 import dev.flatgen.biomes.client.BiomePanel;
 import dev.flatgen.blocks.client.BlockPanel;
+import dev.flatgen.dimensions.client.DimensionPanel;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.facts.client.FactsPanel;
 import dev.flatgen.layers.client.LayerPanel;
@@ -16,6 +17,7 @@ import java.util.List;
 final class EditorPanels {
     /** Every panel, in the order they are laid out. */
     static final List<EditorPanel> ALL = List.of(
+            new DimensionPanel(),
             new SummaryPanel(),
             new FavouritesPanel(),
             new FactsPanel(),

@@ -50,8 +50,9 @@ Default, Amplified or other noise world types.
 ### 3.1 Packages and dependency direction
 
 Everything is under `dev.flatgen`. Each feature has its own package (`config`, `editor`, `preset`, `layers`, `blocks`,
-`biomes`, `facts`, `structures`, `options`, `library`, `templates`), and logic several features share has one of its
-own (`search` for the pickers' search, `json` for reading Flatgen's files), split the same way in each:
+`biomes`, `facts`, `structures`, `options`, `library`, `templates`, `exports`, `dimensions`), and logic several features
+share has one of its own (`search` for the pickers' search, `json` for reading Flatgen's files), split the same way in
+each:
 
 | Part | Holds | May depend on |
 |---|---|---|
@@ -96,9 +97,10 @@ version trees (3.2), and nothing else changes.
 
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
 biome pickers; the grid also the preset library), `Toggle` (world options, structures, templates), `PictureButton`,
-`Badge` (facts), `Slider` (templates), `CycleButton` (a setting of a few states, with its pips), `QuestionScreen`
-(asking before what cannot be undone), `Icon` with Flatgen's own pictures (`tools/sprites.py`), `Label`, `TextField`,
-`TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike.
+`PictureTab` (the editor's dimensions), `Badge` (facts), `Slider` (templates), `CycleButton` (a setting of a few states,
+with its pips), `QuestionScreen` (asking before what cannot be undone), `Icon` with Flatgen's own pictures
+(`tools/sprites.py`), `Label`, `TextField`, `TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the
+keys controls answer alike.
 
 ### 3.4 Extension points
 

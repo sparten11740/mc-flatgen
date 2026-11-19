@@ -7,6 +7,7 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.rules.Fact;
 import dev.flatgen.facts.rules.Facts;
 import dev.flatgen.facts.rules.NoSlimes;
@@ -22,6 +23,12 @@ import net.minecraft.network.chat.Component;
 public final class FactsPanel implements EditorPanel {
     /** The picture of the no-slimes button: the slime fact's own, as it makes that fact true. */
     private static final Icon NO_SLIMES = Icon.struck(Icon.item("minecraft:slime_ball"));
+
+    /** Shown for every dimension the preset gives a stack of its own (F22). */
+    @Override
+    public boolean shows(EditorState state) {
+        return state.stack().isPresent();
+    }
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {

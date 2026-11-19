@@ -42,6 +42,17 @@ class PresetTest {
     }
 
     @Test
+    void takesTheNetherAndTheEndFromElsewhereKeepingItsOverworld() {
+        Stack end = new Stack(List.of(new Layer("minecraft:end_stone", 2)), "minecraft:the_end");
+        Preset other = TestPresets.TALL_FLAT.withStack(Dimension.END, Optional.of(end));
+        Preset taken = new Preset("Other", "", List.of(new Layer("minecraft:sand", 1)), "minecraft:desert",
+                Optional.empty(), false, false, Map.of()).withOtherStacks(other::stack);
+        assertEquals(Optional.of(end), taken.stack(Dimension.END));
+        assertEquals(Optional.empty(), taken.stack(Dimension.NETHER));
+        assertEquals(List.of(new Layer("minecraft:sand", 1)), taken.layers());
+    }
+
+    @Test
     void takesItsTopLayersBlockAsIconWhenItHasLayers() {
         assertEquals("minecraft:grass_block", TestPresets.TALL_FLAT.withIcon("").withTopBlockIcon().icon());
         Preset empty = TestPresets.TALL_FLAT.withLayers(List.of()).withIcon("minecraft:glass");

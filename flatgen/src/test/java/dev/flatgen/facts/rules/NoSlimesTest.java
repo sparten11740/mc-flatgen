@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.TestPresets;
 import java.util.List;
@@ -18,7 +19,7 @@ class NoSlimesTest {
     void addsTheBlocksToTheThickestLayerBetweenTheBottomAndTheTop() {
         EditorState classic = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of(
                 new Layer("minecraft:bedrock", 1), new Layer("minecraft:stone", 3), new Layer("minecraft:dirt", 2),
-                new Layer("minecraft:grass_block", 1))), 3);
+                new Layer("minecraft:grass_block", 1))), Dimension.OVERWORLD, 3);
         EditorState raised = new NoSlimes().apply(classic, OVERWORLD);
         assertEquals(new Layer("minecraft:stone", 3 + 97), raised.preset().layers().get(1));
         assertEquals(40, OVERWORLD.floor() + raised.preset().height());
@@ -29,7 +30,7 @@ class NoSlimesTest {
     void keepsBedrockAFloorInTheClassicFlatWorld() {
         EditorState classic = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of(
                 new Layer("minecraft:bedrock", 1), new Layer("minecraft:dirt", 2),
-                new Layer("minecraft:grass_block", 1))), 2);
+                new Layer("minecraft:grass_block", 1))), Dimension.OVERWORLD, 2);
         assertEquals(List.of(new Layer("minecraft:bedrock", 1), new Layer("minecraft:dirt", 102),
                 new Layer("minecraft:grass_block", 1)), new NoSlimes().apply(classic, OVERWORLD).preset().layers());
     }
@@ -37,7 +38,7 @@ class NoSlimesTest {
     @Test
     void addsToTheBottomLayerOfAShortStack() {
         EditorState two = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of(
-                new Layer("minecraft:bedrock", 1), new Layer("minecraft:grass_block", 1))), 1);
+                new Layer("minecraft:bedrock", 1), new Layer("minecraft:grass_block", 1))), Dimension.OVERWORLD, 1);
         assertEquals(new Layer("minecraft:bedrock", 103), new NoSlimes().apply(two, OVERWORLD).preset().layers()
                 .get(0));
     }
@@ -45,9 +46,9 @@ class NoSlimesTest {
     @Test
     void leavesAHighEnoughOrEmptyStackAsItIs() {
         EditorState tall = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of(
-                new Layer("minecraft:stone", 200))), 0);
+                new Layer("minecraft:stone", 200))), Dimension.OVERWORLD, 0);
         assertSame(tall, new NoSlimes().apply(tall, OVERWORLD));
-        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), -1);
+        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, -1);
         assertSame(empty, new NoSlimes().apply(empty, OVERWORLD));
     }
 }

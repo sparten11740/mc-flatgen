@@ -82,7 +82,7 @@ public final class PresetJson {
     /** The Nether's and the End's own stacks a file gives, by dimension; a file without them gives none. */
     private static Map<Dimension, Stack> otherStacks(JsonObject root, List<String> problems) {
         Map<Dimension, Stack> stacks = new EnumMap<>(Dimension.class);
-        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
+        for (Dimension dimension : Dimension.OTHERS) {
             JsonFields.object(root, dimension.key(), problems)
                     .ifPresent(stack -> stacks.put(dimension, readStack(stack, dimension, problems)));
         }

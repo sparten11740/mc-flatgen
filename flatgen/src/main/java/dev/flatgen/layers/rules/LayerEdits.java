@@ -4,7 +4,6 @@ import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
 import dev.flatgen.preset.rules.Layer;
-import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,11 +26,10 @@ public final class LayerEdits {
     public record Add(boolean above) implements Edit {
         @Override
         public EditorState apply(EditorState state, World world) {
-            Preset preset = state.preset();
-            if (preset.height() >= world.height()) {
+            if (state.height() >= world.height()) {
                 return state;
             }
-            String block = state.selected() < 0 ? FIRST_BLOCK : preset.layers().get(state.selected()).block();
+            String block = state.selectedBlock().orElse(FIRST_BLOCK);
             int at = state.selected() < 0 ? 0 : state.selected() + (above ? 1 : 0);
             return inserted(state, at, new Layer(block, 1));
         }
@@ -41,11 +39,11 @@ public final class LayerEdits {
     public record Duplicate() implements Edit {
         @Override
         public EditorState apply(EditorState state, World world) {
-            int room = world.height() - state.preset().height();
+            int room = world.height() - state.height();
             if (state.selected() < 0 || room < 1) {
                 return state;
             }
-            Layer layer = state.preset().layers().get(state.selected());
+            Layer layer = state.layers().get(state.selected());
             return inserted(state, state.selected() + 1, new Layer(layer.block(), Math.min(layer.height(), room)));
         }
     }
@@ -57,9 +55,9 @@ public final class LayerEdits {
             if (state.selected() < 0) {
                 return state;
             }
-            List<Layer> layers = new ArrayList<>(state.preset().layers());
+            List<Layer> layers = new ArrayList<>(state.layers());
             layers.remove(state.selected());
-            return new EditorState(state.preset().withLayers(layers), state.selected() - 1);
+            return state.withLayers(layers, state.selected() - 1);
         }
     }
 
@@ -71,13 +69,13 @@ public final class LayerEdits {
     public record Move(int to) implements Edit {
         @Override
         public EditorState apply(EditorState state, World world) {
-            int last = state.preset().layers().size() - 1;
+            int last = state.layers().size() - 1;
             if (state.selected() < 0 || to < 0 || to > last || to == state.selected()) {
                 return state;
             }
-            List<Layer> layers = new ArrayList<>(state.preset().layers());
+            List<Layer> layers = new ArrayList<>(state.layers());
             layers.add(to, layers.remove(state.selected()));
-            return new EditorState(state.preset().withLayers(layers), to);
+            return state.withLayers(layers, to);
         }
     }
 
@@ -93,9 +91,9 @@ public final class LayerEdits {
                 return state;
             }
             int clamped = Math.max(1, Math.min(room(state, world), height));
-            List<Layer> layers = new ArrayList<>(state.preset().layers());
+            List<Layer> layers = new ArrayList<>(state.layers());
             layers.set(state.selected(), new Layer(layers.get(state.selected()).block(), clamped));
-            return new EditorState(state.preset().withLayers(layers), state.selected());
+            return state.withLayers(layers, state.selected());
         }
     }
 
@@ -110,7 +108,7 @@ public final class LayerEdits {
             if (state.selected() < 0) {
                 return state;
             }
-            return new SetHeight(state.preset().layers().get(state.selected()).height() + blocks).apply(state, world);
+            return new SetHeight(state.layers().get(state.selected()).height() + blocks).apply(state, world);
         }
     }
 
@@ -126,14 +124,14 @@ public final class LayerEdits {
             if (state.selected() < 0) {
                 return state;
             }
-            int others = state.preset().height() - state.preset().layers().get(state.selected()).height();
+            int others = state.height() - state.layers().get(state.selected()).height();
             return new SetHeight(y - world.floor() - others).apply(state, world);
         }
     }
 
     /**
-     * Puts other layers and a biome in place of the preset's, as pasting a superflat code does, and selects the top
-     * layer; layers taller than the world are not put in.
+     * Puts other layers and a biome in place of the edited stack's, as pasting a superflat code does, and selects the
+     * top layer; layers taller than the world are not put in.
      *
      * @param layers the new layers, bottom first
      * @param biome  the new biome's id
@@ -145,19 +143,19 @@ public final class LayerEdits {
 
         @Override
         public EditorState apply(EditorState state, World world) {
-            Preset replaced = state.preset().withLayers(layers).withBiome(biome);
-            return replaced.fitsWorld(world.height()) ? new EditorState(replaced, layers.size() - 1) : state;
+            EditorState replaced = state.withLayers(layers, layers.size() - 1).withBiome(biome);
+            return replaced.fits(world) ? replaced : state;
         }
     }
 
     /** How deep the selected layer may be: the world's height less the layers around it. */
     public static int room(EditorState state, World world) {
-        return world.height() - state.preset().height() + state.preset().layers().get(state.selected()).height();
+        return world.height() - state.height() + state.layers().get(state.selected()).height();
     }
 
     private static EditorState inserted(EditorState state, int at, Layer layer) {
-        List<Layer> layers = new ArrayList<>(state.preset().layers());
+        List<Layer> layers = new ArrayList<>(state.layers());
         layers.add(at, layer);
-        return new EditorState(state.preset().withLayers(layers), at);
+        return state.withLayers(layers, at);
     }
 }

@@ -13,6 +13,6 @@ import dev.flatgen.editor.rules.World;
 public record SetDecorations(boolean decorations, boolean lakes) implements Edit {
     @Override
     public EditorState apply(EditorState state, World world) {
-        return new EditorState(state.preset().withDecorations(decorations, lakes), state.selected());
+        return state.withPreset(state.preset().withDecorations(decorations, lakes));
     }
 }

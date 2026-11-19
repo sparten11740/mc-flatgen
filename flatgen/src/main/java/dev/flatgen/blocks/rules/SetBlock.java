@@ -18,8 +18,8 @@ public record SetBlock(String block) implements Edit {
         if (state.selected() < 0) {
             return state;
         }
-        List<Layer> layers = new ArrayList<>(state.preset().layers());
+        List<Layer> layers = new ArrayList<>(state.layers());
         layers.set(state.selected(), new Layer(block, layers.get(state.selected()).height()));
-        return new EditorState(state.preset().withLayers(layers), state.selected());
+        return state.withLayers(layers, state.selected());
     }
 }

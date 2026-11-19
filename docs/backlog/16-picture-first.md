@@ -117,6 +117,8 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | No slimes | slime ball under the "no" sign |
 | Editor | favourites row | each favourite's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
+| Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, Eye of Ender; the chosen one raised; own flat badge |
+| Editor | Make flat, Give back (F22) | own: bumpy ground, an arrow, flat stripes; the same turned round |
 | Editor | Biome | the biome's landscape in its colours, and its name |
 | Editor | Structures | village house, and how they are chosen |
 | Editor | Block | the selected layer's block, and its name |

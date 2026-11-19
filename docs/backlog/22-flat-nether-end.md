@@ -1,6 +1,6 @@
 # F22 Flat Nether and End
 
-Milestone: after v1 · Release: v1.x · Status: todo · Depends on: F20
+Milestone: after v1 · Release: v1.x · Status: done · Depends on: F20
 
 ## Why
 
@@ -13,12 +13,14 @@ Optional stacks for the Nether and the End in the same editor, each with its own
 
 ## Acceptance criteria
 
-- [ ] A preset may carry a Nether stack and an End stack (F02's format gains optional `nether` and `end` parts;
+- [x] A preset may carry a Nether stack and an End stack (F02's format gains optional `nether` and `end` parts;
   older files load as overworld only).
-- [ ] Applied by replacing those dimensions' generators with flat ones; the world still opens without Flatgen.
-- [ ] Portals work: a Nether portal leads to the flat Nether and back; the End has a way back (exit portal and dragon
-  handled, as Create Aeronautics' "End Sea" does by setting the dragon fight data).
-- [ ] On 26.2 and later, vanilla's own `flat_all_dimensions` is offered as a built-in.
+- [x] Applied by replacing those dimensions' generators with flat ones; the world still opens without Flatgen.
+- [x] Portals work: a Nether portal leads to the flat Nether and back; the End has a way back (exit portal and dragon
+  handled; first written as Create Aeronautics' "End Sea" does it, by setting the dragon fight data, but the game's
+  own fight places the exit portal on the flat ground, so Flatgen leaves its data alone, see Design).
+- Moved to F25, which builds the first 26.2 node: on 26.2 and later, vanilla's own `flat_all_dimensions` is offered as
+  a built-in.
 
 ## Design
 
@@ -28,6 +30,25 @@ Optional stacks for the Nether and the End in the same editor, each with its own
   or lakes) and keeps their dimension types, so portals, the dragon fight and the dimensions' sky stay the game's; a
   dimension without a stack gets its world type's generator back, undoing an earlier Done. Reopening Customize reads the
   stacks back from the screen. A datapack export (F21) carries them too.
+- The editor (decided by a panel of a user-experience expert and an engineer): three tabs above the column, a grass
+  block, a lit Nether portal (Flatgen's own picture) and an Eye of Ender, the chosen one raised as the creative
+  inventory's tabs are, choose the dimension the column, the layer, block and biome controls, the summary and the facts
+  show and edit. A Nether or End with a stack of its own wears the flat badge, three stripes, on its tab. One without
+  shows "Make the Nether flat" (bumpy ground, an arrow, flat stripes), which gives it a first stack: bedrock and 31
+  netherrack, the surface at Y 32 where the Nether's lava sea lies, or bedrock and 48 end stone, the top in the layer
+  the arrival platform is laid in (`dimensions/rules/NewStacks`). A flat one has "Give back to the game", which asks
+  first.
+- `EditorState` holds the edited dimension; the edits of layers and biome go through its `withLayers` and `withBiome`,
+  so they change whichever stack is edited, and change nothing for a dimension without one. Choosing a tab is no step,
+  like selecting a layer; undo goes back to the dimension where the step was made. Each dimension has its own `World`
+  (its type's floor and height), so Y labels and limits are the Nether's and the End's own.
+- Panels say where they show (`EditorPanel.shows`): by default only for the overworld, as structures, options,
+  presets, templates and the superflat code concern the whole preset or the overworld; the stack's own panels show
+  for any dimension with a stack, undo and the message for all. The editor lays its widgets out again when the edited
+  dimension or whether it has a stack changes.
+- Using a template keeps the Nether and the End, as a template says nothing of them; using a saved preset takes its
+  own. The game's own editor, opened from Flatgen, edits the overworld only, so Nether and End changes not yet applied
+  with Done stay behind in Flatgen.
 - The dragon is left to the game: its fight places the exit portal's podium on the flat surface at the centre and
   spawns the dragon, whose death lights the portal, so the End always has a way back without Flatgen touching the
   fight's data.
@@ -38,7 +59,12 @@ Optional stacks for the Nether and the End in the same editor, each with its own
 
 ## Tests
 
-- GameTest: the dimensions' chunks have the stacks' blocks.
+- Unit: the preset file reads what it writes of the Nether and the End, and an older file as the overworld alone
+  (`PresetJsonTest`); the stacks kept through every change of the preset (`PresetTest`); edits of the chosen stack
+  leaving the overworld alone and a dimension without a stack taking none (`EditorStateTest`); choosing a dimension no
+  step (`HistoryTest`); the first stacks and giving and taking back a stack (`DimensionRulesTest`).
+- GameTest: a Nether stack generates its layers and biome; a world preset gives the Nether and the End their stacks
+  and keeps their types, and without stacks leaves them as the game makes them (`DimensionGameTests`).
 - Dev client: through a Nether portal and back; into the End and out.
 
 ## Tried
@@ -50,3 +76,13 @@ portal lit in the overworld led to the flat Nether, where the game built its par
 An End portal led onto the obsidian platform flush in the end stone; the dragon flew over the flat End, the exit
 podium stood at the centre, and once the dragon was killed the portal lit, a gateway appeared, and the exit portal led
 through the credits back to the overworld. The world loaded again without a question.
+
+The editor, NeoForge: the tabs chose the Nether, which showed only "Make the Nether flat" and undo; making it flat gave
+bedrock and 31 netherrack, the surface at Y 32 and Y labels from 0, Nether Wastes, and its tab the flat badge; the End
+likewise gave a surface at Y 49. Done, then Customize again, read both stacks back from the screen. Give back asked
+first, Yes left the End as the game makes it, and Undo brought its stack back. Tab, the arrow keys and Enter chose each
+tab. Saving to the library wrote the `nether` and `end` parts. Fabric: the same tabs and first stacks, and Done with
+Create New World made a world whose Nether is bedrock and 31 netherrack and whose End is bedrock and end stone. After
+the review's fixes, NeoForge: "Make the Nether flat" pressed with Enter left the focus on the panel, so a second Enter
+asked to give it back rather than pressing Done, and the Water world template kept the flat Nether. Not tried: the
+narrator on the tabs.

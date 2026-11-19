@@ -14,6 +14,6 @@ import java.util.Optional;
 public record SetStructures(Optional<List<String>> sets) implements Edit {
     @Override
     public EditorState apply(EditorState state, World world) {
-        return new EditorState(state.preset().withStructureSets(sets), state.selected());
+        return state.withPreset(state.preset().withStructureSets(sets));
     }
 }

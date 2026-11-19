@@ -14,7 +14,6 @@ import dev.flatgen.layers.rules.ColumnLayout;
 import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.preset.rules.Layer;
-import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +57,7 @@ public final class ColumnWidget implements Widget {
     private final Supplier<List<Marker>> markers;
     private final Rect column;
     private final Rect labels;
-    private Preset laidOut;
+    private List<Layer> laidOut;
     private ColumnLayout layout;
     /** The biome {@link #fluidColor} is the water colour of, the colour water layers are tinted. */
     private String tintedBiome;
@@ -119,9 +118,9 @@ public final class ColumnWidget implements Widget {
         List<Rect> bounds = layerBounds();
         canvas.fill(column, BACKGROUND);
         canvas.clip(column);
-        int fluid = fluidColor(state.preset().biome());
+        int fluid = fluidColor(state.biome());
         for (int index = 0; index < bounds.size(); index++) {
-            canvas.blockSide(state.preset().layers().get(index).block(), fluid, bounds.get(index));
+            canvas.blockSide(state.layers().get(index).block(), fluid, bounds.get(index));
             canvas.fill(new Rect(column.x(), bounds.get(index).y(), column.width(), 1), LINE_BETWEEN_LAYERS);
         }
         markers.get().forEach(marker -> drawMarker(canvas, marker));
@@ -186,7 +185,7 @@ public final class ColumnWidget implements Widget {
         int index = layer.getAsInt();
         editor.select(index);
         Rect bounds = layerBounds().get(index);
-        int height = editor.shown().preset().layers().get(index).height();
+        int height = editor.shown().layers().get(index).height();
         Mode mode = y < bounds.y() + EDGE ? Mode.RESIZING : Mode.PRESSED;
         drag = new Drag(mode, y, height, (double) height / bounds.height(), -1);
         return true;
@@ -238,10 +237,10 @@ public final class ColumnWidget implements Widget {
      * column that shrank to fit shows its top again.
      */
     private ColumnLayout layout() {
-        Preset preset = editor.shown().preset();
-        if (!preset.equals(laidOut)) {
-            laidOut = preset;
-            layout = ColumnLayout.of(heights(preset), column.height(), THINNEST_LAYER);
+        List<Layer> layers = editor.shown().layers();
+        if (!layers.equals(laidOut)) {
+            laidOut = layers;
+            layout = ColumnLayout.of(heights(layers), column.height(), THINNEST_LAYER);
             scroll = Math.max(0, Math.min(layout.contentHeight() - column.height(), scroll));
         }
         return layout;
@@ -275,7 +274,7 @@ public final class ColumnWidget implements Widget {
     }
 
     private void drawMarker(Canvas canvas, Marker marker) {
-        OptionalInt pixel = layout().pixelOfLine(marker.y(), editor.world().floor(), heights(editor.shown().preset()));
+        OptionalInt pixel = layout().pixelOfLine(marker.y(), editor.world().floor(), heights(editor.shown().layers()));
         if (pixel.isEmpty()) {
             return;
         }
@@ -317,12 +316,12 @@ public final class ColumnWidget implements Widget {
 
     /** The lines between layers, top down, the surface first and the world's floor last: each one's pixel row and Y. */
     private List<Line> lines(List<Rect> bounds) {
-        Preset preset = editor.shown().preset();
+        EditorState state = editor.shown();
         List<Line> lines = new ArrayList<>();
-        int y = editor.world().floor() + preset.height();
+        int y = editor.world().floor() + state.height();
         for (int index = bounds.size() - 1; index >= 0; index--) {
             lines.add(new Line(bounds.get(index).y(), y));
-            y -= preset.layers().get(index).height();
+            y -= state.layers().get(index).height();
         }
         if (!bounds.isEmpty()) {
             lines.add(new Line(bounds.get(0).bottom(), editor.world().floor()));
@@ -330,8 +329,8 @@ public final class ColumnWidget implements Widget {
         return lines;
     }
 
-    private static List<Integer> heights(Preset preset) {
-        return preset.layers().stream().map(Layer::height).toList();
+    private static List<Integer> heights(List<Layer> layers) {
+        return layers.stream().map(Layer::height).toList();
     }
 
     /** A line between blocks: its pixel row on the screen and the Y of the block above it. */

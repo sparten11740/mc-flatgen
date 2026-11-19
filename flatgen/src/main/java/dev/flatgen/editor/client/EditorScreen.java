@@ -1,14 +1,15 @@
 package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.FlatgenScreen;
-import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.dimensions.client.DimensionTabs;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.PanelSizes;
@@ -28,7 +29,9 @@ import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Preset;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
@@ -36,19 +39,22 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.flag.FeatureFlagSet;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 /**
- * Flatgen's superflat editor, opened by Customize: the world's layers in a column, beside it the panels of
- * {@link EditorPanels}, top down, wrapping within the space left and scrolling when taller than it, and Done, the
- * game's own editor and Cancel below. Every change is a step to undo. Done applies the preset to the Create World
- * screen; Cancel leaves it.
+ * Flatgen's superflat editor, opened by Customize: the dimensions' tabs above a column of the edited stack's layers,
+ * beside it the panels of {@link EditorPanels} that show for it, top down, wrapping within the space left and
+ * scrolling when taller than it, and Done, the game's own editor and Cancel below. Every change is a step to undo.
+ * Done applies the preset to the Create World screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
-    /** Space above the column for the title, in GUI pixels. */
+    /** Space above the tabs and the panel for the title, in GUI pixels. */
     private static final int HEADER = 24;
     /** Space below the column for the footer's buttons, in GUI pixels. */
     private static final int FOOTER = 32;
+    /** Space between the dimensions' tabs and the column, in GUI pixels: room for half the column's top Y label. */
+    private static final int TABS_GAP = 5;
     /** Space at the sides and between the column and the panel, in GUI pixels. */
     private static final int MARGIN = 12;
     /** A footer button's size, in GUI pixels: three fit the narrowest screen at the largest GUI scale. */
@@ -58,7 +64,8 @@ public final class EditorScreen extends FlatgenScreen {
 
     private final CreateWorldScreen parent;
     private final WorldCreationContext context;
-    private final World world;
+    /** Each dimension's world, which its stack stands in. */
+    private final Map<Dimension, World> worlds = new EnumMap<>(Dimension.class);
     private final History history;
     /** The world options installed, read once as the editor opens. */
     private final List<WorldOption> worldOptions;
@@ -67,28 +74,34 @@ public final class EditorScreen extends FlatgenScreen {
     /** What the last copy or paste said, until the next change; null for nothing. */
     private Component message;
     private ColumnWidget column;
+    /** What the widgets were last laid out for: the edited dimension and whether it has a stack. */
+    private List<Object> laidOutFor = List.of();
 
     public EditorScreen(CreateWorldScreen parent, WorldCreationContext context) {
         super(Component.translatable("flatgen.editor.title"));
         this.parent = parent;
         this.context = context;
-        this.world = new World(WorldCreation.overworldType(context).minY(),
-                WorldCreation.overworldType(context).height());
+        for (Dimension dimension : Dimension.values()) {
+            DimensionType type = WorldCreation.dimensionType(context, dimension);
+            worlds.put(dimension, new World(type.minY(), type.height()));
+        }
         this.worldOptions = InstalledOptions.load();
         Preset overworld = FlatSettings.toPreset(WorldCreation.flatSettings(context), context.worldgenLoadContext(), "",
                 ICON).preset();
-        Preset preset = OptionSessions.shown(parent, withOtherDimensions(overworld, context), worldOptions);
-        this.history = new History(new EditorState(preset, preset.layers().size() - 1));
+        Preset preset = OptionSessions.shown(parent, overworld.withOtherStacks(dimension -> WorldCreation.flatSettings(
+                context, dimension).map(settings -> FlatSettings.toStack(settings, context.worldgenLoadContext()))),
+                worldOptions);
+        this.history = new History(EditorState.of(preset));
     }
 
-    /** The preset the editor shows, with a change being dragged made on it. */
-    public Preset preset() {
-        return editor.shown().preset();
+    /** What the editor shows, with a change being dragged made on it. */
+    public EditorState shown() {
+        return editor.shown();
     }
 
-    /** The Y of the world's floor, where the bottom layer starts. */
+    /** The Y of the edited dimension's floor, where the bottom layer starts. */
     public int worldBottom() {
-        return world.floor();
+        return world().floor();
     }
 
     /** The column, as last laid out. */
@@ -96,30 +109,24 @@ public final class EditorScreen extends FlatgenScreen {
         return column;
     }
 
-    /** The selected layer, bottom first, or -1 when there are none. */
-    public int selected() {
-        return editor.shown().selected();
-    }
-
-    /** A preset with the Nether's and the End's stacks the world on the screen has, when it has them flat. */
-    private static Preset withOtherDimensions(Preset preset, WorldCreationContext context) {
-        Preset with = preset;
-        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
-            with = with.withStack(dimension, WorldCreation.flatSettings(context, dimension)
-                    .map(settings -> FlatSettings.toStack(settings, context.worldgenLoadContext())));
-        }
-        return with;
-    }
-
+    /**
+     * The tabs of the dimensions above the column, the column of the edited stack (an empty area for a dimension
+     * without one, so the keyboard's focus keeps its place among the areas), the panels that show for it beside, and
+     * the footer.
+     */
     @Override
     protected List<Widget> layOut(int width, int height) {
-        Rect space = new Rect(MARGIN, HEADER, ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH,
-                height - HEADER - FOOTER);
+        Rect tabs = new Rect(MARGIN, HEADER, ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH,
+                DimensionTabs.HEIGHT);
+        int columnTop = tabs.bottom() + TABS_GAP;
+        Rect space = new Rect(MARGIN, columnTop, tabs.width(), height - columnTop - FOOTER);
         column = new ColumnWidget(editor, space, FactMarkers.of(editor));
+        laidOutFor = layoutKey();
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(column);
+        widgets.add(new WidgetGroup(DimensionTabs.layOut(editor, tabs)));
+        widgets.add(editor.shown().stack().isPresent() ? column : new WidgetGroup(List.of()));
         int left = space.right() + MARGIN;
-        Rect panelSpace = new Rect(left, HEADER, width - left - MARGIN, space.height());
+        Rect panelSpace = new Rect(left, HEADER, width - left - MARGIN, space.bottom() - HEADER);
         widgets.add(new ScrollGroup(panelSpace, top -> panels(new Rect(left, top, panelSpace.width(), 0))));
         widgets.add(new WidgetGroup(footer(width, height)));
         return widgets;
@@ -129,13 +136,13 @@ public final class EditorScreen extends FlatgenScreen {
     private ScrollGroup.Laid panels(Rect area) {
         FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
         List<Widget> widgets = new ArrayList<>();
-        EditorPanels.ALL.forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
+        shownPanels().forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
         return new ScrollGroup.Laid(widgets, flow.bottom());
     }
 
     @Override
     protected boolean shortcut(int keyCode, Modifiers modifiers) {
-        for (EditorPanel panel : EditorPanels.ALL) {
+        for (EditorPanel panel : shownPanels()) {
             if (panel.shortcut(editor, keyCode, modifiers)) {
                 return true;
             }
@@ -146,7 +153,7 @@ public final class EditorScreen extends FlatgenScreen {
     /** Files dropped on the editor go to the first panel that takes them. */
     @Override
     protected void filesDropped(List<Path> files) {
-        for (EditorPanel panel : EditorPanels.ALL) {
+        for (EditorPanel panel : shownPanels()) {
             if (panel.filesDropped(editor, files)) {
                 return;
             }
@@ -156,6 +163,32 @@ public final class EditorScreen extends FlatgenScreen {
     @Override
     public void onClose() {
         minecraft.setScreen(parent);
+    }
+
+    /** The panels that show for what the editor holds now. */
+    private List<EditorPanel> shownPanels() {
+        return EditorPanels.ALL.stream().filter(panel -> panel.shows(editor.shown())).toList();
+    }
+
+    /** The edited dimension's world. */
+    private World world() {
+        return worlds.get(history.current().edited());
+    }
+
+    /** What decides the widgets: the edited dimension, and whether it has a stack. */
+    private List<Object> layoutKey() {
+        return List.of(history.current().edited(), history.current().stack().isPresent());
+    }
+
+    /**
+     * Lays the widgets out again when a change decides other ones, as choosing a dimension does, dropping a drag's
+     * preview, as the widget dragging is gone.
+     */
+    private void layOutAgainWhenNeeded() {
+        if (!layoutKey().equals(laidOutFor)) {
+            previewed = null;
+            rebuildWidgets();
+        }
     }
 
     private List<Widget> footer(int width, int height) {
@@ -187,23 +220,35 @@ public final class EditorScreen extends FlatgenScreen {
     private final class Context implements EditorContext {
         @Override
         public EditorState shown() {
-            return previewed == null ? history.current() : previewed.apply(history.current(), world);
+            return previewed == null ? history.current() : previewed.apply(history.current(), world());
         }
 
         @Override
         public World world() {
-            return world;
+            return EditorScreen.this.world();
+        }
+
+        @Override
+        public World world(Dimension dimension) {
+            return worlds.get(dimension);
         }
 
         @Override
         public void apply(Edit edit) {
-            history.apply(edit, world);
+            history.apply(edit, world());
             message = null;
+            layOutAgainWhenNeeded();
         }
 
         @Override
         public void select(int layer) {
             history.select(layer);
+        }
+
+        @Override
+        public void choose(Dimension dimension) {
+            history.choose(dimension);
+            layOutAgainWhenNeeded();
         }
 
         @Override
@@ -223,12 +268,14 @@ public final class EditorScreen extends FlatgenScreen {
         public void undo() {
             history.undo();
             message = null;
+            layOutAgainWhenNeeded();
         }
 
         @Override
         public void redo() {
             history.redo();
             message = null;
+            layOutAgainWhenNeeded();
         }
 
         @Override

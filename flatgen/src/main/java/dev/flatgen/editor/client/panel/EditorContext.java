@@ -5,8 +5,12 @@ import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
 import dev.flatgen.options.rules.WorldOption;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.preset.rules.Stack;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
@@ -20,14 +24,20 @@ public interface EditorContext {
     /** What the editor shows: its state, with an edit being previewed made on it. */
     EditorState shown();
 
-    /** The world the stack stands in. */
+    /** The world the edited stack stands in: its dimension's floor and height. */
     World world();
+
+    /** The world a dimension's stack stands in. */
+    World world(Dimension dimension);
 
     /** Makes an edit, a step to undo. Every change, undo and redo too, clears the message. */
     void apply(Edit edit);
 
     /** Selects a layer, bottom first, which is no step. */
     void select(int layer);
+
+    /** Shows and edits this dimension's stack (F22), its top layer selected, which is no step. */
+    void choose(Dimension dimension);
 
     /** Shows an edit made on the editor's state without making it, in place of any shown before, while a drag lasts. */
     void preview(Edit edit);
@@ -51,14 +61,18 @@ public interface EditorContext {
     void say(Component message);
 
     /**
-     * Puts a whole preset in the editor as one step to undo, a saved one or one a template made; one taller than the
-     * world is left out, and the editor's line says so.
+     * Puts a whole preset in the editor as one step to undo, a saved one or one a template made; one with a stack
+     * taller than its dimension is left out, and the editor's line says so.
      */
     default void use(Preset preset) {
-        apply(new ApplyPreset(preset));
-        if (!preset.fitsWorld(world().height())) {
-            say(Component.translatable("flatgen.editor.too_tall", world().height()));
+        Optional<World> tooSmall = Arrays.stream(Dimension.values())
+                .filter(dimension -> preset.stack(dimension).map(Stack::height).orElse(0) > world(dimension).height())
+                .findFirst().map(this::world);
+        if (tooSmall.isPresent()) {
+            say(Component.translatable("flatgen.editor.too_tall", tooSmall.get().height()));
+            return;
         }
+        apply(new ApplyPreset(preset));
     }
 
     /** The message shown now, if any; null for none. */

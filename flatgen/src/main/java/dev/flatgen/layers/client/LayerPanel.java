@@ -14,6 +14,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.rules.Edit;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.LayerEdits;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,12 @@ public final class LayerPanel implements EditorPanel {
     private static final int SMALL = 20;
     private static final int QUICK = 22;
     private static final int FIELD = 40;
+
+    /** Shown for every dimension the preset gives a stack of its own (F22). */
+    @Override
+    public boolean shows(EditorState state) {
+        return state.stack().isPresent();
+    }
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
@@ -97,7 +104,7 @@ public final class LayerPanel implements EditorPanel {
         Rect place = flow.next(Label.width(editor.textWidth(label)));
         return List.of(new Label(Icon.item("minecraft:ladder"), label, place),
                 new NumberField("surface", label, flow.next(FIELD),
-                        () -> editor.world().floor() + editor.shown().preset().height(),
+                        () -> editor.world().floor() + editor.shown().height(),
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
     }
 
@@ -108,7 +115,7 @@ public final class LayerPanel implements EditorPanel {
         }
 
         int height() {
-            return hasLayer() ? editor.shown().preset().layers().get(editor.shown().selected()).height() : 0;
+            return hasLayer() ? editor.shown().layers().get(editor.shown().selected()).height() : 0;
         }
 
         int room() {
@@ -116,7 +123,7 @@ public final class LayerPanel implements EditorPanel {
         }
 
         int roomLeft() {
-            return editor.world().height() - editor.shown().preset().height();
+            return editor.world().height() - editor.shown().height();
         }
 
         List<Component> layerLine() {

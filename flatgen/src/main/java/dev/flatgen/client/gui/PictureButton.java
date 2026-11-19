@@ -86,7 +86,7 @@ public final class PictureButton implements Control {
     @Override
     public List<WidgetDescription> describe() {
         List<Component> lines = tooltip.get();
-        return List.of(new WidgetDescription("button", lines.isEmpty() ? "" : lines.get(0).getString(), bounds,
+        return List.of(new WidgetDescription("button", Narration.name(lines).getString(), bounds,
                 usable.getAsBoolean(), ""));
     }
 }

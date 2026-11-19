@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.TestPresets;
 import java.util.List;
@@ -20,7 +21,7 @@ class BlockRulesTest {
 
     @Test
     void setsTheSelectedLayersBlockAndKeepsItsDepth() {
-        EditorState state = new EditorState(TestPresets.TALL_FLAT, 1);
+        EditorState state = new EditorState(TestPresets.TALL_FLAT, Dimension.OVERWORLD, 1);
         EditorState glass = new SetBlock("minecraft:glass").apply(state, new World(-64, 384));
         assertEquals(new Layer("minecraft:glass", 100), glass.preset().layers().get(1));
         assertEquals(1, glass.selected());

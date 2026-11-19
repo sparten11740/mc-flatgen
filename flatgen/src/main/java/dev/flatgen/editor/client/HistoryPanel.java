@@ -7,12 +7,19 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.rules.EditorState;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /** Undo and redo, as buttons and as Control+Z, Control+Y and Control+Shift+Z. */
 final class HistoryPanel implements EditorPanel {
+    /** Shown for every dimension, with a stack or without (F22). */
+    @Override
+    public boolean shows(EditorState state) {
+        return true;
+    }
+
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();

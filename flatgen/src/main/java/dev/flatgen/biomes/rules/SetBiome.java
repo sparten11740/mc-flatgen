@@ -12,6 +12,6 @@ import dev.flatgen.editor.rules.World;
 public record SetBiome(String biome) implements Edit {
     @Override
     public EditorState apply(EditorState state, World world) {
-        return new EditorState(state.preset().withBiome(biome), state.selected());
+        return state.withBiome(biome);
     }
 }

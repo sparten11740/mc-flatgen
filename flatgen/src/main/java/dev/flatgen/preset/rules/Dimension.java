@@ -1,5 +1,7 @@
 package dev.flatgen.preset.rules;
 
+import java.util.List;
+
 /**
  * A dimension a preset can give a superflat stack (F22): the overworld always has one; the Nether and the End have one
  * only when the preset says so, and are otherwise as the game makes them.
@@ -8,6 +10,9 @@ public enum Dimension {
     OVERWORLD("overworld", "minecraft:plains"),
     NETHER("nether", "minecraft:nether_wastes"),
     END("end", "minecraft:the_end");
+
+    /** The dimensions besides the overworld, whose stacks a preset may leave out. */
+    public static final List<Dimension> OTHERS = List.of(NETHER, END);
 
     private final String key;
     private final String defaultBiome;

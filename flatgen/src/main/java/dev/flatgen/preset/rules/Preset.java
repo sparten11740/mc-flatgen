@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
+import java.util.function.Function;
 
 /**
  * A superflat world as Flatgen keeps it: what the editor changes, the library saves and templates make. Ids are plain
@@ -103,6 +104,18 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
         changed.putAll(stacks);
         stack.ifPresentOrElse(own -> changed.put(dimension, own), () -> changed.remove(dimension));
         return new Preset(name, icon, layers, biome, structureSets, decorations, lakes, options, changed);
+    }
+
+    /**
+     * This preset with the Nether's and the End's stacks as given, each none to leave that dimension as the game makes
+     * it.
+     */
+    public Preset withOtherStacks(Function<Dimension, Optional<Stack>> stacks) {
+        Preset with = this;
+        for (Dimension dimension : Dimension.OTHERS) {
+            with = with.withStack(dimension, stacks.apply(dimension));
+        }
+        return with;
     }
 
     /** How tall the stack is, in blocks. */

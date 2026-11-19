@@ -14,14 +14,14 @@ public final class LayerText {
 
     /** A layer's block, its depth and the Ys it covers, a line each. */
     public static List<Component> describe(EditorState state, World world, int index) {
-        Layer layer = state.preset().layers().get(index);
+        Layer layer = state.layers().get(index);
         return List.of(Names.block(layer.block()), Component.translatable("flatgen.layer.height", layer.height()),
                 yRange(state, world, index));
     }
 
     /** The Ys a layer covers, bottom to top. */
     public static Component yRange(EditorState state, World world, int index) {
-        List<Layer> layers = state.preset().layers();
+        List<Layer> layers = state.layers();
         int bottomY = world.floor() + layers.subList(0, index).stream().mapToInt(Layer::height).sum();
         return Component.translatable("flatgen.layer.y_range", bottomY, bottomY + layers.get(index).height() - 1);
     }

@@ -107,8 +107,9 @@ public final class TemplatesScreen extends FlatgenScreen {
         rebuildWidgets();
     }
 
+    /** Puts the template's world in the editor, keeping its Nether and End, of which a template says nothing (F22). */
     private void use() {
-        editor.use(made());
+        editor.use(made().withOtherStacks(editor.shown().preset()::stack));
         onClose();
     }
 

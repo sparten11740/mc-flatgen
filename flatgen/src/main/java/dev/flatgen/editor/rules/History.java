@@ -1,5 +1,6 @@
 package dev.flatgen.editor.rules;
 
+import dev.flatgen.preset.rules.Dimension;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -44,20 +45,40 @@ public final class History {
         current = current.select(layer);
     }
 
-    /** Goes one step back, if there is one. */
-    public void undo() {
-        if (!undoable.isEmpty()) {
-            redoable.push(current);
-            current = undoable.pop();
+    /**
+     * Edits another dimension's stack, its top layer selected, which is not a step: undo and redo go to the dimension
+     * where each step was made. Choosing the dimension already edited changes nothing.
+     */
+    public void choose(Dimension dimension) {
+        if (dimension != current.edited()) {
+            current = current.choose(dimension);
         }
     }
 
-    /** Makes the step last undone again, if there is one. */
+    /** Goes one step back, if there is one, to the dimension where it was made. */
+    public void undo() {
+        if (!undoable.isEmpty()) {
+            EditorState back = undoable.pop();
+            redoable.push(inDimensionOf(current, back));
+            current = back;
+        }
+    }
+
+    /** Makes the step last undone again, if there is one, in the dimension where it was made. */
     public void redo() {
         if (!redoable.isEmpty()) {
-            undoable.push(current);
-            current = redoable.pop();
+            EditorState ahead = redoable.pop();
+            undoable.push(inDimensionOf(current, ahead));
+            current = ahead;
         }
+    }
+
+    /**
+     * A state kept to go back or ahead to, in the dimension of the step beside it, so a dimension chosen after a step
+     * is not where undo or redo lands.
+     */
+    private static EditorState inDimensionOf(EditorState state, EditorState step) {
+        return state.edited() == step.edited() ? state : state.choose(step.edited());
     }
 
     /** Whether there is a step to undo. */

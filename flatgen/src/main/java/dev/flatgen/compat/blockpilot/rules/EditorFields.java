@@ -1,6 +1,6 @@
 package dev.flatgen.compat.blockpilot.rules;
 
-import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.preset.rules.VanillaCode;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -11,18 +11,20 @@ public final class EditorFields {
     }
 
     /**
-     * The fields of an open editor holding this preset, in a world whose floor is at this Y, with this layer selected
-     * (bottom first, -1 for none).
+     * The fields of an open editor in this state, its edited stack in a world whose floor is at this Y; {@code code} is
+     * the overworld's superflat code, {@code selected} is {@code l<n>}, bottom first, or {@code none}.
      */
-    public static Map<String, Object> of(Preset preset, int worldBottom, int selected) {
+    public static Map<String, Object> of(EditorState state, int worldBottom) {
         Map<String, Object> fields = new LinkedHashMap<>();
         fields.put("open", true);
-        fields.put("code", VanillaCode.write(preset));
-        fields.put("layers", preset.layers().size());
-        fields.put("height", preset.height());
-        fields.put("surface_y", worldBottom + preset.height());
-        fields.put("biome", preset.biome());
-        fields.put("selected", selected >= 0 ? "l" + selected : "none");
+        fields.put("code", VanillaCode.write(state.preset()));
+        fields.put("dimension", state.edited().key());
+        fields.put("flat", state.stack().isPresent());
+        fields.put("layers", state.layers().size());
+        fields.put("height", state.height());
+        fields.put("surface_y", worldBottom + state.height());
+        fields.put("biome", state.biome());
+        fields.put("selected", state.selected() >= 0 ? "l" + state.selected() : "none");
         return fields;
     }
 }

@@ -28,7 +28,7 @@ final class EditorQuery {
     private static Result run(CommandContext context, Args args) {
         Fields fields = new Fields();
         if (Minecraft.getInstance().screen instanceof EditorScreen editor) {
-            EditorFields.of(editor.preset(), editor.worldBottom(), editor.selected()).forEach(fields::put);
+            EditorFields.of(editor.shown(), editor.worldBottom()).forEach(fields::put);
         } else {
             fields.put("open", false);
         }

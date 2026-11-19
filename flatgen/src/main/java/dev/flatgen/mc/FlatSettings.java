@@ -80,7 +80,7 @@ public final class FlatSettings {
     public static Map<Dimension, Optional<FlatLevelGeneratorSettings>> otherDimensions(Preset preset,
             HolderLookup.Provider registries) {
         Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings = new EnumMap<>(Dimension.class);
-        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
+        for (Dimension dimension : Dimension.OTHERS) {
             settings.put(dimension, preset.stack(dimension).map(stack -> toSettings(stack, registries)));
         }
         return settings;

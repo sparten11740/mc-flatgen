@@ -3,6 +3,8 @@ package dev.flatgen.editor.client.panel;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.editor.rules.EditorState;
+import dev.flatgen.preset.rules.Dimension;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -12,6 +14,14 @@ import java.util.List;
  * adding one never changes the editor or another panel.
  */
 public interface EditorPanel {
+    /**
+     * Whether the panel shows for what the editor holds now; by default only while the overworld is edited, as a panel
+     * that changes the whole preset needs (F22).
+     */
+    default boolean shows(EditorState state) {
+        return state.edited() == Dimension.OVERWORLD;
+    }
+
     /** The panel's widgets, placed by the flow, which carries on below the panel before it. */
     List<Widget> layOut(EditorContext editor, FlowLayout flow);
 
