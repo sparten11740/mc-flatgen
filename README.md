@@ -9,6 +9,14 @@ will open Flatgen instead of the vanilla screen:
 - **Presets:** save your own, star favourites, pick a default that is ready the moment you choose Superflat.
 - **Templates:** a tall flat world, a water world or an airship field from a few sliders.
 - **Always day, always clear:** saved with the preset, no more `/time set day` in every new world.
+- **Works without reading:** every button is a picture; the keyboard and the game's narrator work too. In English and
+  German.
+
+![The editor: the layers as a column, the world's facts above the controls, every button a picture](docs/screenshots/editor.png)
+
+| Biomes as cards with their colours and facts | Presets: your own, the game's and Flatgen's | Templates |
+|---|---|---|
+| ![The biome picker](docs/screenshots/biomes.png) | ![The preset library](docs/screenshots/library.png) | ![The templates](docs/screenshots/templates.png) |
 
 Worlds made with Flatgen are plain superflat worlds: they open without the mod.
 
