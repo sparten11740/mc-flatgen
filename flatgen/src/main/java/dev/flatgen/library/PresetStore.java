@@ -17,7 +17,7 @@ import java.util.stream.Stream;
  * The player's saved presets (F11): one file each in a folder, config/flatgen/presets, as F02's format writes them,
  * so they can be copied between instances; each written whole or not at all.
  */
-public final class PresetStore {
+public final class PresetStore implements PresetSource {
     private static final String FOLDER = "presets";
     private static final String JSON = ".json";
 
@@ -38,10 +38,9 @@ public final class PresetStore {
         return paths().stream().map(this::read).toList();
     }
 
-    /** The preset a file holds; none when the file is missing or cannot be read. */
-    public Optional<Preset> read(String file) {
-        Path path = folder.resolve(file);
-        return Files.isRegularFile(path) ? read(path).preset() : Optional.empty();
+    @Override
+    public List<PresetLibrary.Entry> presets() {
+        return load();
     }
 
     /** Keeps a preset in a new file named after it; the file's name, none when it could not be written. */
@@ -97,10 +96,12 @@ public final class PresetStore {
         try {
             PresetReading reading = PresetJson.read(Files.readString(path));
             reading.problems().forEach(problem -> Flatgen.LOGGER.warn("Preset {}: {}", path, problem));
-            return new PresetLibrary.Entry(file, Optional.of(reading.preset()), reading.problems());
+            return new PresetLibrary.Entry(file, PresetLibrary.Origin.PLAYER, Optional.of(reading.preset()),
+                    reading.problems());
         } catch (IOException | IllegalArgumentException exception) {
             Flatgen.LOGGER.warn("Could not read the preset {}", path, exception);
-            return new PresetLibrary.Entry(file, Optional.empty(), List.of(String.valueOf(exception.getMessage())));
+            return new PresetLibrary.Entry(file, PresetLibrary.Origin.PLAYER, Optional.empty(),
+                    List.of(String.valueOf(exception.getMessage())));
         }
     }
 

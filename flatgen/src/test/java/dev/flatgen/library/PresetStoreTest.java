@@ -26,7 +26,8 @@ class PresetStoreTest {
     void keepsAPresetInAFileNamedAfterItAndReadsItBack() {
         PresetStore store = new PresetStore(folder.resolve("presets"));
         assertEquals(Optional.of("tall_flat.json"), store.saveNew(TALL));
-        assertEquals(List.of(new PresetLibrary.Entry("tall_flat.json", Optional.of(TALL), List.of())), store.load());
+        assertEquals(List.of(new PresetLibrary.Entry("tall_flat.json", PresetLibrary.Origin.PLAYER, Optional.of(TALL),
+                List.of())), store.load());
     }
 
     @Test
@@ -62,6 +63,6 @@ class PresetStoreTest {
     }
 
     private static List<String> files(PresetStore store) {
-        return store.load().stream().map(PresetLibrary.Entry::file).toList();
+        return store.load().stream().map(PresetLibrary.Entry::key).toList();
     }
 }

@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "name": "preset.flatgen.void_with_platform",
+  "icon": "minecraft:barrier",
+  "layers": [
+    {
+      "block": "minecraft:air",
+      "height": 1
+    }
+  ],
+  "biome": "minecraft:the_void",
+  "structures": [],
+  "decorations": true,
+  "lakes": false
+}

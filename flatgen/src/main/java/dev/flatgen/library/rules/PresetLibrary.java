@@ -11,8 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * The player's saved presets (F11), as files of config/flatgen/presets: their order, the names of new ones and the
- * files they are kept in.
+ * The presets of the library: the player's own (F11), files of config/flatgen/presets, and the built-in ones (F13) of
+ * the game, its data packs, mods and resource packs; their order, the names of new ones and the files they are kept in.
  */
 public final class PresetLibrary {
     /** What a file's name is made of: its preset's name in lower case, letters and digits, words joined by this. */
@@ -24,38 +24,72 @@ public final class PresetLibrary {
     private PresetLibrary() {
     }
 
+    /** Where a preset of the library comes from, in the order the library shows them after the favourites. */
+    public enum Origin {
+        /** The player's own, a file of config/flatgen/presets, which they may change. */
+        PLAYER,
+        /** The game's or a data pack's flat world presets, built in. */
+        GAME,
+        /** Flatgen's starters and those mods and resource packs add, built in. */
+        PACK
+    }
+
+    /** Which built-in presets the library shows. */
+    public enum BuiltIns {
+        /** All of them. */
+        SHOWN,
+        /** Those of mods and packs, not the game's. */
+        NO_GAME,
+        /** None: only the player's own. */
+        HIDDEN
+    }
+
     /**
-     * A file of the library.
+     * A preset of the library.
      *
-     * @param file     its name within the folder, such as {@code tall_flat.json}
-     * @param preset   the preset it holds; none when it cannot be read at all
+     * @param key      how the library names it: a player's file name, such as {@code tall_flat.json}, or a built-in's
+     *                 id, such as {@code game:minecraft:classic_flat}
+     * @param origin   where it comes from
+     * @param preset   the preset; none when it cannot be read at all
      * @param problems what in it could not be read, for a warning on its card and the log
      */
-    public record Entry(String file, Optional<Preset> preset, List<String> problems) {
+    public record Entry(String key, Origin origin, Optional<Preset> preset, List<String> problems) {
         public Entry {
             problems = List.copyOf(problems);
         }
 
-        /** Its preset's name, or its file's when it cannot be read. */
+        /** Its preset's name, or its key when it cannot be read. */
         public String name() {
-            return preset.map(Preset::name).filter(name -> !name.isBlank()).orElse(file);
+            return preset.map(Preset::name).filter(name -> !name.isBlank()).orElse(key);
         }
+
+        /** Whether it is the player's own, which they may rename, save over and delete; built-ins they may not. */
+        public boolean isPlayers() {
+            return origin == Origin.PLAYER;
+        }
+    }
+
+    /** The entries the library shows with these built-ins shown. */
+    public static List<Entry> shown(List<Entry> entries, BuiltIns builtIns) {
+        return entries.stream().filter(entry -> entry.isPlayers() || builtIns == BuiltIns.SHOWN
+                || (builtIns == BuiltIns.NO_GAME && entry.origin() == Origin.PACK)).toList();
     }
 
     /**
      * The entries in the order the library shows them: favourites first, then those used lately, the latest first,
-     * then the rest by name.
+     * then the rest by where they come from (the player's, the game's, then packs') and by name.
      *
-     * @param favourites the files of the favourite presets (F12)
-     * @param recent     the files of the presets used lately, the latest first
+     * @param favourites the keys of the favourite presets (F12)
+     * @param recent     the keys of the presets used lately, the latest first
      */
     public static List<Entry> ordered(List<Entry> entries, Set<String> favourites, List<String> recent) {
         Comparator<Entry> byName = Comparator.comparing(entry -> entry.name().toLowerCase(Locale.ROOT));
-        List<Entry> ordered = new ArrayList<>(entries.stream().filter(entry -> favourites.contains(entry.file()))
+        List<Entry> ordered = new ArrayList<>(entries.stream().filter(entry -> favourites.contains(entry.key()))
                 .sorted(byName).toList());
-        recent.forEach(file -> entries.stream()
-                .filter(entry -> entry.file().equals(file) && !ordered.contains(entry)).forEach(ordered::add));
-        entries.stream().filter(entry -> !ordered.contains(entry)).sorted(byName).forEach(ordered::add);
+        recent.forEach(key -> entries.stream()
+                .filter(entry -> entry.key().equals(key) && !ordered.contains(entry)).forEach(ordered::add));
+        entries.stream().filter(entry -> !ordered.contains(entry))
+                .sorted(Comparator.comparing(Entry::origin).thenComparing(byName)).forEach(ordered::add);
         return ordered;
     }
 

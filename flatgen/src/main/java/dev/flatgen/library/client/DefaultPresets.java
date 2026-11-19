@@ -3,7 +3,7 @@ package dev.flatgen.library.client;
 import dev.flatgen.Flatgen;
 import dev.flatgen.editor.client.PresetEditors;
 import dev.flatgen.library.ChoicesFile;
-import dev.flatgen.library.PresetStore;
+import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.rules.Choices;
 import dev.flatgen.library.rules.MissingParts;
 import dev.flatgen.mc.FlatSettings;
@@ -54,8 +54,9 @@ public final class DefaultPresets {
         if (applying || !superflat) {
             return;
         }
-        Optional<Preset> chosen = ChoicesFile.read().defaultFile().flatMap(PresetStore.player()::read);
         RegistryAccess registries = screen.getUiState().getSettings().worldgenLoadContext();
+        Optional<Preset> chosen = ChoicesFile.read().defaultFile().flatMap(key -> LibrarySources.find(key,
+                registries));
         Preset world = FlatSettings.toPreset(WorldCreation.flatSettings(screen.getUiState().getSettings()),
                 registries, "", "").preset();
         Preset gameDefault = FlatSettings.toPreset(WorldCreation.defaultFlatSettings(registries), registries, "", "")

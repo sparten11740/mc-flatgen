@@ -43,7 +43,8 @@ class ChoicesTest {
     @Test
     void readsWhatItWritesAndAFileWithoutADefault() {
         Choices chosen = Choices.NONE.toggleFavourite("tall.json").toggleDefault("water.json")
-                .toggleStartOnSuperflat();
+                .toggleStartOnSuperflat().nextBuiltIns();
+        assertEquals(PresetLibrary.BuiltIns.NO_GAME, chosen.builtIns());
         assertEquals(chosen, Choices.fromJson(chosen.toJson()));
         assertEquals(true, chosen.startOnSuperflat());
         assertEquals(Choices.NONE.used("tall.json"), Choices.fromJson("{\"recent\": [\"tall.json\"]}"));

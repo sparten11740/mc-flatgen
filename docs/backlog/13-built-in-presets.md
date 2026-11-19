@@ -25,9 +25,17 @@ and duplicated, not changed or deleted.
 
 ## Design
 
-- Built-ins are a second source behind the same `PresetSource` interface the user folder uses, so the library lists
-  sources without knowing their kind; a new source (F17's pack presets) is a new class, not a change to the library.
-- `mc/FlatPresets` (version tree) turns registry presets into Flatgen presets through F02's conversion.
+- Built-ins are sources behind the same `library/PresetSource` interface the player's folder (`PresetStore`) uses,
+  listed in `LibrarySources`, so the library lists sources without knowing their kind; a new source is a new class
+  there, not a change to the library. Each preset has a key: a player's file name, `game:<id>` for the game's and
+  data packs' (`GamePresets`), `pack:<id>` for files of mods and resource packs (`PackPresets`, Flatgen's starters
+  among them, their names translation keys); favourites and the default name presets by key, so built-ins can be
+  either.
+- `mc/FlatPresets` (in `src/main` until a version needs it to differ) turns the registry's visible presets into
+  Flatgen presets through F02's conversion, with the name the game's presets screen shows and its item as icon.
+- The library orders the player's own first, then the game's, then packs'; a built-in carries a book mark and can be
+  used and copied (into the player's folder) but not renamed, saved over or deleted. The library's Built-ins button
+  shows all, all but the game's, or none, kept in library.json.
 
 ## Tests
 

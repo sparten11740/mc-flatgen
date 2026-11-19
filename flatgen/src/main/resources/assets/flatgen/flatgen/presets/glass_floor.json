@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "name": "preset.flatgen.glass_floor",
+  "icon": "minecraft:glass",
+  "layers": [
+    {
+      "block": "minecraft:bedrock",
+      "height": 1
+    },
+    {
+      "block": "minecraft:stone",
+      "height": 102
+    },
+    {
+      "block": "minecraft:glass",
+      "height": 1
+    }
+  ],
+  "biome": "minecraft:plains",
+  "structures": [],
+  "decorations": false,
+  "lakes": false
+}

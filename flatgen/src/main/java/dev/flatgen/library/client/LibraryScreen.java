@@ -14,6 +14,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.library.ChoicesFile;
+import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.PresetStore;
 import dev.flatgen.library.rules.Choices;
 import dev.flatgen.library.rules.PresetLibrary;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Locale;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import net.minecraft.network.chat.Component;
@@ -57,6 +59,8 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final Icon WARNING = Icon.item("minecraft:barrier");
     /** The mark of the default preset, the one Superflat starts with. */
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
+    /** The mark of a built-in preset, which can be used and copied but not changed. */
+    private static final Icon BUILT_IN = Icon.item("minecraft:book");
     /** The width of a switch, in GUI pixels. */
     private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
     /** The name a new preset starts with, numbered when taken. */
@@ -90,13 +94,12 @@ public final class LibraryScreen extends FlatgenScreen {
                 text -> name = text);
         List<Widget> widgets = new ArrayList<>(List.of(nameField,
                 button("flatgen.library.save_new", rows, this::saveNew, () -> !name.isBlank()),
-                button("flatgen.library.rename", rows, this::rename, () -> pickedPreset().isPresent()
-                        && !name.isBlank())));
+                button("flatgen.library.rename", rows, this::rename, () -> pickedIsPlayers() && !name.isBlank())));
         rows.newRow();
         widgets.add(button("flatgen.library.apply", rows, this::apply, () -> pickedPreset().isPresent()));
-        widgets.add(button("flatgen.library.overwrite", rows, this::overwrite, () -> picked.isPresent()));
+        widgets.add(button("flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
         widgets.add(button("flatgen.library.duplicate", rows, this::duplicate, () -> pickedPreset().isPresent()));
-        widgets.add(button("flatgen.library.delete", rows, this::delete, () -> picked.isPresent()));
+        widgets.add(button("flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
         widgets.add(new TextButton(Component.translatable("flatgen.library.back"), rows.next(BUTTON_WIDTH),
                 this::onClose));
         rows.newRow();
@@ -107,6 +110,10 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
                 rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
                 () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
+        widgets.add(new TextButton(() -> Component.translatable("flatgen.library.built_ins."
+                + choices.builtIns().name().toLowerCase(Locale.ROOT)), rows.next(TOGGLE_WIDTH),
+                () -> choose(choices.nextBuiltIns()), () -> true,
+                () -> List.of(Component.translatable("flatgen.library.built_ins_tip"))));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
                 CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
@@ -126,7 +133,7 @@ public final class LibraryScreen extends FlatgenScreen {
 
     private List<CardGrid.Section> sections() {
         return List.of(new CardGrid.Section(Component.translatable("flatgen.library.presets"), entries.stream()
-                .map(entry -> new Search.Entry(entry.file(), entry.name(), "")).toList()));
+                .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList()));
     }
 
     private void pick(String file) {
@@ -205,14 +212,20 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private void reload() {
-        entries = PresetLibrary.ordered(store.load(), Set.copyOf(choices.picks().starred()), choices.picks().recent());
+        entries = PresetLibrary.ordered(PresetLibrary.shown(LibrarySources.entries(editor.registries()),
+                choices.builtIns()), Set.copyOf(choices.picks().starred()), choices.picks().recent());
         missing.clear();
-        entries.forEach(entry -> entry.preset().ifPresent(preset -> missing.put(entry.file(),
+        entries.forEach(entry -> entry.preset().ifPresent(preset -> missing.put(entry.key(),
                 FlatSettings.missingIds(preset, editor.registries()))));
     }
 
     private Optional<PresetLibrary.Entry> entry(String file) {
-        return entries.stream().filter(entry -> entry.file().equals(file)).findFirst();
+        return entries.stream().filter(entry -> entry.key().equals(file)).findFirst();
+    }
+
+    /** Whether the preset picked is the player's own, which they may rename, save over and delete. */
+    private boolean pickedIsPlayers() {
+        return picked.flatMap(this::entry).filter(PresetLibrary.Entry::isPlayers).isPresent();
     }
 
     private Optional<Preset> pickedPreset() {
@@ -240,9 +253,13 @@ public final class LibraryScreen extends FlatgenScreen {
             preset.ifPresent(found -> ColumnPicture.draw(canvas, found.layers(),
                     Biomes.waterColor(found.biome(), editor.registries()), new Rect(x, y, PICTURE_WIDTH,
                             PICTURE_HEIGHT)));
-            preset.ifPresent(found -> canvas.blockIcon(found.icon(), x + PICTURE_WIDTH + PADDING, y));
+            preset.ifPresent(found -> canvas.itemIcon(found.icon(), x + PICTURE_WIDTH + PADDING, y));
+            int markX = x + PICTURE_WIDTH + Icon.SIZE + 2 * PADDING;
             if (choices.defaultFile().filter(card.id()::equals).isPresent()) {
-                DEFAULT.draw(canvas, x + PICTURE_WIDTH + Icon.SIZE + 2 * PADDING, y);
+                DEFAULT.draw(canvas, markX, y);
+            }
+            if (entry.filter(found -> !found.isPlayers()).isPresent()) {
+                BUILT_IN.draw(canvas, markX, y + Icon.SIZE + PADDING);
             }
             boolean warned = preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty();
             if (warned) {

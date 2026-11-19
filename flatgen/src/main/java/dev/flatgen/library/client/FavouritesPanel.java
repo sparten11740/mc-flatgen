@@ -7,11 +7,11 @@ import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.library.ChoicesFile;
-import dev.flatgen.library.PresetStore;
+import dev.flatgen.library.LibrarySources;
+import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -19,23 +19,49 @@ import net.minecraft.network.chat.Component;
  * library is where they are starred.
  */
 public final class FavouritesPanel implements EditorPanel {
+    /** The favourites as last found, and the keys they were found for, kept until the player's favourites change. */
+    private List<String> foundFor = List.of();
+    private List<Favourite> found = List.of();
+
+    /**
+     * A favourite preset found among the library's sources.
+     *
+     * @param key    how the library names it
+     * @param preset the preset
+     */
+    private record Favourite(String key, Preset preset) {
+    }
+
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        PresetStore store = PresetStore.player();
         List<Widget> widgets = new ArrayList<>();
         flow.newRow();
-        for (String file : ChoicesFile.read().picks().starred()) {
-            Optional<Preset> preset = store.read(file);
-            preset.ifPresent(found -> widgets.add(new PictureButton(Icon.block(found.icon()),
-                    flow.next(PictureButton.SIZE), () -> use(editor, file, found),
-                    () -> List.of(Component.literal(found.name()),
-                            Component.translatable("flatgen.library.use_tip")))));
+        for (Favourite favourite : favourites(editor)) {
+            Preset preset = favourite.preset();
+            widgets.add(new PictureButton(Icon.item(preset.icon()), flow.next(PictureButton.SIZE),
+                    () -> use(editor, favourite.key(), preset),
+                    () -> List.of(Component.literal(preset.name()),
+                            Component.translatable("flatgen.library.use_tip"))));
         }
         return widgets;
     }
 
-    private static void use(EditorContext editor, String file, Preset preset) {
-        ChoicesFile.save(ChoicesFile.read().used(file));
+    /** The player's favourites, found again among the library's sources only when they changed. */
+    private List<Favourite> favourites(EditorContext editor) {
+        List<String> starred = ChoicesFile.read().picks().starred();
+        if (!starred.equals(foundFor)) {
+            foundFor = starred;
+            List<PresetLibrary.Entry> entries = starred.isEmpty() ? List.of()
+                    : LibrarySources.entries(editor.registries());
+            found = starred.stream().flatMap(key -> entries.stream().filter(entry -> entry.key().equals(key))
+                    .findFirst().flatMap(PresetLibrary.Entry::preset).map(preset -> new Favourite(key, preset))
+                    .stream()).toList();
+        }
+        return found;
+    }
+
+    private static void use(EditorContext editor, String key, Preset preset) {
+        ChoicesFile.save(ChoicesFile.read().used(key));
         PresetUse.use(editor, editor.screen(), preset);
     }
 }

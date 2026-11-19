@@ -53,6 +53,10 @@
   "flatgen.library.apply": "Use",
   "flatgen.library.apply_tip": "Put the picked preset in the editor",
   "flatgen.library.back": "Back",
+  "flatgen.library.built_ins.hidden": "Built-ins: hidden",
+  "flatgen.library.built_ins.no_game": "Built-ins: no game's",
+  "flatgen.library.built_ins.shown": "Built-ins: all",
+  "flatgen.library.built_ins_tip": "Which built-in presets show: all, all but the game's own, or none",
   "flatgen.library.default": "Default",
   "flatgen.library.default_tip": "Make the picked preset the one a new Superflat world starts with",
   "flatgen.library.delete": "Delete",
@@ -111,5 +115,9 @@
   "option.flatgen.no_mobs": "No mobs",
   "option.flatgen.no_mobs.description": "No animals or monsters spawn on their own",
   "option_group.flatgen.mobs": "Mobs",
-  "option_group.flatgen.time_and_weather": "Time and weather"
+  "option_group.flatgen.time_and_weather": "Time and weather",
+  "preset.flatgen.airship_field": "Airship field",
+  "preset.flatgen.glass_floor": "Glass floor",
+  "preset.flatgen.tall_flat_no_slimes": "Tall flat, no slimes",
+  "preset.flatgen.void_with_platform": "Void with platform"
 }
