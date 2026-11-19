@@ -42,3 +42,9 @@ Locally, 2026-11-19: `node tools/boot.mjs` booted the Fabric jar on Fabric Loade
 jar on NeoForge 21.1.248 and 21.1.1, each listed, without errors naming Flatgen, up and stopped cleanly; the first boot
 on 21.1.1, right after installing that server, did not exit after stopping and was cut off, and every boot since
 (three, one of them with no mods) exited at once. The workflows have not run: they run on GitHub, which waits for the owner.
+
+2026-11-19, later: the README has screenshots of the editor, the biome picker, the library and the templates;
+`CHANGELOG.md` and `docs/release/store-page.md` draft 1.0.0's changelog and the Modrinth and CurseForge text, nothing
+published. `0.1.0-alpha.2` (`chore(release)`) is the build for the test instance, its jars booting on all four
+servers (sha256: NeoForge `2c69bf3e…4185f`, Fabric `e2360bd6…77b8`); the owner approved copying it into the instance, which
+waits for the share to be mounted.
