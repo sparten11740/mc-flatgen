@@ -47,6 +47,48 @@ The owner chose C, drawn in a modern look at high resolution rather than the gam
 - The block picker is a sheet over the editor that opens on the ground blocks, with favourites, recent, kinds of block,
   every block, a mod filter and a hint for searching one mod, and marks blocks that fall.
 
+## The prototype in the game
+
+Built overnight on this branch for every node (1.21.1 and 26.1, NeoForge and Fabric) and tried in a dev client of
+each; screenshots from 1.21.1 NeoForge in `prototype/`, at a window of 1708 by 960 pixels, which the scale draws as
+854 by 480 of Flatgen's GUI pixels (a 1920 by 1080 window draws exactly the canvas at 640 by 360):
+
+| Screen | File |
+|---|---|
+| The editor, simple | `01-editor.png` |
+| Picking a block, a sheet over the editor | `02-block-picker.png` |
+| Picking a biome | `03-biome-picker.png` |
+| Advanced on | `04-advanced.png` |
+| Structures | `05-structures.png` |
+| A Nether the game makes, and once flat | `06-nether-game-made.png`, `07-nether-flat.png` |
+| Asking before giving the Nether back | `08-question.png` |
+| An End the game makes | `09-end-game-made.png` |
+| The presets library, the templates | `10-library.png`, `11-templates.png` |
+
+Tried in game on 1.21.1 NeoForge: making a layer thicker, adding one on top, dragging a card by its grip to another
+place, undoing each step, picking a block from a card, Advanced, a flat Nether and giving it back. On the other three
+nodes: the editor, Advanced and the block picker. A screen narrower than 640 was tried by forcing the scale: the
+header's and the bar's buttons give way to their pictures.
+
+After the build, a separate agent reviewed the branch's code against the project's standards, and five agents reviewed
+screenshots of every screen on both versions and in German, each for one thing: alignment and spacing, cut borders
+and focus rings, pictures for players who cannot read, translations, and fidelity to the canvas. What they found is
+fixed in the commits after the build: keyboard focus follows the cards, clips round outward so no border is cut,
+tooltips sit below what they tell in Flatgen's own box, buttons centre picture and words, the world shows its ground,
+the header's tools sit at the right, structures have one choice of mode and names in both languages, and every
+picture means one thing.
+
+Left out, for the owner to decide on:
+
+- the library's and templates' layouts from round 3 (they keep their old arrangement in the new frame), the block
+  picker's kinds of block, and the biome picker's landscape cards;
+- small squares under a card's name picturing its thickness, and an illustration in the empty Nether;
+- "+" lines between cards, and the favourite presets as named columns;
+- remembering Advanced in the settings file;
+- windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small;
+  respecting a smaller GUI scale the player chose is not done either;
+- the aside lays all panels out again as it scrolls, which costs nothing a player notices but is not the simplest.
+
 ## How it is built in the game
 
 - **Its own scale.** A Flatgen screen counts in GUI pixels of its own (`client/gui/rules/LayoutScale`): a whole
