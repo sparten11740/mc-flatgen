@@ -2,8 +2,11 @@ package dev.flatgen.library.client;
 
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.CardGrid;
+import dev.flatgen.client.gui.CycleButton;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
@@ -51,9 +54,11 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int ROWS_TOP = 22;
     private static final int ROW_HEIGHT = 20;
     private static final int GAP = 4;
-    /** The width of a button, in GUI pixels: five fit across the narrowest screen. */
+    /** The width of a button with a word, in GUI pixels: the name row fits across the narrowest screen. */
     private static final int BUTTON_WIDTH = 56;
-    private static final int NAME_WIDTH = 120;
+    private static final int NAME_WIDTH = 100;
+    /** Space keeping Save over and Delete, which cannot be undone, apart from the other buttons, in GUI pixels. */
+    private static final int DANGER_GAP = 8;
     /** A card's size, and the size of its column picture, in GUI pixels. */
     private static final int CARD_WIDTH = 64;
     private static final int CARD_HEIGHT = 64;
@@ -67,9 +72,13 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
     private static final Icon BUILT_IN = Icon.item("minecraft:book");
-    /** The width of a switch, and of the button choosing which built-ins show, in GUI pixels. */
+    /** The width of a switch, in GUI pixels. */
     private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
-    private static final int BUILT_INS_WIDTH = 100;
+    /** A preset of the player's own, written in: with a plus, saved as a new one; with a circular arrow, over one. */
+    private static final Icon BOOK_TO_WRITE = Icon.item("minecraft:writable_book");
+    /** The built-ins setting's states, in its order: all shown, the game's hidden, all hidden. */
+    private static final List<Icon> BUILT_INS = List.of(BUILT_IN, Icon.struck(Icon.item("minecraft:grass_block")),
+            Icon.struck(BUILT_IN));
     /** What the player is told when a preset could not be written. */
     private static final Component NOT_SAVED = Component.translatable("flatgen.library.not_saved");
     /** The name a new preset starts with, numbered when taken. */
@@ -101,19 +110,37 @@ public final class LibraryScreen extends FlatgenScreen {
     @Override
     protected List<Widget> layOut(int width, int height) {
         FlowLayout rows = new FlowLayout(new Rect(MARGIN, ROWS_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(new Label(Icon.item("minecraft:name_tag"), Component.empty(), rows.next(Icon.SIZE)));
         nameField = new TextField("name", rows.next(NAME_WIDTH), Component.translatable("flatgen.library.name"), name,
                 text -> name = text);
-        List<Widget> widgets = new ArrayList<>(List.of(nameField,
-                button("flatgen.library.save_new", rows, this::saveNew, () -> !name.isBlank()),
-                button("flatgen.library.rename", rows, this::rename,
-                        () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank())));
+        widgets.add(nameField);
+        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_plus"), "flatgen.library.save_new", rows, this::saveNew,
+                () -> !name.isBlank()));
+        widgets.add(picture(Icon.item("minecraft:anvil"), "flatgen.library.rename", rows, this::rename,
+                () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()));
+        widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.library.apply"),
+                rows.next(BUTTON_WIDTH), this::apply, () -> pickedPreset().isPresent(),
+                () -> List.of(Component.translatable("flatgen.library.apply_tip"))));
+        widgets.add(new TextButton(Icon.own("back"), Component.translatable("flatgen.library.back"),
+                rows.next(BUTTON_WIDTH), this::onClose));
         rows.newRow();
-        widgets.add(button("flatgen.library.apply", rows, this::apply, () -> pickedPreset().isPresent()));
-        widgets.add(button("flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
-        widgets.add(button("flatgen.library.duplicate", rows, this::duplicate, () -> pickedPreset().isPresent()));
-        widgets.add(button("flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
-        widgets.add(new TextButton(Component.translatable("flatgen.library.back"), rows.next(BUTTON_WIDTH),
-                this::onClose));
+        widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate", rows,
+                this::duplicate, () -> pickedPreset().isPresent()));
+        widgets.add(picture(Icon.TO_CLIPBOARD, "flatgen.library.share", rows, this::share,
+                () -> pickedPreset().isPresent()));
+        widgets.add(picture(Icon.FROM_CLIPBOARD, "flatgen.library.paste", rows, this::paste, () -> true));
+        widgets.add(picture(Icon.own("folder"), "flatgen.library.folder", rows,
+                () -> SystemFiles.openFolder(store.folder()), () -> true));
+        widgets.add(new CycleButton(BUILT_INS, () -> choices.builtIns().ordinal(),
+                rows.next(CycleButton.width(BUILT_INS.size())), () -> choose(choices.nextBuiltIns()),
+                () -> List.of(Component.translatable("flatgen.library.built_ins."
+                        + choices.builtIns().name().toLowerCase(Locale.ROOT)),
+                        Component.translatable("flatgen.library.built_ins_tip"))));
+        rows.next(DANGER_GAP);
+        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_swap"), "flatgen.library.overwrite", rows,
+                this::overwrite, this::pickedIsPlayers));
+        widgets.add(picture(Icon.own("trash"), "flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
         rows.newRow();
         widgets.add(new Toggle(DEFAULT, Component.translatable("flatgen.library.default"), rows.next(TOGGLE_WIDTH),
                 () -> picked.isPresent() && picked.equals(choices.defaultFile()),
@@ -122,13 +149,6 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
                 rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
                 () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
-        widgets.add(new TextButton(() -> Component.translatable("flatgen.library.built_ins."
-                + choices.builtIns().name().toLowerCase(Locale.ROOT)), rows.next(BUILT_INS_WIDTH),
-                () -> choose(choices.nextBuiltIns()), () -> true,
-                () -> List.of(Component.translatable("flatgen.library.built_ins_tip"))));
-        widgets.add(button("flatgen.library.share", rows, this::share, () -> pickedPreset().isPresent()));
-        widgets.add(button("flatgen.library.paste", rows, this::paste, () -> true));
-        widgets.add(button("flatgen.library.folder", rows, () -> SystemFiles.openFolder(store.folder()), () -> true));
         widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
@@ -142,9 +162,16 @@ public final class LibraryScreen extends FlatgenScreen {
         minecraft.setScreen(editor.screen());
     }
 
-    private TextButton button(String key, FlowLayout rows, Runnable action, BooleanSupplier usable) {
-        return new TextButton(Component.translatable(key), rows.next(BUTTON_WIDTH), action, usable,
-                () -> List.of(Component.translatable(key + "_tip")));
+    /** A picture button, its tooltip its name and what it does. */
+    private static PictureButton picture(Icon icon, String key, FlowLayout rows, Runnable action,
+            BooleanSupplier usable) {
+        return new PictureButton(icon, rows.next(PictureButton.SIZE), action, usable,
+                () -> List.of(Component.translatable(key), Component.translatable(key + "_tip")));
+    }
+
+    /** Draws the picked preset's picture; nothing before one is picked. */
+    private void drawPicked(Canvas canvas, int x, int y) {
+        pickedPreset().ifPresent(preset -> canvas.itemIcon(preset.icon(), x, y));
     }
 
     private List<CardGrid.Section> sections() {

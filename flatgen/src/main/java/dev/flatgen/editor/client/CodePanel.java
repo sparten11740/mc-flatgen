@@ -16,16 +16,14 @@ import net.minecraft.network.chat.Component;
 
 /** Copying the game's superflat code for the layers, and pasting one, which says which part is wrong when it is. */
 final class CodePanel implements EditorPanel {
-    /** The picture of text: with an arrow out, text leaving the game; in, text coming in. */
-    private static final Icon PAPER = Icon.item("minecraft:paper");
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         return List.of(
-                new PictureButton(Icon.badged(PAPER, "badge_out"), flow.next(PictureButton.SIZE), () -> copy(editor),
+                new PictureButton(Icon.TO_CLIPBOARD, flow.next(PictureButton.SIZE), () -> copy(editor),
                         () -> List.of(Component.translatable("flatgen.code.copy"),
                                 Component.translatable("flatgen.code.copy_tip"))),
-                new PictureButton(Icon.badged(PAPER, "badge_in"), flow.next(PictureButton.SIZE), () -> paste(editor),
+                new PictureButton(Icon.FROM_CLIPBOARD, flow.next(PictureButton.SIZE), () -> paste(editor),
                         () -> List.of(Component.translatable("flatgen.code.paste"),
                                 Component.translatable("flatgen.code.paste_tip"))));
     }

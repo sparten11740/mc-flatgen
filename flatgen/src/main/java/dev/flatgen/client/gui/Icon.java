@@ -15,6 +15,10 @@ public interface Icon {
     Icon TICK = own("tick");
     /** No, cancel: the picture of every button that throws away what was being done. */
     Icon CROSS = own("cross");
+    /** Text leaving the game for the clipboard: paper with an arrow out. */
+    Icon TO_CLIPBOARD = badged(item("minecraft:paper"), "badge_out");
+    /** Text coming in from the clipboard: paper with an arrow in. */
+    Icon FROM_CLIPBOARD = badged(item("minecraft:paper"), "badge_in");
 
     /** Draws the picture with its top left corner here. */
     void draw(Canvas canvas, int x, int y);
