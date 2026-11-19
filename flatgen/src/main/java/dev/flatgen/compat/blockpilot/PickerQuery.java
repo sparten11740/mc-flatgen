@@ -7,8 +7,8 @@ import dev.blockpilot.api.Fields;
 import dev.blockpilot.api.Result;
 import dev.flatgen.client.gui.PickerScreen;
 import dev.flatgen.compat.blockpilot.rules.PickerRows;
+import dev.flatgen.mc.Screens;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 
 /** {@code flatgen:picker}: the cards of the open picker's grid in sight, the block or biome picker's. */
 final class PickerQuery {
@@ -22,7 +22,7 @@ final class PickerQuery {
     }
 
     private static Result run(CommandContext context, Args args) {
-        if (!(Minecraft.getInstance().screen instanceof PickerScreen picker)) {
+        if (!(Screens.current() instanceof PickerScreen picker)) {
             return Result.ok(new Fields().put("open", false));
         }
         List<PickerRows.Card> cards = picker.grid().cards().stream()

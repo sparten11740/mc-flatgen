@@ -17,6 +17,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.PanelSizes;
 import dev.flatgen.mc.Names;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.platform.ClientPlatform;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.structures.rules.SetDecorations;
@@ -79,7 +80,7 @@ public final class StructuresScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(editor.screen());
+        Screens.show(editor.screen());
     }
 
     /** The modes on a box, the decorations on another, then each mod's structures on a box of their own. */

@@ -10,8 +10,8 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.compat.blockpilot.rules.ColumnRows;
 import dev.flatgen.editor.client.EditorScreen;
 import dev.flatgen.layers.client.ColumnWidget;
+import dev.flatgen.mc.Screens;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 
 /** {@code flatgen:column}: each layer of the editor's column, with where it is drawn. */
 final class ColumnQuery {
@@ -24,7 +24,7 @@ final class ColumnQuery {
     }
 
     private static Result run(CommandContext context, Args args) {
-        if (!(Minecraft.getInstance().screen instanceof EditorScreen editor)) {
+        if (!(Screens.current() instanceof EditorScreen editor)) {
             return Result.ok(new Fields().put("open", false));
         }
         ColumnWidget column = editor.column();

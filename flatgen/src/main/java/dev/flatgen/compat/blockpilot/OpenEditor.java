@@ -7,6 +7,7 @@ import dev.blockpilot.api.CommandException;
 import dev.blockpilot.api.CommandSpec;
 import dev.blockpilot.api.Result;
 import dev.flatgen.editor.client.PresetEditors;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.mc.WorldCreation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
@@ -29,8 +30,8 @@ final class OpenEditor {
         if (minecraft.level != null) {
             throw new CommandException("in_world", "leave the world first");
         }
-        CreateWorldScreen screen = WorldCreation.openWithWorldType(minecraft, minecraft.screen, WorldPresets.FLAT);
-        minecraft.setScreen(PresetEditors.EDITOR.createEditScreen(screen, WorldCreation.context(screen)));
+        CreateWorldScreen screen = WorldCreation.openWithWorldType(minecraft, Screens.current(), WorldPresets.FLAT);
+        Screens.show(PresetEditors.EDITOR.createEditScreen(screen, WorldCreation.context(screen)));
         return Result::ok;
     }
 }

@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.mc.Screens;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -101,13 +102,13 @@ public final class QuestionScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        Screens.show(parent);
     }
 
     /** Does what was asked, then goes back, unless doing it already showed another screen. */
     private void answerYes() {
         yes.run();
-        if (minecraft.screen == this) {
+        if (Screens.current() == this) {
             onClose();
         }
     }

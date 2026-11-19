@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.search.rules.PickSections;
 import dev.flatgen.search.rules.Picks;
 import dev.flatgen.search.rules.Search;
@@ -135,7 +136,7 @@ public final class PickerScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        Screens.show(parent);
     }
 
     /** What the grid shows, worked out again only when the search, the mod or the picks changed. */

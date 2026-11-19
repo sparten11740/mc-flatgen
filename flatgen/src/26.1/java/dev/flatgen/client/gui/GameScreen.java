@@ -1,6 +1,5 @@
 package dev.flatgen.client.gui;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Modifiers;
@@ -14,8 +13,6 @@ import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Util;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * The game's {@link Screen} as this version calls it, with input events and a drawing state to extract into, turned
@@ -50,7 +47,7 @@ abstract class GameScreen extends Screen {
     /** The wheel turned here, vertically and horizontally; whether the screen took it. */
     protected abstract boolean scroll(double x, double y, double horizontal, double vertical);
 
-    /** A key pressed, by its GLFW code; whether the screen took it. */
+    /** A key pressed, by its key code ({@code InputConstants.KEY_...}); whether the screen took it. */
     protected abstract boolean key(int keyCode);
 
     /** A character typed; whether the screen took it. */
@@ -58,16 +55,8 @@ abstract class GameScreen extends Screen {
 
     /** Which of Shift, Control (Command on macOS, as the game counts it) and Alt are held now. */
     protected static Modifiers modifiers() {
-        Window window = Minecraft.getInstance().getWindow();
-        boolean control = Util.getPlatform() == Util.OS.OSX
-                ? held(window, GLFW.GLFW_KEY_LEFT_SUPER, GLFW.GLFW_KEY_RIGHT_SUPER)
-                : held(window, GLFW.GLFW_KEY_LEFT_CONTROL, GLFW.GLFW_KEY_RIGHT_CONTROL);
-        return new Modifiers(held(window, GLFW.GLFW_KEY_LEFT_SHIFT, GLFW.GLFW_KEY_RIGHT_SHIFT), control,
-                held(window, GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_RIGHT_ALT));
-    }
-
-    private static boolean held(Window window, int left, int right) {
-        return InputConstants.isKeyDown(window, left) || InputConstants.isKeyDown(window, right);
+        Minecraft minecraft = Minecraft.getInstance();
+        return new Modifiers(minecraft.hasShiftDown(), minecraft.hasControlDown(), minecraft.hasAltDown());
     }
 
     /** How many window pixels one of the screen's GUI pixels is. */

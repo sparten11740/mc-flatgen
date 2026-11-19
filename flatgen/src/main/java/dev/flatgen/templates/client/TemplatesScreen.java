@@ -24,6 +24,7 @@ import dev.flatgen.facts.rules.Facts;
 import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.templates.rules.Parameter;
 import dev.flatgen.templates.rules.Template;
@@ -101,7 +102,7 @@ public final class TemplatesScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(editor.screen());
+        Screens.show(editor.screen());
     }
 
     /** A template's picture button, ringed in blue while it is the chosen one. */
@@ -187,7 +188,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         }
 
         private void pick(Parameter.Block block) {
-            minecraft.setScreen(BlockPicker.screen(TemplatesScreen.this, editor.enabledFeatures(),
+            Screens.show(BlockPicker.screen(TemplatesScreen.this, editor.enabledFeatures(),
                     picked -> values = values.with(block, picked)));
         }
     }

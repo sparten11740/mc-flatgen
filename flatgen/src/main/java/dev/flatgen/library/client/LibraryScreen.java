@@ -31,6 +31,7 @@ import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.mc.SystemFiles;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.MissingIds;
@@ -140,7 +141,7 @@ public final class LibraryScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(editor.screen());
+        Screens.show(editor.screen());
     }
 
     /** The first row, an area of its own: the name, saving and renaming, then Use and Back. */
@@ -297,7 +298,7 @@ public final class LibraryScreen extends FlatgenScreen {
      * presets again.
      */
     private void ask(Icon picture, String key, String presetName, Runnable yes) {
-        minecraft.setScreen(new QuestionScreen(this, picture, Component.translatable("flatgen.library.title"),
+        Screens.show(new QuestionScreen(this, picture, Component.translatable("flatgen.library.title"),
                 List.of(Component.translatable(key, presetName)), () -> afterwards(yes)));
     }
 

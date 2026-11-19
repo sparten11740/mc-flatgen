@@ -1,5 +1,6 @@
 package dev.flatgen.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.rules.FocusOrder;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.PageFrame;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * The base of every Flatgen screen: it lays out a screen's {@link Widget}s for its size, draws them through a
@@ -184,7 +184,7 @@ public abstract class FlatgenScreen extends GameScreen {
 
     @Override
     protected boolean key(int keyCode) {
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
+        if (keyCode == InputConstants.KEY_TAB) {
             boolean forward = !modifiers().shift();
             moveFocus(focus.isEmpty() ? firstPlace(forward) : FocusOrder.tab(counts(), focus, forward));
             return true;
@@ -192,7 +192,7 @@ public abstract class FlatgenScreen extends GameScreen {
         if (focusKey(keyCode)) {
             return true;
         }
-        if (keyboard && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (keyboard && keyCode == InputConstants.KEY_ESCAPE) {
             keyboard = false;
             widgets.keyboard(false);
             return true;

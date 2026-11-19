@@ -46,7 +46,7 @@ abstract class GameScreen extends Screen {
     /** The wheel turned here, vertically and horizontally; whether the screen took it. */
     protected abstract boolean scroll(double x, double y, double horizontal, double vertical);
 
-    /** A key pressed, by its GLFW code; whether the screen took it. */
+    /** A key pressed, by its key code ({@code InputConstants.KEY_...}); whether the screen took it. */
     protected abstract boolean key(int keyCode);
 
     /** A character typed; whether the screen took it. */

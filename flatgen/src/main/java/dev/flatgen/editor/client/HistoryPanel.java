@@ -1,5 +1,6 @@
 package dev.flatgen.editor.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.rules.Modifiers;
@@ -10,7 +11,6 @@ import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import java.util.List;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /** Undo and redo, as buttons and as Control+Z, Control+Y and Control+Shift+Z. */
 final class HistoryPanel implements EditorPanel {
@@ -32,8 +32,8 @@ final class HistoryPanel implements EditorPanel {
 
     @Override
     public boolean shortcut(EditorContext editor, int keyCode, Modifiers modifiers) {
-        boolean redo = keyCode == GLFW.GLFW_KEY_Y || (keyCode == GLFW.GLFW_KEY_Z && modifiers.shift());
-        if (!modifiers.control() || (keyCode != GLFW.GLFW_KEY_Z && keyCode != GLFW.GLFW_KEY_Y)) {
+        boolean redo = keyCode == InputConstants.KEY_Y || (keyCode == InputConstants.KEY_Z && modifiers.shift());
+        if (!modifiers.control() || (keyCode != InputConstants.KEY_Z && keyCode != InputConstants.KEY_Y)) {
             return false;
         }
         if (redo) {

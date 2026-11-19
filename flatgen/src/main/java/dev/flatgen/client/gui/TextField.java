@@ -1,5 +1,6 @@
 package dev.flatgen.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
@@ -9,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /** A box to type text into, such as a search, which hands on the text as it changes; empty, it shows a hint. */
 public final class TextField implements Control {
@@ -71,8 +71,8 @@ public final class TextField implements Control {
 
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
-        if (keyCode != GLFW.GLFW_KEY_BACKSPACE) {
-            return keyCode == GLFW.GLFW_KEY_DELETE;
+        if (keyCode != InputConstants.KEY_BACKSPACE) {
+            return keyCode == InputConstants.KEY_DELETE;
         }
         typed.backspace();
         onChange.accept(typed.text());

@@ -30,6 +30,7 @@ import dev.flatgen.editor.rules.World;
 import dev.flatgen.facts.client.FactMarkers;
 import dev.flatgen.layers.client.ColumnWidget;
 import dev.flatgen.mc.FlatSettings;
+import dev.flatgen.mc.Screens;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionSessions;
@@ -299,7 +300,7 @@ public final class EditorScreen extends FlatgenScreen {
 
     @Override
     public void onClose() {
-        minecraft.setScreen(parent);
+        Screens.show(parent);
     }
 
     /** The panels that show for what the editor holds now. */
@@ -344,7 +345,7 @@ public final class EditorScreen extends FlatgenScreen {
     private void openVanilla() {
         FlatLevelGeneratorSettings edited = FlatSettings.toSettings(history.current().preset(),
                 context.worldgenLoadContext());
-        minecraft.setScreen(PresetEditors.VANILLA.createEditScreen(parent,
+        Screens.show(PresetEditors.VANILLA.createEditScreen(parent,
                 WorldCreation.withFlatSettings(context, edited)));
     }
 
@@ -464,7 +465,7 @@ public final class EditorScreen extends FlatgenScreen {
 
         @Override
         public void open(Screen screen) {
-            minecraft.setScreen(screen);
+            Screens.show(screen);
         }
 
         @Override

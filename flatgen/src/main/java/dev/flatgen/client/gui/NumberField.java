@@ -1,5 +1,6 @@
 package dev.flatgen.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
@@ -10,7 +11,6 @@ import java.util.Optional;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * A box holding a whole number. It shows the number it is given; clicked or given the keyboard's focus, it takes the
@@ -69,19 +69,19 @@ public final class NumberField implements Control {
 
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+        if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
             enter();
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_BACKSPACE) {
+        if (keyCode == InputConstants.KEY_BACKSPACE) {
             typed.backspace();
             return true;
         }
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE && !typed.text().isEmpty()) {
+        if (keyCode == InputConstants.KEY_ESCAPE && !typed.text().isEmpty()) {
             typed.clear();
             return true;
         }
-        return keyCode == GLFW.GLFW_KEY_DELETE;
+        return keyCode == InputConstants.KEY_DELETE;
     }
 
     @Override

@@ -124,11 +124,11 @@ public final class WorldCreation {
     public static CreateWorldScreen openWithWorldType(Minecraft minecraft, Screen lastScreen,
             ResourceKey<WorldPreset> worldType) {
         //? if >=26.1 {
-        /*CreateWorldScreen.openFresh(minecraft, () -> minecraft.setScreen(lastScreen));
+        /*CreateWorldScreen.openFresh(minecraft, () -> Screens.show(lastScreen));
         *///?} else {
         CreateWorldScreen.openFresh(minecraft, lastScreen);
         //?}
-        if (!(minecraft.screen instanceof CreateWorldScreen screen)) {
+        if (!(Screens.current() instanceof CreateWorldScreen screen)) {
             throw new IllegalStateException("the Create World screen did not open");
         }
         if (!chooseWorldType(screen, worldType)) {

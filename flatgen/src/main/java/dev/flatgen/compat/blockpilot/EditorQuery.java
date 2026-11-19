@@ -7,7 +7,7 @@ import dev.blockpilot.api.Fields;
 import dev.blockpilot.api.Result;
 import dev.flatgen.compat.blockpilot.rules.EditorFields;
 import dev.flatgen.editor.client.EditorScreen;
-import net.minecraft.client.Minecraft;
+import dev.flatgen.mc.Screens;
 
 /** {@code flatgen:editor}: whether Flatgen's editor is open, and the preset it holds. */
 final class EditorQuery {
@@ -27,7 +27,7 @@ final class EditorQuery {
 
     private static Result run(CommandContext context, Args args) {
         Fields fields = new Fields();
-        if (Minecraft.getInstance().screen instanceof EditorScreen editor) {
+        if (Screens.current() instanceof EditorScreen editor) {
             EditorFields.of(editor.shown(), editor.worldBottom()).forEach(fields::put);
         } else {
             fields.put("open", false);

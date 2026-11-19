@@ -9,8 +9,8 @@ import dev.blockpilot.api.Row;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.compat.blockpilot.rules.ReportRow;
 import dev.flatgen.compat.blockpilot.rules.WidgetRows;
+import dev.flatgen.mc.Screens;
 import java.util.List;
-import net.minecraft.client.Minecraft;
 
 /**
  * {@code flatgen:widgets}: the buttons, fields and other widgets of the Flatgen screen open now, which Blockpilot's own
@@ -26,7 +26,7 @@ final class WidgetsQuery {
     }
 
     private static Result run(CommandContext context, Args args) {
-        if (!(Minecraft.getInstance().screen instanceof FlatgenScreen screen)) {
+        if (!(Screens.current() instanceof FlatgenScreen screen)) {
             return Result.ok(new Fields().put("open", false));
         }
         List<Row> rows = WidgetRows.of(screen.describeWidgets()).stream().map(WidgetsQuery::toRow).toList();

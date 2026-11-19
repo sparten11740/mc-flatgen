@@ -1,5 +1,6 @@
 package dev.flatgen.layers.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
@@ -16,7 +17,6 @@ import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.LayerEdits;
 import java.util.List;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * The editor's layers: their cards ({@link LayerCards}) in the middle, adding a layer on top in the bar above them and,
@@ -49,13 +49,13 @@ public final class LayerPanel implements EditorPanel {
     public boolean shortcut(EditorContext editor, int keyCode, Modifiers modifiers) {
         int selected = editor.shown().selected();
         Runnable action = switch (keyCode) {
-            case GLFW.GLFW_KEY_UP -> modifiers.alt() ? () -> editor.apply(new LayerEdits.Move(selected + 1))
+            case InputConstants.KEY_UP -> modifiers.alt() ? () -> editor.apply(new LayerEdits.Move(selected + 1))
                     : () -> editor.select(selected + 1);
-            case GLFW.GLFW_KEY_DOWN -> modifiers.alt() ? () -> editor.apply(new LayerEdits.Move(selected - 1))
+            case InputConstants.KEY_DOWN -> modifiers.alt() ? () -> editor.apply(new LayerEdits.Move(selected - 1))
                     : () -> editor.select(Math.max(0, selected - 1));
-            case GLFW.GLFW_KEY_DELETE, GLFW.GLFW_KEY_BACKSPACE -> () -> editor.apply(new LayerEdits.Remove());
-            case GLFW.GLFW_KEY_INSERT -> () -> editor.apply(new LayerEdits.Add(true));
-            case GLFW.GLFW_KEY_D -> modifiers.control() ? () -> editor.apply(new LayerEdits.Duplicate()) : null;
+            case InputConstants.KEY_DELETE, InputConstants.KEY_BACKSPACE -> () -> editor.apply(new LayerEdits.Remove());
+            case InputConstants.KEY_INSERT -> () -> editor.apply(new LayerEdits.Add(true));
+            case InputConstants.KEY_D -> modifiers.control() ? () -> editor.apply(new LayerEdits.Duplicate()) : null;
             default -> null;
         };
         if (action == null) {
