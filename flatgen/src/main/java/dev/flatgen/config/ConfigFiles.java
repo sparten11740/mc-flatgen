@@ -2,6 +2,7 @@ package dev.flatgen.config;
 
 import dev.flatgen.Flatgen;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -61,10 +62,15 @@ public final class ConfigFiles {
      * @return whether it was written
      */
     public static boolean write(Path file, String text) {
+        return write(file, text.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** Writes a file of these bytes whole or not at all, as text is written. */
+    public static boolean write(Path file, byte[] bytes) {
         Path temporary = file.resolveSibling(file.getFileName() + TEMPORARY);
         try {
             Files.createDirectories(file.getParent());
-            Files.writeString(temporary, text);
+            Files.write(temporary, bytes);
             moveOver(temporary, file);
             return true;
         } catch (IOException exception) {

@@ -82,7 +82,7 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F21 | [Exports for servers and datapacks](21-exports.md) | todo | F20 |
+| F21 | [Exports for servers and datapacks](21-exports.md) | done | F20 |
 | F22 | [Flat Nether and End](22-flat-nether-end.md) | todo | F20 |
 | F28 | [Java API for world options](28-options-java-api.md) | todo | F27, F20 |
 

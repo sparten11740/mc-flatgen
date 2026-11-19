@@ -17,12 +17,14 @@ import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.exports.PresetExports;
 import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.library.ChoicesFile;
 import dev.flatgen.library.LibrarySources;
 import dev.flatgen.library.PresetImports;
 import dev.flatgen.library.PresetStore;
 import dev.flatgen.library.rules.Choices;
+import dev.flatgen.library.rules.MissingParts;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Clipboard;
@@ -154,7 +156,10 @@ public final class LibraryScreen extends FlatgenScreen {
         return widgets;
     }
 
-    /** The second row: copying, sharing, pasting, the folder, the built-ins, then what cannot be undone. */
+    /**
+     * The second row: copying, sharing, pasting, the folder, exports for a server and as a datapack, the built-ins,
+     * then what cannot be undone.
+     */
     private List<Widget> actionRow(FlowLayout rows) {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate",
@@ -165,6 +170,10 @@ public final class LibraryScreen extends FlatgenScreen {
                 this::paste, () -> true));
         widgets.add(picture(Icon.own("folder"), "flatgen.library.folder", "flatgen.library.folder_tip", rows,
                 () -> SystemFiles.openFolder(store.folder()), () -> true));
+        widgets.add(picture(Icon.own("server"), "flatgen.library.server", "flatgen.library.server_tip", rows,
+                this::server, () -> pickedPreset().isPresent()));
+        widgets.add(picture(Icon.item("minecraft:bundle"), "flatgen.library.datapack", "flatgen.library.datapack_tip",
+                rows, this::datapack, () -> pickedPreset().isPresent()));
         widgets.add(new CycleButton(BUILT_INS, () -> choices.builtIns().ordinal(),
                 rows.next(CycleButton.width(BUILT_INS.size())), () -> choose(choices.nextBuiltIns()),
                 () -> List.of(Component.translatable(builtInsName(choices.builtIns())),
@@ -311,6 +320,33 @@ public final class LibraryScreen extends FlatgenScreen {
     private void share() {
         pickedPreset().ifPresent(preset -> Clipboard.set(PresetJson.write(preset)));
         message = Component.translatable("flatgen.library.shared");
+    }
+
+    /** Puts the lines a server's server.properties needs for the picked preset on the clipboard (F21). */
+    private void server() {
+        pickedPreset().map(this::madeHere).ifPresent(preset -> Clipboard.set(PresetExports.serverLines(preset,
+                editor.registries(), editor.worldOptions())));
+        message = Component.translatable("flatgen.library.server_copied");
+    }
+
+    /** Saves the picked preset as a datapack in the exports folder, which opens to show it (F21). */
+    private void datapack() {
+        Optional<Path> written = pickedPreset().map(this::madeHere).flatMap(preset -> PresetExports.datapack(preset,
+                exportName(preset), editor.registries(), editor.worldOptions()));
+        message = written.<Component>map(file -> Component.translatable("flatgen.library.datapack_saved",
+                file.getFileName().toString())).orElse(Component.translatable("flatgen.library.datapack_not_saved"));
+        written.ifPresent(file -> SystemFiles.openFolder(PresetExports.folder()));
+    }
+
+    /** A preset as this game can make it, the parts it lacks standing in, as when the preset is used. */
+    private Preset madeHere(Preset preset) {
+        return MissingParts.replaced(preset, FlatSettings.missingIds(preset, editor.registries()));
+    }
+
+    /** A datapack's name for a preset: its file's name without the ending, as {@code tall_flat}. */
+    private static String exportName(Preset preset) {
+        String file = PresetLibrary.fileName(preset.name(), List.of());
+        return file.substring(0, file.length() - PresetLibrary.FILE_ENDING.length());
     }
 
     /** Adds the preset or superflat code on the clipboard to the player's presets. */

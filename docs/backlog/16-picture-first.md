@@ -139,6 +139,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Library | Save new, Rename | writable book with a plus badge, anvil |
 | Library | Use, Back | tick, left arrow, with their words |
 | Library | Copy, Share, Paste, Folder | the picked preset with a copy badge, paper out, paper in, folder |
+| Library | Server, Datapack (F21) | own: a server rack; bundle |
 | Library | built-ins setting | book; grass block or book under the "no" sign; pips for its states |
 | Library | Save over, Delete | writable book with a circular-arrow badge, trash can; apart at the row's end |
 | Library | Default, Start on Superflat | nether star, grass block, each with its box |

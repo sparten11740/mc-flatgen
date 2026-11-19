@@ -28,5 +28,7 @@ Customize opens Flatgen in place of the game's screen:
 - **English and German.**
 - **Mods' flat world types,** such as an airship-ready type, open Flatgen too.
 - **For modpacks:** ship presets and a default ([docs/pack-authors.md](docs/pack-authors.md)).
+- **Exports:** a preset as the lines a server's `server.properties` needs, or as a datapack that adds it as a World
+  Type, for worlds made without Flatgen.
 
 Worlds made with Flatgen are plain superflat worlds: they open without the mod.

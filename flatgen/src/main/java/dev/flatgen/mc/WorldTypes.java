@@ -29,9 +29,15 @@ public final class WorldTypes {
         Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
         boolean flat = Optional.ofNullable(dimensions.get(LevelStem.OVERWORLD))
                 .filter(overworld -> overworld.generator() instanceof FlatLevelSource).isPresent();
-        Optional<Map<ResourceKey<LevelStem>, LevelStem>> normal = registries.lookupOrThrow(Registries.WORLD_PRESET)
-                .get(WorldPresets.NORMAL).map(preset -> preset.value().createWorldDimensions().dimensions());
+        Optional<Map<ResourceKey<LevelStem>, LevelStem>> normal = defaultDimensions(registries);
         return flat && normal.isPresent() && others(dimensions, registries).equals(others(normal.get(), registries));
+    }
+
+    /** The dimensions of the Default world type, by their keys; none when the registries lack it. */
+    public static Optional<Map<ResourceKey<LevelStem>, LevelStem>> defaultDimensions(
+            HolderLookup.Provider registries) {
+        return registries.lookupOrThrow(Registries.WORLD_PRESET).get(WorldPresets.NORMAL)
+                .map(preset -> preset.value().createWorldDimensions().dimensions());
     }
 
     /** Every dimension but the overworld, as the game writes it, so two world types' can be compared. */

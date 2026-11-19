@@ -49,6 +49,7 @@ public final class FlatgenTests {
         tests.putAll(GameRuleGameTests.tests());
         tests.putAll(LibraryGameTests.tests());
         tests.putAll(WorldTypeGameTests.tests());
+        tests.putAll(ExportGameTests.tests());
         return tests;
     }
 
