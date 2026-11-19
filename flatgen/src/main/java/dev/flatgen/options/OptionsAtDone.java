@@ -51,6 +51,7 @@ public final class OptionsAtDone {
         warnIfAny("Flatgen left out these structure sets that world options add, which this game lacks: {}",
                 applied.structureSets().stream().filter(set -> !knownSets.contains(set)).sorted().toList());
         ChunkGenerator generator = WorldCreation.applyFlatSettings(screen, settings(preset, registries, installed));
+        WorldCreation.applyOtherDimensions(screen, FlatSettings.otherDimensions(preset, registries));
         FirstStarts.expect(generator, WorldCreation.describe(generator, registries), on.stream()
                 .flatMap(option -> option.effects().stream()).filter(Effect::actsAtFirstStart).toList());
         if (!OptionSessions.has(screen)) {

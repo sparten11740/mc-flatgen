@@ -2,12 +2,18 @@ package dev.flatgen.mc;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.JsonOps;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.PresetReading;
+import dev.flatgen.preset.rules.Stack;
 import dev.flatgen.preset.rules.VanillaSettings;
+import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -49,11 +55,41 @@ public final class FlatSettings {
      * of an unknown biome and every structure set in place of an unknown one, so these are found first.
      */
     public static MissingIds missingIds(Preset preset, HolderLookup.Provider registries) {
+        List<Stack> stacks = Arrays.stream(Dimension.values()).flatMap(dimension -> preset.stack(dimension).stream())
+                .toList();
         return new MissingIds(
-                missing(preset.layers().stream().map(Layer::block), id -> has(registries, Registries.BLOCK, id)),
-                missing(Stream.of(preset.biome()), id -> has(registries, Registries.BIOME, id)),
+                missing(stacks.stream().flatMap(stack -> stack.layers().stream()).map(Layer::block),
+                        id -> has(registries, Registries.BLOCK, id)),
+                missing(stacks.stream().map(Stack::biome), id -> has(registries, Registries.BIOME, id)),
                 missing(preset.structureSets().orElse(List.of()).stream(),
                         id -> hasSetOrTag(registries, Registries.STRUCTURE_SET, id)));
+    }
+
+    /**
+     * The superflat settings of a Nether or End stack (F22): its layers and biome, with no structures, decorations or
+     * lakes.
+     *
+     * @throws IllegalStateException when the game refuses the settings, as it does an unknown block
+     */
+    public static FlatLevelGeneratorSettings toSettings(Stack stack, HolderLookup.Provider registries) {
+        return toSettings(new Preset("", "", stack.layers(), stack.biome(), Optional.of(List.of()), false, false,
+                Map.of()), registries);
+    }
+
+    /** The Nether's and the End's superflat settings a preset gives, each none when it leaves that dimension alone. */
+    public static Map<Dimension, Optional<FlatLevelGeneratorSettings>> otherDimensions(Preset preset,
+            HolderLookup.Provider registries) {
+        Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings = new EnumMap<>(Dimension.class);
+        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
+            settings.put(dimension, preset.stack(dimension).map(stack -> toSettings(stack, registries)));
+        }
+        return settings;
+    }
+
+    /** A dimension's superflat settings as a stack: their layers and biome. */
+    public static Stack toStack(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries) {
+        Preset read = toPreset(settings, registries, "", "").preset();
+        return new Stack(read.layers(), read.biome());
     }
 
     /** The game's ops for JSON that names registry entries of these registries. */

@@ -24,6 +24,7 @@ import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionSessions;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.options.rules.WorldOption;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Preset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -74,8 +75,9 @@ public final class EditorScreen extends FlatgenScreen {
         this.world = new World(WorldCreation.overworldType(context).minY(),
                 WorldCreation.overworldType(context).height());
         this.worldOptions = InstalledOptions.load();
-        Preset preset = OptionSessions.shown(parent, FlatSettings.toPreset(WorldCreation.flatSettings(context),
-                context.worldgenLoadContext(), "", ICON).preset(), worldOptions);
+        Preset overworld = FlatSettings.toPreset(WorldCreation.flatSettings(context), context.worldgenLoadContext(), "",
+                ICON).preset();
+        Preset preset = OptionSessions.shown(parent, withOtherDimensions(overworld, context), worldOptions);
         this.history = new History(new EditorState(preset, preset.layers().size() - 1));
     }
 
@@ -97,6 +99,16 @@ public final class EditorScreen extends FlatgenScreen {
     /** The selected layer, bottom first, or -1 when there are none. */
     public int selected() {
         return editor.shown().selected();
+    }
+
+    /** A preset with the Nether's and the End's stacks the world on the screen has, when it has them flat. */
+    private static Preset withOtherDimensions(Preset preset, WorldCreationContext context) {
+        Preset with = preset;
+        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
+            with = with.withStack(dimension, WorldCreation.flatSettings(context, dimension)
+                    .map(settings -> FlatSettings.toStack(settings, context.worldgenLoadContext())));
+        }
+        return with;
     }
 
     @Override

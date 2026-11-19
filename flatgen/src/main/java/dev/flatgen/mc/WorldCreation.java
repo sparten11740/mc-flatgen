@@ -1,6 +1,9 @@
 package dev.flatgen.mc;
 
 import com.google.gson.JsonElement;
+import dev.flatgen.preset.rules.Dimension;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.client.Minecraft;
@@ -17,6 +20,7 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 
@@ -43,6 +47,49 @@ public final class WorldCreation {
         screen.getUiState().updateDimensions((registries, dimensions) ->
                 dimensions.replaceOverworldGenerator(registries, generator));
         return generator;
+    }
+
+    /** The Nether's or the End's superflat settings (F22), when the world on the screen has that dimension flat. */
+    public static Optional<FlatLevelGeneratorSettings> flatSettings(WorldCreationContext context,
+            Dimension dimension) {
+        LevelStem stem = context.selectedDimensions().dimensions().get(stemKey(dimension));
+        return stem != null && stem.generator() instanceof FlatLevelSource flat ? Optional.of(flat.settings())
+                : Optional.empty();
+    }
+
+    /**
+     * Gives the Nether and the End these superflat settings, each by its dimension, or, for one with none, the
+     * generator its world type gives it, taking back a superflat one an earlier Done gave it.
+     */
+    public static void applyOtherDimensions(CreateWorldScreen screen,
+            Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings) {
+        Map<ResourceKey<LevelStem>, LevelStem> own = worldType(screen)
+                .map(type -> type.value().createWorldDimensions().dimensions()).orElse(Map.of());
+        screen.getUiState().updateDimensions((registries, dimensions) -> new WorldDimensions(
+                withOtherDimensions(dimensions.dimensions(), own, settings)));
+    }
+
+    /**
+     * Dimensions with the Nether's and the End's generators as the settings say: superflat ones, or for a dimension
+     * with none, its generator among {@code own}.
+     */
+    static Map<ResourceKey<LevelStem>, LevelStem> withOtherDimensions(
+            Map<ResourceKey<LevelStem>, LevelStem> dimensions, Map<ResourceKey<LevelStem>, LevelStem> own,
+            Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings) {
+        Map<ResourceKey<LevelStem>, LevelStem> changed = new LinkedHashMap<>(dimensions);
+        settings.forEach((dimension, flat) -> changed.computeIfPresent(stemKey(dimension),
+                (key, stem) -> flat.map(chosen -> new LevelStem(stem.type(), new FlatLevelSource(chosen)))
+                        .orElse(own.getOrDefault(key, stem))));
+        return changed;
+    }
+
+    /** The key of a dimension's stem among a world's dimensions. */
+    static ResourceKey<LevelStem> stemKey(Dimension dimension) {
+        return switch (dimension) {
+            case OVERWORLD -> LevelStem.OVERWORLD;
+            case NETHER -> LevelStem.NETHER;
+            case END -> LevelStem.END;
+        };
     }
 
     /** The world being created, but with these superflat settings; the Create World screen stays as it is. */

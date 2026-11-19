@@ -4,6 +4,7 @@ import dev.flatgen.config.ConfigFiles;
 import dev.flatgen.exports.rules.DatapackFiles;
 import dev.flatgen.exports.rules.ServerProperties;
 import dev.flatgen.mc.Exports;
+import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
@@ -53,7 +54,8 @@ public final class PresetExports {
      */
     public static Optional<Path> datapack(Preset preset, String id, HolderLookup.Provider registries,
             List<WorldOption> installed) {
-        String worldPreset = Exports.worldPreset(OptionsAtDone.settings(preset, registries, installed), registries);
+        String worldPreset = Exports.worldPreset(OptionsAtDone.settings(preset, registries, installed),
+                FlatSettings.otherDimensions(preset, registries), registries);
         Map<String, String> files = DatapackFiles.of(new DatapackFiles.Pack(Exports.PACK_FORMATS, id, preset.name(),
                 worldPreset));
         Path zip = folder().resolve(id + ZIP);

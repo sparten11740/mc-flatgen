@@ -62,7 +62,7 @@ final class ExportGameTests {
         RegistryAccess registries = helper.getLevel().registryAccess();
         FlatLevelGeneratorSettings settings = OptionsAtDone.settings(GLASS, registries, List.of());
         WorldPreset preset = WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
-                JsonParser.parseString(Exports.worldPreset(settings, registries))).getOrThrow();
+                JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))).getOrThrow();
         check(WorldTypes.onlyFlatOverworld(Holder.direct(preset), registries),
                 "the world preset is not the Default world type with a superflat overworld");
     }

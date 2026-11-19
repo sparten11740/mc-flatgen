@@ -3,8 +3,10 @@ package dev.flatgen.mc;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dev.flatgen.exports.rules.DatapackFiles;
+import dev.flatgen.preset.rules.Dimension;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.dimension.LevelStem;
@@ -32,14 +34,18 @@ public final class Exports {
     }
 
     /**
-     * A world preset of these superflat settings: the Default world type's dimensions, its overworld superflat, as a
-     * datapack's {@code worldgen/world_preset} file holds it.
+     * A world preset of these superflat settings: the Default world type's dimensions, its overworld superflat and its
+     * Nether and End too where {@code others} gives them settings, as a datapack's {@code worldgen/world_preset} file
+     * holds it.
      *
      * @throws IllegalStateException when the registries lack the Default world type
      */
-    public static String worldPreset(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries) {
-        Map<ResourceKey<LevelStem>, LevelStem> dimensions = new LinkedHashMap<>(WorldTypes.defaultDimensions(registries)
-                .orElseThrow(() -> new IllegalStateException("the game has no Default world type")));
+    public static String worldPreset(FlatLevelGeneratorSettings settings,
+            Map<Dimension, Optional<FlatLevelGeneratorSettings>> others, HolderLookup.Provider registries) {
+        Map<ResourceKey<LevelStem>, LevelStem> normal = WorldTypes.defaultDimensions(registries)
+                .orElseThrow(() -> new IllegalStateException("the game has no Default world type"));
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = new LinkedHashMap<>(
+                WorldCreation.withOtherDimensions(normal, normal, others));
         LevelStem overworld = dimensions.get(LevelStem.OVERWORLD);
         dimensions.put(LevelStem.OVERWORLD, new LevelStem(overworld.type(), new FlatLevelSource(settings)));
         return PRETTY.toJson(WorldPreset.DIRECT_CODEC.encodeStart(FlatSettings.ops(registries),
