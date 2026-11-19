@@ -1,16 +1,10 @@
 package dev.flatgen.client.gui;
 
-import dev.flatgen.client.gui.rules.Rect;
-
 /** A picture 16 GUI pixels square that a widget shows beside or in place of words: an item, a block or a texture. */
 @FunctionalInterface
 public interface Icon {
     /** The size of an icon, in GUI pixels. */
     int SIZE = 16;
-    /** The colour of the stroke that strikes an icon through, saying "no". */
-    int STRIKE = 0xFFE03030;
-    /** The thickness of that stroke, in GUI pixels. */
-    int STROKE = 2;
     /** Yes, use this, done: the picture of every button that accepts. */
     Icon TICK = own("tick");
     /** No, cancel: the picture of every button that throws away what was being done. */
@@ -37,16 +31,13 @@ public interface Icon {
         return (canvas, x, y) -> canvas.blockIcon(id, x, y);
     }
 
-    /** This picture struck through in red from its top left corner to its bottom right, saying "no". */
+    /**
+     * This picture under the "no" sign, a red ring and slash with a dark rim, saying "no" by its shape on any picture,
+     * green ones too.
+     */
     static Icon struck(Icon icon) {
-        return (canvas, x, y) -> drawStruck(icon, canvas, x, y);
-    }
-
-    private static void drawStruck(Icon icon, Canvas canvas, int x, int y) {
-        icon.draw(canvas, x, y);
-        for (int step = 0; step <= SIZE - STROKE; step++) {
-            canvas.fill(new Rect(x + step, y + step, STROKE, STROKE), STRIKE);
-        }
+        Icon no = own("no");
+        return (canvas, x, y) -> drawOver(icon, no, canvas, x, y);
     }
 
     /** A sprite of the game's GUI atlas, by its id, such as {@code flatgen:icon/undo}. */

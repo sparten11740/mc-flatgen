@@ -37,7 +37,7 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
   are named constants with the release they come from (`SLIME_CHUNK_MAX_Y = 40`, `COOLING_START_Y = 80`, ...), so a
   version that changes them changes one place.
 - Each fact is a class behind `facts/rules/Fact` (plan 3.4), listed in `Facts`: what it shows (an item's picture,
-  struck through for "no", and its words) and the line it draws across the column, if any. The panel, the column's
+  under the "no" sign for "no", and its words) and the line it draws across the column, if any. The panel, the column's
   lines and the biome picker's cards all read the list, so a new fact changes no other code.
 - The rules are taken from 1.21.1's `Slime.checkSlimeSpawnRules` and `Biome.getPrecipitationAt`; the GameTest checks
   Flatgen's facts against the game's own methods.
