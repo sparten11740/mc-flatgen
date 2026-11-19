@@ -16,7 +16,7 @@ public enum EditorRegion {
     /** The left: the world from the side, or what a dimension without its own layers shows there. */
     WORLD(20),
     /** The right: the world's settings, each panel on a raised box, scrolling when they do not fit. */
-    ASIDE(18),
+    ASIDE(20),
     /** The footer's left: undo, redo and what the last action said. */
     FOOTER(PageFrame.ACTION_HEIGHT);
 

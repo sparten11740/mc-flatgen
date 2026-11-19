@@ -46,9 +46,8 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** The width of the column's preview and of the settings' controls, in GUI pixels. */
     private static final int PREVIEW_WIDTH = 32;
     private static final int CONTROL_WIDTH = 200;
-    /** The settings' box: its widest, and the space inside it, in GUI pixels. */
+    /** Space inside the settings' box, in GUI pixels. */
     private static final int PADDING = 8;
-    private static final int CONTROLS_WIDTH = CONTROL_WIDTH + 2 * PADDING;
 
     private final EditorContext editor;
     /** The world the template makes now, as the facts need it. */
@@ -79,8 +78,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         top += Label.height() + GAP;
         widgets.add(new Preview(new Rect(body.x(), top, PREVIEW_WIDTH, body.bottom() - top)));
         int controlsX = body.x() + PREVIEW_WIDTH + PageFrame.GAP;
-        Rect controlsArea = new Rect(controlsX, top, Math.min(CONTROLS_WIDTH, body.right() - controlsX),
-                body.bottom() - top);
+        Rect controlsArea = new Rect(controlsX, top, body.right() - controlsX, body.bottom() - top);
         widgets.add(new Surface(Look.PANEL, controlsArea));
         FlowLayout controls = new FlowLayout(new Rect(controlsArea.x() + PADDING, top + PADDING,
                 controlsArea.width() - 2 * PADDING, 0), ROW_HEIGHT, GAP);
