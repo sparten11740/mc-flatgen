@@ -11,18 +11,16 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * A switch with a picture, a name, and a light that is green while it is on and dark while it is off,
- * so a player who cannot read sees both what it is and whether it is on. A click turns it over; its tooltip says what
- * it does. It can be unusable, drawn greyed, with the tooltip saying why.
+ * A switch with a picture, a name, and a box that is ticked while it is on and empty while it is off, so a player who
+ * cannot read, or tells no green from grey, sees both what it is and whether it is on. A click turns it over; its
+ * tooltip says what it does. It can be unusable, drawn greyed, with the tooltip saying why.
  */
 public final class Toggle implements Widget {
-    /** Space around the icon and the light, and between the icon and the name, in GUI pixels. */
+    /** Space around the icon and the state's picture, and between the icon and the name, in GUI pixels. */
     private static final int PADDING = 2;
-    /** The size of the light, in GUI pixels. */
-    private static final int LIGHT = 6;
-    private static final int LIGHT_ON = 0xFF40D040;
-    private static final int LIGHT_OFF = 0xFF303030;
-    private static final int LIGHT_RIM = 0xFF000000;
+    /** Whether it is on, as a shape and not a colour alone: a ticked box, or an empty one. */
+    private static final Icon ON = Icon.own("switch_on");
+    private static final Icon OFF = Icon.own("switch_off");
     private static final int LABEL_COLOR = 0xFFFFFFFF;
     private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
 
@@ -58,15 +56,13 @@ public final class Toggle implements Widget {
         canvas.button(bounds, hovered, canUse);
         int iconX = bounds.x() + PADDING;
         icon.draw(canvas, iconX, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
-        Rect light = new Rect(bounds.right() - PADDING - LIGHT - 1, bounds.y() + (bounds.height() - LIGHT) / 2, LIGHT,
-                LIGHT);
+        int stateX = bounds.right() - PADDING - Icon.SIZE;
         int labelX = iconX + Icon.SIZE + PADDING;
-        canvas.clip(new Rect(labelX, bounds.y(), light.x() - PADDING - labelX, bounds.height()));
+        canvas.clip(new Rect(labelX, bounds.y(), stateX - labelX, bounds.height()));
         canvas.text(label, labelX, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1,
                 canUse ? LABEL_COLOR : DISABLED_LABEL_COLOR);
         canvas.unclip();
-        canvas.fill(light, on.getAsBoolean() ? LIGHT_ON : LIGHT_OFF);
-        canvas.outline(light, LIGHT_RIM);
+        (on.getAsBoolean() ? ON : OFF).draw(canvas, stateX, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
             canvas.tooltip(lines, mouseX, mouseY);
