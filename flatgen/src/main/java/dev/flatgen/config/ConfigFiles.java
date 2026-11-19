@@ -2,8 +2,10 @@ package dev.flatgen.config;
 
 import dev.flatgen.Flatgen;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.function.Function;
 
 /**
@@ -11,6 +13,9 @@ import java.util.function.Function;
  * written with the defaults, so players find it, and an unreadable one is logged and read as the defaults.
  */
 public final class ConfigFiles {
+    /** The ending of a file being written, before it is moved over the real one. */
+    private static final String TEMPORARY = ".tmp";
+
     private ConfigFiles() {
     }
 
@@ -36,13 +41,44 @@ public final class ConfigFiles {
         }
     }
 
-    /** Writes a file, making config/flatgen first if needed; a failure is logged. */
-    public static void write(Path file, String text) {
+    /**
+     * Writes a file whole or not at all: to a temporary file beside it, then moved over it, so a crash halfway never
+     * leaves half a file; its folder is made first if needed, and a failure is logged.
+     *
+     * @return whether it was written
+     */
+    public static boolean write(Path file, String text) {
+        Path temporary = null;
         try {
             Files.createDirectories(file.getParent());
-            Files.writeString(file, text);
+            temporary = Files.createTempFile(file.getParent(), file.getFileName().toString(), TEMPORARY);
+            Files.writeString(temporary, text);
+            moveOver(temporary, file);
+            return true;
         } catch (IOException exception) {
             Flatgen.LOGGER.warn("Could not write {}", file, exception);
+            deleteQuietly(temporary);
+            return false;
+        }
+    }
+
+    /** Moves a file over another at once where the file system can, else replacing it. */
+    private static void moveOver(Path from, Path to) throws IOException {
+        try {
+            Files.move(from, to, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (AtomicMoveNotSupportedException exception) {
+            Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
+        }
+    }
+
+    private static void deleteQuietly(Path file) {
+        if (file == null) {
+            return;
+        }
+        try {
+            Files.deleteIfExists(file);
+        } catch (IOException exception) {
+            Flatgen.LOGGER.warn("Could not delete {}", file, exception);
         }
     }
 }
