@@ -1,8 +1,10 @@
 package dev.flatgen.client.gui;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
 import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
 import java.util.Optional;
@@ -52,6 +54,13 @@ abstract class GameScreen extends Screen {
 
     /** A character typed; whether the screen took it. */
     protected abstract boolean type(char character);
+
+    /** The event's mouse button as Flatgen numbers them ({@link MouseButtons}): 26.3 numbers the game's otherwise. */
+    private static int button(MouseButtonEvent event) {
+        int button = event.button();
+        return button == InputConstants.MOUSE_BUTTON_LEFT ? MouseButtons.LEFT
+                : button == InputConstants.MOUSE_BUTTON_RIGHT ? MouseButtons.RIGHT : MouseButtons.OTHER;
+    }
 
     /** Which of Shift, Control (Command on macOS, as the game counts it) and Alt are held now. */
     protected static Modifiers modifiers() {
@@ -118,19 +127,19 @@ abstract class GameScreen extends Screen {
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        return click(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+        return click(scale.fromGame(event.x()), scale.fromGame(event.y()), button(event))
                 || super.mouseClicked(event, doubleClick);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
-        return drag(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+        return drag(scale.fromGame(event.x()), scale.fromGame(event.y()), button(event))
                 || super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        return release(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+        return release(scale.fromGame(event.x()), scale.fromGame(event.y()), button(event))
                 || super.mouseReleased(event);
     }
 

@@ -16,7 +16,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.Difficulty;
+//? if >=26.2 {
+/*import net.minecraft.world.entity.EntityTypes;
+*///?} else {
 import net.minecraft.world.entity.EntityType;
+//?}
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.ChunkPos;

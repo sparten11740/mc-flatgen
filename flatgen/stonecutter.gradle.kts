@@ -26,6 +26,14 @@ stonecutter parameters {
     rename("1.21.11", "ResourceLocation,", "Identifier,")
     // A registry key's id: Flatgen's code calls only ResourceKey's location().
     rename("1.21.11", ".location()", ".identifier()")
+    // 26.2 keeps the entity types' constants in EntityTypes, slimes and magma cubes in monster.cubemob, and a coloured
+    // block's sixteen colours in one collection.
+    rename("26.2", "EntityType.SLIME", "EntityTypes.SLIME")
+    rename("26.2", "entity.monster.Slime;", "entity.monster.cubemob.Slime;")
+    rename("26.2", "Blocks.BLACK_CONCRETE", "Blocks.CONCRETE.black()")
+    rename("26.2", "Blocks.YELLOW_CONCRETE", "Blocks.CONCRETE.yellow()")
+    // 26.3 names the server's structure templates for what they are.
+    rename("26.3", "getStructureManager()", "getStructureTemplateManager()")
     rename("1.21.11", "world.level.GameRules;", "world.level.gamerules.GameRules;")
     rename("26.1", "import net.minecraft.Util;", "import net.minecraft.util.Util;")
     rename("26.1", "Minecraft.getInstance().tell(", "Minecraft.getInstance().schedule(")

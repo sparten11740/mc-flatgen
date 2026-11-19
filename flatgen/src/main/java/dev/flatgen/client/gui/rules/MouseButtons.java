@@ -6,6 +6,8 @@ public final class MouseButtons {
     public static final int LEFT = 0;
     /** The right button: star. */
     public static final int RIGHT = 1;
+    /** Any other button, which no widget answers. */
+    public static final int OTHER = 2;
 
     private MouseButtons() {
     }

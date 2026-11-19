@@ -59,8 +59,13 @@ final class StructureGameTests {
         Preset preset = new Preset("", "", List.of(new Layer("minecraft:stone", 1)), PLAINS, sets, false, false,
                 Map.of());
         FlatLevelSource generator = new FlatLevelSource(FlatSettings.toSettings(preset, registries));
+        //? if >=26.3 {
+        /*RandomState random = RandomState.create(registries.lookupOrThrow(Registries.NOISE), SEED, registries
+                .lookupOrThrow(Registries.NOISE_SETTINGS).getOrThrow(NoiseGeneratorSettings.OVERWORLD).value());
+        *///?} else {
         RandomState random = RandomState.create(NoiseGeneratorSettings.dummy(),
                 registries.lookupOrThrow(Registries.NOISE), SEED);
+        //?}
         return generator.createState(registries.lookupOrThrow(Registries.STRUCTURE_SET), random, SEED)
                 .possibleStructureSets().stream()
                 .flatMap(set -> set.unwrapKey().stream())

@@ -4,7 +4,11 @@ import dev.flatgen.Flatgen;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+//? if >=26.3 {
+/*import com.mojang.blaze3d.Blaze3D;
+*///?} else {
 import net.minecraft.Util;
+//?}
 
 /** The player's own files, as the game opens them in the system's file browser. */
 public final class SystemFiles {
@@ -18,6 +22,10 @@ public final class SystemFiles {
         } catch (IOException exception) {
             Flatgen.LOGGER.warn("Could not make {}", folder, exception);
         }
+        //? if >=26.3 {
+        /*Blaze3D.openPath(folder);
+        *///?} else {
         Util.getPlatform().openPath(folder);
+        //?}
     }
 }
