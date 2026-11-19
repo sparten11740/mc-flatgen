@@ -24,7 +24,6 @@ import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.SystemFiles;
-import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.PresetJson;
@@ -156,7 +155,7 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private void saveNew() {
-        store.saveNew(withTopIcon(editor.shown().preset()).withName(name.strip())).ifPresent(this::reloadPicking);
+        store.saveNew(editor.shown().preset().withTopBlockIcon().withName(name.strip())).ifPresent(this::reloadPicking);
     }
 
     private void rename() {
@@ -179,7 +178,7 @@ public final class LibraryScreen extends FlatgenScreen {
         String file = picked.get();
         String shownName = entry(file).map(PresetLibrary.Entry::name).orElse(file);
         ask("flatgen.library.overwrite_question", shownName, () -> store.overwrite(file,
-                withTopIcon(editor.shown().preset()).withName(shownName)));
+                editor.shown().preset().withTopBlockIcon().withName(shownName)));
     }
 
     private void delete() {
@@ -270,12 +269,6 @@ public final class LibraryScreen extends FlatgenScreen {
 
     private List<String> names() {
         return entries.stream().map(PresetLibrary.Entry::name).toList();
-    }
-
-    /** A preset with its top layer's block as its icon, as the library shows it. */
-    private static Preset withTopIcon(Preset preset) {
-        List<Layer> layers = preset.layers();
-        return layers.isEmpty() ? preset : preset.withIcon(layers.get(layers.size() - 1).block());
     }
 
     /** A preset's card: its column, its icon and its name, a barrier when it is broken or names missing parts. */

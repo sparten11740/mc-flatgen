@@ -1,6 +1,5 @@
 package dev.flatgen.library.rules;
 
-import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import dev.flatgen.preset.rules.PresetJson;
 import dev.flatgen.preset.rules.PresetReading;
@@ -48,9 +47,7 @@ public final class PresetText {
         if (!code.problems().isEmpty()) {
             return new Reading(Optional.empty(), List.of("the text is neither a preset nor a superflat code"));
         }
-        List<Layer> layers = code.layers();
-        String icon = layers.isEmpty() ? "" : layers.get(layers.size() - 1).block();
-        return new Reading(Optional.of(new Preset(PASTED_NAME, icon, layers, code.biome(), Optional.empty(), false,
-                false, Map.of())), List.of());
+        return new Reading(Optional.of(new Preset(PASTED_NAME, "", code.layers(), code.biome(), Optional.empty(), false,
+                false, Map.of()).withTopBlockIcon()), List.of());
     }
 }

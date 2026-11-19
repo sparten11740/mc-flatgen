@@ -41,6 +41,11 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
         return new Preset(name, newIcon, layers, biome, structureSets, decorations, lakes, options);
     }
 
+    /** This preset with its top layer's block as its icon, as the library shows it; as it is with no layers. */
+    public Preset withTopBlockIcon() {
+        return layers.isEmpty() ? this : withIcon(layers.get(layers.size() - 1).block());
+    }
+
     /** This preset with other layers, bottom first. */
     public Preset withLayers(List<Layer> newLayers) {
         return new Preset(name, icon, newLayers, biome, structureSets, decorations, lakes, options);

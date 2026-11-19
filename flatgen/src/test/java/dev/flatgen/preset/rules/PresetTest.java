@@ -27,6 +27,13 @@ class PresetTest {
     }
 
     @Test
+    void takesItsTopLayersBlockAsIconWhenItHasLayers() {
+        assertEquals("minecraft:grass_block", TestPresets.TALL_FLAT.withIcon("").withTopBlockIcon().icon());
+        Preset empty = TestPresets.TALL_FLAT.withLayers(List.of()).withIcon("minecraft:glass");
+        assertEquals("minecraft:glass", empty.withTopBlockIcon().icon());
+    }
+
+    @Test
     void refusesALayerLessThanOneBlockDeep() {
         assertThrows(IllegalArgumentException.class, () -> new Layer("minecraft:stone", 0));
     }
