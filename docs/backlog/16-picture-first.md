@@ -115,5 +115,7 @@ action pictures, as beside the column they would read as layers.
 Both loaders, in dev clients with Blockpilot, at GUI scale 4 in a 427 by 240 window: the editor, the library, the
 templates and the question show their pictures (the biome's landscape, the village house, the bookshelf and crafting
 table, the tick, cross and arrow, the ticked and empty boxes, the pips of the built-ins setting, unusable buttons
-dimmed), and Tab, Tab and Down put the focus ring on the second fact badge. Not tried yet: GUI scales 1 to 3 and the
-320 by 240 window, a keyboard-only run through the editor, the pickers and the library, and the narrator.
+dimmed), and Tab, Tab and Down put the focus ring on the second fact badge. On NeoForge the editor shows whole and in
+order at GUI scales 4, 3, 2 and 1, and in the library Tab moves from row to row, round to the first, Right moves to
+Save new and Enter saves a preset, all by keyboard. Not tried yet: the 320 by 240 window, the pickers by keyboard, and
+the narrator.
