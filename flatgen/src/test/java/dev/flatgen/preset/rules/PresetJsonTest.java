@@ -42,6 +42,27 @@ class PresetJsonTest {
     }
 
     @Test
+    void readsWhatItWritesOfTheNetherAndTheEnd() {
+        Preset both = TestPresets.TALL_FLAT
+                .withStack(Dimension.NETHER, Optional.of(new Stack(List.of(new Layer("minecraft:bedrock", 1),
+                        new Layer("minecraft:netherrack", 4)), "minecraft:crimson_forest")))
+                .withStack(Dimension.END, Optional.of(new Stack(List.of(new Layer("minecraft:end_stone", 2)),
+                        "minecraft:the_end")));
+        PresetReading reading = PresetJson.read(PresetJson.write(both));
+        assertEquals(both, reading.preset());
+        assertEquals(List.of(), reading.problems());
+    }
+
+    @Test
+    void readsAFileWithoutTheNetherOrTheEndAsTheOverworldAlone() {
+        PresetReading reading = PresetJson.read("{\"layers\": [{\"block\": \"minecraft:sand\", \"height\": 3}],"
+                + " \"end\": {\"layers\": [{\"block\": \"minecraft:end_stone\", \"height\": 1}]}}");
+        assertEquals(Optional.empty(), reading.preset().stack(Dimension.NETHER));
+        assertEquals(Optional.of(new Stack(List.of(new Layer("minecraft:end_stone", 1)), "minecraft:the_end")),
+                reading.preset().stack(Dimension.END));
+    }
+
+    @Test
     void givesMissingKeysTheirDefaults() {
         PresetReading reading = PresetJson.read("{\"layers\": [{\"block\": \"minecraft:sand\", \"height\": 3}]}");
         Preset preset = reading.preset();

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.flatgen.json.rules.JsonFields;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,8 @@ public final class PresetJson {
                 JsonFields.bool(root, DECORATIONS, false, problems),
                 JsonFields.bool(root, LAKES, false, problems),
                 JsonFields.object(root, OPTIONS, problems).map(options -> switches(options, problems))
-                        .orElse(Map.of()));
+                        .orElse(Map.of()),
+                otherStacks(root, problems));
         return new PresetReading(preset, problems);
     }
 
@@ -73,7 +75,31 @@ public final class PresetJson {
         JsonObject options = new JsonObject();
         preset.options().forEach(options::addProperty);
         root.add(OPTIONS, options);
+        preset.stacks().forEach((dimension, stack) -> root.add(dimension.key(), writeStack(stack)));
         return JsonFields.PRETTY.toJson(root);
+    }
+
+    /** The Nether's and the End's own stacks a file gives, by dimension; a file without them gives none. */
+    private static Map<Dimension, Stack> otherStacks(JsonObject root, List<String> problems) {
+        Map<Dimension, Stack> stacks = new EnumMap<>(Dimension.class);
+        for (Dimension dimension : List.of(Dimension.NETHER, Dimension.END)) {
+            JsonFields.object(root, dimension.key(), problems)
+                    .ifPresent(stack -> stacks.put(dimension, readStack(stack, dimension, problems)));
+        }
+        return stacks;
+    }
+
+    private static Stack readStack(JsonObject stack, Dimension dimension, List<String> problems) {
+        List<Layer> layers = JsonFields.array(stack, LAYERS, problems).map(array -> LayerJson.read(array, problems))
+                .orElse(List.of());
+        return new Stack(layers, JsonFields.text(stack, BIOME, dimension.defaultBiome(), problems));
+    }
+
+    private static JsonObject writeStack(Stack stack) {
+        JsonObject written = new JsonObject();
+        written.add(LAYERS, LayerJson.write(stack.layers()));
+        written.addProperty(BIOME, stack.biome());
+        return written;
     }
 
     /** The top layer's block, which stands for a preset that names no icon. */

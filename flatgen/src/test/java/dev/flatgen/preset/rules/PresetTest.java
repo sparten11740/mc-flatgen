@@ -27,6 +27,21 @@ class PresetTest {
     }
 
     @Test
+    void keepsTheNetherAndTheEndThroughEveryChangeAndDropsOneWhenTold() {
+        Stack nether = new Stack(List.of(new Layer("minecraft:netherrack", 3)), "minecraft:nether_wastes");
+        Preset withNether = TestPresets.TALL_FLAT.withStack(Dimension.NETHER, Optional.of(nether));
+        Preset changed = withNether.withName("Other").withIcon("minecraft:stone").withBiome("minecraft:desert")
+                .withLayers(List.of(new Layer("minecraft:stone", 1))).withOptions(Map.of("flatgen:always_day", true))
+                .withStructureSets(Optional.of(List.of())).withDecorations(true, true);
+        assertEquals(Optional.of(nether), changed.stack(Dimension.NETHER));
+        assertEquals(Optional.empty(), changed.stack(Dimension.END));
+        assertEquals(Optional.empty(), withNether.withStack(Dimension.NETHER, Optional.empty())
+                .stack(Dimension.NETHER));
+        assertEquals(new Stack(List.of(new Layer("minecraft:stone", 1)), "minecraft:desert"),
+                changed.stack(Dimension.OVERWORLD).orElseThrow());
+    }
+
+    @Test
     void takesItsTopLayersBlockAsIconWhenItHasLayers() {
         assertEquals("minecraft:grass_block", TestPresets.TALL_FLAT.withIcon("").withTopBlockIcon().icon());
         Preset empty = TestPresets.TALL_FLAT.withLayers(List.of()).withIcon("minecraft:glass");

@@ -60,6 +60,10 @@ Nothing directly; presets saved by one version of Flatgen load in every later on
   }
   ```
 
+  F22 added `nether` and `end`, each an object of `layers` and `biome` giving that dimension a superflat stack of its
+  own; a file without them, as every earlier one, leaves both dimensions as the game makes them, and an earlier
+  Flatgen ignores them.
+
 ## Version notes
 
 - `FlatLevelGeneratorSettings`, `FlatLayerInfo` and their codec are stable from 1.20.1 to 1.21.1; check 26.1.
