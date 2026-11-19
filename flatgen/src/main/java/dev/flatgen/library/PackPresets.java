@@ -1,5 +1,6 @@
 package dev.flatgen.library;
 
+import dev.flatgen.Flatgen;
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.Resources;
 import dev.flatgen.preset.rules.PresetJson;
@@ -32,10 +33,12 @@ public final class PackPresets implements PresetSource {
         String key = KEY_PREFIX + file.getKey();
         try {
             PresetReading reading = PresetJson.read(file.getValue());
+            reading.problems().forEach(problem -> Flatgen.LOGGER.warn("Preset {}: {}", key, problem));
             String name = Component.translatable(reading.preset().name()).getString();
             return new PresetLibrary.Entry(key, KIND,
                     Optional.of(reading.preset().withName(name)), reading.problems());
         } catch (IllegalArgumentException exception) {
+            Flatgen.LOGGER.warn("Could not read the preset {}", key, exception);
             return new PresetLibrary.Entry(key, KIND, Optional.empty(),
                     List.of(String.valueOf(exception.getMessage())));
         }
