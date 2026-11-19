@@ -16,7 +16,6 @@ import java.util.Optional;
  * already taken gets a number; nothing is overwritten.
  */
 public final class PresetImports {
-    private static final String JSON = ".json";
 
     private PresetImports() {
     }
@@ -48,7 +47,7 @@ public final class PresetImports {
         List<String> skipped = new ArrayList<>();
         for (Path file : files) {
             String name = file.getFileName().toString();
-            if (!name.toLowerCase(Locale.ROOT).endsWith(JSON)) {
+            if (!name.toLowerCase(Locale.ROOT).endsWith(PresetLibrary.FILE_ENDING)) {
                 skipped.add(name + ": not a preset file");
                 continue;
             }

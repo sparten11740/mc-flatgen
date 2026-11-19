@@ -18,7 +18,8 @@ import java.util.stream.Collectors;
 public final class PresetLibrary {
     /** What a file's name is made of: its preset's name in lower case, letters and digits, words joined by this. */
     private static final String WORD_JOIN = "_";
-    private static final String JSON = ".json";
+    /** How the name of a preset file ends. */
+    public static final String FILE_ENDING = ".json";
     /** The name a preset gets when it has none. */
     private static final String UNNAMED = "preset";
 
@@ -119,9 +120,9 @@ public final class PresetLibrary {
         String words = plainLetters.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]+", WORD_JOIN)
                 .replaceAll("^" + WORD_JOIN + "+|" + WORD_JOIN + "+$", "");
         String base = words.isEmpty() ? UNNAMED : words;
-        String file = base + JSON;
+        String file = base + FILE_ENDING;
         for (int number = 2; taken.contains(file); number++) {
-            file = base + WORD_JOIN + number + JSON;
+            file = base + WORD_JOIN + number + FILE_ENDING;
         }
         return file;
     }

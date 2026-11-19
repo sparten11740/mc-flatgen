@@ -19,7 +19,6 @@ import java.util.stream.Stream;
  */
 public final class PresetStore implements PresetSource {
     private static final String FOLDER = "presets";
-    private static final String JSON = ".json";
 
     private final Path folder;
 
@@ -124,7 +123,8 @@ public final class PresetStore implements PresetSource {
             return List.of();
         }
         try (Stream<Path> files = Files.list(folder)) {
-            return files.filter(file -> file.getFileName().toString().endsWith(JSON)).sorted().toList();
+            return files.filter(file -> file.getFileName().toString().endsWith(PresetLibrary.FILE_ENDING)).sorted()
+                    .toList();
         } catch (IOException exception) {
             Flatgen.LOGGER.warn("Could not list {}", folder, exception);
             return List.of();
