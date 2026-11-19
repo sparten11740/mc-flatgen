@@ -76,7 +76,7 @@ v3 and v4 may swap; both come after v2.
 | F17 | [Pack author support](17-pack-authors.md) | done | F12, F13 |
 | F18 | [Other flat world types](18-other-flat-world-types.md) | done | F01 |
 | F19 | [English and German](19-translations.md) | done | F16 |
-| F20 | [Release v1](20-release-v1.md) | todo | F00 to F19 |
+| F20 | [Release v1](20-release-v1.md) | doing | F00 to F19 |
 
 ### After v1, still 1.21.1 first
 

@@ -1,0 +1,103 @@
+name: release
+
+# A tag v<mod_version> releases that build (docs/backlog/20-release-v1.md): the tag must match mod_version; the tagged
+# commit passes everything the build workflow checks (build.yml: the pictures, every node built with its tests and
+# GameTests, every jar booted), and its jars are the ones released; then a GitHub release takes the jars, a
+# prerelease for an alpha or beta. Its notes are the feat and fix subjects since the last tag (the last release's, for
+# a release). Modrinth and CurseForge uploads join when the owner has made the projects.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  # Everything build.yml checks, on the tagged commit; its jars are the ones released.
+  checks:
+    uses: ./.github/workflows/build.yml
+
+  notes:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      release-type: ${{ steps.version.outputs.release-type }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: The tag matches the mod version
+        id: version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          expected="$(sed -n 's/^mod_version=//p' flatgen/gradle.properties)"
+          if [ "$version" != "$expected" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match mod_version $expected in flatgen/gradle.properties"
+            exit 1
+          fi
+          case "$version" in
+            *-alpha*) type=alpha ;;
+            *-beta*) type=beta ;;
+            *) type=release ;;
+          esac
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "release-type=$type" >> "$GITHUB_OUTPUT"
+      - name: Write the notes
+        env:
+          RELEASE_TYPE: ${{ steps.version.outputs.release-type }}
+        run: |
+          mkdir notes
+          # The tag before this one, or the last release's for a release; an alpha or beta sorts before its release.
+          tags() {
+            git -c versionsort.suffix=-alpha -c versionsort.suffix=-beta \
+              tag --list 'v*' --merged "$GITHUB_REF_NAME^" --sort=-v:refname
+          }
+          if [ "$RELEASE_TYPE" = release ]; then
+            previous="$(tags | grep -vE -- '-(alpha|beta)' | head -1)"
+          else
+            previous="$(tags | head -1)"
+          fi
+          range="${previous:+$previous..}$GITHUB_REF_NAME"
+          git log --format='- %s' "$range" | grep -E '^- (feat|fix)(\(.+\))?!?: ' > notes/release-notes.md || true
+          if [ ! -s notes/release-notes.md ]; then
+            echo "Nothing new for players since ${previous:-the start}." > notes/release-notes.md
+          fi
+          cat notes/release-notes.md
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: notes
+          path: notes/
+          if-no-files-found: error
+
+  # Published last, once everything before it held.
+  github-release:
+    needs: [checks, notes]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: jars
+          path: dist
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: notes
+          path: notes
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.notes.outputs.version }}
+          RELEASE_TYPE: ${{ needs.notes.outputs.release-type }}
+        run: |
+          prerelease=()
+          if [ "$RELEASE_TYPE" != release ]; then
+            prerelease=(--prerelease)
+          fi
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag "${prerelease[@]}" \
+            --title "Flatgen $VERSION" --notes-file notes/release-notes.md dist/flatgen-"$VERSION"+*.jar
