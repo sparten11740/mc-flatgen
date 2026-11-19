@@ -31,6 +31,16 @@ class ConfigFilesTest {
     }
 
     @Test
+    void readsTheDefaultsOfAMissingFileWritingItOnlyWhenAsked() {
+        Path written = folder.resolve("flatgen.json");
+        Path left = folder.resolve("library.json");
+        assertEquals("defaults", ConfigFiles.read(written, text -> text, "defaults", text -> text));
+        assertEquals("defaults", ConfigFiles.readIfThere(left, text -> text, "defaults"));
+        assertTrue(Files.exists(written));
+        assertTrue(Files.notExists(left));
+    }
+
+    @Test
     void givesTheFileThePermissionsAnyNewFileGets() throws IOException {
         assumeTrue(FileSystems.getDefault().supportedFileAttributeViews().contains("posix"));
         Path plain = Files.writeString(folder.resolve("plain.json"), "");

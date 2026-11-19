@@ -10,7 +10,8 @@ import java.util.function.Function;
 
 /**
  * Reading and writing the files Flatgen keeps for the player in config/flatgen, each a feature's own: a missing file is
- * written with the defaults, so players find it, and an unreadable one is logged and read as the defaults.
+ * written with the defaults, so players find it, unless only the player's changes or a pack should make it; an
+ * unreadable one is logged and read as the defaults.
  */
 public final class ConfigFiles {
     /** The ending of a file being written, before it is moved over the real one. */
@@ -31,6 +32,17 @@ public final class ConfigFiles {
     public static <T> T read(Path file, Function<String, T> parse, T defaults, Function<T, String> write) {
         if (!Files.exists(file)) {
             write(file, write.apply(defaults));
+            return defaults;
+        }
+        return readIfThere(file, parse, defaults);
+    }
+
+    /**
+     * What a file holds, read by {@code parse}; the defaults, and nothing written, when it is missing, for a file that
+     * only the player's changes or a pack should make.
+     */
+    public static <T> T readIfThere(Path file, Function<String, T> parse, T defaults) {
+        if (!Files.exists(file)) {
             return defaults;
         }
         try {

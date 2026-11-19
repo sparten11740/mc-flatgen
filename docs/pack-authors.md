@@ -77,10 +77,9 @@ choices in:
 Keys left out take their defaults, and unknown keys are ignored. The default is applied only to a new world's
 Create World screen whose Superflat settings are still the game's own, never to a world being re-created.
 
-Once the player changes a setting, stars a preset or uses one, Flatgen writes the file with their choices, so it is
-theirs from then on. Ship it
-the way your launcher ships default config files that an update must not overwrite, or players lose their favourites
-and default when the pack updates.
+Flatgen does not write the file until the player changes a setting, stars a preset or uses one; then it writes it with
+their choices, so it is theirs from then on. Ship it the way your launcher ships default config files that an update
+must not overwrite, or players lose their favourites and default when the pack updates.
 
 A pack may also put presets the player can change in `config/flatgen/presets/`, the player's own folder: they show as
 the player's own, editable and deletable.
