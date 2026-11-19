@@ -13,7 +13,8 @@ public final class LibrarySources {
 
     /** The sources for a world being created with these registries. */
     public static List<PresetSource> all(HolderLookup.Provider registries) {
-        return List.of(PresetStore.player(), new GamePresets(registries), new PackPresets());
+        return List.of(PresetStore.player(), new GamePresets(registries), new WorldTypePresets(registries),
+                new PackPresets());
     }
 
     /** Every preset of every source, read now. */

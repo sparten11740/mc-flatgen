@@ -2,9 +2,17 @@ package dev.flatgen.gametest;
 
 import static dev.flatgen.gametest.FlatgenTests.check;
 
+import dev.flatgen.mc.FlatWorldTypes;
 import dev.flatgen.mc.WorldTypes;
+import dev.flatgen.preset.rules.Dimension;
+import dev.flatgen.preset.rules.Layer;
+import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.preset.rules.PresetReading;
+import dev.flatgen.preset.rules.Stack;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -16,7 +24,7 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 /**
  * The world types Flatgen edits besides Superflat (F18, F25): those it can edit whole, told from the game's and from
  * the fixture's, one with a flat overworld only, one with every dimension flat and one that changes the End some other
- * way.
+ * way; and those flat beyond the overworld, which the library offers as presets.
  */
 final class WorldTypeGameTests {
     private WorldTypeGameTests() {
@@ -25,6 +33,8 @@ final class WorldTypeGameTests {
     static Map<String, Consumer<GameTestHelper>> tests() {
         Map<String, Consumer<GameTestHelper>> tests = new LinkedHashMap<>();
         tests.put("world types Flatgen can edit whole are told from the others", WorldTypeGameTests::flatUnderneath);
+        tests.put("world types flat beyond the overworld are presets with their Nether and End",
+                WorldTypeGameTests::presets);
         return tests;
     }
 
@@ -36,6 +46,26 @@ final class WorldTypeGameTests {
         expect(registries, "minecraft:normal", false);
         expect(registries, "minecraft:large_biomes", false);
         expect(registries, "flatgen_fixture:end_sea", false);
+    }
+
+    private static void presets(GameTestHelper helper) {
+        Map<String, PresetReading> presets = FlatWorldTypes.presets(helper.getLevel().registryAccess());
+        check(!presets.containsKey("minecraft:flat") && !presets.containsKey("flatgen_fixture:airship_ready"),
+                "a world type flat in the overworld only is offered as a preset");
+        Preset allFlat = Optional.ofNullable(presets.get("flatgen_fixture:all_flat")).map(PresetReading::preset)
+                .orElseThrow(() -> new IllegalStateException("the fixture's all flat world type is not offered"));
+        check(allFlat.icon().equals("minecraft:grass_block"), "the preset's icon is not its top block");
+        check(topBlock(allFlat, Dimension.NETHER).equals("minecraft:netherrack")
+                && topBlock(allFlat, Dimension.END).equals("minecraft:end_stone"),
+                "the preset does not carry the world type's Nether and End");
+        //? if >=26.2 {
+        /*check(presets.containsKey("minecraft:flat_all_dimensions"), "the game's Flat All Dimensions is not offered");
+        *///?}
+    }
+
+    private static String topBlock(Preset preset, Dimension dimension) {
+        List<Layer> layers = preset.stack(dimension).map(Stack::layers).orElse(List.of());
+        return layers.isEmpty() ? "" : layers.get(layers.size() - 1).block();
     }
 
     private static void expect(HolderLookup.Provider registries, String type, boolean whole) {

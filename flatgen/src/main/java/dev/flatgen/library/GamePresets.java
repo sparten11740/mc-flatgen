@@ -16,7 +16,7 @@ public record GamePresets(HolderLookup.Provider registries) implements PresetSou
     /** How a game preset's key begins in the library, before its id. */
     private static final String KEY_PREFIX = "game:";
     /** Built in, after the player's own, hidden by any setting that hides the game's. */
-    private static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(1, false,
+    static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(1, false,
             Optional.of(PresetLibrary.BuiltIns.NO_GAME));
 
     @Override
