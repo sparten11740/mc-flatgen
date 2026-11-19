@@ -13,36 +13,37 @@ import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionsAtDone;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
+import java.util.Map;
 import java.util.WeakHashMap;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.core.RegistryAccess;
 
 /**
- * The default preset (F12): when Superflat is chosen on a Create World screen and its settings are still the game's own
- * default flat world, the player's default preset is applied as Done would apply it, world options included; with
- * "start on Superflat" on, the screen opens with Superflat chosen. It only listens to the screen, through the public
- * methods of its state, and never changes the screen itself.
+ * The default preset (F12): on a new world's Create World screen, when Superflat is chosen while its settings are still
+ * the game's own default flat world, the player's default preset is applied as Done would apply it, world options
+ * included; with "start on Superflat" on, such a screen opens with Superflat chosen. A world being re-created is left
+ * as it is. It only listens to the screen, through the public methods of its state, and never changes the screen.
  */
 public final class DefaultPresets {
-    /** The Create World screens already listened to, so each is listened to once; a screen closed is forgotten. */
-    private static final Set<CreateWorldScreen> WATCHED = Collections.newSetFromMap(new WeakHashMap<>());
-    /** Whether the default is being applied now, as applying it changes the screen it listens to. */
-    private static boolean applying;
+    /**
+     * Each Create World screen listened to, with whether Superflat was chosen when it last changed, so the default is
+     * applied when Superflat is chosen, not again when applying it changes the screen; a screen closed is forgotten.
+     */
+    private static final Map<CreateWorldScreen, Boolean> SUPERFLAT = new WeakHashMap<>();
 
     private DefaultPresets() {
     }
 
     /** A screen has opened, told by the loader's platform half: a Create World screen is listened to, once. */
     public static void screenOpened(Screen screen) {
-        if (!(screen instanceof CreateWorldScreen createWorld) || !WATCHED.add(createWorld)) {
+        if (!(screen instanceof CreateWorldScreen createWorld) || SUPERFLAT.containsKey(createWorld)) {
             return;
         }
+        boolean fresh = WorldCreation.isFresh(createWorld);
+        SUPERFLAT.put(createWorld, !fresh && isSuperflat(createWorld));
         WorldCreation.listen(createWorld, context -> ClientTasks.later(() -> worldChanged(createWorld)));
-        if (ChoicesFile.read().startOnSuperflat()) {
+        if (fresh && ChoicesFile.read().startOnSuperflat()) {
             PresetEditors.EDITED.stream().findFirst().ifPresent(type -> WorldCreation.chooseWorldType(createWorld,
                     type));
         }
@@ -50,24 +51,32 @@ public final class DefaultPresets {
     }
 
     /**
-     * The world on the screen changed: applies the default when Superflat is chosen with the game's own settings. It
-     * runs after the screen's listeners have been told, as applying the default changes the screen and may add one.
+     * The world on the screen changed: applies the default when Superflat has just been chosen. It runs after the
+     * screen's listeners have been told, as applying the default changes the screen and may add one.
      */
     private static void worldChanged(CreateWorldScreen screen) {
-        boolean superflat = PresetEditors.EDITED.stream().anyMatch(type -> WorldCreation.hasWorldType(screen, type));
-        if (applying || !superflat) {
-            return;
+        boolean superflat = isSuperflat(screen);
+        boolean was = Boolean.TRUE.equals(SUPERFLAT.put(screen, superflat));
+        if (superflat && !was) {
+            chosenSuperflat(screen);
         }
-        RegistryAccess registries = screen.getUiState().getSettings().worldgenLoadContext();
-        Optional<Preset> chosen = ChoicesFile.read().defaultFile().flatMap(key -> LibrarySources.find(key,
-                registries));
-        Preset world = FlatSettings.toPreset(WorldCreation.flatSettings(screen.getUiState().getSettings()),
-                registries, "", "").preset();
+    }
+
+    /** Superflat was just chosen: applies the default while the settings are still the game's default flat world. */
+    private static void chosenSuperflat(CreateWorldScreen screen) {
+        RegistryAccess registries = WorldCreation.context(screen).worldgenLoadContext();
+        Preset world = FlatSettings.toPreset(WorldCreation.flatSettings(WorldCreation.context(screen)), registries,
+                "", "").preset();
         Preset gameDefault = FlatSettings.toPreset(WorldCreation.defaultFlatSettings(registries), registries, "", "")
                 .preset();
-        if (chosen.isPresent() && Choices.mayApplyDefault(world, gameDefault)) {
-            apply(screen, chosen.get(), registries);
+        if (Choices.mayApplyDefault(world, gameDefault)) {
+            ChoicesFile.read().defaultFile().flatMap(key -> LibrarySources.find(key, registries))
+                    .ifPresent(preset -> apply(screen, preset, registries));
         }
+    }
+
+    private static boolean isSuperflat(CreateWorldScreen screen) {
+        return PresetEditors.EDITED.stream().anyMatch(type -> WorldCreation.hasWorldType(screen, type));
     }
 
     private static void apply(CreateWorldScreen screen, Preset preset, RegistryAccess registries) {
@@ -75,11 +84,6 @@ public final class DefaultPresets {
         if (!missing.isEmpty()) {
             Flatgen.LOGGER.warn("Flatgen's default preset names what this game lacks, used without it: {}", missing);
         }
-        applying = true;
-        try {
-            OptionsAtDone.apply(screen, MissingParts.replaced(preset, missing), registries, InstalledOptions.load());
-        } finally {
-            applying = false;
-        }
+        OptionsAtDone.apply(screen, MissingParts.replaced(preset, missing), registries, InstalledOptions.load());
     }
 }

@@ -34,9 +34,11 @@ already applied.
 - Watching the World Type uses `WorldCreationUiState.addListener`, a public method, from a screen-opened hook
   (`library/client/DefaultPresets`); the hook is the loader-specific piece: NeoForge's `ScreenEvent.Init.Post`, and on
   Fabric, which Flatgen uses without Fabric API, a mixin at the return of `Minecraft.setScreen`. As with F27's server
-  start, the platform halves call the feature directly. A listener is added once per screen and guards against its
-  own change; the default is applied as Done applies a preset, world options included, with parts the game lacks
-  replaced and logged.
+  start, the platform halves call the feature directly. A listener is added once per screen; it applies the default
+  only when Superflat is newly chosen (it keeps, per screen, whether Superflat was chosen), so applying the default,
+  which changes the screen, never applies it again; it runs after the screen's listeners have been told. A screen
+  re-creating a world (it comes with a seed) is never changed, nor started on Superflat. The default is applied as
+  Done applies a preset, world options included, with parts the game lacks replaced and logged.
 
 ## Tests
 

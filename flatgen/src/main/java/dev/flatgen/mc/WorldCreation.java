@@ -107,6 +107,19 @@ public final class WorldCreation {
         return entry.isPresent();
     }
 
+    /** The world on the Create World screen as it is now. */
+    public static WorldCreationContext context(CreateWorldScreen screen) {
+        return screen.getUiState().getSettings();
+    }
+
+    /**
+     * Whether the Create World screen is for a new world, as Singleplayer's Create New World opens it, rather than for
+     * a world being re-created, which comes with its seed.
+     */
+    public static boolean isFresh(CreateWorldScreen screen) {
+        return screen.getUiState().getSeed().isEmpty();
+    }
+
     /** Whether the Create World screen has this world type chosen. */
     public static boolean hasWorldType(CreateWorldScreen screen, ResourceKey<WorldPreset> worldType) {
         Holder<WorldPreset> chosen = screen.getUiState().getWorldType().preset();
