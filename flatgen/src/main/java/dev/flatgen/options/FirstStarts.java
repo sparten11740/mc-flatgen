@@ -38,6 +38,11 @@ public final class FirstStarts {
         EXPECTED.set(effects.isEmpty() ? null : new Expected(generator, settings, List.copyOf(effects)));
     }
 
+    /** Expects no world any more. */
+    public static void forget() {
+        EXPECTED.set(null);
+    }
+
     /** Whether a world is expected whose overworld generator is not this one. */
     public static boolean expectsAnother(ChunkGenerator generator) {
         Expected expected = EXPECTED.get();

@@ -56,6 +56,11 @@ public final class OptionSessions {
         return APPLIED.containsKey(screen);
     }
 
+    /** Forgets what Done applied to this screen, as when it leaves Superflat. */
+    static void forget(CreateWorldScreen screen) {
+        APPLIED.remove(screen);
+    }
+
     /** Remembers what Done applied to this screen. */
     static void remember(CreateWorldScreen screen, Map<String, Boolean> options, Set<String> addedSets) {
         APPLIED.put(screen, new Applied(Map.copyOf(options), Set.copyOf(addedSets)));

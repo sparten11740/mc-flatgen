@@ -22,8 +22,9 @@ import net.minecraft.core.RegistryAccess;
 /**
  * The default preset (F12): on a new world's Create World screen, when Superflat is chosen while its settings are still
  * the game's own default flat world, the player's default preset is applied as Done would apply it, world options
- * included; with "start on Superflat" on, such a screen opens with Superflat chosen. A world being re-created is left
- * as it is. It only listens to the screen, through the public methods of its state, and never changes the screen.
+ * included; with "start on Superflat" on, such a screen opens with Superflat chosen. When Superflat is left again, the
+ * game rules Flatgen's options set go back to their defaults. A world being re-created is left as it is. It only
+ * listens to the screen, through the public methods of its state, and never changes the screen itself.
  */
 public final class DefaultPresets {
     /**
@@ -51,14 +52,17 @@ public final class DefaultPresets {
     }
 
     /**
-     * The world on the screen changed: applies the default when Superflat has just been chosen. It runs after the
-     * screen's listeners have been told, as applying the default changes the screen and may add one.
+     * The world on the screen changed: applies the default when Superflat has just been chosen, and takes Flatgen's
+     * world options back when it has just been left. It runs after the screen's listeners have been told, as either
+     * changes the screen and may add a listener.
      */
     private static void worldChanged(CreateWorldScreen screen) {
         boolean superflat = isSuperflat(screen);
         boolean was = Boolean.TRUE.equals(SUPERFLAT.put(screen, superflat));
         if (superflat && !was) {
             chosenSuperflat(screen);
+        } else if (!superflat && was) {
+            OptionsAtDone.withdraw(screen, InstalledOptions.load());
         }
     }
 

@@ -38,7 +38,9 @@ already applied.
   only when Superflat is newly chosen (it keeps, per screen, whether Superflat was chosen), so applying the default,
   which changes the screen, never applies it again; it runs after the screen's listeners have been told. A screen
   re-creating a world (it comes with a seed) is never changed, nor started on Superflat. The default is applied as
-  Done applies a preset, world options included, with parts the game lacks replaced and logged.
+  Done applies a preset, world options included, with parts the game lacks replaced and logged. When the World Type
+  leaves Superflat, the game rules Flatgen's options set there go back to their defaults and no first-start effect
+  waits, so a world of another type gets nothing of them.
 
 ## Tests
 

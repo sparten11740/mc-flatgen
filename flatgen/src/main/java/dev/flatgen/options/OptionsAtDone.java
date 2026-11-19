@@ -52,6 +52,22 @@ public final class OptionsAtDone {
                 AddStructures.newlyAdded(preset, applied.structureSets(), knownSets));
     }
 
+    /**
+     * The world type left Superflat: the game rules Flatgen's options set there go back to the game's defaults, and
+     * no world waits for first-start effects, so a world of another type gets nothing of them.
+     */
+    public static void withdraw(CreateWorldScreen screen, List<WorldOption> installed) {
+        if (!OptionSessions.has(screen)) {
+            return;
+        }
+        OptionChoices.Applied applied = OptionChoices.applied(OptionChoices.on(OptionSessions.applied(screen),
+                installed));
+        warnIfAny("Flatgen could not put these game rules back: {}",
+                GameRuleAccess.set(screen, GameRuleAccess.defaults(applied.gameRules().keySet())));
+        FirstStarts.forget();
+        OptionSessions.forget(screen);
+    }
+
     /** Sets the game rules of the options on, and puts those of options turned off back to the game's defaults. */
     private static void setGameRules(CreateWorldScreen screen, OptionChoices.Applied applied,
             OptionChoices.Applied turnedOff) {
