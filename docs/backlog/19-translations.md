@@ -18,7 +18,8 @@ Flatgen's first players speak German; most players on Modrinth and CurseForge re
   The words stay plain, for children.
 - What players read that is not Flatgen's own stays as the game or the mod gives it: block, biome and mod names, and
   the reader's problems with a file, which go to the log, a card saying in the player's language that it could not be
-  read in full. Symbols (the depth buttons' − and + and numbers) are not words.
+  read in full. Symbols (the depth buttons' − and + and numbers) are not words. Structure sets' names are made from
+  their ids, in English, as the game has no words for them.
 - The code names every key whole, never joining one from parts (a table where a key goes with an enum's value), so
   `LanguageFilesTest`, which reads the Java sources and Flatgen's data files, checks every one; the only keys made
   from parts are an option's and its group's, which a mod's data file names, and Flatgen's own are named by their files

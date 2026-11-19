@@ -80,6 +80,8 @@ action pictures, as beside the column they would read as layers.
   left, three or four shades a colour from vanilla's palette (emerald green, redstone red, iron grey, paper, oak),
   no anti-aliasing. A badge is 7 by 7 at the bottom right, where an item's count goes, drawn over the item as the
   "no" sign is.
+- Known: where a fact's line crosses the selected layer's outline at the column's edge, the line's picture covers the
+  outline, as items are drawn above what the column draws.
 - Not in F16, for F29: steppers beside number fields, and a tick or a cross that answers a click on the clipboard
   buttons in place of the message line.
 

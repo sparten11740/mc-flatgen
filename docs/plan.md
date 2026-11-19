@@ -63,7 +63,7 @@ own (`search` for the pickers' search, `json` for reading Flatgen's files), spli
 | `dev.flatgen` itself | `Flatgen`: what the whole mod names alike, such as its mod id. | Nothing of Flatgen's. Anything may depend on it but `rules`. |
 | `compat/<mod>/` | Optional integrations with other mods (Blockpilot's commands, F26), loaded only when the mod is there. | Anything but the platform halves. Only the platform halves depend on it. |
 | `platform/` | `ClientPlatform`, the interface shared code reaches loader hooks through, and its holder. | Nothing loader-specific. |
-| `platform/<loader>/` | Entry points, event wiring, the loader's mixins. | Anything. Nothing depends on it. |
+| `platform/<loader>/` | Entry points, event wiring, the mixins only one loader needs (both loaders' one mixin, F18, is the editor's: `editor/client/mixin`). | Anything. Nothing depends on it. |
 
 The direction is always towards `rules`: platform → client → feature → `mc` → rules. A test reads the sources, imports
 and fully qualified names alike, and fails on a reference against this table (F00).
@@ -89,14 +89,16 @@ Flatgen's screens are built from widgets of its own (`client/gui/Widget`) that d
 outline, text, a button's face, a field's box, a block's side, clipping, tooltips) and hear the mouse through the
 widget's own methods; `WidgetGroup` hands input to a screen's widgets or to a part of a screen, as `ScrollGroup` does.
 `McCanvas` implements `Canvas` over the game's `GuiGraphics`, and `FlatgenScreen` is the one class extending
-Minecraft's `Screen`, turning the game's callbacks into widget calls. Features' widgets therefore compile unchanged on
-every version; when a version's GUI differs, these two classes (and `mc/BlockSides`) move into the version trees
-(3.2), and nothing else changes.
+Minecraft's `Screen`, turning the game's callbacks into widget calls, the keyboard's focus (F16) included, and handing
+widgets' `Narration` to the game's narrator, which only `Narration` itself writes to. Features' widgets therefore
+compile unchanged on every version; when a version's GUI differs, these classes (and `mc/BlockSides`) move into the
+version trees (3.2), and nothing else changes.
 
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
 biome pickers; the grid also the preset library), `Toggle` (world options, structures, templates), `PictureButton`,
-`Badge` (facts), `Slider` (templates), `QuestionScreen` (asking before what cannot be undone), `Icon`, `Label`,
-`TextField`, `TextLines`.
+`Badge` (facts), `Slider` (templates), `CycleButton` (a setting of a few states, with its pips), `QuestionScreen`
+(asking before what cannot be undone), `Icon` with Flatgen's own pictures (`tools/sprites.py`), `Label`, `TextField`,
+`TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike.
 
 ### 3.4 Extension points
 

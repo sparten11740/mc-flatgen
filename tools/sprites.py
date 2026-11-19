@@ -4,7 +4,8 @@ Each picture is 16 by 16; a letter is a pixel of that material and '.' is clear.
 picture shares it: a material's pixels at its edge are outlined in its darkest shade, and the rest are lit from the
 top left (its lightest shade where the pixel above or to the left is an edge, its darker shade where the pixel below
 or to the right is, its middle shade otherwise). A thin shape, written in lower case, and a whole badge, which sits
-small over an item, are outlined outside their shape instead, so they keep their form. The PNG files go to the game's GUI atlas, at textures/gui/sprites/icon/.
+small over an item, are outlined outside their shape instead, so they keep their form. The PNG files go to the game's
+GUI atlas, at textures/gui/sprites/icon/.
 """
 import os
 import struct
