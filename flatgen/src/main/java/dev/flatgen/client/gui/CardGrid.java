@@ -35,8 +35,6 @@ public final class CardGrid implements Widget {
     private final Supplier<List<Section>> sections;
     private final Predicate<String> starred;
     private final Cards cards;
-    /** Whether cards can be starred: a right click then stars or unstars one, and its tooltip says so. */
-    private final boolean withStars;
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
     private int scroll;
@@ -75,8 +73,8 @@ public final class CardGrid implements Widget {
     }
 
     /**
-     * A grid with stars in this rectangle of cards this size, of the sections given, which may change as the player
-     * searches.
+     * A grid in this rectangle of cards this size, of the sections given, which may change as the player searches;
+     * a right click on a card stars or unstars it, and its tooltip says so.
      *
      * @param starred whether an entry is starred, by id
      * @param onPick  told the id a left click picks
@@ -84,18 +82,6 @@ public final class CardGrid implements Widget {
      */
     public CardGrid(Rect bounds, int cardWidth, int cardHeight, Supplier<List<Section>> sections,
             Predicate<String> starred, Cards cards, Consumer<String> onPick, Consumer<String> onStar) {
-        this(bounds, cardWidth, cardHeight, sections, starred, cards, onPick, onStar, true);
-    }
-
-    /** A grid without stars in this rectangle of cards this size, of the sections given; a left click picks. */
-    public CardGrid(Rect bounds, int cardWidth, int cardHeight, Supplier<List<Section>> sections, Cards cards,
-            Consumer<String> onPick) {
-        this(bounds, cardWidth, cardHeight, sections, id -> false, cards, onPick, id -> { }, false);
-    }
-
-    private CardGrid(Rect bounds, int cardWidth, int cardHeight, Supplier<List<Section>> sections,
-            Predicate<String> starred, Cards cards, Consumer<String> onPick, Consumer<String> onStar,
-            boolean withStars) {
         this.bounds = bounds;
         this.cardWidth = cardWidth;
         this.cardHeight = cardHeight;
@@ -104,7 +90,6 @@ public final class CardGrid implements Widget {
         this.cards = cards;
         this.onPick = onPick;
         this.onStar = onStar;
-        this.withStars = withStars;
     }
 
     /** A section's heading where the grid draws it now. */
@@ -176,8 +161,7 @@ public final class CardGrid implements Widget {
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
         Optional<Card> card = cardAt(x, y);
-        boolean starClick = withStars && button == MouseButtons.RIGHT;
-        if (card.isEmpty() || (button != MouseButtons.LEFT && !starClick)) {
+        if (card.isEmpty() || (button != MouseButtons.LEFT && button != MouseButtons.RIGHT)) {
             return false;
         }
         (button == MouseButtons.LEFT ? onPick : onStar).accept(card.get().entry().id());
@@ -215,9 +199,7 @@ public final class CardGrid implements Widget {
     private List<Component> describe(Search.Entry entry) {
         List<Component> lines = new ArrayList<>(List.of(Component.literal(entry.name())));
         lines.addAll(cards.describe(entry));
-        if (withStars) {
-            lines.add(Component.translatable(starred.test(entry.id()) ? "flatgen.picks.unstar" : "flatgen.picks.star"));
-        }
+        lines.add(Component.translatable(starred.test(entry.id()) ? "flatgen.picks.unstar" : "flatgen.picks.star"));
         return lines;
     }
 }
