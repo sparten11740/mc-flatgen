@@ -9,7 +9,7 @@ import java.util.Map;
 /** An open field for airships at a chosen height: deep ground, grass on top, no structures, always clear. */
 final class AirshipField implements Template {
     private static final Parameter.Number SURFACE = new Parameter.Number("surface_y", "flatgen.template.surface_y",
-            Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
+            "minecraft:ladder", Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
     private static final Parameter.Toggle CLEAR = new Parameter.Toggle("always_clear",
             "flatgen.template.always_clear", "minecraft:sunflower", true);
     /** The world option that keeps the weather clear (F10). */

@@ -122,7 +122,7 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.library.apply"),
                 rows.next(BUTTON_WIDTH), this::apply, () -> pickedPreset().isPresent(),
                 () -> List.of(Component.translatable("flatgen.library.apply_tip"))));
-        widgets.add(new TextButton(Icon.own("back"), Component.translatable("flatgen.library.back"),
+        widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"),
                 rows.next(BUTTON_WIDTH), this::onClose));
         rows.newRow();
         widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate", rows,

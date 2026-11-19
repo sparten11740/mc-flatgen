@@ -15,6 +15,8 @@ public interface Icon {
     Icon TICK = own("tick");
     /** No, cancel: the picture of every button that throws away what was being done. */
     Icon CROSS = own("cross");
+    /** Back to where the player came from, keeping what was done: a left arrow. */
+    Icon BACK = own("back");
     /** Text leaving the game for the clipboard: paper with an arrow out. */
     Icon TO_CLIPBOARD = badged(item("minecraft:paper"), "badge_out");
     /** Text coming in from the clipboard: paper with an arrow in. */

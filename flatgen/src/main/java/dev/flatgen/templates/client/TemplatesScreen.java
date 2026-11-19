@@ -11,6 +11,7 @@ import dev.flatgen.client.gui.Slider;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
+import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -85,9 +86,10 @@ public final class TemplatesScreen extends FlatgenScreen {
         template.parameters().forEach(parameter -> widgets.add(parameter.accept(new Control(controls))));
         FlowLayout footer = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2,
                 height - (FOOTER + ROW_HEIGHT) / 2, 2 * BUTTON_WIDTH + GAP, 0), ROW_HEIGHT, GAP);
-        widgets.add(new TextButton(Component.translatable("flatgen.templates.use"), footer.next(BUTTON_WIDTH),
-                this::use, () -> true, () -> List.of(Component.translatable("flatgen.templates.use_tip"))));
-        widgets.add(new TextButton(CommonComponents.GUI_BACK, footer.next(BUTTON_WIDTH), this::onClose));
+        widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.templates.use"),
+                footer.next(BUTTON_WIDTH), this::use, () -> true,
+                () -> List.of(Component.translatable("flatgen.templates.use_tip"))));
+        widgets.add(new TextButton(Icon.BACK, CommonComponents.GUI_BACK, footer.next(BUTTON_WIDTH), this::onClose));
         return widgets;
     }
 
@@ -144,15 +146,18 @@ public final class TemplatesScreen extends FlatgenScreen {
         @Override
         public Widget number(Parameter.Number number) {
             flow.newRow();
-            return new Slider(number.id(), flow.next(CONTROL_WIDTH), number.min(), number.max(),
-                    () -> values.number(number), value -> values = values.with(number, value),
+            Label picture = new Label(Icon.item(number.icon()), Component.empty(), flow.next(Icon.SIZE));
+            Slider slider = new Slider(number.id(), flow.next(CONTROL_WIDTH - Icon.SIZE - GAP), number.min(),
+                    number.max(), () -> values.number(number), value -> values = values.with(number, value),
                     () -> Component.translatable(number.name(), values.number(number)));
+            return new WidgetGroup(List.of(picture, slider));
         }
 
         @Override
         public Widget block(Parameter.Block block) {
             flow.newRow();
-            return new TextButton(() -> Component.translatable(block.name(), Names.block(values.block(block))),
+            return new TextButton((canvas, x, y) -> canvas.blockIcon(values.block(block), x, y),
+                    () -> Component.translatable(block.name(), Names.block(values.block(block))),
                     flow.next(CONTROL_WIDTH), () -> pick(block), () -> true,
                     () -> List.of(Component.translatable("flatgen.templates.pick_block")));
         }

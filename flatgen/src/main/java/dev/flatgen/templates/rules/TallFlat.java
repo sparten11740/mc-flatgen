@@ -10,7 +10,7 @@ import java.util.Optional;
 /** Ground at a chosen Y (F14): bedrock, a filler block up to just below the surface, and a top block. */
 final class TallFlat implements Template {
     private static final Parameter.Number SURFACE = new Parameter.Number("surface_y", "flatgen.template.surface_y",
-            Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
+            "minecraft:ladder", Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
     private static final Parameter.Block TOP = new Parameter.Block("top", "flatgen.template.top", Templates.GRASS);
     private static final Parameter.Block FILLER = new Parameter.Block("filler", "flatgen.template.filler",
             Templates.STONE);

@@ -28,11 +28,12 @@ public interface Parameter {
      *
      * @param id           the setting's id
      * @param name         its name, a translation key
+     * @param icon         the id of the item its slider shows
      * @param min          the least it may be
      * @param max          the most it may be
      * @param defaultValue what it starts at
      */
-    record Number(String id, String name, int min, int max, int defaultValue) implements Parameter {
+    record Number(String id, String name, String icon, int min, int max, int defaultValue) implements Parameter {
         /** A value kept within the range. */
         public int within(int value) {
             return Math.max(min, Math.min(max, value));
