@@ -4,6 +4,7 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Widgets that act as one, as a screen's or a part of it: drawn in order, handed a click and the wheel topmost first
@@ -91,6 +92,18 @@ public final class WidgetGroup implements Widget {
     @Override
     public boolean type(char character) {
         return keyboard != null && keyboard.type(character);
+    }
+
+    /** The narration of the topmost widget at the point that has one. */
+    @Override
+    public Optional<Narration> narrationAt(double x, double y) {
+        for (int index = widgets.size() - 1; index >= 0; index--) {
+            Optional<Narration> said = widgets.get(index).narrationAt(x, y);
+            if (said.isPresent()) {
+                return said;
+            }
+        }
+        return Optional.empty();
     }
 
     @Override

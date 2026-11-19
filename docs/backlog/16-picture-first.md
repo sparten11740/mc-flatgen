@@ -100,8 +100,11 @@ action pictures, as beside the column they would read as layers.
   from card to card (`client/gui/rules/GridSteps`), Enter picks and Shift with Enter stars, as the mouse's buttons do.
   The order is pure (`client/gui/rules/FocusOrder`) and tested. The ring is drawn once by `FlatgenScreen`, white then
   black, a shape not a colour.
-- Narration: each widget describes itself as a `Narration` (kind, name, state, whether usable); `FlatgenScreen` turns
-  the focused or hovered one into the game's narration, so no feature touches the game's narration API.
+- Narration: each widget describes itself as a `Narration` in the game's own words for its kind (a button, a
+  checkbox, a slider, an edit box, an entry of a list, words alone), with its state, whether it can be used, and how
+  it is used with the focus or the mouse; `FlatgenScreen` hands the focused one, or else the one under the mouse, to
+  the game's narrator, so no feature touches the game's narration API. Fact badges take the focus to be heard, and a
+  question says its words as it opens.
 
 ## Tests
 

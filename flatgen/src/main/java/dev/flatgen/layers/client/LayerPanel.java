@@ -45,8 +45,8 @@ public final class LayerPanel implements EditorPanel {
         widgets.add(new Label(Icon.own("thickness"), Component.empty(), flow.next(Icon.SIZE)));
         widgets.add(panel.button("−", flow.next(SMALL), new LayerEdits.ChangeHeight(-1),
                 () -> panel.hasLayer() && panel.height() > 1, () -> panel.tip("flatgen.layer.shallower")));
-        widgets.add(new NumberField("height", flow.next(FIELD), panel::height,
-                height -> editor.apply(new LayerEdits.SetHeight(height))));
+        widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field"), flow.next(FIELD),
+                panel::height, height -> editor.apply(new LayerEdits.SetHeight(height))));
         widgets.add(panel.button("+", flow.next(SMALL), new LayerEdits.ChangeHeight(1),
                 () -> panel.hasLayer() && panel.height() < panel.room(),
                 () -> panel.hasLayer() && panel.height() >= panel.room() ? panel.full()
@@ -96,7 +96,7 @@ public final class LayerPanel implements EditorPanel {
         Component label = Component.translatable("flatgen.editor.surface_field");
         Rect place = flow.next(Label.width(editor.textWidth(label)));
         return List.of(new Label(Icon.item("minecraft:ladder"), label, place),
-                new NumberField("surface", flow.next(FIELD),
+                new NumberField("surface", label, flow.next(FIELD),
                         () -> editor.world().floor() + editor.shown().preset().height(),
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
     }

@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
@@ -77,6 +78,11 @@ public final class CycleButton implements Control {
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
         return Keys.uses(keyCode) && Control.use(() -> true, next);
+    }
+
+    @Override
+    public Optional<Narration> narration() {
+        return Optional.of(Narration.button(tooltip.get(), true));
     }
 
     @Override

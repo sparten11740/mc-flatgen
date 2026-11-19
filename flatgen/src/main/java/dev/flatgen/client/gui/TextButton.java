@@ -107,6 +107,13 @@ public final class TextButton implements Control {
     }
 
     @Override
+    public Optional<Narration> narration() {
+        Component name = label.get();
+        return Optional.of(name.getString().isEmpty() ? Narration.button(tooltip.get(), active.getAsBoolean())
+                : Narration.button(name, active.getAsBoolean(), tooltip.get()));
+    }
+
+    @Override
     public Rect bounds() {
         return bounds;
     }

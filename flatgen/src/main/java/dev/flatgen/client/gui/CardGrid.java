@@ -204,6 +204,27 @@ public final class CardGrid implements Control {
         return Keys.isArrow(keyCode);
     }
 
+    /** The card the keyboard is on: its name, what its tooltip says, and whether it is starred. */
+    @Override
+    public Optional<Narration> narration() {
+        List<Card> all = cards();
+        return all.isEmpty() ? Optional.empty() : Optional.of(narration(focused(all).entry()));
+    }
+
+    @Override
+    public Optional<Narration> narrationAt(double x, double y) {
+        return cardAt(x, y).map(card -> narration(card.entry()));
+    }
+
+    /** A card's name, whether it is starred, and what its tooltip says of it. */
+    private Narration narration(Search.Entry entry) {
+        List<Component> more = new ArrayList<>(cards.describe(entry));
+        if (starred.test(entry.id())) {
+            more.add(0, Component.translatable("flatgen.picks.starred"));
+        }
+        return Narration.entry(Component.literal(entry.name()), more);
+    }
+
     /** The ring goes round the card the keyboard is on, or the grid while it shows none. */
     @Override
     public Optional<Rect> focusArea() {

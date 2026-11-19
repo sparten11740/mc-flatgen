@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -30,6 +31,9 @@ public abstract class FlatgenScreen extends Screen {
     private List<Widget> areas = List.of();
     /** The control that has the keyboard's focus, by its place; none before Tab or after a click. */
     private Optional<FocusOrder.Place> focus = Optional.empty();
+    /** Where the mouse was when the screen was last drawn, for the narration of what is under it. */
+    private int mouseX;
+    private int mouseY;
     private BlockSides blockSides = new BlockSides();
     /** Whether a widget took the click whose button is held, which then hears the drag and the release. */
     private boolean pressed;
@@ -81,6 +85,8 @@ public abstract class FlatgenScreen extends Screen {
         canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
         widgets.draw(canvas, mouseX, mouseY);
         focused().flatMap(Widget::focusArea).ifPresent(canvas::focusRing);
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
         canvas.finish();
     }
 
@@ -126,6 +132,18 @@ public abstract class FlatgenScreen extends Screen {
         double amount = scrollY != 0 ? scrollY : scrollX;
         return widgets.scroll(mouseX, mouseY, amount, modifiers())
                 || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+    }
+
+    /**
+     * Tells the game's narrator about the control that has the focus, or else the widget under the mouse, in the
+     * words that widget gives, as the game does for its own widgets.
+     */
+    @Override
+    protected void updateNarratedWidget(NarrationElementOutput output) {
+        Optional<Widget> focused = focused();
+        Optional<Narration> said = focused.isPresent() ? focused.get().narration()
+                : widgets.narrationAt(mouseX, mouseY);
+        said.ifPresent(narration -> narration.tell(output.nest(), focused.isPresent()));
     }
 
     @Override

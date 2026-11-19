@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
  * A fact as a picture: an icon on a dark tile (struck through, {@link Icon#struck}, for a "no"), with a tooltip saying
  * it in words. What it shows may change from frame to frame; when there is nothing to show it draws nothing.
  */
-public final class Badge implements Widget {
+public final class Badge implements Control {
     /** The border around a badge's icon, in GUI pixels. */
     private static final int BORDER = 2;
     /** A badge's size, in GUI pixels: an icon and its border. */
@@ -45,5 +45,16 @@ public final class Badge implements Widget {
         if (bounds.contains(mouseX, mouseY)) {
             canvas.tooltip(now.get().tooltip(), mouseX, mouseY);
         }
+    }
+
+    /** Its words, as its tooltip shows them. */
+    @Override
+    public Optional<Narration> narration() {
+        return look.get().map(now -> Narration.said(now.tooltip()));
+    }
+
+    @Override
+    public Rect bounds() {
+        return bounds;
     }
 }

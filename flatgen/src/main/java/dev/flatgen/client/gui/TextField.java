@@ -6,6 +6,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -85,6 +86,11 @@ public final class TextField implements Control {
         }
         onChange.accept(typed.text());
         return true;
+    }
+
+    @Override
+    public Optional<Narration> narration() {
+        return Optional.of(Narration.field(hint, typed.text()));
     }
 
     @Override

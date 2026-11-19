@@ -2,6 +2,7 @@ package dev.flatgen.layers.client;
 
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Narration;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
@@ -141,6 +142,16 @@ public final class ColumnWidget implements Widget {
     @Override
     public List<Widget> focusables() {
         return List.of(this);
+    }
+
+    /** The selected layer: its block, its depth and the Ys it covers. */
+    @Override
+    public Optional<Narration> narration() {
+        int selected = editor.shown().selected();
+        if (selected < 0) {
+            return Optional.of(Narration.entry(Component.translatable("flatgen.editor.empty"), List.of()));
+        }
+        return Optional.of(Narration.entry(LayerText.describe(editor.shown(), editor.world(), selected)));
     }
 
     /** The focus ring goes round the selected layer, or the column when it has none. */

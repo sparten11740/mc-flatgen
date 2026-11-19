@@ -66,6 +66,16 @@ public interface Widget {
         return Optional.empty();
     }
 
+    /** What the widget says to the game's narrator while it has the focus; nothing by default. */
+    default Optional<Narration> narration() {
+        return Optional.empty();
+    }
+
+    /** What the widget at a point says to the narrator, the mouse being there; a group asks its widgets. */
+    default Optional<Narration> narrationAt(double x, double y) {
+        return focusArea().filter(area -> area.contains(x, y)).flatMap(area -> narration());
+    }
+
     /** Brings this part of the screen into view, a group that scrolls scrolling to it; nothing by default. */
     default void reveal(Rect area) {
     }

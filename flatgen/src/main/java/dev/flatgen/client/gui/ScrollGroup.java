@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.Scrolling;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Widgets laid out down a window of the screen, perhaps taller than it: drawn and handed the mouse only within it, and
@@ -117,6 +118,11 @@ public final class ScrollGroup implements Widget {
     @Override
     public List<Widget> focusables() {
         return widgets.focusables();
+    }
+
+    @Override
+    public Optional<Narration> narrationAt(double x, double y) {
+        return window.contains(x, y) ? widgets.narrationAt(x, y) : Optional.empty();
     }
 
     /** Scrolls so that a part of the widgets is in the window, as far as it fits. */

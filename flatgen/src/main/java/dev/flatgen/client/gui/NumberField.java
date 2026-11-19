@@ -6,6 +6,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.TypedText;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import net.minecraft.network.chat.Component;
@@ -21,6 +22,7 @@ public final class NumberField implements Control {
     private static final int MOST_CHARACTERS = 6;
 
     private final String name;
+    private final Component label;
     private final Rect bounds;
     private final IntSupplier value;
     private final IntConsumer onEnter;
@@ -30,10 +32,12 @@ public final class NumberField implements Control {
     /**
      * A box showing a number from {@code value}, handing a typed one to {@code onEnter}.
      *
-     * @param name what it is called, for tools that drive the screen
+     * @param name  what it is called, for tools that drive the screen
+     * @param label what it is called, for the player, as the narrator says it
      */
-    public NumberField(String name, Rect bounds, IntSupplier value, IntConsumer onEnter) {
+    public NumberField(String name, Component label, Rect bounds, IntSupplier value, IntConsumer onEnter) {
         this.name = name;
+        this.label = label;
         this.bounds = bounds;
         this.value = value;
         this.onEnter = onEnter;
@@ -41,7 +45,7 @@ public final class NumberField implements Control {
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        String text = keyboard ? typed.text() + "_" : Integer.toString(value.getAsInt());
+        String text = keyboard ? typed.text() + "_" : shown();
         FieldLook.draw(canvas, bounds, keyboard, Component.literal(text), FieldLook.TEXT_COLOR);
     }
 
@@ -79,6 +83,16 @@ public final class NumberField implements Control {
     @Override
     public boolean type(char character) {
         return typed.type(character);
+    }
+
+    @Override
+    public Optional<Narration> narration() {
+        return Optional.of(Narration.field(label, keyboard ? typed.text() : shown()));
+    }
+
+    /** The number it shows while not being typed in. */
+    private String shown() {
+        return Integer.toString(value.getAsInt());
     }
 
     @Override

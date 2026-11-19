@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.IntConsumer;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
@@ -94,6 +95,11 @@ public final class Slider implements Control {
     private void move(int direction, Modifiers modifiers) {
         int step = modifiers.shift() ? SHIFT_WHEEL_STEP : WHEEL_STEP;
         onChange.accept(within(value.getAsInt() + direction * step));
+    }
+
+    @Override
+    public Optional<Narration> narration() {
+        return Optional.of(Narration.slider(label.get()));
     }
 
     @Override

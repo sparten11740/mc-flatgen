@@ -2,6 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.screens.Screen;
@@ -56,6 +57,14 @@ public final class QuestionScreen extends FlatgenScreen {
                         Icon.SIZE)),
                 new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> lines),
                 new WidgetGroup(List.of(answerYes, no)));
+    }
+
+    /** The title and the question's words, as the narrator says them when the question opens. */
+    @Override
+    public Component getNarrationMessage() {
+        List<Component> said = new ArrayList<>(List.of(getTitle()));
+        said.addAll(words);
+        return CommonComponents.joinForNarration(said.toArray(Component[]::new));
     }
 
     @Override
