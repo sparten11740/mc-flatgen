@@ -104,8 +104,10 @@ Shared widgets used by several features live once in `client/gui/`: `PickerScree
 biome pickers; the grid also the preset library), `Toggle` (world options, structures, templates), `PictureButton`,
 `PictureTab` (the editor's dimensions), `Badge` (facts), `Slider` (templates), `CycleButton` (a setting of a few states,
 with its pips), `QuestionScreen` (asking before what cannot be undone), `Icon` with Flatgen's own pictures
-(`tools/sprites.py`), `Label`, `TextField`, `TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the
-keys controls answer alike.
+(`tools/sprites.py`) and the look's line drawings, `Label`, `Caption`, `Chip`, `Surface`, `TextField`, `TextLines`;
+`Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike. Flatgen's screens count in GUI
+pixels of their own (`rules/LayoutScale`) and draw in one look: the colours and sprites of `Look`, the fonts of
+`TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md).
 
 ### 3.4 Extension points
 
@@ -113,8 +115,9 @@ Things that grow are lists of small classes behind an interface, so adding one n
 
 - `editor/client/panel/EditorPanel`: the editor screen's panels (layers, blocks, history, code; later biome,
   structures, world settings), each in its feature's `client` package, listed in `editor/client/EditorPanels`. A panel
-  places its widgets with a wrapping `FlowLayout`, reads and changes the editor through `EditorContext`, and may take
-  keys of its own.
+  places its widgets in the editor's regions (`EditorRegion`: header, the bar above the layers, the layers, the world,
+  the aside, the footer) through `EditorLayout`, reads and changes the editor through `EditorContext`, shows more while
+  the editor is in Advanced, and may take keys of its own.
 - `library/PresetSource`: where presets come from (the player's folder, built-ins, pack resources).
 - `templates/rules/Template`: each template.
 - `options/rules/Effect`: each kind of world option effect (F27); the options themselves are data files that mods and

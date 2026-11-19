@@ -2,12 +2,14 @@ package dev.flatgen.layers.client;
 
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.Narration;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.Scrolling;
+import dev.flatgen.dimensions.client.DimensionPictures;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.ColumnLayout;
@@ -22,15 +24,17 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * The editor's column: the preset's layers seen from the side, the bottom layer lowest, each as tall as its share of
- * the column ({@link ColumnLayout}), with the Y of the lines between them beside it and lines at the heights that
- * matter. A click selects a layer; dragging a layer's top edge makes it deeper or shallower, dragging the layer moves
- * it, and the wheel over it changes its depth (Shift for 10 blocks, Control for 100). The wheel over the Y numbers
- * scrolls a column too tall for its space.
+ * The editor's column: the preset's layers seen from the side, the bottom layer lowest, under the air the world has
+ * above them in the dimension's colour, each as tall as its share of the stack ({@link ColumnLayout}), with the Y of
+ * the lines between them beside it and lines at the heights that matter. A click selects a layer; dragging a layer's
+ * top edge makes it deeper or shallower, dragging the layer moves it, and the wheel over it changes its depth (Shift
+ * for 10 blocks, Control for 100). The wheel over the Y numbers scrolls a column too tall for its space.
  */
 public final class ColumnWidget implements Widget {
     /** The thinnest a layer is drawn, in GUI pixels, so it stays visible and clickable. */
     private static final int THINNEST_LAYER = 8;
+    /** The least height of the column each layer gets, in GUI pixels, so a thin stack is still drawn large enough. */
+    private static final int SMALLEST_SHARE = 16;
     /** How wide the layers are drawn, in GUI pixels: three blocks. */
     public static final int COLUMN_WIDTH = 48;
     /** How wide the space for the Y numbers beside the column is, in GUI pixels. */
@@ -47,11 +51,8 @@ public final class ColumnWidget implements Widget {
     private static final int CONTROL_WHEEL_BLOCKS = 100;
     /** Length of each dash of a marker line, and of the gap after it, in GUI pixels. */
     private static final int DASH = 3;
-    private static final int BACKGROUND = 0xFF101010;
     private static final int LINE_BETWEEN_LAYERS = 0x80000000;
-    private static final int SELECTION = 0xFFFFFFFF;
     private static final int DROP_LINE = 0xFFFFD040;
-    private static final int LABEL_COLOR = 0xFFE0E0E0;
 
     private final EditorContext editor;
     private final Supplier<List<Marker>> markers;
@@ -107,7 +108,7 @@ public final class ColumnWidget implements Widget {
     public List<Rect> layerBounds() {
         List<Rect> bounds = new ArrayList<>();
         for (ColumnLayout.Span span : layout().spans()) {
-            bounds.add(new Rect(column.x(), column.y() + span.top() - scroll, column.width(), span.height()));
+            bounds.add(new Rect(column.x(), stackTop() + span.top() - scroll, column.width(), span.height()));
         }
         return bounds;
     }
@@ -116,7 +117,7 @@ public final class ColumnWidget implements Widget {
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         EditorState state = editor.shown();
         List<Rect> bounds = layerBounds();
-        canvas.fill(column, BACKGROUND);
+        canvas.fill(column, DimensionPictures.air(state.edited()));
         canvas.clip(column);
         int fluid = fluidColor(state.biome());
         for (int index = 0; index < bounds.size(); index++) {
@@ -125,7 +126,10 @@ public final class ColumnWidget implements Widget {
         }
         markers.get().forEach(marker -> drawMarker(canvas, marker));
         if (state.selected() >= 0) {
-            canvas.outline(bounds.get(state.selected()), SELECTION);
+            Rect chosen = bounds.get(state.selected());
+            canvas.outline(chosen, Look.ACCENT);
+            canvas.outline(new Rect(chosen.x() + 1, chosen.y() + 1, chosen.width() - 2, chosen.height() - 2),
+                    Look.ACCENT);
         }
         if (drag.mode() == Mode.MOVING) {
             canvas.fill(dropLine(bounds, state.selected(), drag.target()), DROP_LINE);
@@ -240,10 +244,25 @@ public final class ColumnWidget implements Widget {
         List<Layer> layers = editor.shown().layers();
         if (!layers.equals(laidOut)) {
             laidOut = layers;
-            layout = ColumnLayout.of(heights(layers), column.height(), THINNEST_LAYER);
+            layout = ColumnLayout.of(heights(layers), stackSpace(layers), THINNEST_LAYER);
             scroll = Math.max(0, Math.min(layout.contentHeight() - column.height(), scroll));
         }
         return layout;
+    }
+
+    /**
+     * How tall the stack is drawn: its share of the world's height, so the air above it shows as the world has it, but
+     * no less than {@link #SMALLEST_SHARE} for each layer and no more than the column.
+     */
+    private int stackSpace(List<Layer> layers) {
+        int blocks = layers.stream().mapToInt(Layer::height).sum();
+        int share = (int) ((long) column.height() * blocks / Math.max(1, editor.world().height()));
+        return Math.min(column.height(), Math.max(share, layers.size() * SMALLEST_SHARE));
+    }
+
+    /** Where the stack's top is drawn: below the air over it. */
+    private int stackTop() {
+        return column.bottom() - Math.min(column.height(), layout().contentHeight());
     }
 
     /** The water colour of the biome shown, looked up again only when the biome changes. */
@@ -256,12 +275,12 @@ public final class ColumnWidget implements Widget {
     }
 
     private OptionalInt hoveredLayer(double x, double y) {
-        return column.contains(x, y) ? layout().layerAt((int) y - column.y() + scroll) : OptionalInt.empty();
+        return column.contains(x, y) ? layout().layerAt((int) y - stackTop() + scroll) : OptionalInt.empty();
     }
 
     /** The place a moved layer lands when let go at this row: that of the layer there, or the nearest end. */
     private int placeAt(double y) {
-        int pixel = (int) y - column.y() + scroll;
+        int pixel = (int) y - stackTop() + scroll;
         int last = layout().spans().size() - 1;
         return layout().layerAt(pixel).orElse(pixel < 0 ? last : 0);
     }
@@ -278,7 +297,7 @@ public final class ColumnWidget implements Widget {
         if (pixel.isEmpty()) {
             return;
         }
-        int lineY = column.y() + pixel.getAsInt() - scroll;
+        int lineY = stackTop() + pixel.getAsInt() - scroll;
         for (int x = column.x(); x < column.right(); x += 2 * DASH) {
             canvas.fill(new Rect(x, lineY, Math.min(DASH, column.right() - x), 1), marker.color());
         }
@@ -296,7 +315,7 @@ public final class ColumnWidget implements Widget {
             boolean visible = line.pixel() >= column.y() && line.pixel() <= column.bottom();
             boolean crowded = drawnTops.stream().anyMatch(top -> Math.abs(top - textY) < canvas.lineHeight());
             if (visible && !crowded) {
-                canvas.text(Component.literal(Integer.toString(line.y())), labels.x() + LABEL_GAP, textY, LABEL_COLOR);
+                canvas.text(Component.literal(Integer.toString(line.y())), labels.x() + LABEL_GAP, textY, Look.MUTED);
                 drawnTops.add(textY);
             }
         }

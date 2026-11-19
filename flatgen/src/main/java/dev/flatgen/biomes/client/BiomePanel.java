@@ -6,8 +6,9 @@ import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.client.FactsNow;
 import dev.flatgen.mc.Biomes;
@@ -25,14 +26,18 @@ public final class BiomePanel implements EditorPanel {
         return state.stack().isPresent();
     }
 
+    /** The world's biome, a button with its picture and name on a box of the aside. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        flow.newRow();
-        Map<String, Icon> pictures = new HashMap<>();
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        layout.box(inside -> content(editor, inside));
+    }
+
+    private List<Widget> content(EditorContext editor, FlowLayout flow) {
+                Map<String, Icon> pictures = new HashMap<>();
         Icon picture = (canvas, x, y) -> pictures.computeIfAbsent(editor.shown().biome(),
                 biome -> picture(biome, editor)).draw(canvas, x, y);
         return List.of(new TextButton(picture, () -> Names.biome(editor.shown().biome()),
-                flow.next(PanelSizes.DOUBLE_WIDTH), () -> pick(editor), () -> true,
+                flow.line(EditorRegion.ASIDE.rowHeight()), () -> pick(editor), () -> true,
                 () -> List.of(Component.translatable("flatgen.editor.pick_biome"))));
     }
 

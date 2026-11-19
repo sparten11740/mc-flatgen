@@ -1,5 +1,6 @@
 package dev.flatgen.editor.client.panel;
 
+import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.editor.rules.ApplyPreset;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
@@ -96,9 +97,14 @@ public interface EditorContext {
     /** Opens another screen in place of the editor. */
     void open(Screen screen);
 
-    /** How wide text is drawn, for laying out a label. */
-    int textWidth(Component text);
+    /** How wide text in a style is drawn on the editor's screen. */
+    int textWidth(Component text, TextStyle style);
 
-    /** How tall a line of text is. */
-    int lineHeight();
+    /** How wide body text is drawn on the editor's screen. */
+    default int textWidth(Component text) {
+        return textWidth(text, TextStyle.BODY);
+    }
+
+    /** Whether the editor shows everything, for adults who build flat worlds, rather than the simple view. */
+    boolean advanced();
 }

@@ -1,10 +1,10 @@
 package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.TextLines;
-import dev.flatgen.client.gui.Widget;
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import java.util.List;
 import net.minecraft.network.chat.Component;
@@ -17,9 +17,10 @@ final class MessagePanel implements EditorPanel {
         return true;
     }
 
+    /** What the last copy or paste said, after undo and redo in the footer. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        return List.of(new TextLines(flow.line(editor.lineHeight()),
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        layout.add(EditorRegion.FOOTER, new TextLines(layout.flow(EditorRegion.FOOTER).rest(),
                 () -> List.of(editor.message() == null ? Component.empty() : editor.message())));
     }
 }

@@ -11,44 +11,50 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * A tab showing a picture, standing on what it shows as the creative inventory's tabs do: the chosen one is taller and
- * the others stand behind it, so which is chosen shows by its shape, not by colour alone; its tooltip says what it is.
+ * A tab of a segmented choice, such as the dimensions: a picture and its name. The chosen one stands on a raised
+ * segment with its name in bold, so which is chosen shows by its shape, not by colour alone; its tooltip says more.
  */
 public final class PictureTab implements Control {
-    /** A tab's height, in GUI pixels: a picture with room around it. */
-    public static final int HEIGHT = Icon.SIZE + 6;
-    /** How much lower a tab that is not chosen starts than the chosen one, in GUI pixels. */
-    private static final int LOWERED = 3;
-    /** The shade over a tab that is not chosen, which stands behind the chosen one. */
-    private static final int BEHIND = 0x60000000;
+    /** A tab's height, in GUI pixels: its picture's. */
+    public static final int HEIGHT = Icon.SIZE;
+    /** Space at the tab's sides and between its picture and its name, in GUI pixels. */
+    private static final int PADDING = 6;
+    private static final int GAP = 4;
 
     private final Icon icon;
+    private final Supplier<Component> name;
     private final Rect bounds;
     private final BooleanSupplier chosen;
     private final Runnable choose;
     private final Supplier<List<Component>> tooltip;
 
-    /** A tab showing this picture in this rectangle, chosen while {@code chosen} says so, doing {@code choose}. */
-    public PictureTab(Icon icon, Rect bounds, BooleanSupplier chosen, Runnable choose,
+    /** A tab showing this picture and name in this rectangle, chosen while {@code chosen} says so. */
+    public PictureTab(Icon icon, Supplier<Component> name, Rect bounds, BooleanSupplier chosen, Runnable choose,
             Supplier<List<Component>> tooltip) {
         this.icon = icon;
+        this.name = name;
         this.bounds = bounds;
         this.chosen = chosen;
         this.choose = choose;
         this.tooltip = tooltip;
     }
 
+    /** How wide a tab is whose name is this wide, in GUI pixels. */
+    public static int width(int nameWidth) {
+        return 2 * PADDING + Icon.SIZE + GAP + nameWidth;
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         boolean isChosen = chosen.getAsBoolean();
-        Rect frame = isChosen ? bounds
-                : new Rect(bounds.x(), bounds.y() + LOWERED, bounds.width(), bounds.height() - LOWERED);
         boolean hovered = bounds.contains(mouseX, mouseY);
-        canvas.button(frame, hovered, true);
-        if (!isChosen) {
-            canvas.fill(frame, BEHIND);
+        if (isChosen || hovered) {
+            canvas.sprite(isChosen ? Look.SEGMENT_ON : Look.BUTTON, bounds);
         }
-        icon.draw(canvas, frame.x() + (frame.width() - Icon.SIZE) / 2, frame.y() + (frame.height() - Icon.SIZE) / 2);
+        icon.draw(canvas, bounds.x() + PADDING, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
+        canvas.text(name.get(), bounds.x() + PADDING + Icon.SIZE + GAP, bounds.y() + (bounds.height()
+                - TextStyle.BODY.lineHeight()) / 2 + 1, isChosen ? Look.TEXT : Look.MUTED,
+                isChosen ? TextStyle.STRONG : TextStyle.BODY);
         if (hovered) {
             canvas.tooltip(tooltip.get(), mouseX, mouseY);
         }

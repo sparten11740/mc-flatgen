@@ -1,40 +1,30 @@
 package dev.flatgen.layers.client;
 
-import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
-import dev.flatgen.client.gui.PictureButton;
-import dev.flatgen.client.gui.TextButton;
-import dev.flatgen.client.gui.TextLines;
+import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.rules.Edit;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.LayerEdits;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * The editor's layer controls: the selected layer's Ys; its depth, one less, one more, typed or one of the quick
- * depths; the surface's Y to type; adding, copying and removing layers; and their keys (arrows, Alt with arrows,
- * Delete, Insert, Control+D).
+ * The editor's layers: their cards ({@link LayerCards}) in the middle, adding a layer on top in the bar above them and,
+ * in Advanced, the ground's Y to type; and their keys (arrows, Alt with arrows, Delete, Insert, Control+D).
  */
 public final class LayerPanel implements EditorPanel {
-    /** The depths a single click sets the selected layer to. */
-    private static final List<Integer> QUICK_HEIGHTS = List.of(1, 2, 3, 5, 10, 50, 100);
-    /** Widths of the controls, in GUI pixels: a sign, a quick depth and a number to type. */
-    private static final int SMALL = 20;
-    private static final int QUICK = 22;
+    /** How wide the field to type the ground's Y is, in GUI pixels. */
     private static final int FIELD = 40;
 
     /** Shown for every dimension the preset gives a stack of its own (F22). */
@@ -43,39 +33,22 @@ public final class LayerPanel implements EditorPanel {
         return state.stack().isPresent();
     }
 
+    /**
+     * The cards in the layers' place, scrolled to show the chosen one, as they are laid out again whenever a layer is
+     * added or removed; the bar's controls above them.
+     */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        Panel panel = new Panel(editor);
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new TextLines(flow.line(editor.lineHeight()), panel::layerLine));
-        flow.newRow();
-        widgets.add(new Label(Icon.own("thickness"), Component.empty(), flow.next(Icon.SIZE)));
-        widgets.add(panel.button("−", flow.next(SMALL), new LayerEdits.ChangeHeight(-1),
-                () -> panel.hasLayer() && panel.height() > 1, () -> panel.tip("flatgen.layer.shallower")));
-        widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field"), flow.next(FIELD),
-                panel::height, height -> editor.apply(new LayerEdits.SetHeight(height))));
-        widgets.add(panel.button("+", flow.next(SMALL), new LayerEdits.ChangeHeight(1),
-                () -> panel.hasLayer() && panel.height() < panel.room(),
-                () -> panel.hasLayer() && panel.height() >= panel.room() ? panel.full()
-                        : panel.tip("flatgen.layer.deeper")));
-        for (int quick : QUICK_HEIGHTS) {
-            widgets.add(panel.button(Integer.toString(quick), flow.next(QUICK), new LayerEdits.SetHeight(quick),
-                    panel::hasLayer, () -> panel.hasLayer() && quick > panel.room() ? panel.full() : List.of()));
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        if (editor.advanced()) {
+            layout.add(EditorRegion.LAYERS_BAR, groundRow(editor, layout.flow(EditorRegion.LAYERS_BAR)));
         }
-        flow.newRow();
-        widgets.addAll(surfaceRow(editor, flow));
-        flow.newRow();
-        Supplier<List<Component>> fullTip = () -> panel.roomLeft() > 0 ? List.of() : panel.full();
-        widgets.add(panel.picture(Icon.own("add_above"), "flatgen.editor.add_above", flow.next(PictureButton.SIZE),
-                new LayerEdits.Add(true), () -> panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.picture(Icon.own("add_below"), "flatgen.editor.add_below", flow.next(PictureButton.SIZE),
-                new LayerEdits.Add(false), () -> panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.picture(Icon.badged(panel::drawBlock, "badge_copy"), "flatgen.editor.duplicate",
-                flow.next(PictureButton.SIZE), new LayerEdits.Duplicate(),
-                () -> panel.hasLayer() && panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.picture(Icon.own("remove_layer"), "flatgen.editor.remove", flow.next(PictureButton.SIZE),
-                new LayerEdits.Remove(), panel::hasLayer, List::of));
-        return widgets;
+        layout.button(EditorRegion.LAYERS_BAR, Icon.line("plus"), Component.translatable("flatgen.editor.add_on_top"),
+                () -> addOnTop(editor), () -> LayerText.roomLeft(editor.shown(), editor.world()) > 0,
+                () -> LayerText.whyFull(editor.shown(), editor.world())).kind(Look.ButtonKind.ACCENT);
+        Rect area = layout.area(EditorRegion.LAYERS);
+        ScrollGroup cards = new ScrollGroup(area, top -> LayerCards.layOut(editor, area, top));
+        LayerCards.chosen(editor, area).ifPresent(cards::reveal);
+        layout.add(EditorRegion.LAYERS, cards);
     }
 
     @Override
@@ -98,68 +71,19 @@ public final class LayerPanel implements EditorPanel {
         return true;
     }
 
-    /** The surface's Y to type, with its label: the selected layer's depth changes so the surface is there. */
-    private static List<Widget> surfaceRow(EditorContext editor, FlowLayout flow) {
-        Component label = Component.translatable("flatgen.editor.surface_field");
-        Rect place = flow.next(Label.width(editor.textWidth(label)));
+    /** The ground's Y to type, with its label: the top layer's depth changes so the ground is there. */
+    private static List<Widget> groundRow(EditorContext editor, FlowLayout bar) {
+        Component label = Component.translatable("flatgen.editor.ground_field");
+        Rect place = bar.next(Label.width(editor.textWidth(label)));
         return List.of(new Label(Icon.item("minecraft:ladder"), label, place),
-                new NumberField("surface", label, flow.next(FIELD),
+                new NumberField("surface", label, bar.next(FIELD),
                         () -> editor.world().floor() + editor.shown().height(),
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
     }
 
-    /** What the controls read of the editor, worked out when asked, as it changes. */
-    private record Panel(EditorContext editor) {
-        boolean hasLayer() {
-            return editor.shown().selected() >= 0;
-        }
-
-        int height() {
-            return hasLayer() ? editor.shown().layers().get(editor.shown().selected()).height() : 0;
-        }
-
-        int room() {
-            return LayerEdits.room(editor.shown(), editor.world());
-        }
-
-        int roomLeft() {
-            return editor.world().height() - editor.shown().height();
-        }
-
-        List<Component> layerLine() {
-            return List.of(hasLayer() ? LayerText.yRange(editor.shown(), editor.world(), editor.shown().selected())
-                    : Component.translatable("flatgen.editor.empty"));
-        }
-
-        List<Component> tip(String key) {
-            return List.of(Component.translatable(key));
-        }
-
-        /** Why a control that adds blocks cannot: the stack fills the world. */
-        List<Component> full() {
-            return List.of(Component.translatable("flatgen.editor.full", editor.world().height()));
-        }
-
-        TextButton button(String label, Rect place, Edit edit, BooleanSupplier active,
-                Supplier<List<Component>> tooltip) {
-            return button(Component.literal(label), place, edit, active, tooltip);
-        }
-
-        TextButton button(Component label, Rect place, Edit edit, BooleanSupplier active,
-                Supplier<List<Component>> tooltip) {
-            return new TextButton(label, place, () -> editor.apply(edit), active, tooltip);
-        }
-
-        /** A picture button making an edit, its tooltip its name and, below, why it cannot when it cannot. */
-        PictureButton picture(Icon icon, String name, Rect place, Edit edit, BooleanSupplier active,
-                Supplier<List<Component>> why) {
-            return new PictureButton(icon, place, () -> editor.apply(edit), active,
-                    () -> Stream.concat(Stream.of(Component.translatable(name)), why.get().stream()).toList());
-        }
-
-        /** Draws the selected layer's block; nothing when there is no layer. */
-        void drawBlock(Canvas canvas, int x, int y) {
-            editor.shown().selectedBlock().ifPresent(block -> canvas.blockIcon(block, x, y));
-        }
+    /** Adds a layer above the top one, as one step to undo. */
+    private static void addOnTop(EditorContext editor) {
+        editor.select(editor.shown().layers().size() - 1);
+        editor.apply(new LayerEdits.Add(true));
     }
 }

@@ -1,7 +1,10 @@
 package dev.flatgen.dimensions.client;
 
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.PictureTab;
+import dev.flatgen.client.gui.Surface;
+import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -11,29 +14,41 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 
 /**
- * The tabs above the editor's column (F22), one for each dimension, which choose the stack the column and the layer
- * controls edit. A dimension with a stack of its own wears the flat badge, three stripes, on its tab.
+ * The dimensions as a segmented choice in the editor's header (F22), each its picture and its name, which choose the
+ * stack the editor edits. A dimension with a stack of its own wears the flat badge, three stripes, on its picture.
  */
 public final class DimensionTabs {
-    /** The tabs' height, in GUI pixels. */
-    public static final int HEIGHT = PictureTab.HEIGHT;
+    /** Space around the tabs inside their track, in GUI pixels. */
+    private static final int TRACK_PADDING = 2;
+    /** The tabs' height with their track, in GUI pixels. */
+    public static final int HEIGHT = PictureTab.HEIGHT + 2 * TRACK_PADDING;
 
     private DimensionTabs() {
     }
 
-    /** The tabs, side by side across this area, as wide as it allows. */
+    /** How wide the tabs are with their track, in GUI pixels, each wide enough for its name in bold, as when chosen. */
+    public static int width(EditorContext editor) {
+        int width = 2 * TRACK_PADDING;
+        for (Dimension dimension : Dimension.values()) {
+            width += PictureTab.width(editor.textWidth(DimensionPictures.name(dimension), TextStyle.STRONG));
+        }
+        return width;
+    }
+
+    /** The track and the tabs on it, side by side from the left of this area. */
     public static List<Widget> layOut(EditorContext editor, Rect area) {
-        Dimension[] dimensions = Dimension.values();
-        int width = area.width() / dimensions.length;
-        List<Widget> tabs = new ArrayList<>();
-        for (int index = 0; index < dimensions.length; index++) {
-            Dimension dimension = dimensions[index];
+        List<Widget> tabs = new ArrayList<>(List.of(new Surface(Look.SEGMENTS, area)));
+        int x = area.x() + TRACK_PADDING;
+        for (Dimension dimension : Dimension.values()) {
             Icon plain = DimensionPictures.of(dimension);
             Icon flat = Icon.badged(plain, "badge_flat");
-            Icon picture = (canvas, x, y) -> (hasOwnStack(editor, dimension) ? flat : plain).draw(canvas, x, y);
-            tabs.add(new PictureTab(picture, new Rect(area.x() + index * width, area.y(), width, area.height()),
-                    () -> editor.shown().edited() == dimension, () -> editor.choose(dimension),
-                    () -> tooltip(editor, dimension)));
+            Icon picture = (canvas, left, top) -> (hasOwnStack(editor, dimension) ? flat : plain).draw(canvas, left,
+                    top);
+            int tabWidth = PictureTab.width(editor.textWidth(DimensionPictures.name(dimension), TextStyle.STRONG));
+            tabs.add(new PictureTab(picture, () -> DimensionPictures.name(dimension), new Rect(x,
+                    area.y() + TRACK_PADDING, tabWidth, PictureTab.HEIGHT), () -> editor.shown().edited() == dimension,
+                    () -> editor.choose(dimension), () -> tooltip(editor, dimension)));
+            x += tabWidth;
         }
         return tabs;
     }

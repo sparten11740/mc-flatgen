@@ -6,8 +6,9 @@ import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.SetOptions;
 import dev.flatgen.options.rules.WorldOption;
@@ -23,29 +24,41 @@ import net.minecraft.network.chat.Component;
  * for each option the preset names that is no longer installed, kept as it is.
  */
 public final class OptionsPanel implements EditorPanel {
+    /** Each group of options on a box of the aside, then the options not installed on a box of their own. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
+    public void layOut(EditorContext editor, EditorLayout layout) {
         List<WorldOption> installed = editor.worldOptions();
         Map<String, List<WorldOption>> groups = new LinkedHashMap<>();
         installed.forEach(option -> groups.computeIfAbsent(option.group(), group -> new ArrayList<>()).add(option));
-        List<Widget> widgets = new ArrayList<>();
-        for (List<WorldOption> group : groups.values()) {
-            widgets.add(new Label(icon(group.get(0)), groupTitle(group.get(0).group()), flow.line(Label.height())));
-            group.forEach(option -> widgets.add(toggle(editor, option, installed, flow)));
-            flow.newRow();
-        }
+        groups.values().forEach(group -> layout.box(inside -> group(editor, group, installed, inside)));
         List<String> missing = OptionChoices.missing(editor.shown().preset().options(), installed);
         if (!missing.isEmpty()) {
-            widgets.add(new Label(Icon.MISSING, Component.translatable("flatgen.options.missing"),
-                    flow.line(Label.height())));
-            missing.forEach(id -> widgets.add(missingToggle(editor, id, flow)));
+            layout.box(inside -> missing(editor, missing, inside));
         }
+    }
+
+    /** A group's heading, then a switch for each of its options. */
+    private static List<Widget> group(EditorContext editor, List<WorldOption> group, List<WorldOption> installed,
+            FlowLayout flow) {
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(new Label(icon(group.get(0)), groupTitle(group.get(0).group()), flow.line(Label.height())));
+        group.forEach(option -> widgets.add(toggle(editor, option, installed, flow)));
+        return widgets;
+    }
+
+    /** The heading of the options not installed, then a locked switch for each. */
+    private static List<Widget> missing(EditorContext editor, List<String> missing, FlowLayout flow) {
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(new Label(Icon.MISSING, Component.translatable("flatgen.options.missing"),
+                flow.line(Label.height())));
+        missing.forEach(id -> widgets.add(missingToggle(editor, id, flow)));
         return widgets;
     }
 
     private static Toggle toggle(EditorContext editor, WorldOption option, List<WorldOption> installed,
             FlowLayout flow) {
-        return new Toggle(icon(option), Component.translatable(option.name()), flow.next(PanelSizes.DOUBLE_WIDTH),
+        return new Toggle(icon(option), Component.translatable(option.name()),
+                flow.line(EditorRegion.ASIDE.rowHeight()),
                 () -> OptionChoices.isOn(option, editor.shown().preset().options()),
                 () -> turnOver(editor, option, installed), () -> true,
                 () -> List.of(Component.translatable(option.description())));
@@ -60,7 +73,7 @@ public final class OptionsPanel implements EditorPanel {
 
     /** A switch for an option that is not installed: it shows how the preset keeps it, and cannot be turned over. */
     private static Toggle missingToggle(EditorContext editor, String id, FlowLayout flow) {
-        return new Toggle(Icon.MISSING, Component.literal(id), flow.next(PanelSizes.DOUBLE_WIDTH),
+        return new Toggle(Icon.MISSING, Component.literal(id), flow.line(EditorRegion.ASIDE.rowHeight()),
                 () -> editor.shown().preset().options().getOrDefault(id, false), () -> { }, () -> false,
                 () -> List.of(Component.translatable("flatgen.options.not_installed", id)));
     }

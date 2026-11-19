@@ -1,18 +1,26 @@
 package dev.flatgen.editor.client;
 
+import dev.flatgen.client.gui.Canvas;
+import dev.flatgen.client.gui.Caption;
+import dev.flatgen.client.gui.Chip;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
+import dev.flatgen.client.gui.TextStyle;
+import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.dimensions.client.DimensionTabs;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.editor.rules.History;
@@ -43,24 +51,40 @@ import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 /**
- * Flatgen's superflat editor, opened by Customize: the dimensions' tabs above a column of the edited stack's layers,
- * beside it the panels of {@link EditorPanels} that show for it, top down, wrapping within the space left and
- * scrolling when taller than it, and Done, the game's own editor and Cancel below. Every change is a step to undo.
- * Done applies the preset to the Create World screen; Cancel leaves it.
+ * Flatgen's superflat editor, opened by Customize, laid out as on the design canvas (docs/design/simple-editor.md):
+ * a header with the title, the dimensions, the tools of the panels that go there and the Advanced switch; the world
+ * from the side on the left, the layers in the middle, the world's settings on the right, scrolling when they do not
+ * fit; and a footer with undo and redo, Cancel and Done. The panels of {@link EditorPanels} that show place their
+ * widgets in these {@link EditorRegion}s. Every change is a step to undo. Done applies the preset to the Create World
+ * screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
-    /** Space above the tabs and the panel for the title, in GUI pixels. */
-    private static final int HEADER = 24;
-    /** Space below the column for the footer's buttons, in GUI pixels. */
-    private static final int FOOTER = 32;
-    /** Space between the dimensions' tabs and the column, in GUI pixels: room for half the column's top Y label. */
-    private static final int TABS_GAP = 5;
-    /** Space at the sides and between the column and the panel, in GUI pixels. */
-    private static final int MARGIN = 12;
-    /** A footer button's size, in GUI pixels: three fit the narrowest screen at the largest GUI scale. */
-    private static final int FOOTER_BUTTON_WIDTH = 100;
+    /** The header's and the footer's heights, in GUI pixels. */
+    private static final int HEADER = 32;
+    private static final int FOOTER = 40;
+    /** Space at the screen's sides, in GUI pixels. */
+    private static final int MARGIN = 13;
+    /** Space between the screen's parts, in GUI pixels. */
+    private static final int REGION_GAP = 11;
+    /** Space between the header's picture and the title, and between Cancel and Done, in GUI pixels. */
+    private static final int TITLE_GAP = 4;
+    private static final int FOOTER_BUTTON_GAP = 4;
+    /** How wide the world on the left and the settings on the right are, in GUI pixels. */
+    private static final int WORLD_WIDTH = 127;
+    private static final int ASIDE_WIDTH = 152;
+    /** Space between the bar above the layers and the layers, in GUI pixels. */
+    private static final int BAR_GAP = 7;
+    /** How wide the footer's Cancel and Done are, in GUI pixels. */
+    private static final int FOOTER_BUTTON_WIDTH = 66;
+    /** Space inside the world's panel below the column, in GUI pixels. */
+    private static final int WORLD_PADDING = 8;
     /** The icon of the preset the editor starts from, which the world's settings do not carry. */
     private static final String ICON = "minecraft:grass_block";
+    /**
+     * Whether the editor shows everything, for adults who build flat worlds, rather than the simple view a child can
+     * work out; remembered until the game closes.
+     */
+    private static boolean advanced;
 
     private final CreateWorldScreen parent;
     private final WorldCreationContext context;
@@ -109,35 +133,138 @@ public final class EditorScreen extends FlatgenScreen {
         return column;
     }
 
-    /**
-     * The tabs of the dimensions above the column, the column of the edited stack (an empty area for a dimension
-     * without one, so the keyboard's focus keeps its place among the areas), the panels that show for it beside, and
-     * the footer.
-     */
+    /** The header, the world, the regions the panels fill and the footer, for a screen this big. */
     @Override
     protected List<Widget> layOut(int width, int height) {
-        Rect tabs = new Rect(MARGIN, HEADER, ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH,
-                DimensionTabs.HEIGHT);
-        int columnTop = tabs.bottom() + TABS_GAP;
-        Rect space = new Rect(MARGIN, columnTop, tabs.width(), height - columnTop - FOOTER);
-        column = new ColumnWidget(editor, space, FactMarkers.of(editor));
+        Frame frame = new Frame(width, height);
         laidOutFor = layoutKey();
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new WidgetGroup(DimensionTabs.layOut(editor, tabs)));
-        widgets.add(editor.shown().stack().isPresent() ? column : new WidgetGroup(List.of()));
-        int left = space.right() + MARGIN;
-        Rect panelSpace = new Rect(left, HEADER, width - left - MARGIN, space.bottom() - HEADER);
-        widgets.add(new ScrollGroup(panelSpace, top -> panels(new Rect(left, top, panelSpace.width(), 0))));
-        widgets.add(new WidgetGroup(footer(width, height)));
+        EditorLayout laid = frame.layOut(frame.aside.y());
+        List<Widget> widgets = new ArrayList<>(header(frame, laid));
+        widgets.add(new WidgetGroup(worldWidgets(frame.world, laid)));
+        widgets.add(new WidgetGroup(layersWidgets(frame.layers, laid)));
+        widgets.add(new ScrollGroup(frame.aside, frame::aside));
+        widgets.add(new WidgetGroup(footer(frame, laid)));
         return widgets;
     }
 
-    /** Every panel's widgets, from the top of this area down within its width. */
-    private ScrollGroup.Laid panels(Rect area) {
-        FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
+    /** The lines under the header and over the footer. */
+    @Override
+    protected void drawBehind(Canvas canvas) {
+        canvas.fill(new Rect(0, HEADER, width, 1), Look.DIVIDER);
+        canvas.fill(new Rect(0, height - FOOTER, width, 1), Look.DIVIDER);
+    }
+
+    /** The title, the dimensions in the middle, the panels' tools after them and the Advanced switch at the right. */
+    private List<Widget> header(Frame frame, EditorLayout laid) {
+        Component advancedLabel = Component.translatable("flatgen.editor.advanced");
         List<Widget> widgets = new ArrayList<>();
-        shownPanels().forEach(panel -> widgets.addAll(panel.layOut(editor, flow)));
-        return new ScrollGroup.Laid(widgets, flow.bottom());
+        widgets.add(new Label(Icon.item(ICON), Component.empty(), new Rect(MARGIN, (HEADER - Icon.SIZE) / 2,
+                Icon.SIZE, Icon.SIZE)));
+        widgets.add(new Caption(() -> title, new Rect(MARGIN + Icon.SIZE + TITLE_GAP, 0,
+                frame.tabs.x() - MARGIN - Icon.SIZE - TITLE_GAP, HEADER), TextStyle.TITLE, Look.TEXT));
+        widgets.add(new WidgetGroup(DimensionTabs.layOut(editor, frame.tabs)));
+        widgets.add(new WidgetGroup(laid.widgets(EditorRegion.HEADER)));
+        widgets.add(new Toggle(Icon.line("advanced"), advancedLabel, frame.advanced, () -> advanced,
+                this::turnAdvancedOver, () -> true,
+                () -> List.of(advancedLabel, Component.translatable("flatgen.editor.advanced_tip"))));
+        return widgets;
+    }
+
+    /** The world's panel with the column below the chips over it, or what a dimension without layers shows there. */
+    private List<Widget> worldWidgets(Rect world, EditorLayout laid) {
+        List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.PANEL, world)));
+        int columnWidth = ColumnWidget.COLUMN_WIDTH + ColumnWidget.LABEL_WIDTH;
+        int columnTop = world.y() + Chip.clearBelow();
+        Rect space = new Rect(world.x() + (world.width() - columnWidth) / 2, columnTop, columnWidth,
+                world.bottom() - WORLD_PADDING - columnTop);
+        column = new ColumnWidget(editor, space, FactMarkers.of(editor));
+        if (editor.shown().stack().isPresent()) {
+            widgets.add(column);
+        }
+        widgets.addAll(laid.widgets(EditorRegion.WORLD));
+        return widgets;
+    }
+
+    /** The heading and the bar above the layers, and the layers. */
+    private static List<Widget> layersWidgets(Rect layers, EditorLayout laid) {
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(new Caption(() -> Component.translatable("flatgen.editor.layers"), new Rect(layers.x(),
+                layers.y(), layers.width(), EditorRegion.LAYERS_BAR.rowHeight()), TextStyle.TITLE, Look.TEXT));
+        widgets.addAll(laid.widgets(EditorRegion.LAYERS_BAR));
+        widgets.addAll(laid.widgets(EditorRegion.LAYERS));
+        return widgets;
+    }
+
+    /** Undo, redo and what the panels place at the left; Cancel and Done at the right. */
+    private List<Widget> footer(Frame frame, EditorLayout laid) {
+        Rect row = frame.footerRow;
+        Rect done = new Rect(row.right() - FOOTER_BUTTON_WIDTH, row.y(), FOOTER_BUTTON_WIDTH, row.height());
+        Rect cancel = new Rect(done.x() - FOOTER_BUTTON_GAP - FOOTER_BUTTON_WIDTH, row.y(), FOOTER_BUTTON_WIDTH,
+                row.height());
+        List<Widget> widgets = new ArrayList<>(laid.widgets(EditorRegion.FOOTER));
+        widgets.add(new TextButton(Icon.line("cross"), CommonComponents.GUI_CANCEL, cancel, this::onClose));
+        widgets.add(new TextButton(Icon.line("check"), CommonComponents.GUI_DONE, done, this::done)
+                .kind(Look.ButtonKind.PRIMARY));
+        return widgets;
+    }
+
+    /** Where the editor's parts and regions are on a screen this big, and the panels laid out in them. */
+    private final class Frame {
+        private final Rect world;
+        private final Rect layers;
+        private final Rect aside;
+        private final Rect tabs;
+        private final Rect advanced;
+        private final Rect footerRow;
+        private final Map<EditorRegion, Rect> areas = new EnumMap<>(EditorRegion.class);
+
+        Frame(int width, int height) {
+            int bodyTop = HEADER + REGION_GAP;
+            int bodyBottom = height - FOOTER - REGION_GAP;
+            world = new Rect(MARGIN, bodyTop, WORLD_WIDTH, bodyBottom - bodyTop);
+            aside = new Rect(width - MARGIN - ASIDE_WIDTH, bodyTop, ASIDE_WIDTH, bodyBottom - bodyTop);
+            layers = new Rect(world.right() + REGION_GAP, bodyTop, aside.x() - 2 * REGION_GAP - world.right(),
+                    world.height());
+            int controlTop = (HEADER - DimensionTabs.HEIGHT) / 2;
+            int tabsWidth = DimensionTabs.width(editor);
+            tabs = new Rect((width - tabsWidth) / 2, controlTop, tabsWidth, DimensionTabs.HEIGHT);
+            int switchWidth = Toggle.width(textWidth(Component.translatable("flatgen.editor.advanced")));
+            advanced = new Rect(width - MARGIN - switchWidth, controlTop, switchWidth, DimensionTabs.HEIGHT);
+            int footerHeight = EditorRegion.FOOTER.rowHeight();
+            footerRow = new Rect(MARGIN, height - FOOTER + (FOOTER - footerHeight) / 2, width - 2 * MARGIN,
+                    footerHeight);
+            areas.put(EditorRegion.HEADER, new Rect(tabs.right() + REGION_GAP, (HEADER
+                    - EditorRegion.HEADER.rowHeight()) / 2, advanced.x() - REGION_GAP - tabs.right() - REGION_GAP, 0));
+            int barHeight = EditorRegion.LAYERS_BAR.rowHeight();
+            int barX = layers.x() + textWidth(Component.translatable("flatgen.editor.layers"), TextStyle.TITLE)
+                    + REGION_GAP;
+            areas.put(EditorRegion.LAYERS_BAR, new Rect(barX, layers.y(), layers.right() - barX, barHeight));
+            areas.put(EditorRegion.LAYERS, new Rect(layers.x(), layers.y() + barHeight + BAR_GAP, layers.width(),
+                    layers.height() - barHeight - BAR_GAP));
+            areas.put(EditorRegion.WORLD, world);
+            areas.put(EditorRegion.FOOTER, new Rect(footerRow.x(), footerRow.y(), footerRow.width() / 2,
+                    footerHeight));
+        }
+
+        /** Every panel that shows laid out with the aside's top here, the game's own editor last in Advanced. */
+        EditorLayout layOut(int asideTop) {
+            Map<EditorRegion, Rect> placed = new EnumMap<>(areas);
+            placed.put(EditorRegion.ASIDE, new Rect(aside.x(), asideTop, aside.width(), 0));
+            EditorLayout layout = new EditorLayout(placed, EditorScreen.this::textWidth);
+            shownPanels().forEach(panel -> panel.layOut(editor, layout));
+            if (EditorScreen.advanced) {
+                Rect place = layout.flow(EditorRegion.ASIDE).line(EditorRegion.ASIDE.rowHeight());
+                layout.add(EditorRegion.ASIDE, new TextButton(Icon.line("external"),
+                        Component.translatable("flatgen.editor.vanilla"), place, EditorScreen.this::openVanilla));
+            }
+            return layout;
+        }
+
+        /** The aside's widgets with its top here, as it scrolls. */
+        ScrollGroup.Laid aside(int top) {
+            EditorLayout layout = layOut(top);
+            return new ScrollGroup.Laid(layout.widgets(EditorRegion.ASIDE), layout.flow(EditorRegion.ASIDE).bottom());
+        }
     }
 
     @Override
@@ -177,7 +304,8 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** What decides the widgets now. */
     private Layout layoutKey() {
-        return new Layout(history.current().edited(), history.current().stack().isPresent(), shownPanels());
+        EditorState current = history.current();
+        return new Layout(current.edited(), current.stack().isPresent(), current.layers().size(), shownPanels());
     }
 
     /**
@@ -191,16 +319,10 @@ public final class EditorScreen extends FlatgenScreen {
         }
     }
 
-    private List<Widget> footer(int width, int height) {
-        int gap = 2 * PanelSizes.GAP;
-        int rowWidth = 3 * FOOTER_BUTTON_WIDTH + 2 * gap;
-        FlowLayout row = new FlowLayout(new Rect((width - rowWidth) / 2, height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2,
-                rowWidth, 0), PanelSizes.ROW_HEIGHT, gap);
-        return List.of(
-                new TextButton(Icon.TICK, CommonComponents.GUI_DONE, row.next(FOOTER_BUTTON_WIDTH), this::done),
-                new TextButton(Icon.item("minecraft:command_block"), Component.translatable("flatgen.editor.vanilla"),
-                        row.next(FOOTER_BUTTON_WIDTH), this::openVanilla),
-                new TextButton(Icon.CROSS, CommonComponents.GUI_CANCEL, row.next(FOOTER_BUTTON_WIDTH), this::onClose));
+    /** Turns Advanced on or off, which lays the editor out again. */
+    private void turnAdvancedOver() {
+        advanced = !advanced;
+        rebuildWidgets();
     }
 
     private void done() {
@@ -218,9 +340,9 @@ public final class EditorScreen extends FlatgenScreen {
 
     /**
      * What decides the editor's widgets: the edited dimension, whose panels name it, whether it has a stack, which
-     * decides the column, and the panels that show.
+     * decides the column, how many layers it has, each a card, and the panels that show.
      */
-    private record Layout(Dimension edited, boolean stack, List<EditorPanel> panels) {
+    private record Layout(Dimension edited, boolean stack, int layers, List<EditorPanel> panels) {
     }
 
     /** What the column and the panels see of the editor: its history, with a dragged change shown until let go. */
@@ -336,13 +458,13 @@ public final class EditorScreen extends FlatgenScreen {
         }
 
         @Override
-        public int textWidth(Component text) {
-            return font.width(text);
+        public int textWidth(Component text, TextStyle style) {
+            return EditorScreen.this.textWidth(text, style);
         }
 
         @Override
-        public int lineHeight() {
-            return font.lineHeight;
+        public boolean advanced() {
+            return advanced;
         }
     }
 }

@@ -2,11 +2,11 @@ package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.PictureButton;
-import dev.flatgen.client.gui.Widget;
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import java.util.List;
 import net.minecraft.network.chat.Component;
@@ -20,14 +20,14 @@ final class HistoryPanel implements EditorPanel {
         return true;
     }
 
+    /** Undo, with its name, and Redo, at the left of the footer. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        flow.newRow();
-        return List.of(
-                new PictureButton(Icon.own("undo"), flow.next(PictureButton.SIZE), editor::undo, editor::canUndo,
-                        () -> List.of(Component.translatable("flatgen.editor.undo"))),
-                new PictureButton(Icon.own("redo"), flow.next(PictureButton.SIZE), editor::redo, editor::canRedo,
-                        () -> List.of(Component.translatable("flatgen.editor.redo"))));
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        layout.button(EditorRegion.FOOTER, Icon.line("undo"), Component.translatable("flatgen.editor.undo"),
+                editor::undo, editor::canUndo, List::of);
+        layout.add(EditorRegion.FOOTER, new PictureButton(Icon.line("redo"), layout.flow(EditorRegion.FOOTER)
+                .next(EditorRegion.FOOTER.rowHeight()), editor::redo, editor::canRedo,
+                () -> List.of(Component.translatable("flatgen.editor.redo"))));
     }
 
     @Override

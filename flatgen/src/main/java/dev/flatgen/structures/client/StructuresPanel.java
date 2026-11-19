@@ -5,8 +5,9 @@ import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.mc.Structures;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.structures.rules.StructureChoice;
@@ -17,10 +18,18 @@ import net.minecraft.network.chat.Component;
 /** The editor's structures control: a button saying how the world chooses its structures, which opens their screen. */
 public final class StructuresPanel implements EditorPanel {
 
+    /** In Advanced, the structures' button on a box of the aside. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        if (!editor.advanced()) {
+            return;
+        }
+        layout.box(inside -> content(editor, inside));
+    }
+
+    private List<Widget> content(EditorContext editor, FlowLayout flow) {
         return List.of(new TextButton(Icon.own("house"), () -> label(editor.shown().preset().structureSets()),
-                flow.next(PanelSizes.DOUBLE_WIDTH), () -> open(editor), () -> true,
+                flow.line(EditorRegion.ASIDE.rowHeight()), () -> open(editor), () -> true,
                 () -> List.of(Component.translatable("flatgen.structures.open"))));
     }
 

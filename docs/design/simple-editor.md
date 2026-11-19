@@ -47,10 +47,29 @@ The owner chose C, drawn in a modern look at high resolution rather than the gam
 - The block picker is a sheet over the editor that opens on the ground blocks, with favourites, recent, kinds of block,
   every block, a mod filter and a hint for searching one mod, and marks blocks that fall.
 
-## What building it in the game takes
+## How it is built in the game
 
-The game draws its GUI in whole GUI pixels with its pixel font. The modern look needs the toolkit to draw rounded
-panels (nine-slice sprites, which it can already draw), a TrueType font Flatgen ships (the game's font system takes
-one), finer sizes than the game's GUI scale (Flatgen's screens laying out in real pixels), and the cards, steppers,
-switches, segmented control and sheet as widgets of `client/gui`. The editor's state, edits and history stay as they
-are.
+- **Its own scale.** A Flatgen screen counts in GUI pixels of its own (`client/gui/rules/LayoutScale`): a whole
+  number of window pixels each, as many as leave the screen at least 640 by 360 of them, apart from the game's GUI
+  scale. A 1920 by 1080 window is exactly the canvas at a third; larger and in-between windows get a little more room.
+  Whole pixels keep every line, rounded corner and letter sharp; half steps were tried and left seams in the game's
+  tiled sprites. `GameScreen`, one class per version, sets the screen's size in these pixels, draws scaled from them
+  and hands the mouse over in them; Blockpilot's queries report the game's own pixels.
+- **Its own look.** Inter, which Flatgen ships under the SIL Open Font License, in three styles (`TextStyle`: body,
+  strong, title), each defined once per window pixel count so the game draws its glyphs at exactly the size shown;
+  rounded panels, buttons, fields, switches, chips and the focus ring as nine-slice sprites, and the icons as line
+  drawings; colours and sprites in `Look`. `tools/modern_look.py` draws all of them from numbers in a few seconds.
+  Every Flatgen screen gets the look through the canvas, the old ones included.
+- **Regions.** An editor panel places its widgets in the editor's regions (`EditorRegion`: header tools, the bar above
+  the layers, the layers, the world, the aside, the footer) and shows what only Advanced shows while the editor says
+  Advanced is on; adding a panel still changes no other.
+- **Cards.** `LayerCards` draws a card per layer, top first, from the existing widgets and edits: every control selects
+  its layer, then makes the edit the layer controls always made; dragging a card's grip previews the move as the
+  column's drag did. The block picker opens from the card's block.
+- **The column** keeps everything it did and draws the stack at the bottom, under the air the world has above it, in
+  the dimension's air colour.
+- **Sheets.** A picker or a question stands over the screen it came from, which is drawn dimmed behind it
+  (`GameScreen.behind`).
+- **Not yet handled:** widgets another mod adds to a Flatgen screen through its loader's screen events would get the
+  screen's own size but be drawn in the game's pixels; no mod does so today. Advanced is remembered until the game
+  closes, not in the settings file.

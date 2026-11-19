@@ -35,3 +35,20 @@ Nothing yet: a prototype on its own branch, presented to the owner with screensh
   opinion of them; the UX expert merges their views into one proposal.
 - The prototype changes screens only; the editor's state, edits and history (`editor/rules`, `layers/rules`) stay as
   they are, which shows whether the split between logic and screens holds.
+
+## Prototype build (on `prototype/simple-editor`)
+
+The owner chose direction C in the modern look (`docs/design/simple-editor.md`) and asked for it built overnight. The build:
+
+- [ ] **Look and scale** for every Flatgen screen: Flatgen GUI pixels of its own (`LayoutScale`, whole window pixels,
+  at least 640 by 360, the canvas at a third of 1920 by 1080), Inter text in three styles (`TextStyle`), rounded
+  sprites and the palette in `Look`, all written by `tools/modern_look.py`; switches for toggles.
+- [ ] **Editor regions**: a panel says where it goes (header tools, the bar above the layers, the aside, the footer)
+  and whether only Advanced shows it; the screen lays out header (title, dimensions as segments, Presets, Templates,
+  Advanced), the world on the left, the layers in the middle, the aside on the right, the footer (Undo, Redo, Cancel,
+  Done).
+- [ ] **Layer cards**: grip to drag, the block with its count, the name (Advanced: Ys and id), thinner and thicker
+  (Advanced: typed), copy (Advanced) and remove; the chosen card outlined; scrolling when they do not fit.
+- [ ] **Empty Nether and End**: the dimension as the game makes it, and one button to make it flat.
+- [ ] **Block picker as a sheet**, then the library, templates, biomes, structures and questions in the look.
+- [ ] Both releases built and tried in a dev client; screenshots beside the canvas boards for the owner.

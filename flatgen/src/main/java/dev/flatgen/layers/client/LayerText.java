@@ -7,7 +7,7 @@ import dev.flatgen.preset.rules.Layer;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 
-/** How a layer is told to the player, alike in the column's tooltip and in the editor's panel. */
+/** How a layer is told to the player, alike in the column's tooltip and on the layer cards. */
 public final class LayerText {
     private LayerText() {
     }
@@ -17,6 +17,17 @@ public final class LayerText {
         Layer layer = state.layers().get(index);
         return List.of(Names.block(layer.block()), Component.translatable("flatgen.layer.height", layer.height()),
                 yRange(state, world, index));
+    }
+
+    /** How many more blocks fit in the world above the stack. */
+    public static int roomLeft(EditorState state, World world) {
+        return world.height() - state.height();
+    }
+
+    /** Why a control that adds blocks cannot: none while there is room, else that the stack fills the world. */
+    public static List<Component> whyFull(EditorState state, World world) {
+        return roomLeft(state, world) > 0 ? List.of()
+                : List.of(Component.translatable("flatgen.editor.full", world.height()));
     }
 
     /** The Ys a layer covers, bottom to top. */

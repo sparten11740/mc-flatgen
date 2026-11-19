@@ -2,10 +2,11 @@ package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.PictureButton;
-import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
+import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.layers.rules.LayerEdits;
 import dev.flatgen.mc.Clipboard;
 import dev.flatgen.preset.rules.Layer;
@@ -17,15 +18,21 @@ import net.minecraft.network.chat.Component;
 /** Copying the game's superflat code for the layers, and pasting one, which says which part is wrong when it is. */
 final class CodePanel implements EditorPanel {
 
+    /** In Advanced, copying and pasting the code, a picture button each, in the bar above the layers. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        return List.of(
-                new PictureButton(Icon.TO_CLIPBOARD, flow.next(PictureButton.SIZE), () -> copy(editor),
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        if (!editor.advanced()) {
+            return;
+        }
+        FlowLayout bar = layout.flow(EditorRegion.LAYERS_BAR);
+        int size = EditorRegion.LAYERS_BAR.rowHeight();
+        layout.add(EditorRegion.LAYERS_BAR, List.of(
+                new PictureButton(Icon.line("copy"), bar.next(size), () -> copy(editor),
                         () -> List.of(Component.translatable("flatgen.code.copy"),
                                 Component.translatable("flatgen.code.copy_tip"))),
-                new PictureButton(Icon.FROM_CLIPBOARD, flow.next(PictureButton.SIZE), () -> paste(editor),
+                new PictureButton(Icon.line("paste"), bar.next(size), () -> paste(editor),
                         () -> List.of(Component.translatable("flatgen.code.paste"),
-                                Component.translatable("flatgen.code.paste_tip"))));
+                                Component.translatable("flatgen.code.paste_tip")))));
     }
 
     /** Puts the game's superflat code for the layers and biome on the clipboard. */

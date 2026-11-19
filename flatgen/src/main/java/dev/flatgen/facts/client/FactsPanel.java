@@ -6,6 +6,7 @@ import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.rules.Fact;
@@ -30,11 +31,15 @@ public final class FactsPanel implements EditorPanel {
         return state.stack().isPresent();
     }
 
+    /** What the world will be like, as pictures, and the no-slimes button, on a box of the aside. */
     @Override
-    public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
+    public void layOut(EditorContext editor, EditorLayout layout) {
+        layout.box(inside -> content(editor, inside));
+    }
+
+    private List<Widget> content(EditorContext editor, FlowLayout flow) {
         FactsNow now = new FactsNow(editor);
-        flow.newRow();
-        List<Widget> widgets = new ArrayList<>();
+                List<Widget> widgets = new ArrayList<>();
         Facts.ALL.forEach(fact -> widgets.add(new Badge(flow.next(Badge.SIZE),
                 () -> now.get().map(situation -> look(fact.show(situation))))));
         widgets.add(new PictureButton(NO_SLIMES, flow.next(PictureButton.SIZE), () -> editor.apply(new NoSlimes()),
