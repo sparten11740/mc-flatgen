@@ -1,15 +1,13 @@
 package dev.flatgen.dimensions.client;
 
 import dev.flatgen.client.gui.Icon;
-import dev.flatgen.client.gui.Look;
-import dev.flatgen.client.gui.PictureTab;
-import dev.flatgen.client.gui.Surface;
+import dev.flatgen.client.gui.SegmentedChoice;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.preset.rules.Dimension;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 
@@ -18,39 +16,35 @@ import net.minecraft.network.chat.Component;
  * stack the editor edits. A dimension with a stack of its own wears the flat badge, three stripes, on its picture.
  */
 public final class DimensionTabs {
-    /** Space around the tabs inside their track, in GUI pixels. */
-    private static final int TRACK_PADDING = 2;
     /** The tabs' height with their track, in GUI pixels. */
-    public static final int HEIGHT = PictureTab.HEIGHT + 2 * TRACK_PADDING;
+    public static final int HEIGHT = SegmentedChoice.HEIGHT;
 
     private DimensionTabs() {
     }
 
     /** How wide the tabs are with their track, in GUI pixels, each wide enough for its name in bold, as when chosen. */
     public static int width(EditorContext editor) {
-        int width = 2 * TRACK_PADDING;
-        for (Dimension dimension : Dimension.values()) {
-            width += PictureTab.width(editor.textWidth(DimensionPictures.name(dimension), TextStyle.STRONG));
-        }
-        return width;
+        return SegmentedChoice.width(options(editor));
     }
 
     /** The track and the tabs on it, side by side from the left of this area. */
     public static List<Widget> layOut(EditorContext editor, Rect area) {
-        List<Widget> tabs = new ArrayList<>(List.of(new Surface(Look.SEGMENTS, area)));
-        int x = area.x() + TRACK_PADDING;
-        for (Dimension dimension : Dimension.values()) {
-            Icon plain = DimensionPictures.of(dimension);
-            Icon flat = Icon.badged(plain, "badge_flat");
-            Icon picture = (canvas, left, top) -> (hasOwnStack(editor, dimension) ? flat : plain).draw(canvas, left,
-                    top);
-            int tabWidth = PictureTab.width(editor.textWidth(DimensionPictures.name(dimension), TextStyle.STRONG));
-            tabs.add(new PictureTab(picture, () -> DimensionPictures.name(dimension), new Rect(x,
-                    area.y() + TRACK_PADDING, tabWidth, PictureTab.HEIGHT), () -> editor.shown().edited() == dimension,
-                    () -> editor.choose(dimension), () -> tooltip(editor, dimension)));
-            x += tabWidth;
-        }
-        return tabs;
+        return SegmentedChoice.layOut(options(editor), area);
+    }
+
+    /** A segment for each dimension. */
+    private static List<SegmentedChoice.Option> options(EditorContext editor) {
+        return Arrays.stream(Dimension.values()).map(dimension -> option(editor, dimension)).toList();
+    }
+
+    private static SegmentedChoice.Option option(EditorContext editor, Dimension dimension) {
+        Icon plain = DimensionPictures.of(dimension);
+        Icon flat = Icon.badged(plain, "badge_flat");
+        Component name = DimensionPictures.name(dimension);
+        return new SegmentedChoice.Option((canvas, x, y) -> (hasOwnStack(editor, dimension) ? flat : plain)
+                .draw(canvas, x, y), () -> name, editor.textWidth(name, TextStyle.STRONG),
+                () -> editor.shown().edited() == dimension, () -> editor.choose(dimension),
+                () -> tooltip(editor, dimension));
     }
 
     /** A tab's tooltip: the dimension's name, then whether it is flat, made by a data pack or as the game makes it. */

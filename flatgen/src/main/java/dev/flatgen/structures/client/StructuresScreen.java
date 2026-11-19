@@ -5,8 +5,10 @@ import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.SegmentedChoice;
 import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
+import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -22,6 +24,7 @@ import dev.flatgen.structures.rules.SetStructures;
 import dev.flatgen.structures.rules.StructureChoice;
 import dev.flatgen.structures.rules.StructureSetInfo;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +45,7 @@ public final class StructuresScreen extends FlatgenScreen {
     private static final int BIOMES_NAMED = 3;
     private static final Map<StructureChoice.Mode, Icon> MODE_ICONS = Map.of(
             StructureChoice.Mode.BIOME, Icon.item("minecraft:grass_block"),
-            StructureChoice.Mode.NONE, Icon.item("minecraft:barrier"),
+            StructureChoice.Mode.NONE, Icon.struck(Icon.item("minecraft:chest")),
             StructureChoice.Mode.CHOSEN, Icon.item("minecraft:chest"));
 
     private final EditorContext editor;
@@ -90,13 +93,17 @@ public final class StructuresScreen extends FlatgenScreen {
         return new ScrollGroup.Laid(widgets, flow.bottom());
     }
 
-    /** A switch for each way of choosing the structures, side by side. */
+    /** The ways of choosing the structures as one segmented choice, only one chosen at a time. */
     private List<Widget> modeToggles(FlowLayout flow) {
-        List<Widget> toggles = new ArrayList<>();
-        for (StructureChoice.Mode mode : StructureChoice.Mode.values()) {
-            toggles.add(modeToggle(mode, flow.next(PanelSizes.DOUBLE_WIDTH)));
-        }
-        return toggles;
+        List<SegmentedChoice.Option> options = Arrays.stream(StructureChoice.Mode.values()).map(this::modeOption)
+                .toList();
+        return SegmentedChoice.layOut(options, flow.next(SegmentedChoice.width(options)));
+    }
+
+    /** How wide a switch is so as many as fit fill a row this wide, none narrower than a switch with a name. */
+    private static int columnWidth(int rowWidth) {
+        int columns = Math.max(1, (rowWidth + PanelSizes.GAP) / (PanelSizes.DOUBLE_WIDTH + PanelSizes.GAP));
+        return (rowWidth - (columns - 1) * PanelSizes.GAP) / columns;
     }
 
     /** A mod's name under its first structure's picture, then a switch for each of its structure sets. */
@@ -104,7 +111,8 @@ public final class StructuresScreen extends FlatgenScreen {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new Label(StructureIcons.of(modSets.get(0).id()), Component.literal(ClientPlatform.get()
                 .modName(mod)), flow.line(Label.height())));
-        modSets.forEach(set -> widgets.add(setToggle(set, flow.next(PanelSizes.DOUBLE_WIDTH))));
+        int width = columnWidth(flow.rest().width());
+        modSets.forEach(set -> widgets.add(setToggle(set, flow.next(width))));
         return widgets;
     }
 
@@ -121,11 +129,12 @@ public final class StructuresScreen extends FlatgenScreen {
                         () -> true, tip("flatgen.structures.lakes_tip")));
     }
 
-    private Toggle modeToggle(StructureChoice.Mode mode, Rect place) {
-        return new Toggle(MODE_ICONS.get(mode), Component.translatable(modeName(mode)), place,
+    private SegmentedChoice.Option modeOption(StructureChoice.Mode mode) {
+        Component name = Component.translatable(modeName(mode));
+        return new SegmentedChoice.Option(MODE_ICONS.get(mode), () -> name, textWidth(name, TextStyle.STRONG),
                 () -> StructureChoice.mode(preset().structureSets()) == mode,
                 () -> editor.apply(new SetStructures(StructureChoice.withMode(preset().structureSets(), mode, every))),
-                () -> true, tip(modeTip(mode)));
+                tip(modeTip(mode)));
     }
 
     /** A way of choosing structures' name, by its translation key. */
@@ -150,7 +159,7 @@ public final class StructuresScreen extends FlatgenScreen {
     private Toggle setToggle(StructureSetInfo set, Rect place) {
         boolean appears = set.appearsIn(preset().biome());
         Icon icon = appears ? StructureIcons.of(set.id()) : Icon.struck(StructureIcons.of(set.id()));
-        return new Toggle(icon, Component.literal(set.name()), place,
+        return new Toggle(icon, StructureNames.of(set), place,
                 () -> fromOptions.contains(set.id()) || StructureChoice.isOn(preset().structureSets(), set.id()),
                 () -> editor.apply(new SetStructures(StructureChoice.toggled(preset().structureSets(), set.id(),
                         every))),
