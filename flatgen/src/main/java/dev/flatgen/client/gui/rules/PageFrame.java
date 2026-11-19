@@ -35,14 +35,14 @@ public record PageFrame(int width, int height) {
     public List<Rect> actions(int... widths) {
         Rect row = footerRow();
         int x = row.right();
-        for (int width : widths) {
-            x -= width + ACTION_GAP;
+        for (int actionWidth : widths) {
+            x -= actionWidth + ACTION_GAP;
         }
         List<Rect> places = new ArrayList<>();
-        for (int width : widths) {
+        for (int actionWidth : widths) {
             x += ACTION_GAP;
-            places.add(new Rect(x, row.y(), width, ACTION_HEIGHT));
-            x += width;
+            places.add(new Rect(x, row.y(), actionWidth, ACTION_HEIGHT));
+            x += actionWidth;
         }
         return places;
     }

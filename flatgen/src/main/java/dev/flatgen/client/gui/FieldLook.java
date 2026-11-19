@@ -3,7 +3,7 @@ package dev.flatgen.client.gui;
 import dev.flatgen.client.gui.rules.Rect;
 import net.minecraft.network.chat.Component;
 
-/** How Flatgen's text and number fields look, as the game's own: a box, lit while it has the keyboard, and its text. */
+/** How Flatgen's text and number fields look: a rounded box, lit while it has the keyboard, and its text. */
 final class FieldLook {
     /** Space between the box's edge and its text, in GUI pixels. */
     private static final int PADDING = 4;

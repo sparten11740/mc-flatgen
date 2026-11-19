@@ -80,7 +80,6 @@ public final class StructuresScreen extends FlatgenScreen {
         minecraft.setScreen(editor.screen());
     }
 
-    /** The modes, the decorations and lakes, then each mod's structure sets, from the top of this area down. */
     /** The modes on a box, the decorations on another, then each mod's structures on a box of their own. */
     private ScrollGroup.Laid content(Rect area) {
         FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
