@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 
 /**
  * A question before something that cannot be undone, as deleting a preset: its words, and Yes and No. Yes does it and
@@ -34,14 +35,21 @@ public final class QuestionScreen extends FlatgenScreen {
 
     @Override
     protected List<Widget> layOut(int width, int height) {
-        int wordsHeight = words.size() * (font.lineHeight + 3);
+        List<Component> lines = wrapped(width - 2 * MARGIN);
+        int wordsHeight = TextLines.height(lines.size(), font.lineHeight);
         int buttonsY = WORDS_TOP + wordsHeight + 2 * GAP;
         FlowLayout row = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2, buttonsY,
                 2 * BUTTON_WIDTH + GAP, 0), BUTTON_HEIGHT, GAP);
         return List.of(
-                new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> words),
+                new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> lines),
                 new TextButton(CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes),
                 new TextButton(CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose));
+    }
+
+    /** The question's words in lines no wider than this. */
+    private List<Component> wrapped(int lineWidth) {
+        return words.stream().flatMap(line -> font.getSplitter().splitLines(line, lineWidth, Style.EMPTY).stream())
+                .<Component>map(part -> Component.literal(part.getString())).toList();
     }
 
     @Override

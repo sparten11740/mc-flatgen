@@ -52,7 +52,8 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int ROWS_TOP = 22;
     private static final int ROW_HEIGHT = 20;
     private static final int GAP = 4;
-    private static final int BUTTON_WIDTH = 70;
+    /** The width of a button, in GUI pixels: five fit across the narrowest screen. */
+    private static final int BUTTON_WIDTH = 56;
     private static final int NAME_WIDTH = 120;
     /** A card's size, and the size of its column picture, in GUI pixels. */
     private static final int CARD_WIDTH = 64;
@@ -123,13 +124,10 @@ public final class LibraryScreen extends FlatgenScreen {
                 + choices.builtIns().name().toLowerCase(Locale.ROOT)), rows.next(BUILT_INS_WIDTH),
                 () -> choose(choices.nextBuiltIns()), () -> true,
                 () -> List.of(Component.translatable("flatgen.library.built_ins_tip"))));
-        rows.newRow();
         widgets.add(button("flatgen.library.share", rows, this::share, () -> pickedPreset().isPresent()));
         widgets.add(button("flatgen.library.paste", rows, this::paste, () -> true));
         widgets.add(button("flatgen.library.folder", rows, () -> SystemFiles.openFolder(store.folder()), () -> true));
-        Rect said = rows.next(width - 2 * MARGIN - 3 * (BUTTON_WIDTH + GAP) - GAP);
-        widgets.add(new TextLines(new Rect(said.x(), said.y() + (said.height() - font.lineHeight) / 2, said.width(),
-                font.lineHeight), () -> List.of(message)));
+        widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
                 CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,

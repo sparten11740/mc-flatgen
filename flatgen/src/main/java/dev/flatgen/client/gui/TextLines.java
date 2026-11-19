@@ -14,6 +14,11 @@ public final class TextLines implements Widget {
     private final Rect bounds;
     private final Supplier<List<Component>> lines;
 
+    /** How tall this many lines are drawn, in GUI pixels, for a line height. */
+    public static int height(int count, int lineHeight) {
+        return count * (lineHeight + LINE_GAP);
+    }
+
     public TextLines(Rect bounds, Supplier<List<Component>> lines) {
         this.bounds = bounds;
         this.lines = lines;
