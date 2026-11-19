@@ -84,8 +84,6 @@ public final class LibraryScreen extends FlatgenScreen {
             Icon.struck(BUILT_IN));
     /** What the player is told when a preset could not be written. */
     private static final Component NOT_SAVED = Component.translatable("flatgen.library.not_saved");
-    /** The name a new preset starts with, numbered when taken. */
-    private static final String NEW_NAME = "Preset";
 
     private final EditorContext editor;
     private final PresetStore store;
@@ -107,7 +105,7 @@ public final class LibraryScreen extends FlatgenScreen {
         this.store = PresetStore.player();
         this.choices = ChoicesFile.read();
         reload();
-        this.name = PresetLibrary.newName(NEW_NAME, names());
+        this.name = PresetLibrary.newName(Component.translatable("flatgen.library.new_name").getString(), names());
     }
 
     @Override
@@ -284,7 +282,7 @@ public final class LibraryScreen extends FlatgenScreen {
 
     @Override
     protected void filesDropped(List<Path> files) {
-        said(PresetImports.fromFiles(files, store));
+        said(PresetImports.fromFiles(files, store, Imports.unnamed()));
     }
 
     /** Puts the picked preset on the clipboard as its file's text, to paste into another game or a message. */
@@ -295,12 +293,12 @@ public final class LibraryScreen extends FlatgenScreen {
 
     /** Adds the preset or superflat code on the clipboard to the player's presets. */
     private void paste() {
-        said(PresetImports.fromText(Clipboard.get(), store));
+        said(PresetImports.fromText(Clipboard.get(), store, Imports.unnamed()));
     }
 
     /** Shows what an import did, and the presets as they are now. */
     private void said(PresetImports.Outcome outcome) {
-        message = ImportSummary.of(outcome);
+        message = Imports.summary(outcome);
         reload();
     }
 
@@ -378,8 +376,9 @@ public final class LibraryScreen extends FlatgenScreen {
         @Override
         public List<Component> describe(Search.Entry card) {
             List<Component> lines = new ArrayList<>();
-            entry(card.id()).ifPresent(entry -> entry.problems().forEach(problem -> lines.add(
-                    Component.literal(problem))));
+            if (entry(card.id()).filter(entry -> !entry.problems().isEmpty()).isPresent()) {
+                lines.add(Component.translatable("flatgen.library.unreadable"));
+            }
             MissingIds lacking = missing.getOrDefault(card.id(), MissingIds.NONE);
             if (!lacking.isEmpty()) {
                 lines.add(Component.translatable("flatgen.library.missing", PresetUse.listed(lacking)));

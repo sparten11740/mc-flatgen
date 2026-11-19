@@ -25,7 +25,7 @@ public final class LibraryPanel implements EditorPanel {
     /** Adds dropped preset files to the player's presets, the editor saying what was added and left out. */
     @Override
     public boolean filesDropped(EditorContext editor, List<Path> files) {
-        editor.say(ImportSummary.of(PresetImports.fromFiles(files, PresetStore.player())));
+        editor.say(Imports.summary(PresetImports.fromFiles(files, PresetStore.player(), Imports.unnamed())));
         return true;
     }
 }

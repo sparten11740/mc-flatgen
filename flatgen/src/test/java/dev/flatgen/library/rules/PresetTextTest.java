@@ -25,7 +25,7 @@ class PresetTextTest {
         assertEquals(List.of(new Layer("minecraft:bedrock", 1), new Layer("minecraft:sand", 2)),
                 reading.preset().orElseThrow().layers());
         assertEquals("minecraft:desert", reading.preset().orElseThrow().biome());
-        assertEquals(PresetText.PASTED_NAME, reading.preset().orElseThrow().name());
+        assertEquals("", reading.preset().orElseThrow().name());
     }
 
     @Test

@@ -13,8 +13,6 @@ import java.util.Optional;
  * (F06), read into a preset for the library.
  */
 public final class PresetText {
-    /** The name a preset read from a superflat code gets, numbered when taken. */
-    public static final String PASTED_NAME = "Pasted";
     private static final String JSON_START = "{";
 
     private PresetText() {
@@ -47,7 +45,7 @@ public final class PresetText {
         if (!code.problems().isEmpty()) {
             return new Reading(Optional.empty(), List.of("the text is neither a preset nor a superflat code"));
         }
-        return new Reading(Optional.of(new Preset(PASTED_NAME, "", code.layers(), code.biome(), Optional.empty(), false,
+        return new Reading(Optional.of(new Preset("", "", code.layers(), code.biome(), Optional.empty(), false,
                 false, Map.of()).withTopBlockIcon()), List.of());
     }
 }

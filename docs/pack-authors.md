@@ -97,5 +97,5 @@ config/flatgen/library.json
 ## Trying it
 
 Open Create World, choose Superflat, press Customize, then the bookshelf: the preset shows among the built-ins. If it
-does not, the game's log (`logs/latest.log`) names the file and what is wrong with it; a card with a barrier names its
-problem in its tooltip.
+does not, the game's log (`logs/latest.log`) names the file and what is wrong with it; a card with a barrier says in
+its tooltip that it could not be read in full.

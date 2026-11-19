@@ -66,16 +66,16 @@ public final class PresetImports {
         }
     }
 
-    /** Imports the preset or superflat code a text holds. */
-    public static Outcome fromText(String text, PresetStore store) {
+    /** Imports the preset or superflat code a text holds, named {@code unnamed} when it has no name. */
+    public static Outcome fromText(String text, PresetStore store, String unnamed) {
         List<String> imported = new ArrayList<>();
         List<Skipped> skipped = new ArrayList<>();
-        add(PresetText.read(text), Optional.empty(), store, imported, skipped);
+        add(PresetText.read(text), Optional.empty(), new Destination(store, unnamed), imported, skipped);
         return new Outcome(imported, skipped);
     }
 
-    /** Imports each preset file dropped; a file that is not one is left out. */
-    public static Outcome fromFiles(List<Path> files, PresetStore store) {
+    /** Imports each preset file dropped, named {@code unnamed} when it has none; a file that is not one is left out. */
+    public static Outcome fromFiles(List<Path> files, PresetStore store, String unnamed) {
         List<String> imported = new ArrayList<>();
         List<Skipped> skipped = new ArrayList<>();
         for (Path file : files) {
@@ -85,7 +85,7 @@ public final class PresetImports {
                 continue;
             }
             try {
-                add(PresetText.read(Files.readString(file)), name, store, imported, skipped);
+                add(PresetText.read(Files.readString(file)), name, new Destination(store, unnamed), imported, skipped);
             } catch (IOException exception) {
                 Flatgen.LOGGER.warn("Could not read {} to import it", file, exception);
                 skipped.add(new Skipped(name, Reason.UNREADABLE));
@@ -94,18 +94,27 @@ public final class PresetImports {
         return new Outcome(imported, skipped);
     }
 
-    private static void add(PresetText.Reading reading, Optional<String> file, PresetStore store,
-            List<String> imported, List<Skipped> skipped) {
+    /**
+     * Where imported presets go.
+     *
+     * @param store   the player's presets
+     * @param unnamed the name a preset without one gets
+     */
+    private record Destination(PresetStore store, String unnamed) {
+    }
+
+    private static void add(PresetText.Reading reading, Optional<String> file, Destination to, List<String> imported,
+            List<Skipped> skipped) {
         if (reading.preset().isEmpty()) {
             Flatgen.LOGGER.info("Left {} out of the import: {}", file.orElse("the pasted text"), reading.problems());
             skipped.add(new Skipped(file, Reason.NOT_A_PRESET));
             return;
         }
         Preset preset = reading.preset().get();
-        List<String> names = store.load().stream().map(PresetLibrary.Entry::name).toList();
-        String base = preset.name().isBlank() ? PresetText.PASTED_NAME : preset.name();
+        List<String> names = to.store().load().stream().map(PresetLibrary.Entry::name).toList();
+        String base = preset.name().isBlank() ? to.unnamed() : preset.name();
         Preset named = preset.withName(PresetLibrary.newName(base, names));
-        if (store.saveNew(named).isPresent()) {
+        if (to.store().saveNew(named).isPresent()) {
             imported.add(named.name());
         } else {
             skipped.add(new Skipped(file, Reason.NOT_WRITTEN));

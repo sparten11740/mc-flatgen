@@ -14,6 +14,9 @@ import org.junit.jupiter.api.io.TempDir;
 
 /** Presets brought into the player's folder from text and from dropped files. */
 class PresetImportsTest {
+    /** The name a preset without one gets, as the client gives it in English. */
+    private static final String UNNAMED = "Pasted";
+
     @TempDir
     Path folder;
 
@@ -21,11 +24,14 @@ class PresetImportsTest {
     void importsTextUnderAFreeName() {
         PresetStore store = new PresetStore(folder.resolve("presets"));
         String json = PresetJson.write(TestPresets.TALL_FLAT.withName("Tall"));
-        assertEquals(new PresetImports.Outcome(List.of("Tall"), List.of()), PresetImports.fromText(json, store));
-        assertEquals(new PresetImports.Outcome(List.of("Tall 2"), List.of()), PresetImports.fromText(json, store));
-        assertEquals(List.of("Pasted"), PresetImports.fromText("minecraft:stone;minecraft:plains", store).imported());
+        assertEquals(new PresetImports.Outcome(List.of("Tall"), List.of()),
+                PresetImports.fromText(json, store, UNNAMED));
+        assertEquals(new PresetImports.Outcome(List.of("Tall 2"), List.of()),
+                PresetImports.fromText(json, store, UNNAMED));
+        assertEquals(List.of("Pasted"),
+                PresetImports.fromText("minecraft:stone;minecraft:plains", store, UNNAMED).imported());
         assertEquals(List.of(new PresetImports.Skipped(Optional.empty(), PresetImports.Reason.NOT_A_PRESET)),
-                PresetImports.fromText("hello, world!", store).skipped());
+                PresetImports.fromText("hello, world!", store, UNNAMED).skipped());
     }
 
     @Test
@@ -35,7 +41,7 @@ class PresetImportsTest {
                 .withName("Tall")));
         Path picture = Files.writeString(folder.resolve("tall.png"), "not a preset");
         Path broken = Files.writeString(folder.resolve("broken.json"), "{ not json");
-        PresetImports.Outcome outcome = PresetImports.fromFiles(List.of(preset, picture, broken), store);
+        PresetImports.Outcome outcome = PresetImports.fromFiles(List.of(preset, picture, broken), store, UNNAMED);
         assertEquals(List.of("Tall"), outcome.imported());
         assertEquals(List.of(new PresetImports.Skipped(Optional.of("tall.png"), PresetImports.Reason.NOT_A_PRESET_FILE),
                 new PresetImports.Skipped(Optional.of("broken.json"), PresetImports.Reason.NOT_A_PRESET)),
