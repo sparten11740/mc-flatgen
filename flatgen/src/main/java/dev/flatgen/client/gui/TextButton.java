@@ -12,8 +12,9 @@ import net.minecraft.network.chat.Component;
 
 /**
  * A button with a label that does something when clicked, sounding as the game's own buttons do, with a picture
- * before the label that says the same to a player who cannot read; placed too narrow for its label, it shows the
- * picture alone. It can be unusable for a while, drawn so, with a tooltip saying why.
+ * before the label that says the same to a player who cannot read, the two in the middle of the button together;
+ * placed too narrow for its label, it shows the picture alone. It can be unusable for a while, drawn so, with a
+ * tooltip saying why.
  */
 public final class TextButton implements Control {
     /** Space between the button's edge and its picture, and between the picture and the label, in GUI pixels. */
@@ -81,28 +82,33 @@ public final class TextButton implements Control {
         return this;
     }
 
+    /** Draws the picture with its left edge here, in the middle of the button's height, dimmed while unusable. */
+    private void drawPicture(Canvas canvas, int x, boolean usable) {
+        Rect picture = new Rect(x, bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
+        icon.get().draw(canvas, picture.x(), picture.y());
+        dimUnless(usable, canvas, picture);
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         boolean usable = active.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
         canvas.sprite(Look.button(kind, hovered, usable), bounds);
         Component words = label.get();
-        boolean pictureOnly = icon.isPresent() && bounds.width() < width(canvas.textWidth(words));
-        int labelX = bounds.x();
-        if (icon.isPresent()) {
-            int pictureX = pictureOnly ? bounds.x() + (bounds.width() - Icon.SIZE) / 2 : bounds.x() + PICTURE_GAP;
-            Rect picture = new Rect(pictureX, bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
-            icon.get().draw(canvas, picture.x(), picture.y());
-            dimUnless(usable, canvas, picture);
-            labelX = picture.right();
-        }
-        if (!pictureOnly) {
-            Rect labelArea = new Rect(labelX, bounds.y(), bounds.right() - labelX, bounds.height());
-            canvas.centeredText(words, labelArea, usable ? kind.label() : Look.DISABLED);
+        int labelColor = usable ? kind.label() : Look.DISABLED;
+        if (icon.isEmpty()) {
+            canvas.centeredText(words, bounds, labelColor);
+        } else if (bounds.width() < width(canvas.textWidth(words))) {
+            drawPicture(canvas, bounds.x() + (bounds.width() - Icon.SIZE) / 2, usable);
+        } else {
+            int left = bounds.x() + (bounds.width() - Icon.SIZE - PICTURE_GAP - canvas.textWidth(words)) / 2;
+            drawPicture(canvas, left, usable);
+            canvas.text(words, left + Icon.SIZE + PICTURE_GAP, TextStyle.BODY.top(bounds.y(), bounds.height()),
+                    labelColor);
         }
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
-            canvas.tooltip(lines, mouseX, mouseY);
+            canvas.tooltipBelow(lines, bounds);
         }
     }
 

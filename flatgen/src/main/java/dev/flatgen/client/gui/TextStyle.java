@@ -8,26 +8,34 @@ package dev.flatgen.client.gui;
  */
 public enum TextStyle {
     /** Most text: labels, names, values. */
-    BODY("body", 9),
+    BODY("body", 9, 1),
     /** Text that stands out within a line: a chosen tab, a card's name. */
-    STRONG("strong", 9),
+    STRONG("strong", 9, 1),
     /** A screen's or a section's heading. */
-    TITLE("title", 13);
+    TITLE("title", 13, 3);
 
     /** The most window pixels per GUI pixel the fonts are defined for; beyond, the sharpest is drawn larger. */
     public static final int SHARPEST = 6;
 
     private final String name;
     private final int lineHeight;
+    /** How far below a line's centred top the text is drawn, in GUI pixels, so its letters sit in the middle. */
+    private final int drop;
 
-    TextStyle(String name, int lineHeight) {
+    TextStyle(String name, int lineHeight, int drop) {
         this.name = name;
         this.lineHeight = lineHeight;
+        this.drop = drop;
     }
 
     /** The font that draws this text at this many window pixels per GUI pixel. */
     public String font(int pixelsPerUnit) {
         return "flatgen:" + name + "_" + Math.min(Math.max(pixelsPerUnit, 1), SHARPEST);
+    }
+
+    /** Where to draw a line of it so its letters sit in the middle of a row this tall from this top. */
+    public int top(int rowTop, int rowHeight) {
+        return rowTop + (rowHeight - lineHeight) / 2 + drop;
     }
 
     /** How tall a line of it is, in GUI pixels. */

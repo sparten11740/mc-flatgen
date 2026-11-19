@@ -48,8 +48,7 @@ public abstract class FlatgenScreen extends GameScreen {
 
     /** Draws what is behind the widgets: by default the title at the left of the header, and the frame's lines. */
     protected void drawBehind(Canvas canvas) {
-        canvas.text(title, PageFrame.MARGIN, (PageFrame.HEADER - TextStyle.TITLE.lineHeight()) / 2 + 1, Look.TEXT,
-                TextStyle.TITLE);
+        canvas.text(title, PageFrame.MARGIN, TextStyle.TITLE.top(0, PageFrame.HEADER), Look.TEXT, TextStyle.TITLE);
         drawFrameLines(canvas);
     }
 
