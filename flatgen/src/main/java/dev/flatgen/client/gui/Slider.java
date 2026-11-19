@@ -1,0 +1,98 @@
+package dev.flatgen.client.gui;
+
+import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.MouseButtons;
+import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.client.gui.rules.WidgetDescription;
+import java.util.List;
+import java.util.function.IntConsumer;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+import net.minecraft.network.chat.Component;
+
+/**
+ * A whole number from a range, set by pressing or dragging along it or by turning the wheel over it (one a notch, ten
+ * with Shift), with its name and value written on it, as the game's own sliders look.
+ */
+public final class Slider implements Widget {
+    /** The width of the handle, in GUI pixels. */
+    private static final int HANDLE = 8;
+    /** How far a notch of the wheel moves the value, alone and with Shift. */
+    private static final int WHEEL_STEP = 1;
+    private static final int SHIFT_WHEEL_STEP = 10;
+    private static final int HANDLE_COLOR = 0xFFE0E0E0;
+    private static final int LABEL_COLOR = 0xFFFFFFFF;
+
+    private final String name;
+    private final Rect bounds;
+    private final int min;
+    private final int max;
+    private final IntSupplier value;
+    private final IntConsumer onChange;
+    private final Supplier<Component> label;
+
+    /**
+     * A slider from {@code min} to {@code max} showing {@code value}, handing each new value to {@code onChange}.
+     *
+     * @param name  what it is called, for tools that drive the screen
+     * @param label what is written on it, its name and value
+     */
+    public Slider(String name, Rect bounds, int min, int max, IntSupplier value, IntConsumer onChange,
+            Supplier<Component> label) {
+        this.name = name;
+        this.bounds = bounds;
+        this.min = min;
+        this.max = max;
+        this.value = value;
+        this.onChange = onChange;
+        this.label = label;
+    }
+
+    @Override
+    public void draw(Canvas canvas, int mouseX, int mouseY) {
+        canvas.field(bounds, bounds.contains(mouseX, mouseY));
+        int travel = bounds.width() - HANDLE;
+        int handleX = bounds.x() + (max == min ? 0 : (value.getAsInt() - min) * travel / (max - min));
+        canvas.fill(new Rect(handleX, bounds.y() + 1, HANDLE, bounds.height() - 2), HANDLE_COLOR);
+        canvas.centeredText(label.get(), bounds, LABEL_COLOR);
+    }
+
+    @Override
+    public boolean click(double x, double y, int button, Modifiers modifiers) {
+        if (button != MouseButtons.LEFT || !bounds.contains(x, y)) {
+            return false;
+        }
+        setFrom(x);
+        return true;
+    }
+
+    @Override
+    public void drag(double x, double y) {
+        setFrom(x);
+    }
+
+    @Override
+    public boolean scroll(double x, double y, double amount, Modifiers modifiers) {
+        if (!bounds.contains(x, y)) {
+            return false;
+        }
+        int step = modifiers.shift() ? SHIFT_WHEEL_STEP : WHEEL_STEP;
+        onChange.accept(within(value.getAsInt() + (int) Math.signum(amount) * step));
+        return true;
+    }
+
+    @Override
+    public List<WidgetDescription> describe() {
+        return List.of(new WidgetDescription("slider", name, bounds, true, Integer.toString(value.getAsInt())));
+    }
+
+    /** Sets the value the pointer at this X stands for. */
+    private void setFrom(double x) {
+        double share = (x - bounds.x() - HANDLE / 2.0) / (bounds.width() - HANDLE);
+        onChange.accept(within(min + (int) Math.round(share * (max - min))));
+    }
+
+    private int within(int number) {
+        return Math.max(min, Math.min(max, number));
+    }
+}
