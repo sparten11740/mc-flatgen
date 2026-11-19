@@ -24,8 +24,10 @@ Default, Amplified or other noise world types.
 
 1. **Own mod, not a fork of FlatEdit+.** FlatEdit+ on 1.21.1 is its oldest build, lacks favourites, defaults, biome
    facts and modded structures, needs BoxLib and is GPL-3.0; Flatgen is Apache-2.0 OR MIT like the owner's other mods.
-2. **The Customize button is the only way in.** NeoForge's `RegisterPresetEditorsEvent` replaces the vanilla flat
-   editor; Fabric has no such event, so a mixin at the head of `WorldCreationUiState#getPresetEditor` does it there.
+2. **The Customize button is the only way in.** One mixin both loaders share, at the return of
+   `WorldCreationUiState#getPresetEditor`, hands the game Flatgen's editor for Superflat and for mods' world types
+   that are superflat underneath (F18); it took the place of NeoForge's `RegisterPresetEditorsEvent`, which registers
+   editors by world type before the world types mods add are known.
 3. **The Create World screen and its World tab are never changed.** Create Aeronautics hooks into the World tab's
    constructor and into world creation; replacing or re-laying out either would break it. Flatgen only adds listeners
    through public methods (F12) and its own screens.

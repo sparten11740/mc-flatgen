@@ -30,7 +30,7 @@ anything Flatgen does not do yet.
 - `editor/client/PresetEditors`: Flatgen's table of world types it edits and the editor it hands the game, which
   each loader's platform half registers. For now one entry, `minecraft:flat`.
 - NeoForge (`platform/neoforge`): on the mod bus, `RegisterPresetEditorsEvent.register(key, editor)` for each entry,
-  which replaces the vanilla editor. No mixin.
+  which replaces the vanilla editor. No mixin. (F18 replaced this with the mixin below, shared by both loaders.)
 - Fabric (`platform/fabric`): Fabric API has no such event; a mixin at the head of
   `WorldCreationUiState#getPresetEditor` returns Flatgen's editor when the selected world type is in the table.
 - The screen reads the current settings from `WorldCreationContext.selectedDimensions().overworld()` (a

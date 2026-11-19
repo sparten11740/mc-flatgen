@@ -10,6 +10,11 @@ displayName="${mod_name}"
 displayTest="IGNORE_ALL_VERSION"
 description='''${mod_description}'''
 
+# Flatgen's one mixin both loaders share: Customize opens Flatgen on Superflat and on mods' world types that are
+# superflat underneath (docs/backlog/18-other-flat-world-types.md).
+[[mixins]]
+config="${mod_id}.mixins.json"
+
 [[dependencies.${mod_id}]]
 modId="neoforge"
 type="required"

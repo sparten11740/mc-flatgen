@@ -1,6 +1,6 @@
 # F18 Other flat world types
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: todo · Depends on: F01
+Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F01
 
 ## Why
 
@@ -21,13 +21,19 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
 
 ## Design
 
-- NeoForge's event registers editors by key at start-up, before world types are known, so Flatgen's table gains a
-  second kind of entry: a test on the selected world type. NeoForge then needs the same small mixin into
-  `WorldCreationUiState#getPresetEditor` that Fabric has from F01; it moves to code both loaders share, and the
-  NeoForge event stays for `minecraft:flat`.
-- `editor/client/PresetEditors` holds both kinds behind one lookup, so F01's code does not change.
+- NeoForge's event registers editors by key at start-up, before world types are known, so the choice is made when
+  the game asks for the selected type's editor: Fabric's mixin into `WorldCreationUiState#getPresetEditor` from F01
+  moves to `editor/client/mixin`, listed by both loaders (`flatgen.mixins.json`), and acts at the method's return,
+  after the game or NeoForge's list found its own editor. With it the NeoForge event went too: one way in for both
+  loaders is simpler than two that must agree.
+- `editor/client/PresetEditors.editorFor` decides: Flatgen's editor for Superflat, and for a type with no editor of
+  its own that `mc/WorldTypes.onlyFlatOverworld` finds superflat underneath and nothing more (a flat overworld, and
+  every other dimension written as the Default world type writes it); else the editor the game found.
 
 ## Tests
 
-- Dev client on NeoForge with Create Aeronautics in the dev run: Airship Ready → Customize opens Flatgen; the created
-  world has Flatgen's layers and Aeronautics' game rules.
+- GameTest: Superflat and a fixture world type with only a flat overworld are told as superflat underneath; Default,
+  Large Biomes and a fixture type that also changes the End are not (`WorldTypeGameTests`).
+- Dev client: the fixture's "Airship Ready" (in the dev runs' world types) → Customize opens Flatgen, and the created
+  world keeps the type with Flatgen's layers; its "End Sea" keeps Customize greyed. With Create Aeronautics, in the
+  test instance (F20).
