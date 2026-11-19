@@ -92,6 +92,9 @@ public final class LibraryScreen extends FlatgenScreen {
     private final PresetStore store;
     private Choices choices;
     private List<PresetLibrary.Entry> entries = List.of();
+    /** The grid's sections, and the presets they were made for. */
+    private List<CardGrid.Section> sections = List.of();
+    private List<PresetLibrary.Entry> sectionsFor;
     /** The parts each preset names that the game lacks, by file, worked out as the presets are read. */
     private final Map<String, MissingIds> missing = new HashMap<>();
     /** The file of the card picked; none before one is. */
@@ -198,9 +201,14 @@ public final class LibraryScreen extends FlatgenScreen {
         pickedPreset().ifPresent(preset -> canvas.itemIcon(preset.icon(), x, y));
     }
 
+    /** The grid's one section, made again only when the presets are read again, so the grid keeps its place. */
     private List<CardGrid.Section> sections() {
-        return List.of(new CardGrid.Section(Component.translatable("flatgen.library.presets"), entries.stream()
-                .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList()));
+        if (sectionsFor != entries) {
+            sectionsFor = entries;
+            sections = List.of(new CardGrid.Section(Component.translatable("flatgen.library.presets"), entries.stream()
+                    .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList()));
+        }
+        return sections;
     }
 
     private void pick(String file) {

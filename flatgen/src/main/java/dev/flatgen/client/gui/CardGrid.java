@@ -39,8 +39,11 @@ public final class CardGrid implements Control {
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
     private int scroll;
-    /** The card the keyboard is on while the grid has the focus, by its place among the cards; the first at first. */
-    private int focusedCard;
+    /**
+     * The entry whose card the keyboard is on while the grid has the focus, by its id, so it stays on it as the
+     * sections change; the first card when none is or it is gone.
+     */
+    private Optional<String> focusedEntry = Optional.empty();
     /** The sections {@link #placed} was laid out for, at the scroll it had, and that layout. */
     private List<Section> placedSections;
     private int placedScroll;
@@ -123,9 +126,6 @@ public final class CardGrid implements Control {
     private Placed placed() {
         List<Section> current = sections.get();
         if (current != placedSections || scroll != placedScroll) {
-            if (current != placedSections) {
-                focusedCard = 0;
-            }
             placedSections = current;
             placedScroll = scroll;
             placed = layOut(current);
@@ -198,8 +198,8 @@ public final class CardGrid implements Control {
             (modifiers.shift() ? onStar : onPick).accept(focused(all).entry().id());
             return true;
         }
-        OptionalInt next = GridSteps.next(all.stream().map(Card::place).toList(), focusedCard, Keys.across(keyCode),
-                Keys.down(keyCode));
+        OptionalInt next = GridSteps.next(all.stream().map(Card::place).toList(), focusedIndex(all),
+                Keys.across(keyCode), Keys.down(keyCode));
         next.ifPresent(this::moveTo);
         return Keys.isArrow(keyCode);
     }
@@ -234,13 +234,28 @@ public final class CardGrid implements Control {
 
     /** Puts the keyboard on a card, scrolling it into sight. */
     private void moveTo(int card) {
-        focusedCard = card;
-        scroll = Scrolling.showing(scroll, cards().get(card).place(), bounds, hidden());
+        Card moved = cards().get(card);
+        focusedEntry = Optional.of(moved.entry().id());
+        scroll = Scrolling.showing(scroll, moved.place(), bounds, hidden());
     }
 
-    /** The card the keyboard is on, of these cards, the grid shows. */
+    /** The card the keyboard is on, of these cards, the grid shows: its entry's, or else the first. */
     private Card focused(List<Card> all) {
-        return all.get(Math.min(focusedCard, all.size() - 1));
+        return all.get(focusedIndex(all));
+    }
+
+    private int focusedIndex(List<Card> all) {
+        int found = focusedEntry.map(id -> indexOf(all, id)).orElse(-1);
+        return Math.max(0, found);
+    }
+
+    private static int indexOf(List<Card> all, String id) {
+        for (int index = 0; index < all.size(); index++) {
+            if (all.get(index).entry().id().equals(id)) {
+                return index;
+            }
+        }
+        return -1;
     }
 
     /** How far the cards reach below the grid's window when it is scrolled to the top, in GUI pixels. */
