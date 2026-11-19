@@ -29,8 +29,8 @@ new preset or over an existing one, rename, duplicate, delete.
 
 - `library/rules/PresetLibrary` (pure): the list, ordering (favourites, then recent, then by name), naming new presets
   ("Preset 2"), finding missing ids against a set of known ids.
-- `library/PresetStore`: reads and writes the folder through a small `Files` seam, so the pure part is tested without
-  the disk.
+- `library/PresetStore`: reads and writes the folder, each file written whole (`config/ConfigFiles`); it is
+  constructed with its folder, so its tests use a temporary one.
 - `library/client/LibraryScreen` reuses the card grid widget the biome picker uses (`client/gui/CardGrid`).
 
 ## Tests

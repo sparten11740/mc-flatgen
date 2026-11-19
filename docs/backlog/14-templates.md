@@ -26,7 +26,8 @@ Use turns the result into the editor's layers, to change further or save.
 
 - `templates/rules/Template`: an interface with its parameters and a pure function from parameter values to a preset.
   Each template is one class; adding a template is adding a class and listing it, nothing else changes.
-- The slider panel is generic over a template's parameters (number with range, block, biome, switch).
+- The settings panel is generic over a template's parameters (a number with a range, a block, a switch), each kind a
+  record of `Parameter` with a visitor, so the screen builds a control per kind without a branch on kinds.
 
 ## Tests
 

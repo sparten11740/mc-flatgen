@@ -92,8 +92,9 @@ every version; when a version's GUI differs, these two classes (and `mc/BlockSid
 (3.2), and nothing else changes.
 
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
-biome pickers, later the preset library and templates), `Toggle` (world options, structures), `Icon`, `Label`,
-`TextField`.
+biome pickers; the grid also the preset library), `Toggle` (world options, structures, templates), `PictureButton`,
+`Badge` (facts), `Slider` (templates), `QuestionScreen` (asking before what cannot be undone), `Icon`, `Label`,
+`TextField`, `TextLines`.
 
 ### 3.4 Extension points
 
@@ -114,7 +115,8 @@ Things that grow are lists of small classes behind an interface, so adding one n
 
 - Each feature that keeps a player's choices owns one file named after it, so a feature's data never grows another's
   class: `config/flatgen/flatgen.json` (the `config` feature: whether Flatgen is on), `library.json` (F12: favourites,
-  the default, recents, start on Superflat), `blocks.json` and `biomes.json` (F05, F07: recent and starred).
+  the default, recents, start on Superflat, which built-ins show), `blocks.json` and `biomes.json` (F05, F07: recent
+  and starred).
 - `config/flatgen/presets/*.json`: one preset per file, format of F02, written atomically.
 - `config/flatgen/exports/`: datapacks exported by F21.
 

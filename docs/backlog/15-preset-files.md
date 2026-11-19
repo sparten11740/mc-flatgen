@@ -23,7 +23,8 @@ presets folder.
 
 ## Design
 
-- Reuses F02's reader and F06's parser; the import summary uses the library's missing-id check (F11).
+- Reuses F02's reader and F06's parser. An imported preset naming parts this game lacks is kept as it is; the
+  library's barrier marks it and using it asks first (F11).
 - Dropped files arrive through `Screen.onFilesDrop`; the folder opens through the game's `Util.getPlatform()`.
 
 ## Tests
