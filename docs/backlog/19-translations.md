@@ -1,6 +1,6 @@
 # F19 English and German
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F16
+Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on: F16
 
 ## Why
 
@@ -27,3 +27,11 @@ Flatgen's first players speak German; most players on Modrinth and CurseForge re
 ## Tests
 
 - The key test; screenshots in both languages on one node.
+
+## Tried
+
+NeoForge, in a dev client with Blockpilot and the game set to Deutsch: the editor (Oberfläche bei Y, Ebene,
+Bauwerke: 2 gewählt, Fertig, Spiel-Editor, Abbrechen, the world options Immer klar, Immer Tag, Keine Kreaturen) and
+the library (Vorlagen, Neu speichern, Nehmen, Zurück, Standard, Mit Flachland starten, Gespeicherte Vorlagen, a new
+preset named Vorlage) show German throughout; "Mit Flachland starten" was cut off by its box and the switches were
+made wider. Not tried in German: the pickers, the templates and the questions.
