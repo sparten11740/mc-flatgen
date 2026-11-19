@@ -154,6 +154,14 @@ public final class ColumnWidget implements Widget {
         return Optional.of(Narration.entry(LayerText.describe(editor.shown(), editor.world(), selected)));
     }
 
+    /** The selected layer's block, depth and Ys, shown while the column has the focus. */
+    @Override
+    public List<Component> tooltip() {
+        int selected = editor.shown().selected();
+        return selected < 0 ? List.of(Component.translatable("flatgen.editor.empty"))
+                : LayerText.describe(editor.shown(), editor.world(), selected);
+    }
+
     /** The layer under the mouse, as its tooltip says it. */
     @Override
     public Optional<Narration> narrationAt(double x, double y) {
