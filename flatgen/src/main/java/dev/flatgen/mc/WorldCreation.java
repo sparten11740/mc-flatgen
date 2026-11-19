@@ -51,9 +51,7 @@ public final class WorldCreation {
     /** The Nether's or the End's superflat settings (F22), when the world on the screen has that dimension flat. */
     public static Optional<FlatLevelGeneratorSettings> flatSettings(WorldCreationContext context,
             Dimension dimension) {
-        LevelStem stem = context.selectedDimensions().dimensions().get(WorldTypes.stemKey(dimension));
-        return stem != null && stem.generator() instanceof FlatLevelSource flat ? Optional.of(flat.settings())
-                : Optional.empty();
+        return WorldTypes.flatSettings(context.selectedDimensions().dimensions(), dimension);
     }
 
     /**

@@ -8,11 +8,13 @@ import dev.flatgen.mc.Exports;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldTypes;
 import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UncheckedIOException;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +65,9 @@ final class ExportGameTests {
         FlatLevelGeneratorSettings settings = OptionsAtDone.settings(GLASS, registries, List.of());
         WorldPreset preset = WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
                 JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))).getOrThrow();
-        check(WorldTypes.onlyFlatOverworld(Holder.direct(preset), registries),
+        Holder<WorldPreset> type = Holder.direct(preset);
+        check(WorldTypes.flatUnderneath(type, registries)
+                && WorldTypes.flatDimensions(type).equals(EnumSet.of(Dimension.OVERWORLD)),
                 "the world preset is not the Default world type with a superflat overworld");
     }
 

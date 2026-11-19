@@ -27,15 +27,17 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
   after the game or NeoForge's list found its own editor. With it the NeoForge event went too: one way in for both
   loaders is simpler than two that must agree.
 - `editor/client/PresetEditors.editorFor` decides: Flatgen's editor for Superflat, and for a type with no editor of
-  its own that `mc/WorldTypes.onlyFlatOverworld` finds superflat underneath and nothing more (a flat overworld, and
-  every other dimension written as the Default world type writes it); else the editor the game found.
+  its own that `mc/WorldTypes.flatUnderneath` finds Flatgen can edit whole (a flat overworld, and every other
+  dimension written as the Default world type writes it, or, from F25, a flat Nether or End, which F22 edits); else
+  the editor the game found.
 - World options Done set on such a type are taken back when the screen leaves it for a type Flatgen does not edit, as
   they are when it leaves Superflat (F12's watcher asks `PresetEditors.mayHaveEdited`).
 
 ## Tests
 
-- GameTest: Superflat and a fixture world type with only a flat overworld are told as superflat underneath; Default,
-  Large Biomes and a fixture type that also changes the End are not (`WorldTypeGameTests`).
+- GameTest: Superflat, a fixture world type with only a flat overworld and one with every dimension flat (F25) are told
+  as ones Flatgen can edit whole; Default, Large Biomes and a fixture type that also changes the End are not
+  (`WorldTypeGameTests`).
 - Dev client: the fixture's "Airship Ready" (in the dev runs' world types) → Customize opens Flatgen, and the created
   world keeps the type with Flatgen's layers; its "End Sea" keeps Customize greyed. With Create Aeronautics, in the
   test instance (F20).

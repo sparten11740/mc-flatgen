@@ -14,8 +14,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 
 /**
- * The world types Flatgen edits besides Superflat (F18): those superflat underneath and nothing more, told from the
- * game's and from two of the fixture's, one with a flat overworld only and one that changes the End as well.
+ * The world types Flatgen edits besides Superflat (F18, F25): those it can edit whole, told from the game's and from
+ * the fixture's, one with a flat overworld only, one with every dimension flat and one that changes the End some other
+ * way.
  */
 final class WorldTypeGameTests {
     private WorldTypeGameTests() {
@@ -23,8 +24,7 @@ final class WorldTypeGameTests {
 
     static Map<String, Consumer<GameTestHelper>> tests() {
         Map<String, Consumer<GameTestHelper>> tests = new LinkedHashMap<>();
-        tests.put("world types superflat underneath and nothing more are told from the others",
-                WorldTypeGameTests::flatUnderneath);
+        tests.put("world types Flatgen can edit whole are told from the others", WorldTypeGameTests::flatUnderneath);
         return tests;
     }
 
@@ -32,15 +32,16 @@ final class WorldTypeGameTests {
         HolderLookup.Provider registries = helper.getLevel().registryAccess();
         expect(registries, "minecraft:flat", true);
         expect(registries, "flatgen_fixture:airship_ready", true);
+        expect(registries, "flatgen_fixture:all_flat", true);
         expect(registries, "minecraft:normal", false);
         expect(registries, "minecraft:large_biomes", false);
         expect(registries, "flatgen_fixture:end_sea", false);
     }
 
-    private static void expect(HolderLookup.Provider registries, String type, boolean flatOnly) {
+    private static void expect(HolderLookup.Provider registries, String type, boolean whole) {
         ResourceKey<WorldPreset> key = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.parse(type));
-        boolean found = WorldTypes.onlyFlatOverworld(registries.lookupOrThrow(Registries.WORLD_PRESET)
+        boolean found = WorldTypes.flatUnderneath(registries.lookupOrThrow(Registries.WORLD_PRESET)
                 .getOrThrow(key), registries);
-        check(found == flatOnly, type + (flatOnly ? " is not told as" : " is told as") + " superflat underneath");
+        check(found == whole, type + (whole ? " is not told as" : " is told as") + " one Flatgen can edit whole");
     }
 }

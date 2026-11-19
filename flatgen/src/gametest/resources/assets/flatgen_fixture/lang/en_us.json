@@ -1,4 +1,5 @@
 {
   "generator.flatgen_fixture.airship_ready": "Airship Ready (fixture)",
-  "generator.flatgen_fixture.end_sea": "End Sea (fixture)"
+  "generator.flatgen_fixture.end_sea": "End Sea (fixture)",
+  "generator.flatgen_fixture.all_flat": "All Flat (fixture)"
 }

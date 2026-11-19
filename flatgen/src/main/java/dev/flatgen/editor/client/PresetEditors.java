@@ -12,8 +12,9 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
 
 /**
- * The world types whose Customize button opens Flatgen, and the editor it opens: Superflat, and a mod's world type
- * that is superflat underneath and has no editor of its own (F18). This is the one place that says what Flatgen edits.
+ * The world types whose Customize button opens Flatgen, and the editor it opens: Superflat, and a world type with no
+ * editor of its own that Flatgen can edit whole, as a mod's flat one (F18) or the game's Flat All Dimensions (F25).
+ * This is the one place that says what Flatgen edits.
  */
 public final class PresetEditors {
     /** The world types Flatgen edits. */
@@ -38,20 +39,20 @@ public final class PresetEditors {
 
     /**
      * The editor a world type's Customize button opens: Flatgen's for Superflat, and, while Flatgen is on, for a type
-     * superflat underneath with no editor of its own; else the one the game found, none when it found none.
+     * it can edit whole with no editor of its own; else the one the game found, none when it found none.
      */
     public static Optional<PresetEditor> editorFor(Holder<WorldPreset> type, Optional<PresetEditor> found,
             HolderLookup.Provider registries) {
         boolean flatUnderneath = found.isEmpty() && SettingsFile.read().enabled()
-                && WorldTypes.onlyFlatOverworld(type, registries);
+                && WorldTypes.flatUnderneath(type, registries);
         return edits(type) || flatUnderneath ? Optional.of(EDITOR) : found;
     }
 
     /**
      * Whether Flatgen's editor can have set this world type's settings, world options included: Superflat, or a type
-     * superflat underneath.
+     * it can edit whole.
      */
     public static boolean mayHaveEdited(Holder<WorldPreset> type, HolderLookup.Provider registries) {
-        return edits(type) || WorldTypes.onlyFlatOverworld(type, registries);
+        return edits(type) || WorldTypes.flatUnderneath(type, registries);
     }
 }

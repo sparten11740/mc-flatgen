@@ -4,10 +4,14 @@ import com.google.gson.JsonElement;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import dev.flatgen.preset.rules.Dimension;
+import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -24,16 +28,31 @@ public final class WorldTypes {
     }
 
     /**
-     * Whether a world type is superflat underneath and nothing more: its overworld is flat and its other dimensions are
-     * the Default world type's, so its overworld's layers are all there is to edit, as a mod's "airship ready" type,
-     * and unlike one that changes the End as well.
+     * Whether Flatgen can edit a world type whole: its overworld is flat, and each other dimension is the Default world
+     * type's or, for the Nether and the End, which Flatgen edits too (F22), flat. So a mod's "airship ready" type is,
+     * as is the game's Flat All Dimensions from 26.2 on, and a type that makes the End some other way is not.
      */
-    public static boolean onlyFlatOverworld(Holder<WorldPreset> type, HolderLookup.Provider registries) {
+    public static boolean flatUnderneath(Holder<WorldPreset> type, HolderLookup.Provider registries) {
         Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
-        boolean flat = Optional.ofNullable(dimensions.get(LevelStem.OVERWORLD))
-                .filter(overworld -> overworld.generator() instanceof FlatLevelSource).isPresent();
-        Optional<Map<ResourceKey<LevelStem>, LevelStem>> normal = defaultDimensions(registries);
-        return flat && normal.isPresent() && others(dimensions, registries).equals(others(normal.get(), registries));
+        Set<Dimension> flat = flatDimensions(type);
+        return flat.contains(Dimension.OVERWORLD) && defaultDimensions(registries)
+                .filter(normal -> written(normal, flat, registries).equals(written(dimensions, flat, registries)))
+                .isPresent();
+    }
+
+    /** The dimensions Flatgen edits that a world type makes flat. */
+    public static Set<Dimension> flatDimensions(Holder<WorldPreset> type) {
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
+        return Arrays.stream(Dimension.values()).filter(dimension -> flatSettings(dimensions, dimension).isPresent())
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(Dimension.class)));
+    }
+
+    /** A dimension's superflat settings among a world's dimensions, when it has that dimension flat. */
+    public static Optional<FlatLevelGeneratorSettings> flatSettings(Map<ResourceKey<LevelStem>, LevelStem> dimensions,
+            Dimension dimension) {
+        LevelStem stem = dimensions.get(stemKey(dimension));
+        return stem != null && stem.generator() instanceof FlatLevelSource flat ? Optional.of(flat.settings())
+                : Optional.empty();
     }
 
     /** The dimensions of the Default world type, by their keys; none when the registries lack it. */
@@ -43,14 +62,14 @@ public final class WorldTypes {
                 .map(preset -> preset.value().createWorldDimensions().dimensions());
     }
 
-    /** Every dimension but the overworld, as the game writes it, so two world types' can be compared. */
-    private static Map<String, Optional<JsonElement>> others(Map<ResourceKey<LevelStem>, LevelStem> dimensions,
-            HolderLookup.Provider registries) {
+    /** The dimensions but those left out, as the game writes them, so two world types' can be compared. */
+    private static Map<String, Optional<JsonElement>> written(Map<ResourceKey<LevelStem>, LevelStem> dimensions,
+            Set<Dimension> leftOut, HolderLookup.Provider registries) {
         DynamicOps<JsonElement> ops = registries.createSerializationContext(JsonOps.INSTANCE);
         Map<String, Optional<JsonElement>> written = new TreeMap<>();
         dimensions.forEach((key, stem) -> written.put(key.location().toString(),
                 LevelStem.CODEC.encodeStart(ops, stem).result()));
-        written.remove(LevelStem.OVERWORLD.location().toString());
+        leftOut.forEach(dimension -> written.remove(stemKey(dimension).location().toString()));
         return written;
     }
 
