@@ -1,6 +1,7 @@
 package dev.flatgen.layers.client;
 
 import dev.flatgen.client.gui.Canvas;
+import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.MouseButtons;
@@ -64,12 +65,14 @@ public final class ColumnWidget implements Widget {
     private Drag drag = Drag.NONE;
 
     /**
-     * A dashed line across the column at a height that matters, such as where slimes stop spawning.
+     * A dashed line across the column at a height that matters, such as where slimes stop spawning, ending in the
+     * picture of what it marks, so lines of different colours differ by more than their colour.
      *
-     * @param y     the Y it is drawn at
-     * @param color its colour, ARGB
+     * @param y       the Y it is drawn at
+     * @param color   its colour, ARGB
+     * @param picture what it marks, drawn at its right end
      */
-    public record Marker(int y, int color) {
+    public record Marker(int y, int color, Icon picture) {
     }
 
     /**
@@ -240,6 +243,7 @@ public final class ColumnWidget implements Widget {
         for (int x = column.x(); x < column.right(); x += 2 * DASH) {
             canvas.fill(new Rect(x, lineY, Math.min(DASH, column.right() - x), 1), marker.color());
         }
+        marker.picture().draw(canvas, column.right() - Icon.SIZE - 1, lineY - Icon.SIZE / 2);
     }
 
     /**

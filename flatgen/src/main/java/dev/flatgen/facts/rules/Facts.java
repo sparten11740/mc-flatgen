@@ -15,8 +15,11 @@ public final class Facts {
     /** Every fact, the surface's height first. */
     public static final List<Fact> ALL = Stream.concat(Stream.of(new Surface()), ABOUT_THE_BIOME.stream()).toList();
 
+    /** The lines' colours and pictures: where slimes stop spawning, and where rain turns to snow. */
     private static final int SLIME_GREEN = 0xFF7FD34F;
     private static final int SNOW_BLUE = 0xFF8FD8FF;
+    private static final String SLIME_BALL = "minecraft:slime_ball";
+    private static final String SNOWBALL = "minecraft:snowball";
 
     private Facts() {
     }
@@ -35,7 +38,7 @@ public final class Facts {
         private static final Map<WorldFacts.Weather, String> ICONS = Map.of(
                 WorldFacts.Weather.NONE, "minecraft:sunflower",
                 WorldFacts.Weather.RAIN, "minecraft:water_bucket",
-                WorldFacts.Weather.SNOW, "minecraft:snowball");
+                WorldFacts.Weather.SNOW, SNOWBALL);
 
         @Override
         public Shown show(Situation situation) {
@@ -50,7 +53,7 @@ public final class Facts {
         @Override
         public Optional<Marker> marker(Situation situation) {
             OptionalInt line = WorldFacts.snowLine(situation.biome().climate());
-            return line.isPresent() ? Optional.of(new Marker(line.getAsInt(), SNOW_BLUE)) : Optional.empty();
+            return line.isPresent() ? Optional.of(new Marker(line.getAsInt(), SNOW_BLUE, SNOWBALL)) : Optional.empty();
         }
     }
 
@@ -70,14 +73,15 @@ public final class Facts {
             if (none) {
                 words.add(Words.of("flatgen.facts.no_slimes_here"));
             }
-            return new Shown("minecraft:slime_ball", none, words);
+            return new Shown(SLIME_BALL, none, words);
         }
 
         /** Where slimes stop spawning in slime chunks, when slimes spawn in the biome at all. */
         @Override
         public Optional<Marker> marker(Situation situation) {
             boolean slimes = situation.mobSpawning() && situation.biome().spawns().slimes();
-            return slimes ? Optional.of(new Marker(WorldFacts.SLIME_CHUNK_MAX_Y, SLIME_GREEN)) : Optional.empty();
+            return slimes ? Optional.of(new Marker(WorldFacts.SLIME_CHUNK_MAX_Y, SLIME_GREEN, SLIME_BALL))
+                    : Optional.empty();
         }
     }
 

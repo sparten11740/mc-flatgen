@@ -39,10 +39,12 @@ class FactsTest {
     @Test
     void drawsTheSlimeLineWhereSlimesSpawnAndTheSnowLineWhereSnowStarts() {
         Fact slimes = Facts.ALL.get(2);
-        assertEquals(Optional.of(new Fact.Marker(40, 0xFF7FD34F)), slimes.marker(Situation.of(PLAINS, 60, true)));
+        assertEquals(Optional.of(new Fact.Marker(40, 0xFF7FD34F, "minecraft:slime_ball")),
+                slimes.marker(Situation.of(PLAINS, 60, true)));
         assertEquals(Optional.empty(), slimes.marker(Situation.of(PLAINS, 60, false)));
         assertEquals(List.of(), markers(Situation.of(DESERT, 60, false)));
-        assertEquals(List.of(new Fact.Marker(120, 0xFF8FD8FF), new Fact.Marker(40, 0xFF7FD34F)),
+        assertEquals(List.of(new Fact.Marker(120, 0xFF8FD8FF, "minecraft:snowball"),
+                new Fact.Marker(40, 0xFF7FD34F, "minecraft:slime_ball")),
                 markers(Situation.of(WINDSWEPT_HILLS, 60, true)));
         assertEquals(Optional.empty(), Facts.ALL.get(0).marker(Situation.of(PLAINS, 60, true)));
     }

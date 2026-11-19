@@ -51,7 +51,8 @@ public interface Fact {
      *
      * @param y     the Y it is drawn at
      * @param color its colour, ARGB
+     * @param icon  the id of the item that pictures what it marks, drawn at its end
      */
-    record Marker(int y, int color) {
+    record Marker(int y, int color, String icon) {
     }
 }
