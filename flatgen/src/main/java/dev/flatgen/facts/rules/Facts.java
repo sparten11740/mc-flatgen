@@ -2,7 +2,6 @@ package dev.flatgen.facts.rules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -39,12 +38,17 @@ public final class Facts {
                 WorldFacts.Weather.NONE, "minecraft:sunflower",
                 WorldFacts.Weather.RAIN, "minecraft:water_bucket",
                 WorldFacts.Weather.SNOW, SNOWBALL);
+        /** The words of each weather, by their translation keys. */
+        private static final Map<WorldFacts.Weather, String> WORDS = Map.of(
+                WorldFacts.Weather.NONE, "flatgen.facts.weather.none",
+                WorldFacts.Weather.RAIN, "flatgen.facts.weather.rain",
+                WorldFacts.Weather.SNOW, "flatgen.facts.weather.snow");
 
         @Override
         public Shown show(Situation situation) {
             WorldFacts facts = situation.facts();
             List<Words> words = new ArrayList<>();
-            words.add(Words.of("flatgen.facts.weather." + facts.weather().name().toLowerCase(Locale.ROOT)));
+            words.add(Words.of(WORDS.get(facts.weather())));
             facts.snowLine().ifPresent(y -> words.add(new Words("flatgen.facts.snow_line", List.of(y))));
             return new Shown(ICONS.get(facts.weather()), false, words);
         }

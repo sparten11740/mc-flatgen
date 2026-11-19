@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Locale;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import net.minecraft.network.chat.Component;
@@ -82,6 +81,11 @@ public final class LibraryScreen extends FlatgenScreen {
     /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
     private static final Icon SAVE_OVER = Icon.badged(BOOK_TO_WRITE, "badge_swap");
     private static final Icon DELETE = Icon.own("trash");
+    /** The built-ins setting's states' names. */
+    private static final Map<PresetLibrary.BuiltIns, String> BUILT_INS_NAMES = Map.of(
+            PresetLibrary.BuiltIns.SHOWN, "flatgen.library.built_ins.shown",
+            PresetLibrary.BuiltIns.NO_GAME, "flatgen.library.built_ins.no_game",
+            PresetLibrary.BuiltIns.HIDDEN, "flatgen.library.built_ins.hidden");
     /** The built-ins setting's states, in its order: all shown, the game's hidden, all hidden. */
     private static final List<Icon> BUILT_INS = List.of(BUILT_IN, Icon.struck(Icon.item("minecraft:grass_block")),
             Icon.struck(BUILT_IN));
@@ -143,10 +147,10 @@ public final class LibraryScreen extends FlatgenScreen {
         nameField = new TextField("name", rows.next(NAME_WIDTH), Component.translatable("flatgen.library.name"), name,
                 text -> name = text);
         widgets.add(nameField);
-        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_plus"), "flatgen.library.save_new", rows, this::saveNew,
-                () -> !name.isBlank()));
-        widgets.add(picture(Icon.item("minecraft:anvil"), "flatgen.library.rename", rows, this::rename,
-                () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()));
+        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_plus"), "flatgen.library.save_new",
+                "flatgen.library.save_new_tip", rows, this::saveNew, () -> !name.isBlank()));
+        widgets.add(picture(Icon.item("minecraft:anvil"), "flatgen.library.rename", "flatgen.library.rename_tip", rows,
+                this::rename, () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()));
         widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.library.apply"),
                 rows.next(BUTTON_WIDTH), this::apply, () -> pickedPreset().isPresent(),
                 () -> List.of(Component.translatable("flatgen.library.apply_tip"))));
@@ -158,21 +162,23 @@ public final class LibraryScreen extends FlatgenScreen {
     /** The second row: copying, sharing, pasting, the folder, the built-ins, then what cannot be undone. */
     private List<Widget> actionRow(FlowLayout rows) {
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate", rows,
-                this::duplicate, () -> pickedPreset().isPresent()));
-        widgets.add(picture(Icon.TO_CLIPBOARD, "flatgen.library.share", rows, this::share,
+        widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate",
+                "flatgen.library.duplicate_tip", rows, this::duplicate, () -> pickedPreset().isPresent()));
+        widgets.add(picture(Icon.TO_CLIPBOARD, "flatgen.library.share", "flatgen.library.share_tip", rows, this::share,
                 () -> pickedPreset().isPresent()));
-        widgets.add(picture(Icon.FROM_CLIPBOARD, "flatgen.library.paste", rows, this::paste, () -> true));
-        widgets.add(picture(Icon.own("folder"), "flatgen.library.folder", rows,
+        widgets.add(picture(Icon.FROM_CLIPBOARD, "flatgen.library.paste", "flatgen.library.paste_tip", rows,
+                this::paste, () -> true));
+        widgets.add(picture(Icon.own("folder"), "flatgen.library.folder", "flatgen.library.folder_tip", rows,
                 () -> SystemFiles.openFolder(store.folder()), () -> true));
         widgets.add(new CycleButton(BUILT_INS, () -> choices.builtIns().ordinal(),
                 rows.next(CycleButton.width(BUILT_INS.size())), () -> choose(choices.nextBuiltIns()),
-                () -> List.of(Component.translatable("flatgen.library.built_ins."
-                        + choices.builtIns().name().toLowerCase(Locale.ROOT)),
+                () -> List.of(Component.translatable(BUILT_INS_NAMES.get(choices.builtIns())),
                         Component.translatable("flatgen.library.built_ins_tip"))));
         rows.next(DANGER_GAP);
-        widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
-        widgets.add(picture(DELETE, "flatgen.library.delete", rows, this::delete, this::pickedIsPlayers));
+        widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", "flatgen.library.overwrite_tip", rows,
+                this::overwrite, this::pickedIsPlayers));
+        widgets.add(picture(DELETE, "flatgen.library.delete", "flatgen.library.delete_tip", rows, this::delete,
+                this::pickedIsPlayers));
         return widgets;
     }
 
@@ -189,11 +195,11 @@ public final class LibraryScreen extends FlatgenScreen {
         return widgets;
     }
 
-    /** A picture button, its tooltip its name and what it does. */
-    private static PictureButton picture(Icon icon, String key, FlowLayout rows, Runnable action,
+    /** A picture button, its tooltip its name and what it does, by their translation keys. */
+    private static PictureButton picture(Icon icon, String name, String tip, FlowLayout rows, Runnable action,
             BooleanSupplier usable) {
         return new PictureButton(icon, rows.next(PictureButton.SIZE), action, usable,
-                () -> List.of(Component.translatable(key), Component.translatable(key + "_tip")));
+                () -> List.of(Component.translatable(name), Component.translatable(tip)));
     }
 
     /** Draws the picked preset's picture; nothing before one is picked. */

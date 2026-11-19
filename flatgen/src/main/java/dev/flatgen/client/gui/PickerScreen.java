@@ -7,7 +7,7 @@ import dev.flatgen.search.rules.Picks;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,6 +33,10 @@ public final class PickerScreen extends FlatgenScreen {
     private static final int SEARCH_WIDTH = 124;
     private static final int MOD_WIDTH = 140;
     private static final int CANCEL_WIDTH = 100;
+    /** The headings of the found, starred and recent sections, by their translation keys; all's is the picker's. */
+    private static final Map<PickSections.Kind, String> HEADINGS = Map.of(PickSections.Kind.FOUND,
+            "flatgen.picks.found", PickSections.Kind.STARRED, "flatgen.picks.starred", PickSections.Kind.RECENT,
+            "flatgen.picks.recent");
     /** The search field's picture, as the creative inventory's search tab has it. */
     private static final Icon SEARCH = Icon.item("minecraft:compass");
     /** The mod filter's picture while it shows every mod. */
@@ -147,8 +151,7 @@ public final class PickerScreen extends FlatgenScreen {
     }
 
     private Component heading(PickSections.Kind kind) {
-        return kind == PickSections.Kind.ALL ? picker.allHeading()
-                : Component.translatable("flatgen.picks." + kind.name().toLowerCase(Locale.ROOT));
+        return kind == PickSections.Kind.ALL ? picker.allHeading() : Component.translatable(HEADINGS.get(kind));
     }
 
     private void pick(String id) {

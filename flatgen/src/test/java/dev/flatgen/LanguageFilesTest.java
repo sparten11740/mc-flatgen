@@ -20,27 +20,25 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Flatgen's language files and its code agree (F19): every key the code or Flatgen's data files name is in each
- * language file, and each file has only keys something names. The code names a key whole, or by a beginning it ends
- * with a name of its own ({@code "flatgen.facts.weather." + weather}), or by a key with {@code _tip} after it for a
- * button's tooltip; Flatgen's options are named by their files, as {@code option.flatgen.always_day}.
+ * language file, and each file has only keys something names. The code names its keys whole, never joining one from
+ * parts, so every one is checked; Flatgen's options are named by their files, as {@code option.flatgen.always_day},
+ * the one key the code joins being the options' and their groups', which mods' files name.
  */
 class LanguageFilesTest {
     private static final Path SRC = Path.of(System.getProperty("flatgen.project"), "src", "main");
     private static final Path LANG = SRC.resolve("resources/assets/flatgen/lang");
     private static final Path DATA = SRC.resolve("resources/assets/flatgen/flatgen");
     private static final List<String> LANGUAGES = List.of("en_us", "de_de");
-    /** A key as Flatgen's code and data write them, in quotes; one ending in a dot is the beginning of keys. */
+    /** A key as Flatgen's code and data write them, in quotes; one ending in a dot begins an option's or a group's. */
     private static final Pattern KEY = Pattern.compile("\"((?:flatgen|option|option_group|preset)\\.[a-z0-9_.]+)\"");
-    /** What a tooltip's key adds to its button's. */
-    private static final String TIP = "_tip";
     private static final Set<String> NAMED = named();
 
     @Test
     void everyKeyNamedIsInEachLanguage() {
         for (String language : LANGUAGES) {
             Set<String> keys = keys(language);
-            Set<String> missing = NAMED.stream().filter(key -> !key.endsWith("."))
-                    .filter(key -> !keys.contains(key)).collect(Collectors.toCollection(TreeSet::new));
+            Set<String> missing = NAMED.stream().filter(key -> !keys.contains(key))
+                    .collect(Collectors.toCollection(TreeSet::new));
             assertEquals(Set.of(), missing, language + " lacks keys");
         }
     }
@@ -48,7 +46,7 @@ class LanguageFilesTest {
     @Test
     void eachLanguageHasOnlyKeysSomethingNames() {
         for (String language : LANGUAGES) {
-            Set<String> unused = keys(language).stream().filter(key -> !isNamed(key))
+            Set<String> unused = keys(language).stream().filter(key -> !NAMED.contains(key))
                     .collect(Collectors.toCollection(TreeSet::new));
             assertEquals(Set.of(), unused, language + " has keys nothing names");
         }
@@ -59,13 +57,7 @@ class LanguageFilesTest {
         assertEquals(keys("en_us"), keys("de_de"));
     }
 
-    private static boolean isNamed(String key) {
-        String stem = key.endsWith(TIP) ? key.substring(0, key.length() - TIP.length()) : key;
-        return NAMED.contains(key) || NAMED.contains(stem)
-                || NAMED.stream().anyMatch(named -> named.endsWith(".") && key.startsWith(named));
-    }
-
-    /** Every key or beginning of keys the Java code and Flatgen's data files name, and the keys of its options. */
+    /** Every key the Java code and Flatgen's data files name whole, and the keys of its options. */
     private static Set<String> named() {
         Set<String> found = new TreeSet<>();
         Stream.of(SRC.resolve("java"), DATA).flatMap(folder -> walk(folder).stream())
@@ -86,10 +78,11 @@ class LanguageFilesTest {
         return keys;
     }
 
-    /** The keys a file names; a file's name, as {@code flatgen.json}, is none. */
+    /** The keys a file names whole; a file's name, as {@code flatgen.json}, is none, nor is a key's beginning. */
     private static List<String> keysIn(Path file) {
         Matcher matcher = KEY.matcher(read(file));
-        return matcher.results().map(found -> found.group(1)).filter(key -> !key.endsWith(".json")).toList();
+        return matcher.results().map(found -> found.group(1))
+                .filter(key -> !key.endsWith(".json") && !key.endsWith(".")).toList();
     }
 
     private static Set<String> keys(String language) {
