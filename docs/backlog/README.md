@@ -90,7 +90,7 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F29 | [A simpler editor a child can work out](29-simple-editor-prototype.md) | todo | F06 |
+| F29 | [A simpler editor a child can work out](29-simple-editor-prototype.md) | doing | F06 |
 
 ### v2 and later
 
