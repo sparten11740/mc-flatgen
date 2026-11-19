@@ -43,15 +43,15 @@ public final class ConfigFiles {
 
     /**
      * Writes a file whole or not at all: to a temporary file beside it, then moved over it, so a crash halfway never
-     * leaves half a file; its folder is made first if needed, and a failure is logged.
+     * leaves half a file; its folder is made first if needed, and a failure is logged. The file gets the permissions
+     * any new file of the player's gets, so a shared instance folder stays readable by everyone sharing it.
      *
      * @return whether it was written
      */
     public static boolean write(Path file, String text) {
-        Path temporary = null;
+        Path temporary = file.resolveSibling(file.getFileName() + TEMPORARY);
         try {
             Files.createDirectories(file.getParent());
-            temporary = Files.createTempFile(file.getParent(), file.getFileName().toString(), TEMPORARY);
             Files.writeString(temporary, text);
             moveOver(temporary, file);
             return true;
@@ -72,9 +72,6 @@ public final class ConfigFiles {
     }
 
     private static void deleteQuietly(Path file) {
-        if (file == null) {
-            return;
-        }
         try {
             Files.deleteIfExists(file);
         } catch (IOException exception) {
