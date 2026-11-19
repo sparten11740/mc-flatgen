@@ -24,16 +24,15 @@ public final class BlockPanel implements EditorPanel {
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();
-        TextButton block = new TextButton(() -> label(editor), flow.next(PanelSizes.DOUBLE_WIDTH), () -> pick(editor),
-                () -> editor.shown().selected() >= 0,
+        TextButton block = new TextButton((canvas, x, y) -> editor.shown().selectedBlock()
+                .ifPresent(selected -> canvas.blockIcon(selected, x, y)), () -> label(editor),
+                flow.next(PanelSizes.DOUBLE_WIDTH), () -> pick(editor), () -> editor.shown().selected() >= 0,
                 () -> List.of(Component.translatable("flatgen.editor.pick_block")));
         return List.of(block, new TextLines(flow.line(editor.lineHeight()), () -> List.of(hints(editor))));
     }
 
     private static Component label(EditorContext editor) {
-        int selected = editor.shown().selected();
-        return selected >= 0 ? Names.block(editor.shown().preset().layers().get(selected).block())
-                : Component.literal("-");
+        return editor.shown().selectedBlock().map(Names::block).orElse(Component.literal("-"));
     }
 
     private static void pick(EditorContext editor) {

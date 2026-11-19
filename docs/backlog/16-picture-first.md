@@ -52,7 +52,7 @@ action pictures, as beside the column they would read as layers.
 | Paste code, Paste | paper with an "in" badge |
 | Add above, Add below | own: a layer bar with a plus above it, below it |
 | Remove layer | own: a layer bar with a minus |
-| Copy layer, Copy preset | the thing's own picture twice, offset |
+| Copy layer, Copy preset | the thing's own picture with a "copy" badge of two small sheets |
 | Delete preset | own: a trash can |
 | Presets | bookshelf |
 | Templates | crafting table |
@@ -70,6 +70,8 @@ action pictures, as beside the column they would read as layers.
   320 wide eight pictures take 174 pixels, their words about 450. Buttons that decide (Done, Cancel, Use, Back, Yes,
   No) show the picture and a short word, as there are few, there is room, and a helping parent reads along. Biome,
   Block and the templates' block settings show the picture and the name, as the name is what they hold.
+- The layer's depth buttons keep their − and + signs and their numbers, which are symbols a child learns early, not
+  words.
 - Delete and Save over stand at the end of their row, apart from the others. The question before them shows the
   action's picture large above Yes and No, and keyboard focus starts on No.
 - A setting that cycles through few states (the built-ins setting) shows which state is on with small pips below

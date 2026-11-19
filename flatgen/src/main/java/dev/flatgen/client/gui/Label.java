@@ -19,6 +19,11 @@ public final class Label implements Widget {
         this.bounds = bounds;
     }
 
+    /** How wide a label is whose words are this wide, in GUI pixels. */
+    public static int width(int textWidth) {
+        return Icon.SIZE + GAP + textWidth;
+    }
+
     /** How tall a label is, in GUI pixels: its picture. */
     public static int height() {
         return Icon.SIZE;

@@ -37,6 +37,27 @@ public interface Icon {
         }
     }
 
+    /** A sprite of the game's GUI atlas, by its id, such as {@code flatgen:icon/undo}. */
+    static Icon sprite(String id) {
+        return (canvas, x, y) -> canvas.sprite(id, x, y);
+    }
+
+    /** One of Flatgen's own pictures, by its name in {@code textures/gui/sprites/icon/}, such as {@code undo}. */
+    static Icon own(String name) {
+        return sprite("flatgen:icon/" + name);
+    }
+
+    /** This picture with a badge over it, one of Flatgen's own drawn where an item's count goes, such as a plus. */
+    static Icon badged(Icon icon, String badge) {
+        Icon over = own(badge);
+        return (canvas, x, y) -> drawOver(icon, over, canvas, x, y);
+    }
+
+    private static void drawOver(Icon below, Icon above, Canvas canvas, int x, int y) {
+        below.draw(canvas, x, y);
+        above.draw(canvas, x, y);
+    }
+
     /** A texture 16 by 16 pixels, by its location, such as {@code skyliners:textures/gui/airport.png}. */
     static Icon texture(String location) {
         return (canvas, x, y) -> canvas.texture(location, x, y);

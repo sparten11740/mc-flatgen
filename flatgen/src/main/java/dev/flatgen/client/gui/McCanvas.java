@@ -19,6 +19,10 @@ final class McCanvas implements Canvas {
     private static final ResourceLocation FIELD = ResourceLocation.withDefaultNamespace("widget/text_field");
     private static final ResourceLocation LIT_FIELD =
             ResourceLocation.withDefaultNamespace("widget/text_field_highlighted");
+    /** How far toward the player what is drawn over items is lifted, as the game lifts an item's count. */
+    private static final float OVER_ITEMS = 200;
+    /** The shade laid over a control that cannot be used, ARGB. */
+    private static final int DIM = 0x90000000;
 
     private final GuiGraphics graphics;
     private final Font font;
@@ -92,6 +96,25 @@ final class McCanvas implements Canvas {
     @Override
     public void itemIcon(String item, int x, int y) {
         graphics.renderItem(Items.stack(item), x, y);
+    }
+
+    @Override
+    public void sprite(String id, int x, int y) {
+        Optional.ofNullable(ResourceLocation.tryParse(id)).ifPresent(sprite -> overItems(() ->
+                graphics.blitSprite(sprite, x, y, Icon.SIZE, Icon.SIZE)));
+    }
+
+    @Override
+    public void dim(Rect area) {
+        overItems(() -> graphics.fill(area.x(), area.y(), area.right(), area.bottom(), DIM));
+    }
+
+    /** Draws above the items drawn so far. */
+    private void overItems(Runnable draw) {
+        graphics.pose().pushPose();
+        graphics.pose().translate(0, 0, OVER_ITEMS);
+        draw.run();
+        graphics.pose().popPose();
     }
 
     @Override

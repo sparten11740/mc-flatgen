@@ -1,5 +1,6 @@
 package dev.flatgen.structures.client;
 
+import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -19,7 +20,7 @@ public final class StructuresPanel implements EditorPanel {
 
     @Override
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
-        return List.of(new TextButton(() -> label(editor.shown().preset().structureSets()),
+        return List.of(new TextButton(Icon.own("house"), () -> label(editor.shown().preset().structureSets()),
                 flow.next(PanelSizes.DOUBLE_WIDTH), () -> open(editor), () -> true,
                 () -> List.of(Component.translatable("flatgen.structures.open"))));
     }

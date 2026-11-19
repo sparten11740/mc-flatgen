@@ -1,6 +1,10 @@
 package dev.flatgen.layers.client;
 
+import dev.flatgen.client.gui.Canvas;
+import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.NumberField;
+import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextLines;
 import dev.flatgen.client.gui.Widget;
@@ -9,13 +13,13 @@ import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.layers.rules.LayerEdits;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -38,6 +42,7 @@ public final class LayerPanel implements EditorPanel {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new TextLines(flow.line(editor.lineHeight()), panel::layerLine));
         flow.newRow();
+        widgets.add(new Label(Icon.own("thickness"), Component.empty(), flow.next(Icon.SIZE)));
         widgets.add(panel.button("−", flow.next(SMALL), new LayerEdits.ChangeHeight(-1),
                 () -> panel.hasLayer() && panel.height() > 1, () -> panel.tip("flatgen.layer.shallower")));
         widgets.add(new NumberField("height", flow.next(FIELD), panel::height,
@@ -54,13 +59,14 @@ public final class LayerPanel implements EditorPanel {
         widgets.addAll(surfaceRow(editor, flow));
         flow.newRow();
         Supplier<List<Component>> fullTip = () -> panel.roomLeft() > 0 ? List.of() : panel.full();
-        widgets.add(panel.button(Component.translatable("flatgen.editor.add_above"), flow.next(PanelSizes.WIDE_BUTTON),
+        widgets.add(panel.picture(Icon.own("add_above"), "flatgen.editor.add_above", flow.next(PictureButton.SIZE),
                 new LayerEdits.Add(true), () -> panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.button(Component.translatable("flatgen.editor.add_below"), flow.next(PanelSizes.WIDE_BUTTON),
+        widgets.add(panel.picture(Icon.own("add_below"), "flatgen.editor.add_below", flow.next(PictureButton.SIZE),
                 new LayerEdits.Add(false), () -> panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.button(Component.translatable("flatgen.editor.duplicate"), flow.next(PanelSizes.WIDE_BUTTON),
-                new LayerEdits.Duplicate(), () -> panel.hasLayer() && panel.roomLeft() > 0, fullTip));
-        widgets.add(panel.button(Component.translatable("flatgen.editor.remove"), flow.next(PanelSizes.WIDE_BUTTON),
+        widgets.add(panel.picture(Icon.badged(panel::drawBlock, "badge_copy"), "flatgen.editor.duplicate",
+                flow.next(PictureButton.SIZE), new LayerEdits.Duplicate(),
+                () -> panel.hasLayer() && panel.roomLeft() > 0, fullTip));
+        widgets.add(panel.picture(Icon.own("remove_layer"), "flatgen.editor.remove", flow.next(PictureButton.SIZE),
                 new LayerEdits.Remove(), panel::hasLayer, List::of));
         return widgets;
     }
@@ -88,10 +94,8 @@ public final class LayerPanel implements EditorPanel {
     /** The surface's Y to type, with its label: the selected layer's depth changes so the surface is there. */
     private static List<Widget> surfaceRow(EditorContext editor, FlowLayout flow) {
         Component label = Component.translatable("flatgen.editor.surface_field");
-        Rect place = flow.next(editor.textWidth(label));
-        Rect text = new Rect(place.x(), place.y() + (place.height() - editor.lineHeight()) / 2, place.width(),
-                editor.lineHeight());
-        return List.of(new TextLines(text, () -> List.of(label)),
+        Rect place = flow.next(Label.width(editor.textWidth(label)));
+        return List.of(new Label(Icon.item("minecraft:ladder"), label, place),
                 new NumberField("surface", flow.next(FIELD),
                         () -> editor.world().floor() + editor.shown().preset().height(),
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
@@ -137,6 +141,18 @@ public final class LayerPanel implements EditorPanel {
         TextButton button(Component label, Rect place, Edit edit, BooleanSupplier active,
                 Supplier<List<Component>> tooltip) {
             return new TextButton(label, place, () -> editor.apply(edit), active, tooltip);
+        }
+
+        /** A picture button making an edit, its tooltip its name and, below, why it cannot when it cannot. */
+        PictureButton picture(Icon icon, String name, Rect place, Edit edit, BooleanSupplier active,
+                Supplier<List<Component>> why) {
+            return new PictureButton(icon, place, () -> editor.apply(edit), active,
+                    () -> Stream.concat(Stream.of(Component.translatable(name)), why.get().stream()).toList());
+        }
+
+        /** Draws the selected layer's block; nothing when there is no layer. */
+        void drawBlock(Canvas canvas, int x, int y) {
+            editor.shown().selectedBlock().ifPresent(block -> canvas.blockIcon(block, x, y));
         }
     }
 }

@@ -45,6 +45,15 @@ public interface Canvas {
     /** Draws an item, 16 GUI pixels square, with its top left corner here; nothing for an item the game lacks. */
     void itemIcon(String item, int x, int y);
 
+    /**
+     * Draws a sprite of the game's GUI atlas 16 GUI pixels square, by its id, such as {@code flatgen:icon/undo}, with
+     * its top left corner here, above an item drawn there, as an item's count is.
+     */
+    void sprite(String id, int x, int y);
+
+    /** Darkens what is drawn in a rectangle, an item there too, as a control that cannot be used is drawn. */
+    void dim(Rect area);
+
     /** Draws a texture 16 by 16 pixels, by its location, with its top left corner here; nothing for a bad location. */
     void texture(String location, int x, int y);
 

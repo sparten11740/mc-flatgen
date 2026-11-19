@@ -1,12 +1,12 @@
 package dev.flatgen.editor.client;
 
-import dev.flatgen.client.gui.TextButton;
+import dev.flatgen.client.gui.Icon;
+import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorPanel;
-import dev.flatgen.editor.client.panel.PanelSizes;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -17,10 +17,10 @@ final class HistoryPanel implements EditorPanel {
     public List<Widget> layOut(EditorContext editor, FlowLayout flow) {
         flow.newRow();
         return List.of(
-                new TextButton(Component.translatable("flatgen.editor.undo"), flow.next(PanelSizes.WIDE_BUTTON),
-                        editor::undo, editor::canUndo, List::of),
-                new TextButton(Component.translatable("flatgen.editor.redo"), flow.next(PanelSizes.WIDE_BUTTON),
-                        editor::redo, editor::canRedo, List::of));
+                new PictureButton(Icon.own("undo"), flow.next(PictureButton.SIZE), editor::undo, editor::canUndo,
+                        () -> List.of(Component.translatable("flatgen.editor.undo"))),
+                new PictureButton(Icon.own("redo"), flow.next(PictureButton.SIZE), editor::redo, editor::canRedo,
+                        () -> List.of(Component.translatable("flatgen.editor.redo"))));
     }
 
     @Override
