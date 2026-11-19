@@ -1,5 +1,7 @@
 package dev.flatgen.client.gui;
 
+import dev.flatgen.client.gui.rules.Rect;
+
 /** A picture 16 GUI pixels square that a widget shows beside or in place of words: an item, a block or a texture. */
 @FunctionalInterface
 public interface Icon {
@@ -43,6 +45,16 @@ public interface Icon {
     /** A sprite of the game's GUI atlas, by its id, such as {@code flatgen:icon/undo}. */
     static Icon sprite(String id) {
         return (canvas, x, y) -> canvas.sprite(id, x, y);
+    }
+
+    /** How far a line drawing sits inside an icon's square, in GUI pixels, so it matches the size of text beside it. */
+    int LINE_INSET = 3;
+
+    /** One of {@link Look}'s line drawings, by its name, such as {@code undo}, in the middle of an icon's square. */
+    static Icon line(String name) {
+        String sprite = Look.icon(name);
+        return (canvas, x, y) -> canvas.sprite(sprite, new Rect(x + LINE_INSET, y + LINE_INSET, SIZE - 2 * LINE_INSET,
+                SIZE - 2 * LINE_INSET));
     }
 
     /** One of Flatgen's own pictures, by its name in {@code textures/gui/sprites/icon/}, such as {@code undo}. */

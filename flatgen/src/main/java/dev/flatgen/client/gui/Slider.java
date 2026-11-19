@@ -21,8 +21,6 @@ public final class Slider implements Control {
     /** How far a notch of the wheel moves the value, alone and with Shift. */
     private static final int WHEEL_STEP = 1;
     private static final int SHIFT_WHEEL_STEP = 10;
-    private static final int HANDLE_COLOR = 0xFFE0E0E0;
-    private static final int LABEL_COLOR = 0xFFFFFFFF;
 
     private final String name;
     private final Rect bounds;
@@ -54,8 +52,8 @@ public final class Slider implements Control {
         canvas.field(bounds, bounds.contains(mouseX, mouseY));
         int travel = bounds.width() - HANDLE;
         int handleX = bounds.x() + (max == min ? 0 : (value.getAsInt() - min) * travel / (max - min));
-        canvas.fill(new Rect(handleX, bounds.y() + 1, HANDLE, bounds.height() - 2), HANDLE_COLOR);
-        canvas.centeredText(label.get(), bounds, LABEL_COLOR);
+        canvas.fill(new Rect(handleX, bounds.y() + 1, HANDLE, bounds.height() - 2), Look.TEXT);
+        canvas.centeredText(label.get(), bounds, Look.TEXT);
     }
 
     @Override

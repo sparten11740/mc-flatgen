@@ -7,7 +7,6 @@ import net.minecraft.network.chat.Component;
 public final class Label implements Widget {
     /** Space between the picture and the words, in GUI pixels. */
     private static final int GAP = 4;
-    private static final int TEXT_COLOR = 0xFFFFFFFF;
 
     private final Icon icon;
     private final Component text;
@@ -33,6 +32,6 @@ public final class Label implements Widget {
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         icon.draw(canvas, bounds.x(), bounds.y() + (bounds.height() - Icon.SIZE) / 2);
         canvas.text(text, bounds.x() + Icon.SIZE + GAP, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1,
-                TEXT_COLOR);
+                Look.TEXT);
     }
 }

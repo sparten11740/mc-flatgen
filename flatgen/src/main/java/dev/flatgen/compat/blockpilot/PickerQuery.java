@@ -26,8 +26,9 @@ final class PickerQuery {
             return Result.ok(new Fields().put("open", false));
         }
         List<PickerRows.Card> cards = picker.grid().cards().stream()
-                .map(card -> new PickerRows.Card(card.entry().id(), card.place())).toList();
+                .map(card -> new PickerRows.Card(card.entry().id(), picker.inGameGui(card.place()))).toList();
         return Result.ok(new Fields().put("open", true).put("title", picker.getTitle().getString()))
-                .withRows(PickerRows.of(cards, picker.grid().bounds()).stream().map(WidgetsQuery::toRow).toList());
+                .withRows(PickerRows.of(cards, picker.inGameGui(picker.grid().bounds())).stream()
+                        .map(WidgetsQuery::toRow).toList());
     }
 }

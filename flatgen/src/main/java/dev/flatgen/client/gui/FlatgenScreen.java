@@ -20,8 +20,6 @@ import org.lwjgl.glfw.GLFW;
 public abstract class FlatgenScreen extends GameScreen {
     /** Where the title's line starts, from the top, in GUI pixels. */
     private static final int TITLE_TOP = 8;
-    /** White, the colour of a screen's title as the game draws it. */
-    private static final int TITLE_COLOR = 0xFFFFFFFF;
 
     private WidgetGroup widgets = new WidgetGroup(List.of());
     /** The screen's widgets as laid out, each an area the keyboard's focus moves between with Tab. */
@@ -49,6 +47,12 @@ public abstract class FlatgenScreen extends GameScreen {
     protected void filesDropped(List<Path> files) {
     }
 
+    /** Draws what is behind the widgets: by default the title, in the middle at the top. */
+    protected void drawBehind(Canvas canvas) {
+        canvas.centeredText(title, new Rect(0, TITLE_TOP, width, TextStyle.TITLE.lineHeight()), Look.TEXT,
+                TextStyle.TITLE);
+    }
+
     /** The control the focus starts on when Tab is first pressed; the first control by default. */
     protected Optional<Widget> firstFocus() {
         return Optional.empty();
@@ -59,9 +63,26 @@ public abstract class FlatgenScreen extends GameScreen {
         return false;
     }
 
-    /** What every widget that can be found says of itself, for tools that drive the screen. */
+    /** How wide body text is drawn on this screen. */
+    protected int textWidth(Component text) {
+        return textWidth(text, TextStyle.BODY);
+    }
+
+    /** How wide text in a style is drawn on this screen. */
+    protected int textWidth(Component text, TextStyle style) {
+        return font.width(McCanvas.styled(text, style, pixelsPerUnit()));
+    }
+
+    /** Body text in lines no wider than this, as this screen draws it. */
+    protected List<Component> wrapped(Component text, int lineWidth) {
+        return font.getSplitter().splitLines(text, lineWidth, McCanvas.style(TextStyle.BODY, pixelsPerUnit())).stream()
+                .<Component>map(part -> Component.literal(part.getString())).toList();
+    }
+
+    /** What every widget that can be found says of itself, placed in the game's GUI pixels for tools that click. */
     public List<WidgetDescription> describeWidgets() {
-        return widgets.describe();
+        return widgets.describe().stream().map(widget -> new WidgetDescription(widget.kind(), widget.label(),
+                inGameGui(widget.bounds()), widget.active(), widget.value())).toList();
     }
 
     @Override
@@ -76,7 +97,7 @@ public abstract class FlatgenScreen extends GameScreen {
 
     @Override
     protected void draw(Canvas canvas, int mouseX, int mouseY) {
-        canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
+        drawBehind(canvas);
         Optional<Widget> focused = focused();
         Optional<Rect> ring = focused.flatMap(Widget::focusArea);
         ring.ifPresent(area -> canvas.tooltipBelow(focused.get().tooltip(), area));
@@ -120,10 +141,14 @@ public abstract class FlatgenScreen extends GameScreen {
     /**
      * The wheel, vertical or, as macOS turns Shift with the wheel, horizontal, which then counts the same. As a click
      * does, it ends the keyboard's focus, as what it scrolls may take the focused control out of sight; a field that
-     * has the keyboard from a click keeps it.
+     * has the keyboard from a click keeps it. While a button is held it does nothing, as scrolling lays widgets out
+     * again and the widget dragging would never hear the release.
      */
     @Override
     protected boolean scroll(double x, double y, double horizontal, double vertical) {
+        if (pressed) {
+            return true;
+        }
         if (focus.isPresent()) {
             moveFocus(Optional.empty());
         }

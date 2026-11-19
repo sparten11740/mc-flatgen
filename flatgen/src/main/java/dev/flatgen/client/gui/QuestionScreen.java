@@ -1,6 +1,5 @@
 package dev.flatgen.client.gui;
 
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,21 +7,21 @@ import java.util.Optional;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 
 /**
- * A question before something that cannot be undone, as deleting a preset: its words, and Yes and No. Yes does it and
- * goes back, unless doing it showed another screen; No and Escape go back without.
+ * A question before something that cannot be undone, as deleting a preset: a dialog over the screen it asks about,
+ * with the picture of what Yes does, the title, the words, and No and Yes. Yes does it and goes back, unless doing it
+ * showed another screen; No and Escape go back without.
  */
 public final class QuestionScreen extends FlatgenScreen {
-    /** Where the picture and the words start, below the title, in GUI pixels. */
-    private static final int PICTURE_TOP = 20;
-    private static final int WORDS_TOP = 40;
-    private static final int BUTTON_WIDTH = 100;
-    private static final int BUTTON_HEIGHT = 20;
+    /** How wide the dialog is at most, in GUI pixels. */
+    private static final int DIALOG_WIDTH = 320;
+    /** Space inside the dialog's edges, and between its parts, in GUI pixels. */
+    private static final int PADDING = 14;
     private static final int GAP = 8;
-    /** Space at the sides of the words, in GUI pixels. */
-    private static final int MARGIN = 24;
+    /** The No and Yes buttons, in GUI pixels. */
+    private static final int BUTTON_WIDTH = 90;
+    private static final int BUTTON_HEIGHT = 19;
 
     private final Screen parent;
     private final Icon picture;
@@ -43,20 +42,42 @@ public final class QuestionScreen extends FlatgenScreen {
         this.yes = yes;
     }
 
+    /** The dialog in the middle of the screen, as tall as its words need. */
     @Override
     protected List<Widget> layOut(int width, int height) {
-        List<Component> lines = wrapped(width - 2 * MARGIN);
-        int wordsHeight = TextLines.height(lines.size(), font.lineHeight);
-        int buttonsY = WORDS_TOP + wordsHeight + 2 * GAP;
-        FlowLayout row = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2, buttonsY,
-                2 * BUTTON_WIDTH + GAP, 0), BUTTON_HEIGHT, GAP);
-        Widget answerYes = new TextButton(Icon.TICK, CommonComponents.GUI_YES, row.next(BUTTON_WIDTH), this::answerYes);
-        no = new TextButton(Icon.CROSS, CommonComponents.GUI_NO, row.next(BUTTON_WIDTH), this::onClose);
-        return List.of(
-                new Label(picture, Component.empty(), new Rect((width - Icon.SIZE) / 2, PICTURE_TOP, Icon.SIZE,
+        int dialogWidth = Math.min(DIALOG_WIDTH, width - 2 * PADDING);
+        List<Component> lines = wrapped(dialogWidth - 2 * PADDING);
+        int wordsHeight = TextLines.height(lines.size(), TextStyle.BODY.lineHeight());
+        int dialogHeight = 2 * PADDING + Icon.SIZE + TextStyle.TITLE.lineHeight() + wordsHeight + BUTTON_HEIGHT
+                + 3 * GAP;
+        Rect dialog = new Rect((width - dialogWidth) / 2, (height - dialogHeight) / 2, dialogWidth, dialogHeight);
+        int titleTop = dialog.y() + PADDING + Icon.SIZE + GAP;
+        int wordsTop = titleTop + TextStyle.TITLE.lineHeight() + GAP;
+        int buttonsY = wordsTop + wordsHeight + GAP;
+        int doneX = dialog.right() - PADDING - BUTTON_WIDTH;
+        Widget answerYes = new TextButton(Icon.line("check"), CommonComponents.GUI_YES, new Rect(doneX, buttonsY,
+                BUTTON_WIDTH, BUTTON_HEIGHT), this::answerYes).kind(Look.ButtonKind.PRIMARY);
+        no = new TextButton(Icon.line("cross"), CommonComponents.GUI_NO, new Rect(doneX - GAP - BUTTON_WIDTH, buttonsY,
+                BUTTON_WIDTH, BUTTON_HEIGHT), this::onClose);
+        return List.of(new Surface(Look.SHEET, dialog),
+                new Label(picture, Component.empty(), new Rect(dialog.x() + PADDING, dialog.y() + PADDING, Icon.SIZE,
                         Icon.SIZE)),
-                new TextLines(new Rect(MARGIN, WORDS_TOP, width - 2 * MARGIN, wordsHeight), () -> lines),
-                new WidgetGroup(List.of(answerYes, no)));
+                new Caption(this::getTitle, new Rect(dialog.x() + PADDING, titleTop, dialog.width() - 2 * PADDING,
+                        TextStyle.TITLE.lineHeight()), TextStyle.TITLE, Look.TEXT),
+                new TextLines(new Rect(dialog.x() + PADDING, wordsTop, dialog.width() - 2 * PADDING, wordsHeight),
+                        () -> lines),
+                new WidgetGroup(List.of(no, answerYes)));
+    }
+
+    /** Nothing: the title is in the dialog. */
+    @Override
+    protected void drawBehind(Canvas canvas) {
+    }
+
+    /** The screen the question asks about, dimmed behind the dialog. */
+    @Override
+    protected Optional<Screen> behind() {
+        return Optional.of(parent);
     }
 
     /** The title and the question's words, as the narrator says them when the question opens. */
@@ -74,8 +95,7 @@ public final class QuestionScreen extends FlatgenScreen {
 
     /** The question's words in lines no wider than this. */
     private List<Component> wrapped(int lineWidth) {
-        return words.stream().flatMap(line -> font.getSplitter().splitLines(line, lineWidth, Style.EMPTY).stream())
-                .<Component>map(part -> Component.literal(part.getString())).toList();
+        return words.stream().flatMap(line -> wrapped(line, lineWidth).stream()).toList();
     }
 
     @Override

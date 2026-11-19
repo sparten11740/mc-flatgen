@@ -11,18 +11,17 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * A switch with a picture, a name, and a box that is ticked while it is on and empty while it is off, so a player who
- * cannot read, or tells no green from grey, sees both what it is and whether it is on. A click turns it over; its
- * tooltip says what it does. It can be unusable, drawn greyed, with the tooltip saying why.
+ * A switch with a picture, a name, and a knob that sits at the right while it is on and at the left while it is off,
+ * so a player who cannot read, or tells no green from grey, sees both what it is and whether it is on. A click turns
+ * it over; its tooltip says what it does. It can be unusable, drawn greyed, with the tooltip saying why.
  */
 public final class Toggle implements Control {
-    /** Space around the icon and the state's picture, and between the icon and the name, in GUI pixels. */
+    /** Space around the icon and the switch, and between the icon and the name, in GUI pixels. */
     private static final int PADDING = 2;
-    /** Whether it is on, as a shape and not a colour alone: a ticked box, or an empty one. */
-    private static final Icon ON = Icon.own("switch_on");
-    private static final Icon OFF = Icon.own("switch_off");
-    private static final int LABEL_COLOR = 0xFFFFFFFF;
-    private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
+    /** A switch's track, and the knob that sits at its left while off and its right while on, in GUI pixels. */
+    private static final int SWITCH_WIDTH = 17;
+    private static final int SWITCH_HEIGHT = 10;
+    private static final int KNOB_SIZE = 8;
 
     private final Icon icon;
     private final Component label;
@@ -60,13 +59,13 @@ public final class Toggle implements Control {
         if (!canUse) {
             canvas.dim(picture);
         }
-        int stateX = bounds.right() - PADDING - Icon.SIZE;
+        int stateX = bounds.right() - 2 * PADDING - SWITCH_WIDTH;
         int labelX = iconX + Icon.SIZE + PADDING;
         canvas.clip(new Rect(labelX, bounds.y(), stateX - labelX, bounds.height()));
         canvas.text(label, labelX, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1,
-                canUse ? LABEL_COLOR : DISABLED_LABEL_COLOR);
+                canUse ? Look.TEXT : Look.DISABLED);
         canvas.unclip();
-        (on.getAsBoolean() ? ON : OFF).draw(canvas, stateX, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
+        drawSwitch(canvas, stateX, bounds.y() + (bounds.height() - SWITCH_HEIGHT) / 2, on.getAsBoolean());
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
             canvas.tooltip(lines, mouseX, mouseY);
@@ -103,5 +102,18 @@ public final class Toggle implements Control {
     public List<WidgetDescription> describe() {
         return List.of(new WidgetDescription("toggle", label.getString(), bounds, usable.getAsBoolean(),
                 Boolean.toString(on.getAsBoolean())));
+    }
+
+    /** How wide a toggle is whose label is this wide, in GUI pixels: its picture, the label and the switch. */
+    public static int width(int labelWidth) {
+        return 2 * PADDING + Icon.SIZE + PADDING + labelWidth + 3 * PADDING + SWITCH_WIDTH;
+    }
+
+    /** Draws a switch, green with its knob at the right while on, grey with it at the left while off. */
+    private static void drawSwitch(Canvas canvas, int x, int y, boolean on) {
+        canvas.sprite(on ? Look.SWITCH_ON : Look.SWITCH_OFF, new Rect(x, y, SWITCH_WIDTH, SWITCH_HEIGHT));
+        int inset = (SWITCH_HEIGHT - KNOB_SIZE) / 2;
+        int knobX = on ? x + SWITCH_WIDTH - inset - KNOB_SIZE : x + inset;
+        canvas.sprite(Look.KNOB, new Rect(knobX, y + inset, KNOB_SIZE, KNOB_SIZE));
     }
 }

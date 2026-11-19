@@ -51,7 +51,7 @@ public final class TextField implements Control {
         String text = typed.text() + (keyboard ? "_" : "");
         boolean showHint = text.isEmpty();
         FieldLook.draw(canvas, bounds, keyboard, showHint ? hint : Component.literal(text),
-                showHint ? FieldLook.HINT_COLOR : FieldLook.TEXT_COLOR);
+                showHint ? Look.MUTED : Look.TEXT);
     }
 
     @Override

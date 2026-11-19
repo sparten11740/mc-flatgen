@@ -2,8 +2,11 @@ package dev.flatgen.client.gui;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.Window;
+import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
@@ -22,6 +25,8 @@ import org.lwjgl.glfw.GLFW;
 abstract class GameScreen extends Screen {
     /** The blocks' sides drawn on this screen, looked up afresh each time it is laid out. */
     private BlockSides blockSides = new BlockSides();
+    /** The screen's own GUI pixels for the window as last laid out. */
+    private LayoutScale scale = LayoutScale.of(LayoutScale.MIN_WIDTH, LayoutScale.MIN_HEIGHT, 1);
 
     protected GameScreen(Component title) {
         super(title);
@@ -62,37 +67,85 @@ abstract class GameScreen extends Screen {
         return InputConstants.isKeyDown(window, left) || InputConstants.isKeyDown(window, right);
     }
 
+    /** How many window pixels one of the screen's GUI pixels is. */
+    protected int pixelsPerUnit() {
+        return scale.pixelsPerUnit();
+    }
+
+    /** Where an area of the screen is in the game's GUI pixels, as tools that drive the game click. */
+    public Rect inGameGui(Rect area) {
+        return scale.toGame(area);
+    }
+
+    /** The screen this one stands over, drawn dimmed behind it, as a picker stands over the editor; none by default. */
+    protected Optional<Screen> behind() {
+        return Optional.empty();
+    }
+
+    /**
+     * Sets the screen's size in its own GUI pixels for the window as it is now, before it is laid out, and lays out
+     * the screen it stands over for the window too.
+     */
     @Override
     protected void init() {
+        Window window = Minecraft.getInstance().getWindow();
+        scale = LayoutScale.of(window.getWidth(), window.getHeight(), window.getGuiScale());
+        width = scale.width();
+        height = scale.height();
+        behind().ifPresent(screen -> screen.init(window.getGuiScaledWidth(), window.getGuiScaledHeight()));
         blockSides = new BlockSides();
     }
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        McCanvas canvas = new McCanvas(graphics, font, blockSides);
-        draw(canvas, mouseX, mouseY);
+        graphics.pose().pushMatrix();
+        graphics.pose().scale(scale.gameUnit());
+        McCanvas canvas = new McCanvas(graphics, font, blockSides, scale);
+        draw(canvas, (int) scale.fromGame(mouseX), (int) scale.fromGame(mouseY));
+        graphics.pose().popMatrix();
         canvas.finish();
+    }
+
+    /**
+     * Flatgen's own background, plain, in place of the game's; or the screen this one stands over, dimmed, in a layer
+     * below what this one draws so that screen's items stay behind.
+     */
+    @Override
+    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+        Optional<Screen> under = behind();
+        if (under.isEmpty()) {
+            graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Look.BACKGROUND);
+            return;
+        }
+        under.get().extractBackground(graphics, -1, -1, partialTick);
+        under.get().extractRenderState(graphics, -1, -1, partialTick);
+        graphics.nextStratum();
+        graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Look.SCRIM);
     }
 
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        return click(event.x(), event.y(), event.button()) || super.mouseClicked(event, doubleClick);
+        return click(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+                || super.mouseClicked(event, doubleClick);
     }
 
     @Override
     public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
-        return drag(event.x(), event.y(), event.button()) || super.mouseDragged(event, dragX, dragY);
+        return drag(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+                || super.mouseDragged(event, dragX, dragY);
     }
 
     @Override
     public boolean mouseReleased(MouseButtonEvent event) {
-        return release(event.x(), event.y(), event.button()) || super.mouseReleased(event);
+        return release(scale.fromGame(event.x()), scale.fromGame(event.y()), event.button())
+                || super.mouseReleased(event);
     }
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-        return scroll(mouseX, mouseY, scrollX, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+        return scroll(scale.fromGame(mouseX), scale.fromGame(mouseY), scrollX, scrollY)
+                || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
     }
 
     @Override

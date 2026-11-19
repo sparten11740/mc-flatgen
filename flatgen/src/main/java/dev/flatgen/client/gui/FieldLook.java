@@ -5,10 +5,6 @@ import net.minecraft.network.chat.Component;
 
 /** How Flatgen's text and number fields look, as the game's own: a box, lit while it has the keyboard, and its text. */
 final class FieldLook {
-    /** The colour of a field's text. */
-    static final int TEXT_COLOR = 0xFFE0E0E0;
-    /** The colour of a hint shown in an empty field. */
-    static final int HINT_COLOR = 0xFF808080;
     /** Space between the box's edge and its text, in GUI pixels. */
     private static final int PADDING = 4;
 

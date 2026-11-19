@@ -25,8 +25,6 @@ public final class CardGrid implements Control {
     private static final int SECTION_GAP = 4;
     /** The height of a section's heading, in GUI pixels: a line of text and a little space under it. */
     private static final int HEADING_HEIGHT = 12;
-    private static final int HEADING_COLOR = 0xFFA0A0A0;
-    private static final int HOVER = 0x60FFFFFF;
     /** The mark on a starred card, an outlined star in its top right corner. */
     private static final Icon STAR = Icon.own("star");
 
@@ -160,7 +158,7 @@ public final class CardGrid implements Control {
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         Placed now = placed();
         canvas.clip(bounds);
-        now.headings().forEach(heading -> canvas.text(heading.text(), bounds.x(), heading.y(), HEADING_COLOR));
+        now.headings().forEach(heading -> canvas.text(heading.text(), bounds.x(), heading.y(), Look.MUTED));
         for (Card card : now.cards()) {
             if (card.place().bottom() > bounds.y() && card.place().y() < bounds.bottom()) {
                 drawCard(canvas, card, card.place().contains(mouseX, mouseY) && bounds.contains(mouseX, mouseY));
@@ -293,7 +291,7 @@ public final class CardGrid implements Control {
     private void drawCard(Canvas canvas, Card card, boolean hovered) {
         Rect place = card.place();
         if (hovered) {
-            canvas.fill(place, HOVER);
+            canvas.sprite(Look.BUTTON_LIT, place);
         }
         cards.draw(canvas, card.entry(), place);
         if (starred.test(card.entry().id())) {

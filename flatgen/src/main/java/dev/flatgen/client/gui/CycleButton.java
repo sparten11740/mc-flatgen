@@ -20,7 +20,6 @@ public final class CycleButton implements Control {
     private static final int BORDER = 2;
     private static final int PIP = 4;
     private static final int PIP_GAP = 2;
-    private static final int PIP_COLOR = 0xFFFFFFFF;
 
     private final List<Icon> states;
     private final IntSupplier current;
@@ -59,9 +58,9 @@ public final class CycleButton implements Control {
         for (int state = 0; state < states.size(); state++) {
             Rect pip = new Rect(bounds.x() + BORDER + Icon.SIZE + PIP_GAP + state * (PIP_GAP + PIP), pipY, PIP, PIP);
             if (state == on) {
-                canvas.fill(pip, PIP_COLOR);
+                canvas.fill(pip, Look.TEXT);
             } else {
-                canvas.outline(pip, PIP_COLOR);
+                canvas.outline(pip, Look.TEXT);
             }
         }
         if (hovered) {

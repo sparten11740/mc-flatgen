@@ -32,4 +32,28 @@ class FlowLayoutTest {
         assertEquals(new Rect(0, 61, 100, 9), flow.line(9));
         assertEquals(74, flow.bottom());
     }
+
+    @Test
+    void placesWhatABoxHoldsInsideItsPaddingAndCarriesOnBelowIt() {
+        FlowLayout flow = new FlowLayout(new Rect(0, 0, 100, 200), 20, 4);
+        FlowLayout box = flow.boxed(6);
+        assertEquals(new Rect(6, 6, 30, 20), box.next(30));
+        assertEquals(new Rect(0, 0, 100, 32), flow.endBox(box, 6));
+        assertEquals(new Rect(0, 36, 10, 20), flow.next(10));
+    }
+
+    @Test
+    void endsABoxAsFarBelowALineAsAboveIt() {
+        FlowLayout flow = new FlowLayout(new Rect(0, 0, 100, 200), 20, 4);
+        FlowLayout box = flow.boxed(6);
+        assertEquals(new Rect(6, 6, 88, 9), box.line(9));
+        assertEquals(new Rect(0, 0, 100, 21), flow.endBox(box, 6));
+    }
+
+    @Test
+    void givesTheRestOfTheRow() {
+        FlowLayout flow = new FlowLayout(new Rect(10, 0, 100, 200), 20, 4);
+        flow.next(30);
+        assertEquals(new Rect(44, 0, 66, 20), flow.rest());
+    }
 }

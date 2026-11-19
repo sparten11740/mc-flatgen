@@ -43,16 +43,14 @@ public final class BlockSides {
         static final int FLUID = -1;
     }
 
-    /** Fills the rectangle with the block's side, tiled, clipped to the rectangle. */
+    /** Fills the rectangle with the block's side, tiled from its top left corner; the caller clips what spills over. */
     public void draw(GuiGraphics graphics, String block, int fluidColor, int x, int y, int width, int height) {
         List<Face> sides = faces.computeIfAbsent(block, BlockSides::lookUp);
-        graphics.enableScissor(x, y, x + width, y + height);
         for (int tileY = y; tileY < y + height; tileY += TILE) {
             for (int tileX = x; tileX < x + width; tileX += TILE) {
                 drawTile(graphics, sides, fluidColor, tileX, tileY);
             }
         }
-        graphics.disableScissor();
     }
 
     /** Draws the block's item at this corner, or its side when it has no item, as water and fire do not. */

@@ -1,12 +1,12 @@
 package dev.flatgen.client.gui;
 
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.search.rules.PickSections;
 import dev.flatgen.search.rules.Picks;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -15,23 +15,27 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 /**
- * A picker: every entry of its kind as cards, the starred and recent ones first, found by typing and narrowed to one
- * mod. Picking one hands it on and goes back; the picks and stars are kept in the picker's own file for next time.
- * The block and the biome pickers are this screen, each with its {@link Picker}.
+ * A picker, a sheet over the screen it came from: every entry of its kind as cards, the starred and recent ones first,
+ * found by typing and narrowed to one mod. Picking one hands it on and goes back, as Close and Escape go back without;
+ * the picks and stars are kept in the picker's own file for next time. The block and the biome pickers are this
+ * screen, each with its {@link Picker}.
  */
 public final class PickerScreen extends FlatgenScreen {
-    /** Space below the grid for Cancel, in GUI pixels. */
-    private static final int FOOTER = 32;
-    private static final int MARGIN = 12;
-    /** Where the search row starts, below the title, in GUI pixels. */
-    private static final int ROW_TOP = 22;
-    private static final int ROW_HEIGHT = 20;
-    /** Space between the search row's controls, and between it and the grid, in GUI pixels. */
-    private static final int GAP = 8;
-    /** Widths in GUI pixels; the search and the mod button fit side by side on the narrowest screen, 320 wide. */
-    private static final int SEARCH_WIDTH = 124;
-    private static final int MOD_WIDTH = 140;
-    private static final int CANCEL_WIDTH = 100;
+    /** The most room left around the sheet at the screen's sides and top and bottom, in GUI pixels. */
+    private static final int SHEET_MARGIN_X = 64;
+    private static final int SHEET_MARGIN_Y = 28;
+    /** The widest and tallest the sheet grows on a large screen, in GUI pixels. */
+    private static final int MAX_SHEET_WIDTH = 620;
+    private static final int MAX_SHEET_HEIGHT = 400;
+    /** Space inside the sheet's edges, in GUI pixels. */
+    private static final int PADDING = 10;
+    /** The height of the header's controls, in GUI pixels. */
+    private static final int ROW_HEIGHT = 17;
+    /** Space between the header's controls, in GUI pixels. */
+    private static final int GAP = 6;
+    /** Widths in GUI pixels: the search field and the mod filter. */
+    private static final int SEARCH_WIDTH = 150;
+    private static final int MOD_WIDTH = 130;
     /** The search field's picture, as the creative inventory's search tab has it. */
     private static final Icon SEARCH = Icon.item("minecraft:compass");
     /** The mod filter's picture while it shows every mod. */
@@ -89,21 +93,44 @@ public final class PickerScreen extends FlatgenScreen {
         return grid;
     }
 
+    /**
+     * A sheet over the screen it came from: the title, then the search, the mod filter and Close at the right of the
+     * header, and the grid below.
+     */
     @Override
     protected List<Widget> layOut(int width, int height) {
-        FlowLayout row = new FlowLayout(new Rect(MARGIN, ROW_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
-        Label lookingGlass = new Label(SEARCH, Component.empty(), row.next(Icon.SIZE));
-        TextField search = new TextField("search", row.next(SEARCH_WIDTH), picker.searchHint(), query, this::search);
+        int sheetWidth = Math.min(MAX_SHEET_WIDTH, width - 2 * SHEET_MARGIN_X);
+        int sheetHeight = Math.min(MAX_SHEET_HEIGHT, height - 2 * SHEET_MARGIN_Y);
+        Rect sheet = new Rect((width - sheetWidth) / 2, (height - sheetHeight) / 2, sheetWidth, sheetHeight);
+        int headerTop = sheet.y() + PADDING;
+        Rect close = new Rect(sheet.right() - PADDING - ROW_HEIGHT, headerTop, ROW_HEIGHT, ROW_HEIGHT);
+        Rect modPlace = new Rect(close.x() - GAP - MOD_WIDTH, headerTop, MOD_WIDTH, ROW_HEIGHT);
+        Rect searchPlace = new Rect(modPlace.x() - GAP - SEARCH_WIDTH, headerTop, SEARCH_WIDTH, ROW_HEIGHT);
+        Rect glass = new Rect(searchPlace.x() - Icon.SIZE - GAP / 2, headerTop, Icon.SIZE, ROW_HEIGHT);
+        TextField search = new TextField("search", searchPlace, picker.searchHint(), query, this::search);
         TextButton modButton = new TextButton((canvas, x, y) -> modPicture().draw(canvas, x, y), this::modLabel,
-                row.next(MOD_WIDTH), this::nextMod, () -> true, List::of);
-        int gridTop = row.bottom() + GAP;
-        grid = new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - FOOTER),
-                picker.cardWidth(), picker.cardHeight(), this::sections, id -> picks.starred().contains(id),
-                new IdAndMod(), this::pick, this::star);
-        return List.of(new WidgetGroup(List.of(lookingGlass, search, modButton)), grid,
-                new TextButton(Icon.CROSS, CommonComponents.GUI_CANCEL,
-                        new Rect((width - CANCEL_WIDTH) / 2, height - (FOOTER + ROW_HEIGHT) / 2, CANCEL_WIDTH,
-                                ROW_HEIGHT), this::onClose));
+                modPlace, this::nextMod, () -> true, List::of);
+        int gridTop = headerTop + ROW_HEIGHT + PADDING;
+        grid = new CardGrid(new Rect(sheet.x() + PADDING, gridTop, sheet.width() - 2 * PADDING,
+                sheet.bottom() - PADDING - gridTop), picker.cardWidth(), picker.cardHeight(), this::sections,
+                id -> picks.starred().contains(id), new IdAndMod(), this::pick, this::star);
+        return List.of(new Surface(Look.SHEET, sheet),
+                new Caption(this::getTitle, new Rect(sheet.x() + PADDING, headerTop, glass.x() - sheet.x() - PADDING,
+                        ROW_HEIGHT), TextStyle.TITLE, Look.TEXT),
+                new WidgetGroup(List.of(new Label(SEARCH, Component.empty(), glass), search, modButton)), grid,
+                new PictureButton(Icon.line("cross"), close, this::onClose,
+                        () -> List.of(CommonComponents.GUI_CANCEL)));
+    }
+
+    /** Nothing: the title is on the sheet. */
+    @Override
+    protected void drawBehind(Canvas canvas) {
+    }
+
+    /** The screen the picker came from, dimmed behind the sheet. */
+    @Override
+    protected Optional<Screen> behind() {
+        return Optional.of(parent);
     }
 
     @Override

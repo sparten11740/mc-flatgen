@@ -6,6 +6,7 @@ import dev.blockpilot.api.CommandSpec;
 import dev.blockpilot.api.Fields;
 import dev.blockpilot.api.Result;
 import dev.blockpilot.api.Row;
+import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.compat.blockpilot.rules.ColumnRows;
 import dev.flatgen.editor.client.EditorScreen;
 import dev.flatgen.layers.client.ColumnWidget;
@@ -27,7 +28,8 @@ final class ColumnQuery {
             return Result.ok(new Fields().put("open", false));
         }
         ColumnWidget column = editor.column();
-        List<Row> rows = ColumnRows.of(editor.shown(), editor.worldBottom(), column.layerBounds()).stream()
+        List<Rect> layers = column.layerBounds().stream().map(editor::inGameGui).toList();
+        List<Row> rows = ColumnRows.of(editor.shown(), editor.worldBottom(), layers).stream()
                 .map(WidgetsQuery::toRow).toList();
         return Result.ok(new Fields().put("open", true)).withRows(rows);
     }

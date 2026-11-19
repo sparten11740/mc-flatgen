@@ -16,10 +16,10 @@ import net.minecraft.network.chat.Component;
  * with a tooltip saying why.
  */
 public final class TextButton implements Control {
-    private static final int LABEL_COLOR = 0xFFFFFFFF;
-    private static final int DISABLED_LABEL_COLOR = 0xFFA0A0A0;
     /** Space between the button's edge and its picture, and between the picture and the label, in GUI pixels. */
     private static final int PICTURE_GAP = 3;
+    /** Space at each side of the label, in GUI pixels. */
+    private static final int LABEL_PADDING = 6;
 
     private final Optional<Icon> icon;
     private final Supplier<Component> label;
@@ -27,6 +27,8 @@ public final class TextButton implements Control {
     private final Runnable action;
     private final BooleanSupplier active;
     private final Supplier<List<Component>> tooltip;
+    /** What the button does, which its colour says. */
+    private Look.ButtonKind kind = Look.ButtonKind.PLAIN;
 
     /** A button always usable, without a tooltip. */
     public TextButton(Component label, Rect bounds, Runnable action) {
@@ -68,11 +70,22 @@ public final class TextButton implements Control {
         this.tooltip = tooltip;
     }
 
+    /** How wide a button with a picture is whose label is this wide, in GUI pixels. */
+    public static int width(int labelWidth) {
+        return PICTURE_GAP + Icon.SIZE + labelWidth + 2 * LABEL_PADDING;
+    }
+
+    /** The button drawn as one of the look's kinds, such as the green one that goes ahead. */
+    public TextButton kind(Look.ButtonKind buttonKind) {
+        this.kind = buttonKind;
+        return this;
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         boolean usable = active.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
-        canvas.button(bounds, hovered, usable);
+        canvas.sprite(Look.button(kind, hovered, usable), bounds);
         int labelX = bounds.x();
         if (icon.isPresent()) {
             Rect picture = new Rect(bounds.x() + PICTURE_GAP, bounds.y() + (bounds.height() - Icon.SIZE) / 2,
@@ -82,7 +95,7 @@ public final class TextButton implements Control {
             labelX = picture.right();
         }
         Rect labelArea = new Rect(labelX, bounds.y(), bounds.right() - labelX, bounds.height());
-        canvas.centeredText(label.get(), labelArea, usable ? LABEL_COLOR : DISABLED_LABEL_COLOR);
+        canvas.centeredText(label.get(), labelArea, usable ? kind.label() : Look.DISABLED);
         List<Component> lines = tooltip.get();
         if (hovered && !lines.isEmpty()) {
             canvas.tooltip(lines, mouseX, mouseY);

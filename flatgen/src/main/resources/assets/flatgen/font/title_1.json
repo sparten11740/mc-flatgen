@@ -1,0 +1,4 @@
+{"providers": [
+  {"type": "ttf", "file": "flatgen:inter-semibold.ttf", "size": 10, "oversample": 1, "shift": [0, 0]},
+  {"type": "reference", "id": "minecraft:default"}
+]}
