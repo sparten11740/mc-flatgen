@@ -25,7 +25,10 @@ public final class PackPresets implements PresetSource {
     /** Built in, after the game's, hidden only when every built-in is. */
     private static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(2, false,
             Optional.of(PresetLibrary.BuiltIns.HIDDEN));
-    /** The presets whose problems were logged, so each is logged once a game, not at every look at the library. */
+    /**
+     * The preset files whose problems were logged, by key and text, so each is logged once a game, not at every look at
+     * the library, and again when a pack reloaded with resources changes it.
+     */
     private static final Set<String> LOGGED = ConcurrentHashMap.newKeySet();
 
     @Override
@@ -37,14 +40,14 @@ public final class PackPresets implements PresetSource {
         String key = KEY_PREFIX + file.getKey();
         try {
             PresetReading reading = PresetJson.read(file.getValue());
-            if (LOGGED.add(key)) {
+            if (LOGGED.add(key + "\n" + file.getValue())) {
                 reading.problems().forEach(problem -> Flatgen.LOGGER.warn("Preset {}: {}", key, problem));
             }
             String name = Component.translatable(reading.preset().name()).getString();
             return new PresetLibrary.Entry(key, KIND,
                     Optional.of(reading.preset().withName(name)), reading.problems());
         } catch (IllegalArgumentException exception) {
-            if (LOGGED.add(key)) {
+            if (LOGGED.add(key + "\n" + file.getValue())) {
                 Flatgen.LOGGER.warn("Could not read the preset {}", key, exception);
             }
             return new PresetLibrary.Entry(key, KIND, Optional.empty(),
