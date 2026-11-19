@@ -1,6 +1,6 @@
 # F17 Pack author support
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F12, F13
+Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on: F12, F13
 
 ## Why
 
@@ -13,9 +13,9 @@ Nothing to do: a pack's presets are in the library and its default is set when t
 
 ## Acceptance criteria
 
-- [ ] Presets shipped in a mod or resource pack at `assets/<namespace>/flatgen/presets/*.json` show as built-ins of
+- [x] Presets shipped in a mod or resource pack at `assets/<namespace>/flatgen/presets/*.json` show as built-ins of
   that pack (F13).
-- [ ] A pack ships `config/flatgen/library.json` with its default preset, "start on Superflat" and hidden built-ins;
+- [x] A pack ships `config/flatgen/library.json` with its default preset, "start on Superflat" and hidden built-ins;
   a player's own changes later are kept (the file is the player's once written).
 - [x] A page for pack authors in `docs/pack-authors.md` with the file format and examples.
 
@@ -34,3 +34,11 @@ Nothing to do: a pack's presets are in the library and its default is set when t
   included (`ChoicesTest`); Flatgen's own starters, read by the same source, read without problems
   (`FlatgenStarterPresetsTest`).
 - Dev client: a resource pack with a preset shows it, and its `library.json` default is ready on Superflat.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot, with a resource pack `flatgen_test_pack` holding
+`assets/flatgentest/flatgen/presets/sky.json` and a `library.json` of only `"default": "pack:flatgentest:sky"` and
+`"start_on_superflat": true`: Create New World opened with Superflat chosen, and Customize showed the pack's preset
+(bedrock and five white wool) as the default. Not tried in game: the pack preset's card in the library (the library
+found it among its sources, as it became the default), and a `library.json` hiding the built-ins.
