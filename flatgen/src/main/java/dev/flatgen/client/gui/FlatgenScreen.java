@@ -23,8 +23,6 @@ import org.lwjgl.glfw.GLFW;
 public abstract class FlatgenScreen extends Screen {
     /** Where the title's line starts, from the top, in GUI pixels. */
     private static final int TITLE_TOP = 8;
-    /** How far below the focused control its tooltip is shown, in GUI pixels. */
-    private static final int TOOLTIP_GAP = 4;
     /** White, the colour of a screen's title as the game draws it. */
     private static final int TITLE_COLOR = 0xFFFFFFFF;
 
@@ -85,8 +83,11 @@ public abstract class FlatgenScreen extends Screen {
         super.render(graphics, mouseX, mouseY, partialTick);
         McCanvas canvas = new McCanvas(graphics, font, blockSides);
         canvas.centeredText(title, new Rect(0, TITLE_TOP, width, font.lineHeight), TITLE_COLOR);
+        Optional<Widget> focused = focused();
+        Optional<Rect> ring = focused.flatMap(Widget::focusArea);
+        ring.ifPresent(area -> canvas.tooltipBelow(focused.get().tooltip(), area));
         widgets.draw(canvas, mouseX, mouseY);
-        focused().ifPresent(control -> showFocus(canvas, control));
+        ring.ifPresent(canvas::focusRing);
         this.mouseX = mouseX;
         this.mouseY = mouseY;
         canvas.finish();
@@ -216,19 +217,6 @@ public abstract class FlatgenScreen extends Screen {
         focus = to;
         focus.ifPresent(place -> focused().flatMap(Widget::focusArea).ifPresent(areas.get(place.area())::reveal));
         focused().ifPresent(control -> control.keyboard(true));
-    }
-
-    /** Draws the focus ring round a control, and its tooltip just below it. */
-    private static void showFocus(Canvas canvas, Widget control) {
-        Optional<Rect> area = control.focusArea();
-        if (area.isEmpty()) {
-            return;
-        }
-        canvas.focusRing(area.get());
-        List<Component> tooltip = control.tooltip();
-        if (!tooltip.isEmpty()) {
-            canvas.tooltip(tooltip, area.get().x(), area.get().bottom() + TOOLTIP_GAP);
-        }
     }
 
     /**

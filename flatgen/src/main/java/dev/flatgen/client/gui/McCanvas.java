@@ -23,6 +23,10 @@ final class McCanvas implements Canvas {
     private static final float OVER_ITEMS = 200;
     /** The shade laid over a control that cannot be used, ARGB. */
     private static final int DIM = 0x90000000;
+    /** How far the game draws a tooltip right of and above the point it is shown at, in GUI pixels. */
+    private static final int TOOLTIP_OFFSET = 12;
+    /** Space between a rectangle and a tooltip shown below it, in GUI pixels. */
+    private static final int TOOLTIP_GAP = 4;
     /** The focus ring's colours, outside and inside. */
     private static final int RING_OUTSIDE = 0xFFFFFFFF;
     private static final int RING_INSIDE = 0xFF000000;
@@ -144,6 +148,11 @@ final class McCanvas implements Canvas {
     @Override
     public void unclip() {
         graphics.disableScissor();
+    }
+
+    @Override
+    public void tooltipBelow(List<Component> lines, Rect area) {
+        tooltip(lines, area.x() - TOOLTIP_OFFSET, area.bottom() + TOOLTIP_GAP + TOOLTIP_OFFSET);
     }
 
     @Override

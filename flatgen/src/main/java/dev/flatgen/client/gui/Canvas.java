@@ -69,6 +69,9 @@ public interface Canvas {
     /** Ends the innermost {@link #clip}. */
     void unclip();
 
+    /** Shows a tooltip just below a rectangle, its left edges lined up, once everything else is drawn. */
+    void tooltipBelow(List<Component> lines, Rect area);
+
     /** Shows a tooltip at a point once everything else is drawn. */
     void tooltip(List<Component> lines, int x, int y);
 }
