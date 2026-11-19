@@ -1,6 +1,6 @@
 # F10 Time, weather and mob options
 
-Milestone: M2 biome and world · Release: v1 · Status: todo · Depends on: F27
+Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F27
 
 ## Why
 

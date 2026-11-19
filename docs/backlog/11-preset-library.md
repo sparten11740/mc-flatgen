@@ -1,6 +1,6 @@
 # F11 Preset library
 
-Milestone: M3 presets · Release: v1 · Status: todo · Depends on: F02, F03
+Milestone: M3 presets · Release: v1 · Status: doing · Depends on: F02, F03
 
 ## Why
 

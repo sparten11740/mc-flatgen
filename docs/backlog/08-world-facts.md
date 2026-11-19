@@ -1,6 +1,6 @@
 # F08 World facts
 
-Milestone: M2 biome and world · Release: v1 · Status: todo · Depends on: F07
+Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F07
 
 ## Why
 

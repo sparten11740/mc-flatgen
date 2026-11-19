@@ -1,6 +1,6 @@
 # F09 Structures and decorations
 
-Milestone: M2 biome and world · Release: v1 · Status: todo · Depends on: F03
+Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F03
 
 ## Why
 

@@ -31,6 +31,11 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
         options = Collections.unmodifiableMap(new TreeMap<>(options));
     }
 
+    /** This preset under another name. */
+    public Preset withName(String newName) {
+        return new Preset(newName, icon, layers, biome, structureSets, decorations, lakes, options);
+    }
+
     /** This preset with other layers, bottom first. */
     public Preset withLayers(List<Layer> newLayers) {
         return new Preset(name, icon, newLayers, biome, structureSets, decorations, lakes, options);
