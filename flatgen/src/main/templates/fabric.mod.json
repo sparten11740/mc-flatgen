@@ -17,8 +17,5 @@
   },
   "suggests": {
     "blockpilot": ">=${blockpilot_release}"
-  },
-  "breaks": {
-    "blockpilot": "<${blockpilot_release}"
   }
 }

@@ -1,7 +1,7 @@
 package dev.flatgen.platform.neoforge;
 
 import dev.flatgen.Flatgen;
-import dev.flatgen.compat.blockpilot.BlockpilotCommands;
+import dev.flatgen.compat.blockpilot.BlockpilotSupport;
 import dev.flatgen.library.client.DefaultPresets;
 import dev.flatgen.options.FirstStarts;
 import dev.flatgen.platform.ClientPlatform;
@@ -19,9 +19,8 @@ public final class NeoForgeEntrypoint {
         ClientPlatform.install(new NeoForgeClientPlatform());
         NeoForge.EVENT_BUS.addListener(NeoForgeEntrypoint::serverStarted);
         NeoForge.EVENT_BUS.addListener(NeoForgeEntrypoint::screenOpened);
-        if (ModList.get().isLoaded(BlockpilotCommands.MOD_ID)) {
-            BlockpilotCommands.register();
-        }
+        ModList.get().getModContainerById(BlockpilotSupport.MOD_ID)
+                .ifPresent(blockpilot -> BlockpilotSupport.installed(blockpilot.getModInfo().getVersion().toString()));
     }
 
     /** Runs the first-start effects of the world just created, if the integrated server started is that world's. */

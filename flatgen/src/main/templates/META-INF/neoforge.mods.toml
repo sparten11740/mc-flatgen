@@ -30,10 +30,11 @@ ordering="NONE"
 side="BOTH"
 
 # Blockpilot, which Flatgen gives commands of its own when it is there (docs/backlog/26-blockpilot-commands.md): never
-# required, but from the release whose API the commands are built against.
+# required, and any release: an older one than the commands are built against is left alone at runtime, as a range
+# here would stop the game for a player who has one.
 [[dependencies.${mod_id}]]
 modId="blockpilot"
 type="optional"
-versionRange="[${blockpilot_release},)"
+versionRange="*"
 ordering="NONE"
 side="CLIENT"

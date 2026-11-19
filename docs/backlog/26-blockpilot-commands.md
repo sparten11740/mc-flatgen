@@ -31,7 +31,10 @@ tests run.
   as before.
 - [x] Compiled against `blockpilot-api` from Blockpilot's GitHub release (the API jar attached to `v1.4.0`), so the
   build needs no local Maven repository.
-- [x] Both loaders' metadata name Blockpilot as optional, from the release the commands are tested with.
+- [x] Both loaders' metadata name Blockpilot as optional, any release: the commands are registered only with the
+  release they are built against or a later one (`compat/blockpilot/BlockpilotSupport`, the check pure and tested in
+  `BlockpilotRelease`), an older Blockpilot being left alone and logged, as a version range in the metadata stops the
+  game for a player who has an older one (NeoForge checks an optional dependency's range when it is there).
 
 ## Design
 
