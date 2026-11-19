@@ -70,6 +70,8 @@ public final class LibraryScreen extends FlatgenScreen {
     /** The width of a switch, and of the button choosing which built-ins show, in GUI pixels. */
     private static final int TOGGLE_WIDTH = 2 * BUTTON_WIDTH + GAP;
     private static final int BUILT_INS_WIDTH = 100;
+    /** What the player is told when a preset could not be written. */
+    private static final Component NOT_SAVED = Component.translatable("flatgen.library.not_saved");
     /** The name a new preset starts with, numbered when taken. */
     private static final String NEW_NAME = "Preset";
 
@@ -103,7 +105,8 @@ public final class LibraryScreen extends FlatgenScreen {
                 text -> name = text);
         List<Widget> widgets = new ArrayList<>(List.of(nameField,
                 button("flatgen.library.save_new", rows, this::saveNew, () -> !name.isBlank()),
-                button("flatgen.library.rename", rows, this::rename, () -> pickedIsPlayers() && !name.isBlank())));
+                button("flatgen.library.rename", rows, this::rename,
+                        () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank())));
         rows.newRow();
         widgets.add(button("flatgen.library.apply", rows, this::apply, () -> pickedPreset().isPresent()));
         widgets.add(button("flatgen.library.overwrite", rows, this::overwrite, this::pickedIsPlayers));
@@ -155,12 +158,13 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private void saveNew() {
-        store.saveNew(editor.shown().preset().withTopBlockIcon().withName(name.strip())).ifPresent(this::reloadPicking);
+        saved(store.saveNew(editor.shown().preset().withTopBlockIcon().withName(name.strip())))
+                .ifPresent(this::reloadPicking);
     }
 
     private void rename() {
         String file = picked.get();
-        pickedPreset().flatMap(preset -> store.rename(file, preset, name.strip()))
+        saved(store.rename(file, pickedPreset().orElseThrow(), name.strip()))
                 .ifPresent(renamed -> renamedTo(file, renamed));
     }
 
@@ -171,14 +175,28 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private void duplicate() {
-        pickedPreset().ifPresent(preset -> store.duplicate(preset).ifPresent(this::reloadPicking));
+        saved(store.duplicate(pickedPreset().orElseThrow())).ifPresent(this::reloadPicking);
+    }
+
+    /** The file a preset was written to, passed on; when it could not be written, the player is told. */
+    private Optional<String> saved(Optional<String> file) {
+        if (file.isEmpty()) {
+            message = NOT_SAVED;
+        }
+        return file;
     }
 
     private void overwrite() {
         String file = picked.get();
         String shownName = entry(file).map(PresetLibrary.Entry::name).orElse(file);
-        ask("flatgen.library.overwrite_question", shownName, () -> store.overwrite(file,
-                editor.shown().preset().withTopBlockIcon().withName(shownName)));
+        ask("flatgen.library.overwrite_question", shownName, () -> overwritten(file, shownName));
+    }
+
+    /** Saves the editor's preset over a file, under its name; when it could not be written, the player is told. */
+    private void overwritten(String file, String shownName) {
+        if (!store.overwrite(file, editor.shown().preset().withTopBlockIcon().withName(shownName))) {
+            message = NOT_SAVED;
+        }
     }
 
     private void delete() {
@@ -236,6 +254,8 @@ public final class LibraryScreen extends FlatgenScreen {
     private void deleted(String file) {
         if (store.delete(file)) {
             choose(choices.deleted(file));
+        } else {
+            message = Component.translatable("flatgen.library.not_deleted");
         }
     }
 

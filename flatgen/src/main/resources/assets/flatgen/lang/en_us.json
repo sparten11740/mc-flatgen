@@ -72,6 +72,8 @@
   "flatgen.library.missing_question": "This preset names parts this game lacks: %s. Use it with stone for missing blocks, plains for a missing biome and without missing structures?",
   "flatgen.library.missing_title": "Parts this game lacks",
   "flatgen.library.name": "Name",
+  "flatgen.library.not_deleted": "The preset could not be deleted; the game's log says why",
+  "flatgen.library.not_saved": "The preset could not be saved; the game's log says why",
   "flatgen.library.open": "Presets",
   "flatgen.library.open_tip": "Save this world's settings, or use ones saved before",
   "flatgen.library.overwrite": "Save over",
