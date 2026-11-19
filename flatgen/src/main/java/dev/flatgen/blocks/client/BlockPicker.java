@@ -29,6 +29,8 @@ public final class BlockPicker {
     private static final int PICTURE = 22;
     /** Space above the picture and between it and the name, in GUI pixels. */
     private static final int SPACING = 4;
+    /** How far above and below its line a name may draw, in GUI pixels, so its letters keep their tails. */
+    private static final int NAME_SLACK = 2;
     /** The mark of a block that falls: its size, and the picture inside its yellow pill, in GUI pixels. */
     private static final int MARK = 10;
     private static final int MARK_PICTURE = 8;
@@ -63,7 +65,7 @@ public final class BlockPicker {
             }
             Rect name = new Rect(place.x() + 1, picture.bottom() + SPACING, place.width() - 2,
                     TextStyle.BODY.lineHeight());
-            canvas.clip(name);
+            canvas.clip(new Rect(name.x(), name.y() - NAME_SLACK, name.width(), name.height() + 2 * NAME_SLACK));
             canvas.centeredText(Names.block(entry.id()), name, Look.MUTED);
             canvas.unclip();
         }
