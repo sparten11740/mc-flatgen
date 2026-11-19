@@ -1,6 +1,6 @@
 # F08 World facts
 
-Milestone: M2 biome and world · Release: v1 · Status: doing · Depends on: F07
+Milestone: M2 biome and world · Release: v1 · Status: done · Depends on: F07
 
 ## Why
 
@@ -15,20 +15,20 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
 
 ## Acceptance criteria
 
-- [ ] Surface Y: the Y mobs stand at, world bottom plus the stack's height.
-- [ ] Weather at the surface: none when the biome has no precipitation; snow when it is cold enough at the surface,
+- [x] Surface Y: the Y mobs stand at, world bottom plus the stack's height.
+- [x] Weather at the surface: none when the biome has no precipitation; snow when it is cold enough at the surface,
   rain otherwise. Above Y=80 temperature drops with height (by 0.05 per 40 blocks in 1.21.1, plus noise of up to
   about 8 blocks either way), so a tall stack in a cool biome can turn rain into snow; the fact says "snow from about
   Y=N" when the surface is near that line.
-- [ ] Slimes in slime chunks: when the biome's spawn list has slimes and the surface Y is below 40.
-- [ ] Surface slimes: when the biome is in `#minecraft:allows_surface_slime_spawns` (swamps) and the surface Y is
+- [x] Slimes in slime chunks: when the biome's spawn list has slimes and the surface Y is below 40.
+- [x] Surface slimes: when the biome is in `#minecraft:allows_surface_slime_spawns` (swamps) and the surface Y is
   between 51 and 69, at night.
-- [ ] Hostile mobs: when the biome's monster spawn list is not empty and mob spawning is on (F10).
-- [ ] "No slimes": raises the stack so the surface is at Y=40 (adds height to the thickest layer between the bottom and
+- [x] Hostile mobs: when the biome's monster spawn list is not empty and mob spawning is on (F10).
+- [x] "No slimes": raises the stack so the surface is at Y=40 (adds height to the thickest layer between the bottom and
   the top one, the bottom one in a stack of two or fewer, one undoable edit), or offers biomes without slimes. (The
   first rule, the thickest below the top two, made the classic flat world's bedrock 101 deep; tried 2026-11-19.)
-- [ ] Each fact is a picture with a tooltip; marker lines of F03 show only when they matter for the current biome.
-- [ ] The biome picker's cards (F07) show the facts that differ from biome to biome, for the world as the editor has
+- [x] Each fact is a picture with a tooltip; marker lines of F03 show only when they matter for the current biome.
+- [x] The biome picker's cards (F07) show the facts that differ from biome to biome, for the world as the editor has
   it, with their words in the card's tooltip.
 
 ## Design
@@ -56,3 +56,10 @@ no. A "no slimes" button fixes slimes in one click when they would spawn.
   GameTest world; their heights (above 50, below 70) and the biome tag are taken from 1.21.1's `Slime`.
 - Known approximations: the weather leaves out the game's temperature noise (about 8 blocks either way, so the snow
   line is "about"), and a frozen ocean, whose FROZEN temperature modifier lets it rain in patches, is told as snow.
+
+## Tried
+
+Both loaders, in dev clients with Blockpilot: the facts row (surface, weather, slimes, monsters) under the summary,
+No slimes raising the classic world to Y 40 with the dirt and greying itself, a swamp at Y 60 showing surface slimes,
+and the biome picker's cards with each biome's facts and their words. Not tried in game: a frozen ocean (told as
+snow) and the snow line near a tall stack's surface, which the unit tests and the weather GameTest cover.
