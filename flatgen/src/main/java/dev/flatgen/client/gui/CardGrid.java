@@ -44,6 +44,11 @@ public final class CardGrid implements Control {
      * sections change; the first card when none is or it is gone.
      */
     private Optional<String> focusedEntry = Optional.empty();
+    /**
+     * The card the keyboard is on, by its place among the cards, kept beside its entry as an entry can have more than
+     * one card (starred, recent and among all): the place counts while its card is still that entry's.
+     */
+    private int focusedCard;
     /** The sections {@link #placed} was laid out for, at the scroll it had, and that layout. */
     private List<Section> placedSections;
     private int placedScroll;
@@ -196,6 +201,7 @@ public final class CardGrid implements Control {
         }
         if (Keys.uses(keyCode)) {
             (modifiers.shift() ? onStar : onPick).accept(focused(all).entry().id());
+            reveal(bounds);
             return true;
         }
         OptionalInt next = GridSteps.next(all.stream().map(Card::place).toList(), focusedIndex(all),
@@ -243,6 +249,7 @@ public final class CardGrid implements Control {
     private void moveTo(int card) {
         Card moved = cards().get(card);
         focusedEntry = Optional.of(moved.entry().id());
+        focusedCard = card;
         scroll = Scrolling.showing(scroll, moved.place(), bounds, hidden());
     }
 
@@ -251,9 +258,21 @@ public final class CardGrid implements Control {
         return all.get(focusedIndex(all));
     }
 
+    /** The place of the card the keyboard is on: its own while it is still its entry's, else the entry's first card. */
     private int focusedIndex(List<Card> all) {
-        int found = focusedEntry.map(id -> indexOf(all, id)).orElse(-1);
+        boolean still = focusedCard < all.size()
+                && focusedEntry.filter(all.get(focusedCard).entry().id()::equals).isPresent();
+        int found = still ? focusedCard : focusedEntry.map(id -> indexOf(all, id)).orElse(-1);
         return Math.max(0, found);
+    }
+
+    /** Scrolls the card the keyboard is on into sight, as when the focus comes back to the grid. */
+    @Override
+    public void reveal(Rect area) {
+        List<Card> all = cards();
+        if (!all.isEmpty()) {
+            scroll = Scrolling.showing(scroll, focused(all).place(), bounds, hidden());
+        }
     }
 
     private static int indexOf(List<Card> all, String id) {
