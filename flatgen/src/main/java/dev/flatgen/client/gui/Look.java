@@ -21,7 +21,7 @@ public final class Look {
     /** What is chosen, and a link. */
     public static final int ACCENT = 0xFF5AA9FF;
     /** Text on the green button that goes ahead, on the blue one that adds, and on the purple one that stands out. */
-    public static final int ON_PRIMARY = 0xFF0B1A08;
+    public static final int ON_PRIMARY = 0xFFFFFFFF;
     public static final int ON_ACCENT = 0xFFD6E7FF;
     public static final int ON_VIVID = 0xFFFFFFFF;
 

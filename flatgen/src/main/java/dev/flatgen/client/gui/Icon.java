@@ -7,10 +7,6 @@ import dev.flatgen.client.gui.rules.Rect;
 public interface Icon {
     /** The size of an icon, in GUI pixels. */
     int SIZE = 16;
-    /** Yes, use this, done: the picture of every button that accepts. */
-    Icon TICK = own("tick");
-    /** No, cancel: the picture of every button that throws away what was being done. */
-    Icon CROSS = own("cross");
     /** Something the game lacks or cannot read: the barrier. */
     Icon MISSING = item("minecraft:barrier");
     /** Back to where the player came from, keeping what was done: a left arrow. */

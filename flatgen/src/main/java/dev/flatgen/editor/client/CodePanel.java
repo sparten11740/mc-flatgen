@@ -27,10 +27,10 @@ final class CodePanel implements EditorPanel {
         FlowLayout bar = layout.flow(EditorRegion.LAYERS_BAR);
         int size = EditorRegion.LAYERS_BAR.rowHeight();
         layout.add(EditorRegion.LAYERS_BAR, List.of(
-                new PictureButton(Icon.line("copy"), bar.next(size), () -> copy(editor),
+                new PictureButton(Icon.TO_CLIPBOARD, bar.next(size), () -> copy(editor),
                         () -> List.of(Component.translatable("flatgen.code.copy"),
                                 Component.translatable("flatgen.code.copy_tip"))),
-                new PictureButton(Icon.line("paste"), bar.next(size), () -> paste(editor),
+                new PictureButton(Icon.FROM_CLIPBOARD, bar.next(size), () -> paste(editor),
                         () -> List.of(Component.translatable("flatgen.code.paste"),
                                 Component.translatable("flatgen.code.paste_tip")))));
     }
