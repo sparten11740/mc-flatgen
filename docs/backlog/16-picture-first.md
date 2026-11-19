@@ -27,8 +27,75 @@ alone and with the game's narrator.
 
 ## Design
 
-- Icons are sprites in Flatgen's own GUI atlas (`assets/flatgen/textures/gui/sprites/`), drawn through `Canvas`.
-- Widgets implement the game's narration through the version tree's screen base.
+Decided on 2026-11-19 by a panel of three agents (a UX designer for children who cannot read yet, a long-time
+Minecraft and modpack player, an accessibility engineer who knows the game's GUI code), while the owner was away; the owner may
+revisit any of it.
+
+### Pictures
+
+One picture keeps one meaning everywhere, and none takes a meaning the code already gives an item: the barrier means
+missing, the book a built-in preset, the chest chosen structures, the lava bucket lakes, the grass block Superflat.
+A vanilla item is used where it says the thing; Flatgen's own pixel art where no item does. Terrain blocks are never
+action pictures, as beside the column they would read as layers.
+
+| Control | Picture |
+|---|---|
+| Done, Use (library, templates), Yes | own: green tick |
+| Cancel (editor, pickers), No | own: red cross |
+| Back (library, templates) | own: left arrow, as the recipe book's page arrow |
+| Biome | the biome's own colours drawn as a little landscape (sky, grass, foliage, water), and its name |
+| Block, a template's block setting | the block itself, and its name |
+| Structures | own: a village house |
+| No slimes | the slime ball with the "no" sign |
+| Undo, Redo | own: a hooked arrow curling left, right |
+| Copy code, Share | paper with an "out" badge |
+| Paste code, Paste | paper with an "in" badge |
+| Add above, Add below | own: a layer bar with a plus above it, below it |
+| Remove layer | own: a layer bar with a minus |
+| Copy layer, Copy preset | the thing's own picture twice, offset |
+| Delete preset | own: a trash can |
+| Presets | bookshelf |
+| Templates | crafting table |
+| Vanilla editor | command block |
+| Surface Y | ladder |
+| Thickness | own: a layer between a two-headed arrow |
+| Search | compass, as the creative inventory's search tab |
+| Mod filter | the state itself: all mods own 2x2 of small cubes, Minecraft the grass block, a mod its first block |
+| Name field, Rename | name tag, anvil |
+| Save new, Save over | writable book with a plus badge, with a circular-arrow badge |
+| Built-ins setting | book; the grass block with the "no" sign; the book with the "no" sign |
+| Folder | own: a folder |
+
+- Action buttons show the picture alone, with a tooltip on hover and on keyboard focus, which the narrator reads: at
+  320 wide eight pictures take 174 pixels, their words about 450. Buttons that decide (Done, Cancel, Use, Back, Yes,
+  No) show the picture and a short word, as there are few, there is room, and a helping parent reads along. Biome,
+  Block and the templates' block settings show the picture and the name, as the name is what they hold.
+- Delete and Save over stand at the end of their row, apart from the others. The question before them shows the
+  action's picture large above Yes and No, and keyboard focus starts on No.
+- A setting that cycles through few states (the built-ins setting) shows which state is on with small pips below
+  its picture. The templates' block settings stand in the order their layers do, top layer first.
+- Own pictures are 16 by 16 with a pixel of margin, outlined in the darkest shade of their own colour, lit from the top
+  left, three or four shades a colour from vanilla's palette (emerald green, redstone red, iron grey, paper, oak),
+  no anti-aliasing. A badge is 7 by 7 at the bottom right, where an item's count goes, drawn over the item as the
+  "no" sign is.
+- Not in F16, for F29: steppers beside number fields, and a tick or a cross that answers a click on the clipboard
+  buttons in place of the message line.
+
+### Toolkit
+
+- Own pictures are sprites of the game's GUI atlas, `assets/flatgen/textures/gui/sprites/icon/`, drawn by
+  `Icon.sprite` through `Canvas.sprite`; on 1.20.1, which has no atlas, the version tree's `McCanvas` draws the same
+  files as plain textures. `Icon.texture` stays for world options' data (F27). The pixel art is written as text in
+  `tools/sprites.py`, which writes the PNG files, so it can be read and changed in review.
+- Shapes beside colours: the toggle's light becomes an on or off picture, a button that cannot be used dims its
+  picture and says so, the "no" sign (a circle and slash with a dark rim) replaces the red stroke, the card star is an
+  outlined star, and the column's fact lines end in their fact's picture.
+- Keyboard focus lives where the keyboard does, in `WidgetGroup`: each widget says whether it takes focus and where its
+  focus is; Tab moves between the screen's areas (its top-level groups), arrows within one, Enter uses, Escape goes
+  back, and a click hides the focus ring. The order is pure (`client/gui/rules/FocusOrder`) and tested. The ring is
+  drawn once by `FlatgenScreen`, black then white, a shape not a colour.
+- Narration: each widget describes itself as a `Narration` (kind, name, state, whether usable); `FlatgenScreen` turns
+  the focused or hovered one into the game's narration, so no feature touches the game's narration API.
 
 ## Tests
 
