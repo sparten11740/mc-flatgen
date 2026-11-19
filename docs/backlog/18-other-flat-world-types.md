@@ -1,6 +1,6 @@
 # F18 Other flat world types
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F01
+Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on: F01
 
 ## Why
 
@@ -13,10 +13,10 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
 
 ## Acceptance criteria
 
-- [ ] Any world type whose overworld generator is flat and that has no editor of its own gets Flatgen's editor.
-- [ ] The world type stays selected, so what its mod does for it (Aeronautics' game rules for Airship Ready) still
+- [x] Any world type whose overworld generator is flat and that has no editor of its own gets Flatgen's editor.
+- [x] The world type stays selected, so what its mod does for it (Aeronautics' game rules for Airship Ready) still
   happens.
-- [ ] World types that change other dimensions (Aeronautics' "End Sea") are left alone unless their overworld is all
+- [x] World types that change other dimensions (Aeronautics' "End Sea") are left alone unless their overworld is all
   they are.
 
 ## Design
@@ -41,6 +41,8 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
 ## Tried
 
 Both loaders, in dev clients with Blockpilot: cycling World Type reaches the fixture's "Airship Ready", and Customize
-opens Flatgen's editor on its own layers (bedrock, three stone, grass). Not tried yet: creating that world and finding
-its type kept, the fixture's "End Sea" with Customize greyed (the GameTest tells it apart), and Create Aeronautics'
-own Airship Ready in the test instance (F20).
+opens Flatgen's editor on its own layers (bedrock, three stone, grass). On Fabric, a superflat code pasted there and
+Done return to Create World with Airship Ready still chosen, and the world made has the code's layers (bedrock, four
+glass) and the normal End. Not tried in game: the fixture's "End Sea" with Customize greyed (the GameTest tells it
+apart), and Create Aeronautics' own Airship Ready with its game rules, which F20's play in the test instance
+covers.
