@@ -26,9 +26,10 @@ import net.minecraft.network.chat.Component;
 /**
  * The editor's column: the preset's layers seen from the side, the bottom layer lowest, under the air the world has
  * above them in the dimension's colour, each as tall as its share of the stack ({@link ColumnLayout}), with the Y of
- * the lines between them beside it and lines at the heights that matter. A click selects a layer; dragging a layer's
- * top edge makes it deeper or shallower, dragging the layer moves it, and the wheel over it changes its depth (Shift
- * for 10 blocks, Control for 100). The wheel over the Y numbers scrolls a column too tall for its space.
+ * the lines between them beside it, lines at the heights that matter and a figure standing on the top. A click
+ * selects a layer; dragging a layer's top edge makes it deeper or shallower, dragging the layer moves it, and the
+ * wheel over it changes its depth (Shift for 10 blocks, Control for 100). The wheel over the Y numbers scrolls a
+ * column too tall for its space.
  */
 public final class ColumnWidget implements Widget {
     /** The thinnest a layer is drawn, in GUI pixels, so it stays visible and clickable. */
@@ -125,6 +126,8 @@ public final class ColumnWidget implements Widget {
             canvas.fill(new Rect(column.x(), bounds.get(index).y(), column.width(), 1), LINE_BETWEEN_LAYERS);
         }
         markers.get().forEach(marker -> drawMarker(canvas, marker));
+        int ground = bounds.isEmpty() ? column.bottom() : bounds.get(bounds.size() - 1).y();
+        StandingFigure.draw(canvas, column.x() + column.width() / 2, ground);
         if (state.selected() >= 0) {
             Rect chosen = bounds.get(state.selected());
             canvas.outline(chosen, Look.ACCENT);
