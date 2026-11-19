@@ -15,6 +15,7 @@ import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.dimensions.client.DimensionTabs;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -59,16 +60,8 @@ import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
  * screen; Cancel leaves it.
  */
 public final class EditorScreen extends FlatgenScreen {
-    /** The header's and the footer's heights, in GUI pixels. */
-    private static final int HEADER = 32;
-    private static final int FOOTER = 40;
-    /** Space at the screen's sides, in GUI pixels. */
-    private static final int MARGIN = 13;
-    /** Space between the screen's parts, in GUI pixels. */
-    private static final int REGION_GAP = 11;
-    /** Space between the header's picture and the title, and between Cancel and Done, in GUI pixels. */
+    /** Space between the header's picture and the title, in GUI pixels. */
     private static final int TITLE_GAP = 4;
-    private static final int FOOTER_BUTTON_GAP = 4;
     /** How wide the world on the left and the settings on the right are, in GUI pixels. */
     private static final int WORLD_WIDTH = 127;
     private static final int ASIDE_WIDTH = 152;
@@ -147,21 +140,21 @@ public final class EditorScreen extends FlatgenScreen {
         return widgets;
     }
 
-    /** The lines under the header and over the footer. */
+    /** The frame's lines; the title is a widget beside the header's picture. */
     @Override
     protected void drawBehind(Canvas canvas) {
-        canvas.fill(new Rect(0, HEADER, width, 1), Look.DIVIDER);
-        canvas.fill(new Rect(0, height - FOOTER, width, 1), Look.DIVIDER);
+        drawFrameLines(canvas);
     }
 
     /** The title, the dimensions in the middle, the panels' tools after them and the Advanced switch at the right. */
     private List<Widget> header(Frame frame, EditorLayout laid) {
         Component advancedLabel = Component.translatable("flatgen.editor.advanced");
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Label(Icon.item(ICON), Component.empty(), new Rect(MARGIN, (HEADER - Icon.SIZE) / 2,
-                Icon.SIZE, Icon.SIZE)));
-        widgets.add(new Caption(() -> title, new Rect(MARGIN + Icon.SIZE + TITLE_GAP, 0,
-                frame.tabs.x() - MARGIN - Icon.SIZE - TITLE_GAP, HEADER), TextStyle.TITLE, Look.TEXT));
+        int titleX = PageFrame.MARGIN + Icon.SIZE + TITLE_GAP;
+        widgets.add(new Label(Icon.item(ICON), Component.empty(), new Rect(PageFrame.MARGIN,
+                (PageFrame.HEADER - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE)));
+        widgets.add(new Caption(() -> title, new Rect(titleX, 0, frame.tabs.x() - titleX, PageFrame.HEADER),
+                TextStyle.TITLE, Look.TEXT));
         widgets.add(new WidgetGroup(DimensionTabs.layOut(editor, frame.tabs)));
         widgets.add(new WidgetGroup(laid.widgets(EditorRegion.HEADER)));
         widgets.add(new Toggle(Icon.line("advanced"), advancedLabel, frame.advanced, () -> advanced,
@@ -197,10 +190,9 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** Undo, redo and what the panels place at the left; Cancel and Done at the right. */
     private List<Widget> footer(Frame frame, EditorLayout laid) {
-        Rect row = frame.footerRow;
-        Rect done = new Rect(row.right() - FOOTER_BUTTON_WIDTH, row.y(), FOOTER_BUTTON_WIDTH, row.height());
-        Rect cancel = new Rect(done.x() - FOOTER_BUTTON_GAP - FOOTER_BUTTON_WIDTH, row.y(), FOOTER_BUTTON_WIDTH,
-                row.height());
+        List<Rect> actions = frame.page.actions(FOOTER_BUTTON_WIDTH, FOOTER_BUTTON_WIDTH);
+        Rect cancel = actions.get(0);
+        Rect done = actions.get(1);
         List<Widget> widgets = new ArrayList<>(laid.widgets(EditorRegion.FOOTER));
         widgets.add(new TextButton(Icon.line("cross"), CommonComponents.GUI_CANCEL, cancel, this::onClose));
         widgets.add(new TextButton(Icon.line("check"), CommonComponents.GUI_DONE, done, this::done)
@@ -215,35 +207,34 @@ public final class EditorScreen extends FlatgenScreen {
         private final Rect aside;
         private final Rect tabs;
         private final Rect advanced;
-        private final Rect footerRow;
+        private final PageFrame page;
         private final Map<EditorRegion, Rect> areas = new EnumMap<>(EditorRegion.class);
 
         Frame(int width, int height) {
-            int bodyTop = HEADER + REGION_GAP;
-            int bodyBottom = height - FOOTER - REGION_GAP;
-            world = new Rect(MARGIN, bodyTop, WORLD_WIDTH, bodyBottom - bodyTop);
-            aside = new Rect(width - MARGIN - ASIDE_WIDTH, bodyTop, ASIDE_WIDTH, bodyBottom - bodyTop);
-            layers = new Rect(world.right() + REGION_GAP, bodyTop, aside.x() - 2 * REGION_GAP - world.right(),
-                    world.height());
-            int controlTop = (HEADER - DimensionTabs.HEIGHT) / 2;
+            page = new PageFrame(width, height);
+            Rect body = page.body();
+            world = new Rect(body.x(), body.y(), WORLD_WIDTH, body.height());
+            aside = new Rect(body.right() - ASIDE_WIDTH, body.y(), ASIDE_WIDTH, body.height());
+            layers = new Rect(world.right() + PageFrame.GAP, body.y(), aside.x() - 2 * PageFrame.GAP - world.right(),
+                    body.height());
+            int controlTop = (PageFrame.HEADER - DimensionTabs.HEIGHT) / 2;
             int tabsWidth = DimensionTabs.width(editor);
             tabs = new Rect((width - tabsWidth) / 2, controlTop, tabsWidth, DimensionTabs.HEIGHT);
             int switchWidth = Toggle.width(textWidth(Component.translatable("flatgen.editor.advanced")));
-            advanced = new Rect(width - MARGIN - switchWidth, controlTop, switchWidth, DimensionTabs.HEIGHT);
-            int footerHeight = EditorRegion.FOOTER.rowHeight();
-            footerRow = new Rect(MARGIN, height - FOOTER + (FOOTER - footerHeight) / 2, width - 2 * MARGIN,
-                    footerHeight);
-            areas.put(EditorRegion.HEADER, new Rect(tabs.right() + REGION_GAP, (HEADER
-                    - EditorRegion.HEADER.rowHeight()) / 2, advanced.x() - REGION_GAP - tabs.right() - REGION_GAP, 0));
+            advanced = new Rect(width - PageFrame.MARGIN - switchWidth, controlTop, switchWidth, DimensionTabs.HEIGHT);
+            int toolsX = tabs.right() + PageFrame.GAP;
+            areas.put(EditorRegion.HEADER, new Rect(toolsX, (PageFrame.HEADER - EditorRegion.HEADER.rowHeight()) / 2,
+                    advanced.x() - PageFrame.GAP - toolsX, 0));
             int barHeight = EditorRegion.LAYERS_BAR.rowHeight();
             int barX = layers.x() + textWidth(Component.translatable("flatgen.editor.layers"), TextStyle.TITLE)
-                    + REGION_GAP;
+                    + PageFrame.GAP;
             areas.put(EditorRegion.LAYERS_BAR, new Rect(barX, layers.y(), layers.right() - barX, barHeight));
             areas.put(EditorRegion.LAYERS, new Rect(layers.x(), layers.y() + barHeight + BAR_GAP, layers.width(),
                     layers.height() - barHeight - BAR_GAP));
             areas.put(EditorRegion.WORLD, world);
+            Rect footerRow = page.footerRow();
             areas.put(EditorRegion.FOOTER, new Rect(footerRow.x(), footerRow.y(), footerRow.width() / 2,
-                    footerHeight));
+                    footerRow.height()));
         }
 
         /** Every panel that shows laid out with the aside's top here, the game's own editor last in Advanced. */

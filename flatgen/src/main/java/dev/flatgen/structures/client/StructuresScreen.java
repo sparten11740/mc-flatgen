@@ -3,11 +3,14 @@ package dev.flatgen.structures.client;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
+import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.PanelSizes;
@@ -35,11 +38,8 @@ import net.minecraft.network.chat.Component;
  * to undo in the editor.
  */
 public final class StructuresScreen extends FlatgenScreen {
-    /** Space above the switches for the title, and below them for Done, in GUI pixels. */
-    private static final int HEADER = 24;
-    private static final int FOOTER = 32;
-    private static final int MARGIN = 12;
-    private static final int DONE_WIDTH = 100;
+    /** How wide Done is, in GUI pixels. */
+    private static final int DONE_WIDTH = 66;
     /** How many of the biomes a set needs its tooltip names. */
     private static final int BIOMES_NAMED = 3;
     private static final Map<StructureChoice.Mode, Icon> MODE_ICONS = Map.of(
@@ -67,12 +67,12 @@ public final class StructuresScreen extends FlatgenScreen {
 
     @Override
     protected List<Widget> layOut(int width, int height) {
-        Rect area = new Rect(MARGIN, HEADER, width - 2 * MARGIN, height - HEADER - FOOTER);
+        PageFrame frame = new PageFrame(width, height);
+        Rect body = frame.body();
         return List.of(
-                new ScrollGroup(area, top -> content(new Rect(MARGIN, top, area.width(), 0))),
-                new TextButton(Icon.TICK, CommonComponents.GUI_DONE, new Rect((width - DONE_WIDTH) / 2,
-                        height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2, DONE_WIDTH, PanelSizes.ROW_HEIGHT),
-                        this::onClose));
+                new ScrollGroup(body, top -> content(new Rect(body.x(), top, body.width(), 0))),
+                new TextButton(Icon.line("check"), CommonComponents.GUI_DONE, frame.actions(DONE_WIDTH).get(0),
+                        this::onClose).kind(Look.ButtonKind.PRIMARY));
     }
 
     @Override
@@ -81,27 +81,37 @@ public final class StructuresScreen extends FlatgenScreen {
     }
 
     /** The modes, the decorations and lakes, then each mod's structure sets, from the top of this area down. */
+    /** The modes on a box, the decorations on another, then each mod's structures on a box of their own. */
     private ScrollGroup.Laid content(Rect area) {
         FlowLayout flow = new FlowLayout(area, PanelSizes.ROW_HEIGHT, PanelSizes.GAP);
-        List<Widget> widgets = new ArrayList<>();
-        for (StructureChoice.Mode mode : StructureChoice.Mode.values()) {
-            widgets.add(modeToggle(mode, flow.next(PanelSizes.DOUBLE_WIDTH)));
-        }
-        flow.newRow();
-        widgets.addAll(decorationToggles(flow));
+        List<Widget> widgets = new ArrayList<>(Surface.box(flow, this::modeToggles));
+        widgets.addAll(Surface.box(flow, this::decorationToggles));
         Map<String, List<StructureSetInfo>> byMod = new LinkedHashMap<>();
         sets.forEach(set -> byMod.computeIfAbsent(set.namespace(), mod -> new ArrayList<>()).add(set));
-        for (Map.Entry<String, List<StructureSetInfo>> mod : byMod.entrySet()) {
-            widgets.add(new Label(StructureIcons.of(mod.getValue().get(0).id()),
-                    Component.literal(ClientPlatform.get().modName(mod.getKey())), flow.line(Label.height())));
-            mod.getValue().forEach(set -> widgets.add(setToggle(set, flow.next(PanelSizes.DOUBLE_WIDTH))));
-            flow.newRow();
-        }
+        byMod.forEach((mod, modSets) -> widgets.addAll(Surface.box(flow, inside -> modBox(mod, modSets, inside))));
         return new ScrollGroup.Laid(widgets, flow.bottom());
     }
 
+    /** A switch for each way of choosing the structures, side by side. */
+    private List<Widget> modeToggles(FlowLayout flow) {
+        List<Widget> toggles = new ArrayList<>();
+        for (StructureChoice.Mode mode : StructureChoice.Mode.values()) {
+            toggles.add(modeToggle(mode, flow.next(PanelSizes.DOUBLE_WIDTH)));
+        }
+        return toggles;
+    }
+
+    /** A mod's name under its first structure's picture, then a switch for each of its structure sets. */
+    private List<Widget> modBox(String mod, List<StructureSetInfo> modSets, FlowLayout flow) {
+        List<Widget> widgets = new ArrayList<>();
+        widgets.add(new Label(StructureIcons.of(modSets.get(0).id()), Component.literal(ClientPlatform.get()
+                .modName(mod)), flow.line(Label.height())));
+        modSets.forEach(set -> widgets.add(setToggle(set, flow.next(PanelSizes.DOUBLE_WIDTH))));
+        return widgets;
+    }
+
     /** The switches for the biome's decorations and for the lakes. */
-    private List<Toggle> decorationToggles(FlowLayout flow) {
+    private List<Widget> decorationToggles(FlowLayout flow) {
         return List.of(
                 new Toggle(Icon.item("minecraft:poppy"), Component.translatable("flatgen.structures.decorations"),
                         flow.next(PanelSizes.DOUBLE_WIDTH), () -> preset().decorations(),

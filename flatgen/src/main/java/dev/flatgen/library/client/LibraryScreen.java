@@ -6,6 +6,7 @@ import dev.flatgen.client.gui.CycleButton;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
@@ -15,6 +16,7 @@ import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
+import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.exports.PresetExports;
@@ -51,13 +53,11 @@ import net.minecraft.network.chat.Component;
  * or deleted. Overwriting, deleting and applying one with missing parts ask first.
  */
 public final class LibraryScreen extends FlatgenScreen {
-    private static final int MARGIN = 12;
-    /** Where the controls start, below the title, in GUI pixels. */
-    private static final int ROWS_TOP = 22;
+    /** A row of controls, in GUI pixels. */
     private static final int ROW_HEIGHT = 20;
     private static final int GAP = 4;
-    /** The width of a button with a word, in GUI pixels: the name row fits across the narrowest screen. */
-    private static final int BUTTON_WIDTH = 56;
+    /** The width of Back and Use, in GUI pixels. */
+    private static final int BUTTON_WIDTH = 66;
     private static final int NAME_WIDTH = 100;
     /** Space keeping Save over and Delete, which cannot be undone, apart from the other buttons, in GUI pixels. */
     private static final int DANGER_GAP = 8;
@@ -67,8 +67,6 @@ public final class LibraryScreen extends FlatgenScreen {
     private static final int PICTURE_WIDTH = 16;
     private static final int PICTURE_HEIGHT = 40;
     private static final int PADDING = 4;
-    private static final int SELECTED = 0xFFFFFFFF;
-    private static final int NAME_COLOR = 0xFFFFFFFF;
     /** The mark of the default preset, the one Superflat starts with. */
     private static final Icon DEFAULT = Icon.item("minecraft:nether_star");
     /** The mark of a built-in preset, which can be used and copied but not changed. */
@@ -117,7 +115,9 @@ public final class LibraryScreen extends FlatgenScreen {
 
     @Override
     protected List<Widget> layOut(int width, int height) {
-        FlowLayout rows = new FlowLayout(new Rect(MARGIN, ROWS_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
+        PageFrame frame = new PageFrame(width, height);
+        Rect body = frame.body();
+        FlowLayout rows = new FlowLayout(new Rect(body.x(), body.y(), body.width(), 0), ROW_HEIGHT, GAP);
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new WidgetGroup(nameRow(rows)));
         rows.newRow();
@@ -126,9 +126,15 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new WidgetGroup(switchRow(rows)));
         widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
         int gridTop = rows.bottom() + GAP;
-        widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
-                CARD_WIDTH, CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
+        widgets.add(new CardGrid(new Rect(body.x(), gridTop, body.width(), body.bottom() - gridTop), CARD_WIDTH,
+                CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
                 file -> choose(choices.toggleFavourite(file))));
+        List<Rect> actions = frame.actions(BUTTON_WIDTH, BUTTON_WIDTH);
+        widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"), actions.get(0),
+                this::onClose));
+        widgets.add(new TextButton(Icon.line("check"), () -> Component.translatable("flatgen.library.apply"),
+                actions.get(1), this::apply, () -> pickedPreset().isPresent(),
+                () -> List.of(Component.translatable("flatgen.library.apply_tip"))).kind(Look.ButtonKind.PRIMARY));
         return widgets;
     }
 
@@ -148,11 +154,6 @@ public final class LibraryScreen extends FlatgenScreen {
                 "flatgen.library.save_new_tip", rows, this::saveNew, () -> !name.isBlank()));
         widgets.add(picture(Icon.item("minecraft:anvil"), "flatgen.library.rename", "flatgen.library.rename_tip", rows,
                 this::rename, () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()));
-        widgets.add(new TextButton(Icon.TICK, () -> Component.translatable("flatgen.library.apply"),
-                rows.next(BUTTON_WIDTH), this::apply, () -> pickedPreset().isPresent(),
-                () -> List.of(Component.translatable("flatgen.library.apply_tip"))));
-        widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"),
-                rows.next(BUTTON_WIDTH), this::onClose));
         return widgets;
     }
 
@@ -425,6 +426,9 @@ public final class LibraryScreen extends FlatgenScreen {
     private final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry card, Rect place) {
+            if (picked.filter(card.id()::equals).isPresent()) {
+                canvas.sprite(Look.CHOSEN, place);
+            }
             Optional<PresetLibrary.Entry> entry = entry(card.id());
             Optional<Preset> preset = entry.flatMap(PresetLibrary.Entry::preset);
             int x = place.x() + PADDING;
@@ -445,11 +449,8 @@ public final class LibraryScreen extends FlatgenScreen {
                 Icon.MISSING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
             }
             canvas.clip(new Rect(place.x(), place.y(), place.width(), place.height()));
-            canvas.text(Component.literal(card.name()), x, y + PICTURE_HEIGHT + PADDING, NAME_COLOR);
+            canvas.text(Component.literal(card.name()), x, y + PICTURE_HEIGHT + PADDING, Look.TEXT);
             canvas.unclip();
-            if (picked.filter(card.id()::equals).isPresent()) {
-                canvas.outline(place, SELECTED);
-            }
         }
 
         @Override

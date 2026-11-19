@@ -13,11 +13,13 @@ import net.minecraft.network.chat.Component;
 
 /**
  * A whole number from a range, set by pressing or dragging along it or by turning the wheel over it (one a notch, ten
- * with Shift), with its name and value written on it, as the game's own sliders look.
+ * with Shift), with its name and value written on it and the track filled up to its knob.
  */
 public final class Slider implements Control {
     /** The width of the handle, in GUI pixels. */
     private static final int HANDLE = 8;
+    /** How far the handle's knob sits inside the slider's top and bottom, in GUI pixels. */
+    private static final int KNOB_INSET = 2;
     /** How far a notch of the wheel moves the value, alone and with Shift. */
     private static final int WHEEL_STEP = 1;
     private static final int SHIFT_WHEEL_STEP = 10;
@@ -52,7 +54,9 @@ public final class Slider implements Control {
         canvas.field(bounds, bounds.contains(mouseX, mouseY));
         int travel = bounds.width() - HANDLE;
         int handleX = bounds.x() + (max == min ? 0 : (value.getAsInt() - min) * travel / (max - min));
-        canvas.fill(new Rect(handleX, bounds.y() + 1, HANDLE, bounds.height() - 2), Look.TEXT);
+        canvas.sprite(Look.button(Look.ButtonKind.ACCENT, false, true), new Rect(bounds.x(), bounds.y(),
+                handleX + HANDLE - bounds.x(), bounds.height()));
+        canvas.sprite(Look.KNOB, new Rect(handleX, bounds.y() + KNOB_INSET, HANDLE, bounds.height() - 2 * KNOB_INSET));
         canvas.centeredText(label.get(), bounds, Look.TEXT);
     }
 

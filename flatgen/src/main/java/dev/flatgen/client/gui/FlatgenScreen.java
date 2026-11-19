@@ -2,6 +2,7 @@ package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.FocusOrder;
 import dev.flatgen.client.gui.rules.Modifiers;
+import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.nio.file.Path;
@@ -18,8 +19,6 @@ import org.lwjgl.glfw.GLFW;
  * versions only that class and {@code McCanvas} follow (docs/plan.md 3.3).
  */
 public abstract class FlatgenScreen extends GameScreen {
-    /** Where the title's line starts, from the top, in GUI pixels. */
-    private static final int TITLE_TOP = 8;
 
     private WidgetGroup widgets = new WidgetGroup(List.of());
     /** The screen's widgets as laid out, each an area the keyboard's focus moves between with Tab. */
@@ -47,10 +46,17 @@ public abstract class FlatgenScreen extends GameScreen {
     protected void filesDropped(List<Path> files) {
     }
 
-    /** Draws what is behind the widgets: by default the title, in the middle at the top. */
+    /** Draws what is behind the widgets: by default the title at the left of the header, and the frame's lines. */
     protected void drawBehind(Canvas canvas) {
-        canvas.centeredText(title, new Rect(0, TITLE_TOP, width, TextStyle.TITLE.lineHeight()), Look.TEXT,
+        canvas.text(title, PageFrame.MARGIN, (PageFrame.HEADER - TextStyle.TITLE.lineHeight()) / 2 + 1, Look.TEXT,
                 TextStyle.TITLE);
+        drawFrameLines(canvas);
+    }
+
+    /** Draws the lines under the header and over the footer of the screen's {@link PageFrame}. */
+    protected final void drawFrameLines(Canvas canvas) {
+        canvas.fill(new Rect(0, PageFrame.HEADER, width, 1), Look.DIVIDER);
+        canvas.fill(new Rect(0, height - PageFrame.FOOTER, width, 1), Look.DIVIDER);
     }
 
     /** The control the focus starts on when Tab is first pressed; the first control by default. */

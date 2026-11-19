@@ -6,13 +6,16 @@ import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
+import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.Slider;
+import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.FlowLayout;
+import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.client.FactPictures;
@@ -37,17 +40,17 @@ import net.minecraft.network.chat.Component;
  * editor as one step to undo.
  */
 public final class TemplatesScreen extends FlatgenScreen {
-    private static final int MARGIN = 12;
-    /** Where the templates' pictures start, below the title, in GUI pixels. */
-    private static final int ROWS_TOP = 22;
+    /** A row of the settings, and the space between controls, in GUI pixels. */
     private static final int ROW_HEIGHT = 20;
     private static final int GAP = 4;
     /** The width of the column's preview and of the settings' controls, in GUI pixels. */
     private static final int PREVIEW_WIDTH = 32;
     private static final int CONTROL_WIDTH = 200;
+    /** The settings' box: its widest, and the space inside it, in GUI pixels. */
+    private static final int PADDING = 8;
+    private static final int CONTROLS_WIDTH = CONTROL_WIDTH + 2 * PADDING;
+    /** How wide Back and Use are, in GUI pixels. */
     private static final int BUTTON_WIDTH = 70;
-    /** Space below the settings for Use and Back, in GUI pixels. */
-    private static final int FOOTER = 32;
 
     private final EditorContext editor;
     /** The world the template makes now, as the facts need it. */
@@ -67,32 +70,37 @@ public final class TemplatesScreen extends FlatgenScreen {
 
     @Override
     protected List<Widget> layOut(int width, int height) {
-        FlowLayout row = new FlowLayout(new Rect(MARGIN, ROWS_TOP, width - 2 * MARGIN, 0), PictureButton.SIZE, GAP);
+        PageFrame frame = new PageFrame(width, height);
+        Rect body = frame.body();
+        FlowLayout row = new FlowLayout(new Rect(body.x(), body.y(), body.width(), 0), PictureButton.SIZE, GAP);
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new WidgetGroup(Templates.ALL.stream().<Widget>map(choice -> new PictureButton(
                 Icon.item(choice.icon()), row.next(PictureButton.SIZE), () -> choose(choice),
                 () -> List.of(Component.translatable(choice.name())))).toList()));
         int top = row.bottom() + GAP;
         widgets.add(new Label(Icon.item(template.icon()), Component.translatable(template.name()),
-                new Rect(MARGIN, top, width - 2 * MARGIN, Label.height())));
+                new Rect(body.x(), top, body.width(), Label.height())));
         top += Label.height() + GAP;
-        int previewHeight = height - top - FOOTER;
-        widgets.add(new Preview(new Rect(MARGIN, top, PREVIEW_WIDTH, previewHeight)));
-        int controlsX = MARGIN + PREVIEW_WIDTH + 2 * MARGIN;
-        FlowLayout controls = new FlowLayout(new Rect(controlsX, top, width - controlsX - MARGIN, 0), ROW_HEIGHT, GAP);
+        widgets.add(new Preview(new Rect(body.x(), top, PREVIEW_WIDTH, body.bottom() - top)));
+        int controlsX = body.x() + PREVIEW_WIDTH + PageFrame.GAP;
+        Rect controlsArea = new Rect(controlsX, top, Math.min(CONTROLS_WIDTH, body.right() - controlsX),
+                body.bottom() - top);
+        widgets.add(new Surface(Look.PANEL, controlsArea));
+        FlowLayout controls = new FlowLayout(new Rect(controlsArea.x() + PADDING, top + PADDING,
+                controlsArea.width() - 2 * PADDING, 0), ROW_HEIGHT, GAP);
         List<Widget> settings = new ArrayList<>();
         Facts.ALL.forEach(fact -> settings.add(new Badge(controls.next(Badge.SIZE),
                 () -> facts.get().map(world -> new Badge.Look(FactPictures.icon(fact.show(world)),
                         FactPictures.words(fact.show(world)))))));
         template.parameters().forEach(parameter -> settings.add(parameter.accept(new Control(controls))));
         widgets.add(new WidgetGroup(settings));
-        FlowLayout footer = new FlowLayout(new Rect((width - 2 * BUTTON_WIDTH - GAP) / 2,
-                height - (FOOTER + ROW_HEIGHT) / 2, 2 * BUTTON_WIDTH + GAP, 0), ROW_HEIGHT, GAP);
+        List<Rect> actions = frame.actions(BUTTON_WIDTH, BUTTON_WIDTH);
         widgets.add(new WidgetGroup(List.of(
-                new TextButton(Icon.TICK, () -> Component.translatable("flatgen.templates.use"),
-                        footer.next(BUTTON_WIDTH), this::use, () -> true,
-                        () -> List.of(Component.translatable("flatgen.templates.use_tip"))),
-                new TextButton(Icon.BACK, CommonComponents.GUI_BACK, footer.next(BUTTON_WIDTH), this::onClose))));
+                new TextButton(Icon.BACK, CommonComponents.GUI_BACK, actions.get(0), this::onClose),
+                new TextButton(Icon.line("check"), () -> Component.translatable("flatgen.templates.use"),
+                        actions.get(1), this::use, () -> true,
+                        () -> List.of(Component.translatable("flatgen.templates.use_tip")))
+                        .kind(Look.ButtonKind.PRIMARY))));
         return widgets;
     }
 

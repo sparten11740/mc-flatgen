@@ -1,7 +1,6 @@
 package dev.flatgen.editor.client.panel;
 
 import dev.flatgen.client.gui.Icon;
-import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
@@ -23,9 +22,6 @@ import net.minecraft.network.chat.Component;
  * in the order the panels come, and the widgets placed in it so far, which the editor then draws there.
  */
 public final class EditorLayout {
-    /** Space inside a box of the aside around what it holds, in GUI pixels. */
-    private static final int BOX_PADDING = 6;
-
     private final Map<EditorRegion, Rect> areas;
     /** How wide body text is drawn, for buttons as wide as their names. */
     private final ToIntFunction<Component> textWidth;
@@ -78,11 +74,7 @@ public final class EditorLayout {
 
     /** Adds a box to the aside, on a raised panel, holding what the content places in the flow it is given. */
     public void box(Function<FlowLayout, List<Widget>> content) {
-        FlowLayout aside = flow(EditorRegion.ASIDE);
-        FlowLayout inside = aside.boxed(BOX_PADDING);
-        List<Widget> placed = content.apply(inside);
-        add(EditorRegion.ASIDE, new Surface(Look.PANEL, aside.endBox(inside, BOX_PADDING)));
-        add(EditorRegion.ASIDE, placed);
+        add(EditorRegion.ASIDE, Surface.box(flow(EditorRegion.ASIDE), content));
     }
 
     /** The widgets placed in a region. */
