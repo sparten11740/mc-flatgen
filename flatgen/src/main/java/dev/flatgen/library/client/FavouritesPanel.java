@@ -44,7 +44,7 @@ public final class FavouritesPanel implements EditorPanel {
 
     private List<Widget> content(EditorContext editor, FlowLayout flow) {
         List<Widget> widgets = new ArrayList<>();
-                for (Favourite favourite : favourites(editor)) {
+        for (Favourite favourite : favourites(editor)) {
             Preset preset = favourite.preset();
             widgets.add(new PictureButton(Icon.item(preset.icon()), flow.next(PictureButton.SIZE),
                     () -> use(editor, favourite.key(), preset),

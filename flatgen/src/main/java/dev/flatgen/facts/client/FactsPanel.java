@@ -39,7 +39,7 @@ public final class FactsPanel implements EditorPanel {
 
     private List<Widget> content(EditorContext editor, FlowLayout flow) {
         FactsNow now = new FactsNow(editor);
-                List<Widget> widgets = new ArrayList<>();
+        List<Widget> widgets = new ArrayList<>();
         Facts.ALL.forEach(fact -> widgets.add(new Badge(flow.next(Badge.SIZE),
                 () -> now.get().map(situation -> look(fact.show(situation))))));
         widgets.add(new PictureButton(NO_SLIMES, flow.next(PictureButton.SIZE), () -> editor.apply(new NoSlimes()),
