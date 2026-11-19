@@ -130,7 +130,7 @@ public final class LibraryScreen extends FlatgenScreen {
         widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
         int gridTop = rows.bottom() + GAP;
         widgets.add(new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - MARGIN),
-                CARD_WIDTH, CARD_HEIGHT, this::sections, choices::isFavourite, new Cards(), this::pick,
+                CARD_WIDTH, CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
                 file -> choose(choices.toggleFavourite(file))));
         return widgets;
     }
@@ -190,8 +190,9 @@ public final class LibraryScreen extends FlatgenScreen {
                 () -> choose(choices.toggleDefault(picked.get())), () -> pickedPreset().isPresent(),
                 () -> List.of(Component.translatable("flatgen.library.default_tip"))));
         widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
-                rows.next(TOGGLE_WIDTH), choices::startOnSuperflat, () -> choose(choices.toggleStartOnSuperflat()),
-                () -> true, () -> List.of(Component.translatable("flatgen.library.start_tip"))));
+                rows.next(TOGGLE_WIDTH), () -> choices.startOnSuperflat(),
+                () -> choose(choices.toggleStartOnSuperflat()), () -> true,
+                () -> List.of(Component.translatable("flatgen.library.start_tip"))));
         return widgets;
     }
 
