@@ -18,6 +18,7 @@ import net.minecraft.client.gui.screens.worldselection.CreateWorldScreen;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationContext;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 /**
  * Applies a preset to the Create World screen when the editor's Done is pressed: its superflat settings, what its world
@@ -26,6 +27,17 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
  */
 public final class OptionsAtDone {
     private OptionsAtDone() {
+    }
+
+    /**
+     * The superflat settings a preset makes, the structure sets its world options add included, as Done applies them
+     * and as exports write them (F21).
+     */
+    public static FlatLevelGeneratorSettings settings(Preset preset, HolderLookup.Provider registries,
+            List<WorldOption> installed) {
+        OptionChoices.Applied applied = OptionChoices.applied(OptionChoices.on(preset.options(), installed));
+        Preset withStructures = AddStructures.addedTo(preset, applied.structureSets(), Structures.ids(registries));
+        return FlatSettings.toSettings(withStructures, registries);
     }
 
     /** Applies the preset, with the options it has on of those installed, to the world on the screen. */
@@ -38,8 +50,7 @@ public final class OptionsAtDone {
         Set<String> knownSets = Structures.ids(registries);
         warnIfAny("Flatgen left out these structure sets that world options add, which this game lacks: {}",
                 applied.structureSets().stream().filter(set -> !knownSets.contains(set)).sorted().toList());
-        ChunkGenerator generator = WorldCreation.applyFlatSettings(screen, FlatSettings.toSettings(
-                AddStructures.addedTo(preset, applied.structureSets(), knownSets), registries));
+        ChunkGenerator generator = WorldCreation.applyFlatSettings(screen, settings(preset, registries, installed));
         FirstStarts.expect(generator, WorldCreation.describe(generator, registries), on.stream()
                 .flatMap(option -> option.effects().stream()).filter(Effect::actsAtFirstStart).toList());
         if (!OptionSessions.has(screen)) {
