@@ -353,7 +353,10 @@ public final class LibraryScreen extends FlatgenScreen {
         return entries.stream().map(PresetLibrary.Entry::name).toList();
     }
 
-    /** A preset's card: its column, its icon and its name, a barrier when it is broken or names missing parts. */
+    /**
+     * A preset's card: its column, its icon and its name, a barrier when it is broken or names missing parts; its
+     * tooltip, and so the narrator, says in words what its marks show: picked, the default, built in.
+     */
     private final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry card, Rect place) {
@@ -387,6 +390,15 @@ public final class LibraryScreen extends FlatgenScreen {
         @Override
         public List<Component> describe(Search.Entry card) {
             List<Component> lines = new ArrayList<>();
+            if (picked.filter(card.id()::equals).isPresent()) {
+                lines.add(Component.translatable("flatgen.library.is_picked"));
+            }
+            if (choices.defaultFile().filter(card.id()::equals).isPresent()) {
+                lines.add(Component.translatable("flatgen.library.is_default"));
+            }
+            if (entry(card.id()).filter(entry -> !entry.isPlayers()).isPresent()) {
+                lines.add(Component.translatable("flatgen.library.is_built_in"));
+            }
             if (entry(card.id()).filter(entry -> !entry.problems().isEmpty()).isPresent()) {
                 lines.add(Component.translatable("flatgen.library.unreadable"));
             }
