@@ -30,9 +30,13 @@ public final class PickerScreen extends FlatgenScreen {
     /** Space between the search row's controls, and between it and the grid, in GUI pixels. */
     private static final int GAP = 8;
     /** Widths in GUI pixels; the search and the mod button fit side by side on the narrowest screen, 320 wide. */
-    private static final int SEARCH_WIDTH = 148;
+    private static final int SEARCH_WIDTH = 124;
     private static final int MOD_WIDTH = 140;
     private static final int CANCEL_WIDTH = 100;
+    /** The search field's picture, as the creative inventory's search tab has it. */
+    private static final Icon SEARCH = Icon.item("minecraft:compass");
+    /** The mod filter's picture while it shows every mod. */
+    private static final Icon ALL_MODS = Icon.own("all_mods");
 
     private final Screen parent;
     private final Picker picker;
@@ -57,12 +61,14 @@ public final class PickerScreen extends FlatgenScreen {
      * @param cardWidth  a card's width, in GUI pixels
      * @param cardHeight a card's height, in GUI pixels
      * @param cards      what a card shows
+     * @param picture    an entry's picture, by id: the mod filter shows a mod's first entry's
      * @param modName    a mod's name for players, by namespace, for the mod filter
      * @param readPicks  reads the picker's file of picks and stars
      * @param savePicks  keeps picks and stars in it
      */
     public record Picker(Component title, Component searchHint, Component allHeading, List<Search.Entry> entries,
-            int cardWidth, int cardHeight, CardGrid.Cards cards, Function<String, String> modName,
+            int cardWidth, int cardHeight, CardGrid.Cards cards, Function<String, Icon> picture,
+            Function<String, String> modName,
             Supplier<Picks> readPicks, Consumer<Picks> savePicks) {
         public Picker {
             entries = List.copyOf(entries);
@@ -87,15 +93,16 @@ public final class PickerScreen extends FlatgenScreen {
     @Override
     protected List<Widget> layOut(int width, int height) {
         FlowLayout row = new FlowLayout(new Rect(MARGIN, ROW_TOP, width - 2 * MARGIN, 0), ROW_HEIGHT, GAP);
+        Label lookingGlass = new Label(SEARCH, Component.empty(), row.next(Icon.SIZE));
         TextField search = new TextField("search", row.next(SEARCH_WIDTH), picker.searchHint(), query, this::search);
-        TextButton modButton = new TextButton(this::modLabel, row.next(MOD_WIDTH), this::nextMod, () -> true,
-                List::of);
+        TextButton modButton = new TextButton((canvas, x, y) -> modPicture().draw(canvas, x, y), this::modLabel,
+                row.next(MOD_WIDTH), this::nextMod, () -> true, List::of);
         int gridTop = row.bottom() + GAP;
         grid = new CardGrid(new Rect(MARGIN, gridTop, width - 2 * MARGIN, height - gridTop - FOOTER),
                 picker.cardWidth(), picker.cardHeight(), this::sections, id -> picks.starred().contains(id),
                 new IdAndMod(), this::pick, this::star);
-        return List.of(search, modButton, grid,
-                new TextButton(CommonComponents.GUI_CANCEL,
+        return List.of(lookingGlass, search, modButton, grid,
+                new TextButton(Icon.CROSS, CommonComponents.GUI_CANCEL,
                         new Rect((width - CANCEL_WIDTH) / 2, height - (FOOTER + ROW_HEIGHT) / 2, CANCEL_WIDTH,
                                 ROW_HEIGHT), this::onClose));
     }
@@ -159,6 +166,12 @@ public final class PickerScreen extends FlatgenScreen {
     private void search(String text) {
         query = text;
         grid.toTop();
+    }
+
+    /** The mod filter's picture: every mod's, or the mod's first entry's. */
+    private Icon modPicture() {
+        return mod < 0 ? ALL_MODS : picker.entries().stream().filter(entry -> entry.namespace().equals(mods.get(mod)))
+                .findFirst().map(entry -> picker.picture().apply(entry.id())).orElse(ALL_MODS);
     }
 
     private Component modLabel() {

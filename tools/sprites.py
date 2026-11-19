@@ -158,6 +158,24 @@ PICTURES = {
 ...........AAA..
 ................
 """),
+    "all_mods": ("inside", """
+................
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.GGGGGGGSSSSSSS.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+.OOOOOOOBBBBBBB.
+................
+"""),
     "undo": ("inside", """
 ................
 ....WW..........

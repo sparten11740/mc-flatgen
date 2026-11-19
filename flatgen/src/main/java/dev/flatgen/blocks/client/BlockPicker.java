@@ -28,7 +28,7 @@ public final class BlockPicker {
     public static PickerScreen screen(Screen parent, FeatureFlagSet enabled, Consumer<String> onPick) {
         return new PickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.blocks.title"),
                 Component.translatable("flatgen.blocks.search"), Component.translatable("flatgen.blocks.all"),
-                BlockCatalog.blocks(enabled), SLOT, SLOT, new Cards(), ClientPlatform.get()::modName,
+                BlockCatalog.blocks(enabled), SLOT, SLOT, new Cards(), Icon::block, ClientPlatform.get()::modName,
                 PICKS::read, PICKS::save),
                 onPick);
     }

@@ -71,7 +71,7 @@ public final class StructuresScreen extends FlatgenScreen {
         Rect area = new Rect(MARGIN, HEADER, width - 2 * MARGIN, height - HEADER - FOOTER);
         return List.of(
                 new ScrollGroup(area, top -> content(new Rect(MARGIN, top, area.width(), 0))),
-                new TextButton(CommonComponents.GUI_DONE, new Rect((width - DONE_WIDTH) / 2,
+                new TextButton(Icon.TICK, CommonComponents.GUI_DONE, new Rect((width - DONE_WIDTH) / 2,
                         height - (FOOTER + PanelSizes.ROW_HEIGHT) / 2, DONE_WIDTH, PanelSizes.ROW_HEIGHT),
                         this::onClose));
     }

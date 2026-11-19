@@ -70,8 +70,9 @@ public final class BiomePicker {
                 .toList();
         return new PickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.biomes.title"),
                 Component.translatable("flatgen.biomes.search"), Component.translatable("flatgen.biomes.all"),
-                entries, CARD_WIDTH, CARD_HEIGHT, new Cards(biomes, situation), ClientPlatform.get()::modName,
-                PICKS::read, PICKS::save), onPick);
+                entries, CARD_WIDTH, CARD_HEIGHT, new Cards(biomes, situation),
+                id -> new BiomeIcon(biomes.get(id).colours()), ClientPlatform.get()::modName, PICKS::read,
+                PICKS::save), onPick);
     }
 
     /**
