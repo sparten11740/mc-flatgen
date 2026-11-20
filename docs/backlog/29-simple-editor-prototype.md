@@ -1,6 +1,6 @@
 # F29 A simpler editor a child can work out
 
-Milestone: design track, when the owner asks for it · Release: none until approved · Status: doing · Depends on: F06
+Milestone: design track, when the owner asks for it · Release: with the next release · Status: done · Depends on: F06
 
 ## Why
 
@@ -25,8 +25,8 @@ Nothing yet: a prototype on its own branch, presented to the owner with screensh
   fewer numbers.
 - [x] A prototype of that design on the branch `prototype/simple-editor`, built on the same toolkit and edits, so the
   existing logic is reused rather than copied.
-- [ ] Presented to the owner: screenshots of each screen and a short walk through the flows, with what was left out and why.
-- [ ] Nothing of it reaches `main` until the owner has decided; what is accepted flows into F16 (works without reading) and
+- [x] Presented to the owner: screenshots of each screen and a short walk through the flows, with what was left out and why.
+- [x] Nothing of it reaches `main` until the owner has decided; what is accepted flows into F16 (works without reading) and
   the later screens.
 
 ## Design
@@ -53,3 +53,9 @@ The owner chose direction C in the modern look (`docs/design/simple-editor.md`) 
 - [x] **Block picker as a sheet**, then the library, templates, biomes, structures and questions in the look
   (the library and templates keep their old arrangement in the new frame).
 - [x] Both releases built and tried in a dev client; screenshots beside the canvas boards for the owner.
+
+## Decision
+
+On 2026-11-20 the owner accepted the prototype: Flatgen goes on in the modern look. Their first finding, that the time and
+weather card's pictures did not say what they mean, was fixed the same day with pictures of Flatgen's own (F16's
+table). The prototype reaches `main` when the owner merges its branch.
