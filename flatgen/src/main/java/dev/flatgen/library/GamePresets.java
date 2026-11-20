@@ -2,7 +2,9 @@ package dev.flatgen.library;
 
 import dev.flatgen.library.rules.PresetLibrary;
 import dev.flatgen.mc.FlatPresets;
+import dev.flatgen.preset.rules.PresetReading;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import net.minecraft.core.HolderLookup;
 
@@ -16,13 +18,18 @@ public record GamePresets(HolderLookup.Provider registries) implements PresetSou
     /** How a game preset's key begins in the library, before its id. */
     private static final String KEY_PREFIX = "game:";
     /** Built in, after the player's own, hidden by any setting that hides the game's. */
-    static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(1, false,
+    private static final PresetLibrary.Kind KIND = new PresetLibrary.Kind(1, false,
             Optional.of(PresetLibrary.BuiltIns.NO_GAME));
 
     @Override
     public List<PresetLibrary.Entry> presets() {
-        return FlatPresets.visible(registries).entrySet().stream()
-                .map(preset -> new PresetLibrary.Entry(KEY_PREFIX + preset.getKey(), KIND,
+        return entries(KEY_PREFIX, FlatPresets.visible(registries));
+    }
+
+    /** The game's presets read from it, by id, as the library's entries, each key the prefix before its id. */
+    static List<PresetLibrary.Entry> entries(String keyPrefix, Map<String, PresetReading> presets) {
+        return presets.entrySet().stream()
+                .map(preset -> new PresetLibrary.Entry(keyPrefix + preset.getKey(), KIND,
                         Optional.of(preset.getValue().preset()), preset.getValue().problems()))
                 .toList();
     }
