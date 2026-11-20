@@ -5,22 +5,24 @@ from this file.
 
 ## Summary (one line)
 
-A better superflat screen: edit layers where you see them, pick blocks and biomes from pictures, see the world before
-you make it, and keep presets.
+A better superflat screen: layers as cards beside the world they make, blocks and biomes as pictures, the world's
+facts before you make it, and presets.
 
 ## Description
 
 **Flatgen** replaces the Superflat Customize screen with an editor anyone can use, children who cannot read yet
 included.
 
-- **Edit layers where you see them.** The world's layers stand as a column you drag, stretch and scroll. Undo anything.
-- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star.
+- **Layers as cards beside the world they make.** Drag a card to move a layer, + and − for its thickness, undo
+  anything; Advanced adds Y levels, codes and the game's own editor.
+- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star; biomes sorted by kind,
+  each a little landscape.
 - **Know your world before you make it:** rain, snow or sun at your surface, whether slimes and monsters spawn.
 - **Structures, decorations and lakes,** every structure set of every mod, marked where your biome will not have it.
-- **Always day, always clear, no mobs:** saved with the preset, no more `/time set day` in every new world.
+- **Always day, always clear, mobs or none:** saved with the preset, no more `/time set day` in every new world.
 - **Presets:** save your own, star favourites, pick a default ready the moment you choose Superflat, share them as
   text.
-- **Templates:** a tall flat world, a water world or an airship field from a few sliders.
+- **Templates:** a tall flat world, a water world or an airship field from a few sliders, drawn as you slide.
 - **Works without reading:** every button has a picture; keyboard and narrator work too.
 - **English and German.**
 
