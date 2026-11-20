@@ -132,7 +132,7 @@ final class McCanvas implements Canvas {
         *///?} else if >=1.21 {
         graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
         //?} else
-        /*GuiSprites.draw(graphics, sprite, area.x(), area.y(), area.width(), area.height());*/
+        /*GuiSprites.draw(graphics, sprite, area);*/
     }
 
     @Override

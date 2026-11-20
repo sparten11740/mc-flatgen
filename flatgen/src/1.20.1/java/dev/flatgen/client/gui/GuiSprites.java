@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import dev.flatgen.Flatgen;
+import dev.flatgen.client.gui.rules.Rect;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -22,23 +23,40 @@ import net.minecraft.server.packs.resources.Resource;
 final class GuiSprites {
     /** The columns and the rows a nine-slice sprite is cut into. */
     private static final int PARTS = 3;
-    /** Each sprite's texture size and border, read the first time it is drawn. */
+    /** Each sprite's texture size and border, read the first time it is drawn after a screen opened. */
     private static final Map<ResourceLocation, Sprite> SPRITES = new HashMap<>();
 
     private GuiSprites() {
     }
 
+    /** Forgets the sprites read, as a screen opens, so a resource pack that changed them since is drawn as it is. */
+    static void forget() {
+        SPRITES.clear();
+    }
+
     /** Draws a sprite of Flatgen's GUI over this area. */
-    static void draw(GuiGraphics graphics, ResourceLocation id, int x, int y, int width, int height) {
+    static void draw(GuiGraphics graphics, ResourceLocation id, Rect area) {
         ResourceLocation texture = id.withPath(path -> "textures/gui/sprites/" + path + ".png");
         Sprite sprite = SPRITES.computeIfAbsent(texture, GuiSprites::sprite);
-        int border = Math.min(sprite.border(), Math.min(width, height) / 2);
-        int edge = border == 0 ? 0 : sprite.textureBorder();
-        int[] columns = {x, x + border, x + width - border, x + width};
-        int[] rows = {y, y + border, y + height - border, y + height};
+        int border = Math.min(sprite.border(), Math.min(area.width(), area.height()) / 2);
+        RenderSystem.enableBlend();
+        if (border == 0) {
+            graphics.blit(texture, area.x(), area.y(), area.width(), area.height(), 0, 0, sprite.width(),
+                    sprite.height(), sprite.width(), sprite.height());
+        } else {
+            drawNineSlice(graphics, texture, sprite, border, area);
+        }
+        RenderSystem.disableBlend();
+    }
+
+    /** Draws a sprite cut in nine over an area, its corners at their size. */
+    private static void drawNineSlice(GuiGraphics graphics, ResourceLocation texture, Sprite sprite, int border,
+            Rect area) {
+        int edge = sprite.textureBorder();
+        int[] columns = {area.x(), area.x() + border, area.right() - border, area.right()};
+        int[] rows = {area.y(), area.y() + border, area.bottom() - border, area.bottom()};
         int[] us = {0, edge, sprite.width() - edge, sprite.width()};
         int[] vs = {0, edge, sprite.height() - edge, sprite.height()};
-        RenderSystem.enableBlend();
         for (int row = 0; row < PARTS; row++) {
             for (int column = 0; column < PARTS; column++) {
                 graphics.blit(texture, columns[column], rows[row], columns[column + 1] - columns[column],
@@ -46,7 +64,6 @@ final class GuiSprites {
                         vs[row + 1] - vs[row], sprite.width(), sprite.height());
             }
         }
-        RenderSystem.disableBlend();
     }
 
     private static Sprite sprite(ResourceLocation texture) {
@@ -74,7 +91,7 @@ final class GuiSprites {
      * @param textureBorder its border in texture pixels
      */
     private record Sprite(int width, int height, int border, int textureBorder) {
-        /** A sprite that could not be read, drawn as nothing. */
+        /** A sprite that could not be read, drawn as the game's missing texture, as later releases' atlas draws it. */
         static final Sprite NONE = new Sprite(1, 1, 0, 0);
     }
 

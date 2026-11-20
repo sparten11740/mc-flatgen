@@ -85,6 +85,7 @@ abstract class GameScreen extends Screen {
         behind().ifPresent(screen -> screen.init(Minecraft.getInstance(), window.getGuiScaledWidth(),
                 window.getGuiScaledHeight()));
         blockSides = new BlockSides();
+        GuiSprites.forget();
     }
 
     @Override
