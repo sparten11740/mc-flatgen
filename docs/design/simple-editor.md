@@ -84,8 +84,11 @@ Left out, for the owner to decide on:
   F14), and the block picker's kinds as the creative inventory's tabs (F05);
 - an illustration in the empty Nether;
 - "+" lines between cards, and the favourite presets as named columns;
-- windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small;
-  respecting a smaller GUI scale the player chose is not done either;
+- windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small
+  (at the launchers' default 854 by 480, half the game's own); respecting a smaller GUI scale the player chose is not
+  done either. On 2026-11-20 a panel of three agents ranked it second after the block picker's kinds: fonts exist for
+  whole pixels only and the layouts need 640 by 360, so it needs a fractional scale, giving up sharp pixels, or a
+  second, smaller layout of every screen, which is large; left for the owner to weigh;
 - the aside lays all panels out again as it scrolls, which costs nothing a player notices but is not the simplest.
 
 ## How it is built in the game
