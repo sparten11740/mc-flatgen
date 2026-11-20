@@ -207,7 +207,7 @@ public final class LibraryScreen extends FlatgenScreen {
     /** What can be done with the card picked, in this much room, Use last. */
     private List<Widget> actions(PageFrame frame, int room) {
         List<Action> actions = List.of(
-                new Action(Icon.item("minecraft:anvil"), "flatgen.library.rename", "flatgen.library.rename_tip",
+                new Action(Icon.item("minecraft:name_tag"), "flatgen.library.rename", "flatgen.library.rename_tip",
                         this::rename,
                         () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()),
                 new Action(Icon.badged(this::drawPickedIcon, "badge_copy"), "flatgen.library.duplicate",
@@ -545,9 +545,9 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     /**
-     * A preset's card: its layers standing in the sky, a bed on the default and a barrier when it is broken or names
-     * missing parts, its name, and for a built-in the mod or pack it comes from; its tooltip, and so the narrator, says
-     * in words what its marks show: picked, the default, built in.
+     * A preset's card: its layers standing in the sky with its own item beside them, a bed on the default and a barrier
+     * when it is broken or names missing parts, its name, and for a built-in the mod or pack it comes from; its
+     * tooltip, and so the narrator, says in words what its marks show: picked, the default, built in.
      */
     private final class Cards implements CardGrid.Cards {
         @Override
@@ -564,7 +564,8 @@ public final class LibraryScreen extends FlatgenScreen {
                     TOWER_HEIGHT);
             preset.ifPresent(found -> ColumnPicture.draw(canvas, found.layers(),
                     Biomes.waterColor(found.biome(), editor.registries()), tower));
-            drawMarks(canvas, card, preset, place, sky);
+            preset.ifPresent(found -> canvas.itemIcon(found.icon(), sky.x() - Icon.SIZE - CARD_SPACING, sky.y()));
+            drawMarks(canvas, card, preset, sky);
             Rect name = new Rect(place.x() + CARD_SPACING, sky.bottom() + CARD_SPACING,
                     place.width() - 2 * CARD_SPACING, TextStyle.BODY.lineHeight());
             canvas.centeredText(canvas.fitted(Component.literal(card.name()), name.width(), TextStyle.BODY), name,
@@ -575,10 +576,10 @@ public final class LibraryScreen extends FlatgenScreen {
             }
         }
 
-        /** A bed on the default preset's card, at its top left; a barrier on the sky of one broken or lacking parts. */
-        private void drawMarks(Canvas canvas, Search.Entry card, Optional<Preset> preset, Rect place, Rect sky) {
+        /** A bed on the default preset's card, under its item; a barrier on the sky of one broken or lacking parts. */
+        private void drawMarks(Canvas canvas, Search.Entry card, Optional<Preset> preset, Rect sky) {
             if (choices.defaultFile().filter(card.id()::equals).isPresent()) {
-                DEFAULT.draw(canvas, place.x() + CARD_SPACING, place.y() + CARD_SPACING);
+                DEFAULT.draw(canvas, sky.x() - Icon.SIZE - CARD_SPACING, sky.y() + Icon.SIZE + CARD_SPACING);
             }
             if (preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty()) {
                 Icon.MISSING.draw(canvas, sky.x() + (SKY_WIDTH - Icon.SIZE) / 2, sky.y() + CARD_SPACING);
