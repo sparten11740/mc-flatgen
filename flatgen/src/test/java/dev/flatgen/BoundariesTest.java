@@ -31,6 +31,7 @@ class BoundariesTest {
     /** The packages of each loader's API, by the platform half allowed to name them. */
     private static final Map<String, List<String>> LOADER_APIS = Map.of(
             "neoforge", List.of("net.neoforged."),
+            "forge", List.of("net.minecraftforge."),
             "fabric", List.of("net.fabricmc."));
     /** What rules may use besides other rules: the JDK and Gson. */
     private static final List<String> RULES_LIBRARIES = List.of("java.", "com.google.gson.");

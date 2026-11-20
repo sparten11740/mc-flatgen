@@ -13,7 +13,7 @@ val minecraft = prop("minecraft_version")
 val treeDir = parent!!.projectDir
 
 // Fabric's metadata, which common.gradle.kts generates from its template.
-extra["metadataTemplate"] = "fabric.mod.json"
+extra["metadataTemplates"] = listOf("fabric.mod.json")
 extra["loaderMetadata"] = mapOf(
     "fabric_loader_min_version" to prop("fabric_loader_min_version"),
     "minecraft_version_range" to prop("minecraft_version_range"),

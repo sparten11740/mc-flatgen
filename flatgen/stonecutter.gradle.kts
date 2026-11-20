@@ -6,9 +6,8 @@ plugins {
 stonecutter active "1.21.1-neoforge"
 
 stonecutter parameters {
-    // `//? if fabric` and `//? if neoforge` in the sources, from the loader half of the node's name. Forge joins with
-    // the 1.20.1 nodes (docs/backlog/24-port-1-20-1.md).
-    constants.match(current.project.substringAfterLast('-'), "fabric", "neoforge")
+    // `//? if fabric`, `//? if forge` and `//? if neoforge` in the sources, from the loader half of the node's name.
+    constants.match(current.project.substringAfterLast('-'), "fabric", "forge", "neoforge")
 
     // Plain renames between Minecraft versions, as Blockpilot's are: each names the earliest release known to have the
     // new name and swaps it in for the nodes from that release on, the rules in the order of their releases. src/main

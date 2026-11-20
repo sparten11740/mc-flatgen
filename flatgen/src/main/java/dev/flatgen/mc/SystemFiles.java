@@ -24,8 +24,9 @@ public final class SystemFiles {
         }
         //? if >=26.3 {
         /*Blaze3D.openPath(folder);
-        *///?} else {
+        *///?} else if >=1.21 {
         Util.getPlatform().openPath(folder);
-        //?}
+        //?} else
+        /*Util.getPlatform().openFile(folder.toFile());*/
     }
 }

@@ -129,9 +129,10 @@ final class McCanvas implements Canvas {
     private void sprite(ResourceLocation sprite, Rect area) {
         //? if >=1.21.11 {
         /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, area.x(), area.y(), area.width(), area.height());
-        *///?} else {
+        *///?} else if >=1.21 {
         graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
-        //?}
+        //?} else
+        /*GuiSprites.draw(graphics, sprite, area.x(), area.y(), area.width(), area.height());*/
     }
 
     @Override

@@ -32,7 +32,7 @@ tasks.named<Jar>("jar") {
 
 // Each loader's half of dev/flatgen/platform: a node's build takes its own and leaves out the others' (their entry
 // points, event wiring and mixins).
-val loaders = listOf("fabric", "neoforge")
+val loaders = listOf("fabric", "forge", "neoforge")
 val otherLoaders = (loaders - loader).map { "dev/flatgen/platform/$it/**" }
 val sourceSets = the<SourceSetContainer>()
 sourceSets.named("main") {
@@ -45,6 +45,42 @@ sourceSets.matching { it.name == "gametest" }.all {
 }
 // What differs between Minecraft versions: one tree per range.
 apply(from = treeDir.resolve("version-sources.gradle.kts"))
+// The GameTests' structures, in the data folder the node's release reads them from: structure/ as from 1.21, or the
+// folder its properties name (structures/ up to 1.20.x).
+findProperty("structure_folder")?.toString()?.let { folder ->
+    tasks.matching { it.name == "processGametestResources" }.configureEach {
+        (this as ProcessResources).eachFile { path = path.replace("/structure/", "/$folder/") }
+    }
+}
+// Flatgen's fonts as the node's release must be told them to draw them as the others do: a release that sizes a
+// TrueType font by its whole height rather than its em, and sets its glyphs elsewhere, has them written larger and
+// lower by what its properties give (1.20.1): one factor, and how far down each text style's glyphs go. Each shift is
+// rounded to the glyphs' own pixels, as many to a GUI pixel as the definition oversamples, so letters stay on whole
+// window pixels.
+findProperty("ttf_size_factor")?.toString()?.toDouble()?.let { factor ->
+    val shifts = property("ttf_shift_down").toString().split(",")
+        .associate { it.substringBefore(":") to it.substringAfter(":").toDouble() }
+    val oversample = property("ttf_oversample_factor").toString().toInt()
+    val size = Regex("\"size\": ([0-9.]+)")
+    val shift = Regex("\"oversample\": ([0-9]+), \"shift\": \\[0, 0]")
+    tasks.named<ProcessResources>("processResources") {
+        inputs.property("ttfSizeFactor", factor)
+        inputs.property("ttfShiftDown", shifts.toString())
+        inputs.property("ttfOversampleFactor", oversample)
+        shifts.forEach { (style, down) ->
+            filesMatching("assets/$modId/font/${style}_*.json") {
+                filter { line -> size.replace(line) { "\"size\": ${it.groupValues[1].toDouble() * factor}" } }
+                filter { line ->
+                    shift.replace(line) {
+                        val pixels = it.groupValues[1].toInt()
+                        val shifted = Math.round(down * pixels).toDouble() / pixels
+                        "\"oversample\": ${pixels * oversample}, \"shift\": [0, $shifted]"
+                    }
+                }
+            }
+        }
+    }
+}
 
 // Where the GameTests leave word that they played, which each loader's GameTest run is told: a game that never started,
 // or stopped as its mods loaded, ends its run without playing a test, and some loaders call that a success.
@@ -86,12 +122,13 @@ dependencies {
     "testImplementation"("org.slf4j:slf4j-api:2.0.9")
 }
 
-// The loader's metadata file, from its template in src/main/templates with the mod's own properties and the loader's,
-// which the loader's build sets before applying this script: the template's path (extra["metadataTemplate"]) and its
-// properties (extra["loaderMetadata"]).
+// The loader's metadata files, from their templates in src/main/templates with the mod's own properties and the
+// loader's, which the loader's build sets before applying this script: the templates' paths
+// (extra["metadataTemplates"]) and their properties (extra["loaderMetadata"]).
 @Suppress("UNCHECKED_CAST")
 val loaderMetadata = extra["loaderMetadata"] as Map<String, String>
-val metadataTemplate = extra["metadataTemplate"].toString()
+@Suppress("UNCHECKED_CAST")
+val metadataTemplates = extra["metadataTemplates"] as List<String>
 val modMetadata = mapOf(
     "mod_id" to modId,
     "mod_name" to parent!!.property("mod_name").toString(),
@@ -104,7 +141,7 @@ val generateModMetadata = tasks.register<ProcessResources>("generateModMetadata"
     inputs.properties(modMetadata)
     expand(modMetadata)
     from(treeDir.resolve("src/main/templates")) {
-        include(metadataTemplate)
+        include(metadataTemplates)
     }
     into(layout.buildDirectory.dir("generated/sources/modMetadata"))
 }

@@ -23,6 +23,8 @@ stonecutter {
             version("$minecraft-$loader", minecraft).buildscript = "build.$loader.gradle.kts"
         }
 
+        // 1.20.1's Forge jar also loads on NeoForge 47.1.
+        target("1.20.1", "forge", "fabric")
         target("1.21.1", "neoforge", "fabric")
         target("1.21.11", "neoforge", "fabric")
         target("26.1", "neoforge", "fabric")

@@ -12,7 +12,7 @@ val modId = parent!!.property("mod_id").toString()
 val treeDir = parent!!.projectDir
 
 // NeoForge's metadata, which common.gradle.kts generates from its template.
-extra["metadataTemplate"] = "META-INF/neoforge.mods.toml"
+extra["metadataTemplates"] = listOf("META-INF/neoforge.mods.toml")
 extra["loaderMetadata"] = mapOf(
     "loader_version_range" to prop("loader_version_range"),
     "neo_min_version" to prop("neo_min_version"),
