@@ -27,7 +27,6 @@ final class TallFlat implements Template {
         return "flatgen.template.tall_flat.about";
     }
 
-
     @Override
     public List<Parameter> parameters() {
         return List.of(SURFACE, TOP, FILLER);

@@ -15,7 +15,6 @@ public interface Template {
     /** What it makes, in a line, a translation key. */
     String about();
 
-
     /** Its settings, in the order they are shown. */
     List<Parameter> parameters();
 

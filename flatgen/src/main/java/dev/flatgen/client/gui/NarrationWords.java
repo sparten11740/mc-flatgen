@@ -31,7 +31,8 @@ final class NarrationWords implements NarrationElementOutput {
     }
 
     //? if >=26.3 {
-    /*@Override
+    /*/^* The focus moved by the keyboard, as the words are asked for the control that has it, or else the mouse's. ^/
+    @Override
     public NarrationTrigger narrationTrigger() {
         return NarrationTrigger.KEYBOARD;
     }

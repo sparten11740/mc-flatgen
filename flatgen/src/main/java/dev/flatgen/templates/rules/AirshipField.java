@@ -26,7 +26,6 @@ final class AirshipField implements Template {
         return "flatgen.template.airship_field.about";
     }
 
-
     @Override
     public List<Parameter> parameters() {
         return List.of(SURFACE, CLEAR);

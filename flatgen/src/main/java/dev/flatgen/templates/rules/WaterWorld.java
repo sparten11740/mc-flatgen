@@ -26,7 +26,6 @@ final class WaterWorld implements Template {
         return "flatgen.template.water_world.about";
     }
 
-
     @Override
     public List<Parameter> parameters() {
         return List.of(WATER, FLOOR, FLOOR_DEPTH);

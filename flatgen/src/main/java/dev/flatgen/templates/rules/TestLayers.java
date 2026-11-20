@@ -26,7 +26,6 @@ final class TestLayers implements Template {
         return "flatgen.template.test_layers.about";
     }
 
-
     @Override
     public List<Parameter> parameters() {
         return List.of(COUNT, FIRST, SECOND);
