@@ -18,21 +18,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
- * The block picker (F05) as the biome picker is laid out: the creative inventory's tabs of blocks down its side as the
- * kinds, with their names and pictures as the game shows them, beside the starred, the recent and every block; each
- * block a card with its picture, its marks ({@link BlockMarks}) and its name. A click on a card picks its block.
+ * The block picker (F05): every block, the game's own first, with a row of the blocks picked lately and a row of the
+ * starred ones above; down its side, all the blocks, chosen at first, and the creative inventory's tabs of blocks, with
+ * their names and pictures as the game shows them, to narrow them to one. Each block is a card with its picture, its
+ * marks ({@link BlockMarks}) and its name; a click on a card picks its block.
  */
 final class BlockPickerScreen extends ShelvedPickerScreen {
     /** A block's card, and the picture of the block on it, in GUI pixels. */
-    private static final int CARD_WIDTH = 50;
-    private static final int CARD_HEIGHT = 42;
+    private static final int CARD_WIDTH = 58;
+    private static final int CARD_HEIGHT = 48;
     private static final int PICTURE = 22;
     /** Space above the picture and between it and the name, in GUI pixels. */
-    private static final int SPACING = 4;
+    private static final int SPACING = 5;
+    /** Space between a card's edge and its name, in GUI pixels, so the focus ring keeps clear of the words. */
+    private static final int NAME_INSET = 5;
     /** The blocks Every block's picture shows, four in a square. */
     private static final List<String> EVERY = List.of("minecraft:grass_block", "minecraft:stone",
             "minecraft:oak_planks", "minecraft:glass");
@@ -55,11 +59,26 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
         return List.of(new Caption(this::getTitle, area, TextStyle.TITLE, Look.TEXT));
     }
 
-    /** A shelf for each tab of the creative inventory with blocks a layer can be of. */
+    /** All the blocks, then each tab of the creative inventory with blocks a layer can be of. */
     @Override
-    protected List<Shelf> kinds() {
-        return tabs.stream().map(BlockPickerScreen::shelf).filter(shelf -> !shelf.of().apply(entries()).isEmpty())
-                .toList();
+    protected List<List<Shelf>> shelves() {
+        return List.of(List.of(every()), tabs.stream().map(BlockPickerScreen::shelf)
+                .filter(shelf -> !shelf.of().apply(entries()).isEmpty()).toList());
+    }
+
+    /** All the blocks. */
+    @Override
+    protected Shelf shownFirst(List<List<Shelf>> side) {
+        return side.get(0).get(0);
+    }
+
+    /** A row of the blocks picked lately and a row of the starred ones, each when there are any, over the shelf's. */
+    @Override
+    protected List<CardGrid.Section> browsing(List<Search.Entry> shown, Shelf chosen) {
+        return Stream.of(CardGrid.Section.row(Component.translatable("flatgen.picks.recent"), recent()),
+                CardGrid.Section.row(Component.translatable("flatgen.picks.starred"), starred()),
+                new CardGrid.Section(chosen.name(), chosen.of().apply(shown)))
+                .filter(section -> !section.entries().isEmpty()).toList();
     }
 
     /** A tab's shelf: its blocks among those shown, in the creative inventory's order. */
@@ -71,9 +90,8 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
                 .sorted(Comparator.comparing(entry -> order.get(entry.id()))).toList());
     }
 
-    /** Every block, its picture four blocks in a square. */
-    @Override
-    protected Shelf every() {
+    /** All the blocks, its picture four blocks in a square. */
+    private Shelf every() {
         return new Shelf(Component.translatable("flatgen.blocks.every"), Icon.quartered(EVERY.stream()
                 .<BiConsumer<Canvas, Rect>>map(block -> (canvas, area) -> canvas.blockIcon(block, area)).toList()),
                 all -> all);
@@ -92,7 +110,7 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
             Rect picture = new Rect(place.x() + (place.width() - PICTURE) / 2, place.y() + SPACING, PICTURE, PICTURE);
             canvas.blockIcon(entry.id(), picture);
             BlockMarks.draw(canvas, entry.id(), picture);
-            Rect name = new Rect(place.x() + 1, picture.bottom() + SPACING, place.width() - 2,
+            Rect name = new Rect(place.x() + NAME_INSET, picture.bottom() + SPACING, place.width() - 2 * NAME_INSET,
                     TextStyle.BODY.lineHeight());
             canvas.centeredText(canvas.fitted(Names.block(entry.id()), name.width(), TextStyle.BODY), name,
                     Look.MUTED);

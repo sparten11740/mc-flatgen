@@ -9,11 +9,11 @@ of blocks, so finding one has to be quick, and the picture has to be enough for 
 
 ## What the player gets
 
-A block picker opened from the button showing the selected layer's block: a grid of block pictures to search by typing,
-narrow to one mod, and browse by the creative inventory's tabs down its side, with the starred and recently picked
-blocks on shelves of their own, shown first when there are any. Clicking one sets the selected layer's block and goes
-back. It is a screen of its own rather than a grid beside the column, which has no room for one at the largest GUI
-scale.
+A block picker opened from the button showing the selected layer's block, and from Add layer on top, which adds a layer
+of the block picked: all the blocks, the game's own first, with a row of the blocks picked lately and a row of the
+starred ones above them; the creative inventory's tabs down its side to narrow them to one; a search by typing and a
+filter by mod. Clicking one picks it and goes back. It is a screen of its own rather than a grid beside the column,
+which has no room for one at the largest GUI scale.
 
 ## Acceptance criteria
 
@@ -21,8 +21,8 @@ scale.
   (water, lava, fire and the like) with their side, as the column draws it.
 - [x] Search by name and by id, as the player types.
 - [x] Filter by mod (namespace), with the mod's name from the loader (`ClientPlatform`).
-- [x] Starred blocks and the last 16 picked, each a shelf of the side, whatever the mod chosen, the picker opening on
-  them when there are any; a right click stars or unstars; both kept across games in `config/flatgen/blocks.json`.
+- [x] A row of the blocks picked lately and a row of the starred ones over the grid, whatever the mod chosen, each as
+  many as fit across; a right click stars or unstars; both kept across games in `config/flatgen/blocks.json`.
 - [x] Hover shows name, id and mod.
 - [x] Hints for blocks that make a poor layer, under the selected layer in the editor: a falling block over air, a
   fluid or the void, a block that is not whole (torches, flowers, water), a block entity. Their pictures come with
@@ -34,16 +34,18 @@ scale.
 - `search/rules/Search` (pure, shared with the biome picker of F07 from the start): matching and ranking (exact id,
   name prefix, word prefix, contains), recent and starred ordering, over plain entries of id, name and namespace.
   Unit-tested once for both pickers.
-- `blocks/client/BlockPicker`: the block picker, `BlockPickerScreen`, a `client/gui/ShelvedPickerScreen` as F07's
-  biome picker is (a `PickerScreen`: the search field, the mod filter and Cancel; the starred, the recent, the kinds and
-  every block down its side), whose cards are block icons. Since 2026-11-20 its kinds are the creative inventory's tabs
-  of blocks, natural first as most of a flat world's layers are, then building, coloured, functional and redstone, each
-  filled by the game for the world's features with the blocks mods put in them, their names and pictures the game's
-  own (`mc/BlockCatalog.tabs`); a panel of three agents chose it as the next left-out item, as a player who cannot read
-  cannot search but knows those tabs. Only these five tabs are filled, one by one, as filling runs mods' code that may
-  want a world or a server's settings the Create World screen has not got: in the test pack Astral Sorcery's
-  did, and filling every tab at once left the picker with none. Every block lists the game's own blocks first, then
-  the mods', and leaves out mods' blocks with no item, the parts they move, light or mark with, which have no picture.
+- `blocks/client/BlockPicker`: the block picker, `BlockPickerScreen`, a `client/gui/ShelvedPickerScreen` as F07's biome
+  picker is (a `PickerScreen`: the search field, the mod filter and Cancel; shelves down its side), whose cards are
+  block icons: its side holds all the blocks, chosen at first, and the kinds, and the grid's rows of recent and starred
+  blocks stand over the shelf's, as the owner asked for after trying shelves of picks with a young player. Since 2026-11-20 its kinds
+  are the creative inventory's tabs of blocks, natural first as most of a flat world's layers are, then building,
+  coloured, functional and redstone, each filled by the game for the world's features with the blocks mods put in them,
+  their names and pictures the game's own (`mc/BlockCatalog.tabs`); a panel of three agents chose it as the next
+  left-out item, as a player who cannot read cannot search but knows those tabs. Only these five tabs are filled, one by
+  one, as filling runs mods' code that may want a world or a server's settings the Create World screen has not got: in
+  the test pack Astral Sorcery's did, and filling every tab at once left the picker with none. Every block lists
+  the game's own blocks first, then the mods', and leaves out mods' blocks with no item, the parts they move, light or
+  mark with, which have no picture.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
   which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
@@ -75,3 +77,8 @@ be seen but a Create Aeronautics block and blocks without pictures. The log show
 code wanted its server settings, the filling of every tab at once failed, and the picker fell back to every block in the
 registry's order. Fixed as above; tried on 1.21.1 NeoForge, where the side starts with Natural Blocks and Every block
 with stone. Not tried yet: the pack itself.
+
+Layout, 2026-11-20, as the owner asked: all the blocks chosen at first with rows of the recent and the starred over them and
+the tabs to switch to down the side; the cards' words kept clear of the focus ring; Add layer on top opening the picker
+first. Tried on 1.21.1 NeoForge: the picker opens on All blocks with Recent and Starred rows, picking glass from Add
+layer on top adds a glass layer on top, cancelling adds nothing, and Undo takes the glass back.

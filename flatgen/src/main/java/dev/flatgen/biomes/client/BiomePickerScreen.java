@@ -84,9 +84,21 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         this.chosen = biomes.containsKey(current) ? current : entries().get(0).id();
     }
 
-    /** A shelf for each kind of biome that has any, its picture the biome the kind names, else its first. */
+    /** The starred and the recent biomes, each kind of biome that has any, and every biome. */
     @Override
-    protected List<Shelf> kinds() {
+    protected List<List<Shelf>> shelves() {
+        return List.of(List.of(starredShelf(), recentShelf()), kinds(), List.of(every()));
+    }
+
+    /** The player's own picks, starred or recent, when there are any, else the first kind, else every biome. */
+    @Override
+    protected Shelf shownFirst(List<List<Shelf>> side) {
+        return side.stream().flatMap(List::stream).filter(shelf -> !shelf.of().apply(entries()).isEmpty())
+                .findFirst().orElse(side.get(side.size() - 1).get(0));
+    }
+
+    /** A shelf for each kind of biome that has any, its picture the biome the kind names, else its first. */
+    private List<Shelf> kinds() {
         List<Shelf> made = new ArrayList<>();
         for (BiomeKinds.Kind kind : BiomeKinds.ALL) {
             Function<List<Search.Entry>, List<Search.Entry>> of = shown -> ofKind(shown, kind);
@@ -100,8 +112,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
     }
 
     /** Every biome, its picture four of the game's biomes, each a little landscape, in a square. */
-    @Override
-    protected Shelf every() {
+    private Shelf every() {
         Icon four = Icon.quartered(EVERY.stream().filter(biomes::containsKey).map(biomes::get)
                 .<BiConsumer<Canvas, Rect>>map(biome -> (canvas, area) -> BiomeLandscape.draw(canvas, biome, area))
                 .toList());

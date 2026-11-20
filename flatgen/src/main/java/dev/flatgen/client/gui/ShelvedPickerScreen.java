@@ -6,16 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
  * A picker that sorts its entries onto shelves down its side, as round 3 of docs/design/simple-editor.md drew the biome
- * picker: the starred and the recent entries, then each kind the picker has, then every entry, gaps parting the three;
- * the grid beside shows the shelf chosen, or what a search found among every entry. It opens on the player's own
- * picks, starred or recent, when there are any, else on the first kind. A player who cannot read browses by the
- * shelves' pictures instead of searching. The biome and the block pickers are this screen.
+ * picker: the grid beside shows the shelf chosen, or what a search found among every entry, and a picker may put rows
+ * above it, as the block picker's recent and starred blocks. A player who cannot read browses by the shelves' pictures
+ * instead of searching. Which shelves there are, and which is shown first, is each picker's own: the biome picker's
+ * starred, recent, kinds and every biome; the block picker's every block and the creative inventory's tabs.
  */
 public abstract class ShelvedPickerScreen extends PickerScreen {
     /** The side's width, a shelf's row on it, the space parting its groups and the space beside it, in GUI pixels. */
@@ -47,14 +46,39 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
         super(parent, picker, onPick);
     }
 
-    /** A shelf for each kind of entry the picker has that holds any, in the order shown; the first is shown first. */
-    protected abstract List<Shelf> kinds();
+    /** The side's groups of shelves, in order, gaps parting them; asked once, when the sheet is first laid out. */
+    protected abstract List<List<Shelf>> shelves();
 
-    /** The shelf of every entry, last on the side. */
-    protected abstract Shelf every();
+    /** The shelf shown first, one of these groups'. */
+    protected abstract Shelf shownFirst(List<List<Shelf>> side);
 
     /** What stands beside the side: the grid, made by {@code grid}, and anything more. */
     protected abstract List<Widget> beside(Rect area);
+
+    /** What the grid shows while nothing is searched for: the shelf chosen; a picker may put rows above it. */
+    protected List<CardGrid.Section> browsing(List<Search.Entry> shown, Shelf chosen) {
+        return List.of(new CardGrid.Section(chosen.name(), chosen.of().apply(shown)));
+    }
+
+    /** The shelf of the starred entries, whatever the mod chosen, as a star shows wherever it is. */
+    protected final Shelf starredShelf() {
+        return new Shelf(Component.translatable("flatgen.picks.starred"), STARRED, shown -> starred());
+    }
+
+    /** The shelf of the entries picked lately, newest first, whatever the mod chosen. */
+    protected final Shelf recentShelf() {
+        return new Shelf(Component.translatable("flatgen.picks.recent"), RECENT, shown -> recent());
+    }
+
+    /** The starred entries, in the order they were starred. */
+    protected final List<Search.Entry> starred() {
+        return picked(entries(), picks().starred());
+    }
+
+    /** The entries picked lately, newest first. */
+    protected final List<Search.Entry> recent() {
+        return picked(entries(), picks().recent());
+    }
 
     /** The side at the left, and what the picker puts beside it. */
     @Override
@@ -67,31 +91,20 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
         return widgets;
     }
 
-    /** The shelf's entries under its name, or what a search found among every entry shown. */
+    /** What the picker shows while browsing, or what a search found among every entry shown. */
     @Override
-    protected List<CardGrid.Section> sections(List<Search.Entry> shown, String searched) {
+    protected final List<CardGrid.Section> sections(List<Search.Entry> shown, String searched) {
         groups();
-        return List.of(searched.isBlank() ? new CardGrid.Section(shelf.name(), shelf.of().apply(shown))
-                : new CardGrid.Section(Component.translatable("flatgen.picks.found"), Search.find(shown, searched)));
+        return searched.isBlank() ? browsing(shown, shelf)
+                : List.of(new CardGrid.Section(Component.translatable("flatgen.picks.found"),
+                        Search.find(shown, searched)));
     }
 
-    /**
-     * The side's groups: the picks, the kinds, every entry; made once, showing first the starred or else the recent
-     * entries where there are any, else the first kind, else every entry. The picks show whatever the mod chosen, as a
-     * star does.
-     */
+    /** The side's groups, made once, with the shelf shown first. */
     private List<List<Shelf>> groups() {
         if (groups == null) {
-            List<Shelf> own = List.of(
-                    new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
-                            shown -> picked(entries(), picks().starred())),
-                    new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
-                            shown -> picked(entries(), picks().recent())));
-            List<Shelf> kinds = kinds();
-            Shelf all = every();
-            groups = List.of(own, kinds, List.of(all));
-            shelf = Stream.of(own, kinds, List.of(all)).flatMap(List::stream)
-                    .filter(each -> each == all || !each.of().apply(entries()).isEmpty()).findFirst().orElse(all);
+            groups = shelves();
+            shelf = shownFirst(groups);
         }
         return groups;
     }
