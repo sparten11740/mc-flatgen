@@ -25,6 +25,8 @@ public final class CardGrid implements Control {
     private static final int SECTION_GAP = 4;
     /** The height of a section's heading, in GUI pixels: a line of text and a little space under it. */
     private static final int HEADING_HEIGHT = 12;
+    /** The space between a heading and its detail, in GUI pixels. */
+    private static final int DETAIL_GAP = 6;
     /** How far a heading sits in from the grid's left edge, in GUI pixels, clear of the clip at that edge. */
     private static final int HEADING_INDENT = 2;
     /** The mark on a starred card, an outlined star in its top right corner. */
@@ -70,9 +72,14 @@ public final class CardGrid implements Control {
      * A part of the grid under a heading.
      *
      * @param heading what it is called
+     * @param detail  more about it, quieter, beside the heading; empty for nothing
      * @param entries its entries, in order
      */
-    public record Section(Component heading, List<Search.Entry> entries) {
+    public record Section(Component heading, Component detail, List<Search.Entry> entries) {
+        /** A part of the grid under a heading alone. */
+        public Section(Component heading, List<Search.Entry> entries) {
+            this(heading, Component.empty(), entries);
+        }
     }
 
     /**
@@ -105,8 +112,8 @@ public final class CardGrid implements Control {
         this.onStar = onStar;
     }
 
-    /** A section's heading where the grid draws it now. */
-    private record Heading(Component text, int y) {
+    /** A section's heading and its detail where the grid draws them now. */
+    private record Heading(Component text, Component detail, int y) {
     }
 
     /** Where everything is drawn now: the headings and the cards, those scrolled out of sight included. */
@@ -147,7 +154,7 @@ public final class CardGrid implements Control {
         int columnWidth = Math.max(cardWidth, bounds.width() / columns);
         int y = bounds.y() - scroll;
         for (Section section : current) {
-            headings.add(new Heading(section.heading(), y + SECTION_GAP));
+            headings.add(new Heading(section.heading(), section.detail(), y + SECTION_GAP));
             y += SECTION_GAP + HEADING_HEIGHT;
             for (int index = 0; index < section.entries().size(); index++) {
                 Rect place = new Rect(bounds.x() + index % columns * columnWidth, y + index / columns * cardHeight,
@@ -163,8 +170,7 @@ public final class CardGrid implements Control {
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         Placed now = placed();
         canvas.clip(bounds);
-        now.headings().forEach(heading -> canvas.text(heading.text(), bounds.x() + HEADING_INDENT, heading.y(),
-                Look.MUTED));
+        now.headings().forEach(heading -> drawHeading(canvas, heading));
         for (Card card : now.cards()) {
             if (card.place().bottom() > bounds.y() && card.place().y() < bounds.bottom()) {
                 drawCard(canvas, card, card.place().contains(mouseX, mouseY) && bounds.contains(mouseX, mouseY));
@@ -172,6 +178,15 @@ public final class CardGrid implements Control {
         }
         canvas.unclip();
         cardAt(mouseX, mouseY).ifPresent(card -> canvas.tooltipBelow(describe(card.entry()), card.place()));
+    }
+
+    /** A section's heading in bold, and its detail quieter beside it. */
+    private void drawHeading(Canvas canvas, Heading heading) {
+        int x = bounds.x() + HEADING_INDENT;
+        canvas.text(heading.text(), x, heading.y(), Look.TEXT, TextStyle.STRONG);
+        int detailX = x + canvas.textWidth(heading.text(), TextStyle.STRONG) + DETAIL_GAP;
+        canvas.text(canvas.fitted(heading.detail(), bounds.right() - detailX, TextStyle.BODY), detailX, heading.y(),
+                Look.MUTED);
     }
 
     @Override
