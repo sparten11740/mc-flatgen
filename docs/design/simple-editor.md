@@ -110,8 +110,7 @@ Left out, for the owner to decide on:
   moved a few pixels so a click still only selects. The block picker opens from the card's block.
 - **The column** keeps everything it did and draws the stack at the bottom, under the air the world has above it, in
   the dimension's air colour.
-- **Sheets.** A picker or a question stands over the screen it came from, which is drawn dimmed behind it
+- **Sheets.** A picker, a question or a menu stands over the screen it came from, which is drawn dimmed behind it
   (`GameScreen.behind`).
 - **Not yet handled:** widgets another mod adds to a Flatgen screen through its loader's screen events would get the
-  screen's own size but be drawn in the game's pixels; no mod does so today. Advanced is remembered until the game
-  closes, not in the settings file.
+  screen's own size but be drawn in the game's pixels; no mod does so today.
