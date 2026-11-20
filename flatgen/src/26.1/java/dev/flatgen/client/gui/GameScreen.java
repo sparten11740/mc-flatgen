@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.InputQuirks;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -62,10 +63,25 @@ abstract class GameScreen extends Screen {
                 : button == InputConstants.MOUSE_BUTTON_RIGHT ? MouseButtons.RIGHT : MouseButtons.OTHER;
     }
 
-    /** Which of Shift, Control (Command on macOS, as the game counts it) and Alt are held now. */
+    /**
+     * Which of Shift, Control and Alt are held now, Control being Command on macOS, as the game's edit shortcuts count
+     * it.
+     */
     protected static Modifiers modifiers() {
         Minecraft minecraft = Minecraft.getInstance();
-        return new Modifiers(minecraft.hasShiftDown(), minecraft.hasControlDown(), minecraft.hasAltDown());
+        boolean control = InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY ? commandDown() : minecraft.hasControlDown();
+        return new Modifiers(minecraft.hasShiftDown(), control, minecraft.hasAltDown());
+    }
+
+    /** Whether either Command key, the game's Super keys, is held. */
+    private static boolean commandDown() {
+        //? if >=26.3 {
+        /*return InputConstants.isKeyDown(InputConstants.KEY_LGUI) || InputConstants.isKeyDown(InputConstants.KEY_RGUI);
+        *///?} else {
+        Window window = Minecraft.getInstance().getWindow();
+        return InputConstants.isKeyDown(window, InputConstants.KEY_LSUPER)
+                || InputConstants.isKeyDown(window, InputConstants.KEY_RSUPER);
+        //?}
     }
 
     /** How many window pixels one of the screen's GUI pixels is. */
