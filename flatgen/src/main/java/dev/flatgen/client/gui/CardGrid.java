@@ -31,6 +31,7 @@ public final class CardGrid implements Control {
     private static final Icon STAR = Icon.own("star");
 
     private final Rect bounds;
+    /** How wide a card is at least, in GUI pixels. */
     private final int cardWidth;
     private final int cardHeight;
     private final Supplier<List<Section>> sections;
@@ -84,8 +85,9 @@ public final class CardGrid implements Control {
     }
 
     /**
-     * A grid in this rectangle of cards this size, of the sections given, which may change as the player searches;
-     * a right click on a card stars or unstars it, and its tooltip says so.
+     * A grid in this rectangle of cards at least this wide and this tall, of the sections given, which may change as
+     * the player searches; the columns share the width a row of cards leaves over, so the grid fills its rectangle. A
+     * right click on a card stars or unstars it, and its tooltip says so.
      *
      * @param starred whether an entry is starred, by id
      * @param onPick  told the id a left click picks
@@ -142,13 +144,14 @@ public final class CardGrid implements Control {
         List<Heading> headings = new ArrayList<>();
         List<Card> placedCards = new ArrayList<>();
         int columns = Math.max(1, bounds.width() / cardWidth);
+        int columnWidth = Math.max(cardWidth, bounds.width() / columns);
         int y = bounds.y() - scroll;
         for (Section section : current) {
             headings.add(new Heading(section.heading(), y + SECTION_GAP));
             y += SECTION_GAP + HEADING_HEIGHT;
             for (int index = 0; index < section.entries().size(); index++) {
-                Rect place = new Rect(bounds.x() + index % columns * cardWidth, y + index / columns * cardHeight,
-                        cardWidth, cardHeight);
+                Rect place = new Rect(bounds.x() + index % columns * columnWidth, y + index / columns * cardHeight,
+                        columnWidth, cardHeight);
                 placedCards.add(new Card(section.entries().get(index), place));
             }
             y += (section.entries().size() + columns - 1) / columns * cardHeight;

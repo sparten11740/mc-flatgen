@@ -62,7 +62,7 @@ public final class PickerScreen extends FlatgenScreen {
      * @param searchHint the search field's hint
      * @param allHeading the heading of every entry, as "All blocks"
      * @param entries    every entry, in the order shown
-     * @param cardWidth  a card's width, in GUI pixels
+     * @param cardWidth  how wide a card is at least, in GUI pixels; the grid's columns share what is left over
      * @param cardHeight a card's height, in GUI pixels
      * @param cards      what a card shows
      * @param picture    an entry's picture, by id: the mod filter shows a mod's first entry's
