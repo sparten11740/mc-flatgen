@@ -130,7 +130,7 @@
   "flatgen.library.search": "Search presets",
   "flatgen.library.server": "Copy server lines",
   "flatgen.library.server_copied": "The server lines are on the clipboard: paste them into server.properties",
-  "flatgen.library.server_copied_overworld": "Copied, overworld only: Datapack carries the Nether and End too",
+  "flatgen.library.server_copied_overworld": "Copied, overworld only: Save as a datapack carries the Nether and End too",
   "flatgen.library.server_tip": "Put the lines a server's server.properties needs for the picked preset on the clipboard; they make the overworld, without the world options' game rules",
   "flatgen.library.share": "Share",
   "flatgen.library.share_tip": "Put the picked preset on the clipboard as text, to paste into a message or another game",

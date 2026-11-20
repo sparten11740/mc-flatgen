@@ -130,7 +130,7 @@
   "flatgen.library.search": "Vorlagen suchen",
   "flatgen.library.server": "Serverzeilen kopieren",
   "flatgen.library.server_copied": "Die Server-Zeilen liegen in der Zwischenablage: Füge sie in die server.properties ein",
-  "flatgen.library.server_copied_overworld": "Kopiert, nur Oberwelt: Datenpaket nimmt Nether und Ende mit",
+  "flatgen.library.server_copied_overworld": "Kopiert, nur Oberwelt: Als Datenpaket speichern nimmt Nether und Ende mit",
   "flatgen.library.server_tip": "Die Zeilen, die die server.properties eines Servers für die gewählte Vorlage braucht, in die Zwischenablage legen; sie machen die Oberwelt, ohne die Spielregeln der Weltoptionen",
   "flatgen.library.share": "Teilen",
   "flatgen.library.share_tip": "Die gewählte Vorlage als Text in die Zwischenablage legen, für eine Nachricht oder ein anderes Spiel",

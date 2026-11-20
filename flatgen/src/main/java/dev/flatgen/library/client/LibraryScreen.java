@@ -78,6 +78,8 @@ public final class LibraryScreen extends FlatgenScreen {
     /** Space between a card's sky, name and source, and around a source's words on its chip, in GUI pixels. */
     private static final int CARD_SPACING = 3;
     private static final int CHIP_PADDING = 4;
+    /** How much taller a source's chip is than its words, in GUI pixels: its border above and below. */
+    private static final int CHIP_BORDER = 2;
     /** The colour of the sky on a card, ARGB: the overworld's. */
     private static final int SKY = 0xFF9CC3F7;
     /** The picked preset's layers in the footer, in GUI pixels. */
@@ -394,11 +396,15 @@ public final class LibraryScreen extends FlatgenScreen {
         ask(SAVE_OVER, "flatgen.library.overwrite_question", shownName, () -> overwritten(file, shownName));
     }
 
-    /** Saves the editor's preset over a file, under its name; when it could not be written, the player is told. */
+    /**
+     * Saves the editor's preset over a file, under its name, which stays picked; when it could not be written, the
+     * player is told.
+     */
     private void overwritten(String file, String shownName) {
         if (!store.overwrite(file, editor.shown().preset().withTopBlockIcon().withName(shownName))) {
             message = NOT_SAVED;
         }
+        reloadPicking(file);
     }
 
     private void delete() {
@@ -414,19 +420,10 @@ public final class LibraryScreen extends FlatgenScreen {
         PresetUse.use(editor, this, preset);
     }
 
-    /**
-     * Asks before something that cannot be undone, showing its picture, about a preset of this name, then reads the
-     * presets again.
-     */
+    /** Asks before something that cannot be undone, showing its picture, about a preset of this name. */
     private void ask(Icon picture, String key, String presetName, Runnable yes) {
         Screens.show(new QuestionScreen(this, picture, Component.translatable("flatgen.library.title"),
-                List.of(Component.translatable(key, presetName)), () -> afterwards(yes)));
-    }
-
-    private void afterwards(Runnable change) {
-        change.run();
-        picked = Optional.empty();
-        reload();
+                List.of(Component.translatable(key, presetName)), yes));
     }
 
     private void reloadPicking(String file) {
@@ -501,12 +498,15 @@ public final class LibraryScreen extends FlatgenScreen {
         reload();
     }
 
+    /** Deletes a preset's file, leaving none picked and the name field empty; when it cannot, the player is told. */
     private void deleted(String file) {
-        if (store.delete(file)) {
-            choose(choices.deleted(file));
-        } else {
+        if (!store.delete(file)) {
             message = Component.translatable("flatgen.library.not_deleted");
+            return;
         }
+        picked = Optional.empty();
+        name = "";
+        choose(choices.deleted(file));
     }
 
     /** Keeps the player's choices, and shows the presets in their order. */
@@ -588,7 +588,7 @@ public final class LibraryScreen extends FlatgenScreen {
             Component fitted = canvas.fitted(source, most - 2 * CHIP_PADDING, TextStyle.BODY);
             int chipWidth = Math.min(most, canvas.textWidth(fitted, TextStyle.BODY) + 2 * CHIP_PADDING);
             Rect chip = new Rect(place.x() + (place.width() - chipWidth) / 2, top, chipWidth,
-                    TextStyle.BODY.lineHeight() + 2);
+                    TextStyle.BODY.lineHeight() + CHIP_BORDER);
             canvas.sprite(Look.CHIP, chip);
             canvas.centeredText(fitted, chip, Look.MUTED);
         }
