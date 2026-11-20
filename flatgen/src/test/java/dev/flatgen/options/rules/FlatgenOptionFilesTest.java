@@ -50,6 +50,14 @@ class FlatgenOptionFilesTest {
         assertEquals("option.flatgen.no_mobs", option.name());
     }
 
+    /** No mobs shows a zombie under the "no" sign, and its group's heading the zombie's head (F16). */
+    @Test
+    void noMobsShowsFlatgensOwnPictureUnderTheZombiesHead() throws IOException {
+        WorldOption option = read("no_mobs");
+        assertTrue(option.icon().texture() && Files.exists(texture(option.icon().id())));
+        assertEquals(new WorldOption.Icon("minecraft:zombie_head", false), option.groupIcon().orElseThrow());
+    }
+
     private static WorldOption read(String name) throws IOException {
         OptionReader.Reading reading = OptionReader.read("flatgen:" + name,
                 Files.readString(OPTIONS.resolve(name + ".json")));

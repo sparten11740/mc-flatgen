@@ -1,11 +1,12 @@
 """Writes Flatgen's own pictures (F16) from the text masks below: python3 tools/sprites.py.
 
-Each picture is 16 by 16; a letter is a pixel of that material and '.' is clear. The style is applied here, so every
-picture shares it: a material's pixels at its edge are outlined in its darkest shade, and the rest are lit from the
-top left (its lightest shade where the pixel above or to the left is an edge, its darker shade where the pixel below
-or to the right is, its middle shade otherwise). A thin shape, written in lower case, and a whole badge, which sits
-small over an item, are outlined outside their shape instead, so they keep their form. The PNG files go to the game's
-GUI atlas, at textures/gui/sprites/icon/.
+Each picture is 16 by 16; a letter or digit is a pixel of that material and '.' is clear. The style is applied here,
+so every picture shares it: a material's pixels at its edge are outlined in its darkest shade, and the rest are lit
+from the top left (its lightest shade where the pixel above or to the left is an edge, its darker shade where the
+pixel below or to the right is, its middle shade otherwise). A thin shape, written in lower case, and a whole badge,
+which sits small over an item, are outlined outside their shape instead, so they keep their form. A material whose
+four shades are one colour is drawn flat, as a sign is. The PNG files go to the game's GUI atlas, at
+textures/gui/sprites/icon/.
 """
 import os
 import struct
@@ -42,6 +43,8 @@ MATERIALS = {
     "M": (0x2B3138, 0x5E6873, 0x7B8692, 0x9DA8B4),  # a grey rain cloud
     "T": (0x5A9AF0, 0x5A9AF0, 0x5A9AF0, 0x5A9AF0),  # raindrops, flat as a sign is drawn
     "X": (0xE03A3A, 0xE03A3A, 0xE03A3A, 0xE03A3A),  # the "no" sign's red ring and slash, flat as a sign is drawn
+    "1": (0x1F3314, 0x3E6628, 0x548A36, 0x6FAE4A),  # a zombie's green skin
+    "2": (0x14200C, 0x14200C, 0x14200C, 0x14200C),  # a zombie's dark eyes and mouth, flat
 }
 
 PICTURES = {
@@ -368,6 +371,24 @@ LLLLLLLLLLLLLL..
 .DDDDDDDDDDDDDD.
 .DDDDDDDDDDDDDD.
 ................
+"""),
+    "no_mobs": ("inside", """
+................
+.111111111111...
+.111111111111...
+.111111111111...
+.112211112211...
+.112211112211...
+.111111111111...
+.111111111111...
+.111111111XXXX..
+.11222221X111.X.
+.1122222X1X11..X
+.1111111X11X1..X
+.1111111X111X..X
+........X....X.X
+.........X....X.
+..........XXXX..
 """),
 }
 
