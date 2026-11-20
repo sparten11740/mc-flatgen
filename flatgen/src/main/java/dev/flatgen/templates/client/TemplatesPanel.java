@@ -13,7 +13,7 @@ public final class TemplatesPanel implements EditorPanel {
     /** A button in the header. */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
-        layout.button(EditorRegion.HEADER, Icon.line("templates"), Component.translatable("flatgen.templates.open"),
+        layout.button(EditorRegion.HEADER, Icon.item("minecraft:crafting_table"), Component.translatable("flatgen.templates.open"),
                 () -> editor.open(new TemplatesScreen(editor)), () -> true,
                 () -> List.of(Component.translatable("flatgen.templates.open_tip")));
     }

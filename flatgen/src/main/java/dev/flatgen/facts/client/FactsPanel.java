@@ -22,8 +22,8 @@ import net.minecraft.network.chat.Component;
  * words as a tooltip, and a button that raises the surface out of slime chunks' reach.
  */
 public final class FactsPanel implements EditorPanel {
-    /** The picture of the no-slimes button: the slime fact's own, as it makes that fact true. */
-    private static final Icon NO_SLIMES = Icon.marked(Icon.item("minecraft:slime_ball"), "arrow_up");
+    /** The picture of the no-slimes button, which raises the ground: the ladder of the ground's height, going up. */
+    private static final Icon NO_SLIMES = Icon.marked(Icon.item("minecraft:ladder"), "arrow_up");
 
     /** Shown for every dimension the preset gives a stack of its own (F22). */
     @Override
