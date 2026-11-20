@@ -11,8 +11,14 @@ import java.util.List;
  * @param colours its colours, as the game tints the world in it
  * @param climate its weather
  * @param spawns  what spawns in it
+ * @param tags    the ids of the tags it is in, the game's and mods', such as {@code minecraft:is_forest}, which sort it
+ *                into the biome picker's kinds
  */
-public record BiomeInfo(String id, Colours colours, Climate climate, Spawns spawns) {
+public record BiomeInfo(String id, Colours colours, Climate climate, Spawns spawns, List<String> tags) {
+    public BiomeInfo {
+        tags = List.copyOf(tags);
+    }
+
     /**
      * A biome's colours, RGB.
      *

@@ -19,8 +19,9 @@ class BiomeInfoTest {
     void comesFromTheNamespaceOfItsId() {
         BiomeInfo.Climate climate = new BiomeInfo.Climate(0.8f, true, 80);
         BiomeInfo.Spawns spawns = new BiomeInfo.Spawns(true, true, false);
-        assertEquals("minecraft", new BiomeInfo("minecraft:plains", PLAINS_COLOURS, climate, spawns).namespace());
+        assertEquals("minecraft",
+                new BiomeInfo("minecraft:plains", PLAINS_COLOURS, climate, spawns, List.of()).namespace());
         assertEquals("biomesoplenty",
-                new BiomeInfo("biomesoplenty:lavender_field", PLAINS_COLOURS, climate, spawns).namespace());
+                new BiomeInfo("biomesoplenty:lavender_field", PLAINS_COLOURS, climate, spawns, List.of()).namespace());
     }
 }

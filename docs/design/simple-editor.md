@@ -80,8 +80,8 @@ picture means one thing.
 
 Left out, for the owner to decide on:
 
-- the library's and templates' layouts from round 3 (they keep their old arrangement in the new frame), the block
-  picker's kinds of block, and the biome picker's landscape cards;
+- the library's and templates' layouts from round 3 (they keep their old arrangement in the new frame) and the block
+  picker's kinds of block (the biome picker's round 3 layout came after, F07);
 - an illustration in the empty Nether;
 - "+" lines between cards, and the favourite presets as named columns;
 - windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small;

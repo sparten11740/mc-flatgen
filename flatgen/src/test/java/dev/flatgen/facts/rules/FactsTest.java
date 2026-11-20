@@ -57,6 +57,6 @@ class FactsTest {
 
     private static BiomeInfo biome(float temperature, boolean precipitation, boolean monsters) {
         return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation, COOLING_START_Y),
-                new BiomeInfo.Spawns(monsters, monsters, false));
+                new BiomeInfo.Spawns(monsters, monsters, false), List.of());
     }
 }

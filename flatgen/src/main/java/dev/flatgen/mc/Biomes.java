@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BiomeTags;
+import net.minecraft.tags.TagKey;
 //? if >=1.21.11 {
 /*import net.minecraft.world.attribute.EnvironmentAttributes;
 *///?}
@@ -83,7 +84,8 @@ public final class Biomes {
                 new BiomeInfo.Colours(biome.getGrassColor(0, 0), biome.getFoliageColor(), biome.getWaterColor(), sky),
                 new BiomeInfo.Climate(biome.getBaseTemperature(), biome.hasPrecipitation(), COOLING_START_Y),
                 new BiomeInfo.Spawns(!monsters.isEmpty(), monsters.contains(EntityType.SLIME),
-                        holder.is(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)));
+                        holder.is(BiomeTags.ALLOWS_SURFACE_SLIME_SPAWNS)),
+                holder.tags().map(TagKey::location).map(Object::toString).toList());
     }
 
     /** A biome's water colour, RGB. */

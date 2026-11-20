@@ -3,6 +3,7 @@ package dev.flatgen.facts.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.flatgen.biomes.rules.BiomeInfo;
+import java.util.List;
 import java.util.OptionalInt;
 import org.junit.jupiter.api.Test;
 
@@ -62,6 +63,6 @@ class WorldFactsTest {
     private static BiomeInfo biome(float temperature, boolean precipitation, boolean monsters, boolean slimes,
             boolean surfaceSlimes) {
         return new BiomeInfo("test:biome", COLOURS, new BiomeInfo.Climate(temperature, precipitation, COOLING_START_Y),
-                new BiomeInfo.Spawns(monsters, slimes, surfaceSlimes));
+                new BiomeInfo.Spawns(monsters, slimes, surfaceSlimes), List.of());
     }
 }

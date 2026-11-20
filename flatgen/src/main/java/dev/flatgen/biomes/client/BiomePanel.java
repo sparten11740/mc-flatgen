@@ -8,6 +8,7 @@ import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
+import dev.flatgen.dimensions.client.DimensionPictures;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
@@ -48,12 +49,13 @@ public final class BiomePanel implements EditorPanel {
 
     /** A biome's landscape in its colours, worked out once per biome while the editor is open. */
     private static Icon picture(String biome, EditorContext editor) {
-        return Biomes.info(biome, editor.registries()).<Icon>map(info -> new BiomeIcon(info.colours()))
+        return Biomes.info(biome, editor.registries()).<Icon>map(BiomeIcon::new)
                 .orElse(Icon.MISSING);
     }
 
     private static void pick(EditorContext editor) {
-        editor.open(BiomePicker.screen(editor.screen(), editor.registries(), new FactsNow(editor)::withBiome,
-                biome -> editor.apply(new SetBiome(biome))));
+        Component now = Component.translatable("flatgen.biomes.now", DimensionPictures.name(editor.shown().edited()));
+        editor.open(BiomePicker.screen(editor.screen(), editor.registries(), new FactsNow(editor)::withBiome, now,
+                editor.shown().biome(), biome -> editor.apply(new SetBiome(biome))));
     }
 }
