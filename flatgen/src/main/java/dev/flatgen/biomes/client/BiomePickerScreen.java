@@ -60,8 +60,8 @@ public final class BiomePickerScreen extends PickerScreen {
     private static final int PICK_HEIGHT = 20;
     private static final int FACT_GAP = 4;
     /** Pictures of the side's choices: the starred, the recent and every biome. */
-    private static final Icon STARRED = Icon.item("minecraft:nether_star");
-    private static final Icon RECENT = Icon.item("minecraft:clock");
+    private static final Icon STARRED = Icon.own("starred");
+    private static final Icon RECENT = Icon.line("recent");
     private static final Icon EVERY = Icon.item("minecraft:map");
     private static final int RIM = 0xFF000000;
 

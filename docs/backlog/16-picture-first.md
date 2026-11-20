@@ -131,29 +131,27 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
 | Editor | Mobs spawn | own: a zombie's face, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
 | Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
-| Pickers | search | compass |
+| Pickers | search | spyglass |
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |
-| Pickers | cards | the block, or the biome's colours and facts; starred ones a gold star |
+| Pickers | cards | the block, or the biome as a little landscape; starred ones a gold star |
 | Pickers | Cancel | cross |
+| Biome picker | side | own: a gold star (Starred); a clock (Recent); each kind a landscape of its first biome; a map (Every biome) |
+| Biome picker | the biome chosen | painted larger, its facts' pictures beside their words; Pick a tick with its words |
 | Structures | the three ways to choose | grass block, barrier, chest, each with its box |
 | Structures | Decorations, Lakes | poppy, lava bucket |
 | Structures | each structure set | its own picture, under the "no" sign where it cannot appear |
 | Structures | Done | tick |
-| Library | name field | name tag |
-| Library | Save new, Rename | writable book with a plus badge, anvil |
-| Library | Use, Back | tick, left arrow, with their words |
-| Library | Copy, Share, Paste, Folder | the picked preset with a copy badge, paper out, paper in, folder |
-| Library | Server, Datapack (F21) | own: a server rack; bundle |
-| Library | built-ins setting | book; grass block or book under the "no" sign; pips for its states |
-| Library | Save over, Delete | writable book with a circular-arrow badge, trash can; apart at the row's end |
-| Library | Default, Start on Superflat | nether star, grass block, each with its box |
-| Library | cards | the preset's column and top block; marks for default (nether star), built in (book), missing parts (barrier), starred (gold star) |
-| Templates | the templates | each template's item |
-| Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider |
+| Library | Back, search | left arrow; spyglass |
+| Library | Save current as new, More | writable book with a plus badge; three dots |
+| Library | the menu | paper in (paste), folder, own server rack (server lines, F21), bundle (datapack), grass block with its box (Start on Superflat), book or a grass block or book under the "no" sign (the built-ins shown) |
+| Library | the footer | the picked preset's layers; anvil (Rename), the preset with a copy badge (Copy), paper out (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
+| Library | cards | the preset's layers in the sky; marks for default (red bed), missing parts (barrier), starred (gold star); a built-in's mod or pack on a chip |
+| Templates | the templates | a card each: a picture of what it makes, its name and a line on what it is |
+| Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider; minus and plus for its steps |
 | Templates | block settings | the block |
 | Templates | switches | the switch's item, with its box |
-| Templates | fact badges | as the editor's |
-| Templates | Use, Back | tick, left arrow, with their words |
+| Templates | what it makes | its ground in its sky, the air above it on a chip with an arrow up, the fact badges as the editor's, each layer's block |
+| Templates | Back, Cancel, Use | left arrow, cross, tick, the last two with their words |
 | Question | what Yes does | its picture above the words: trash can, writable book with a circular arrow, barrier |
 | Question | Yes, No | tick, cross, with their words |
 
