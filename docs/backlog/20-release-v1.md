@@ -52,3 +52,8 @@ waits for the share to be mounted.
 Later that evening: `0.1.0-alpha.2` was never copied, as the instance has Blockpilot 1.1.1 and NeoForge would have
 refused to start beside it (fixed by letting an older Blockpilot stand); `0.1.0-alpha.3`'s NeoForge jar is in the
 instance's mods folder with the owner's yes (sha256 `055b140f…89ad5`), waiting to be played there.
+
+2026-11-20, afternoon: the owner and a young player played alpha.9 to alpha.12 in the instance. What they found was fixed in between:
+the block picker's tabs, emptied by Astral Sorcery's tab code (alpha.10), its layout with all blocks and rows of recent
+and starred (alpha.11), and lag on every Flatgen screen, which 1.21.1's tiled drawing of nine-sliced sprites caused
+(alpha.12); with alpha.12 the owner found the screens smooth.
