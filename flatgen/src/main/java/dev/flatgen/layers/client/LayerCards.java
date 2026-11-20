@@ -18,6 +18,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.rules.Edit;
 import dev.flatgen.layers.rules.LayerEdits;
+import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,11 @@ final class LayerCards {
     /** The count's pill on the block's tile: its height and the space at each side of the number, in GUI pixels. */
     private static final int COUNT_HEIGHT = 10;
     private static final int COUNT_PADDING = 3;
+    /** A square picturing one block of a layer's thickness, and the space between squares, in GUI pixels. */
+    private static final int SQUARE = 7;
+    private static final int SQUARE_GAP = 2;
+    /** The most blocks shown one square each; a thicker layer shows this many less one, folded, then one more. */
+    private static final int MOST_SQUARES = 5;
     /** How far below and right of a lifted card its shadow falls, in GUI pixels, and the shadow's colour, ARGB. */
     private static final int SHADOW_OFFSET = 2;
     private static final int SHADOW = 0x80000000;
@@ -136,10 +142,15 @@ final class LayerCards {
         return widgets;
     }
 
-    /** The layer's block's name; in Advanced, below it, its Ys and its id. */
+    /** The layer's block's name, and below it squares picturing its thickness; in Advanced, its Ys and its id. */
     private static List<Widget> words(EditorContext editor, int index, Rect area) {
         if (!editor.advanced()) {
-            return List.of(new Caption(() -> Names.block(block(editor, index)), area, TextStyle.STRONG, Look.TEXT));
+            int both = TextStyle.STRONG.lineHeight() + SQUARE_GAP + SQUARE;
+            Rect name = new Rect(area.x(), area.y() + (area.height() - both) / 2, area.width(),
+                    TextStyle.STRONG.lineHeight());
+            return List.of(new Caption(() -> Names.block(block(editor, index)), name, TextStyle.STRONG, Look.TEXT),
+                    new Thickness(editor, index, new Rect(area.x(), name.bottom() + SQUARE_GAP, area.width(),
+                            SQUARE)));
         }
         int lines = 2 * TextStyle.STRONG.lineHeight();
         Rect name = new Rect(area.x(), area.y() + (area.height() - lines) / 2, area.width(), lines / 2);
@@ -322,6 +333,59 @@ final class LayerCards {
             canvas.fill(new Rect(lifted.x() + SHADOW_OFFSET, lifted.y() + SHADOW_OFFSET, lifted.width(),
                     lifted.height()), SHADOW);
             card(editor, index, lifted, slots, new Drag()).forEach(widget -> widget.draw(canvas, -1, -1));
+        }
+    }
+
+    /**
+     * A layer's thickness pictured under its name, for a player who does not read numbers: a square of its block for
+     * each block, or for a thick layer a few squares, a fold and one more square.
+     */
+    private static final class Thickness implements Widget {
+        private final EditorContext editor;
+        private final int index;
+        private final Rect area;
+        /** The biome {@link #water} is the colour of, the colour a water layer's squares are tinted. */
+        private String tintedBiome = "";
+        private int water;
+
+        Thickness(EditorContext editor, int index, Rect area) {
+            this.editor = editor;
+            this.index = index;
+            this.area = area;
+        }
+
+        @Override
+        public void draw(Canvas canvas, int mouseX, int mouseY) {
+            int blocks = height(editor, index);
+            if (blocks == 0) {
+                return;
+            }
+            boolean folded = blocks > MOST_SQUARES;
+            int before = folded ? MOST_SQUARES - 1 : blocks;
+            int x = area.x();
+            for (int square = 0; square < before; square++) {
+                drawSquare(canvas, x);
+                x += SQUARE + SQUARE_GAP;
+            }
+            if (folded) {
+                canvas.sprite(Look.icon("fold"), new Rect(x, area.y() + (SQUARE - Icon.SIZE) / 2, Icon.SIZE,
+                        Icon.SIZE));
+                drawSquare(canvas, x + Icon.SIZE + SQUARE_GAP);
+            }
+        }
+
+        private void drawSquare(Canvas canvas, int x) {
+            canvas.blockSide(block(editor, index), waterColor(), new Rect(x, area.y(), SQUARE, SQUARE));
+        }
+
+        /** The water colour of the biome shown, looked up again only when the biome changes. */
+        private int waterColor() {
+            String biome = editor.shown().biome();
+            if (!biome.equals(tintedBiome)) {
+                tintedBiome = biome;
+                water = Biomes.waterColor(biome, editor.registries());
+            }
+            return water;
         }
     }
 

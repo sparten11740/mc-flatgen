@@ -82,7 +82,7 @@ Left out, for the owner to decide on:
 
 - the library's and templates' layouts from round 3 (they keep their old arrangement in the new frame), the block
   picker's kinds of block, and the biome picker's landscape cards;
-- small squares under a card's name picturing its thickness, and an illustration in the empty Nether;
+- an illustration in the empty Nether;
 - "+" lines between cards, and the favourite presets as named columns;
 - windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small;
   respecting a smaller GUI scale the player chose is not done either;
