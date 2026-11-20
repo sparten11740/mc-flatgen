@@ -37,8 +37,12 @@ it.
   one-grid `GridPickerScreen`: the sheet, searching, the mod filter, the picks and stars and the grid are the base's and
   `search/rules`'; the side, the cards and the panel the biome picker's.
 - The kinds are `biomes/rules/BiomeKinds`, a list of tests on a biome's tags and climate (`BiomeInfo` carries the tags
-  `mc/Biomes` reads), each with the scene a biome of it is painted as; a new kind is one more entry.
-  `biomes/client/BiomeLandscape` paints a biome at any size, the editor's small picture of it included.
+  `mc/Biomes` reads), each naming the biome that pictures it; a new kind is one more entry.
+- How a biome is painted is `biomes/rules/BiomeScenes`: lists of rules on its tags, name and climate pick its sky, its
+  ground (grass, sand, the badlands' terracotta bands, mycelium, snow, stone, none for the void) and what stands on it
+  (an oak, a birch, a spruce, an acacia, a cherry or a jungle tree, a peak behind, a mushroom, flowers), as rectangles
+  in shares of the picture; a new look is one more rule. `biomes/client/BiomeLandscape` paints a scene at any size,
+  the editor's small picture of a biome included, so a player who cannot read tells alike biomes apart.
 - Recent and starred biomes live in `config/flatgen/biomes.json`, the biome feature's own file (`search/PicksFile`).
 - The card reads a `BiomeInfo` (pure record: id and colours; F08 adds climate and spawns) that `mc/Biomes` builds from
   each `Biome` of the registries of the world being created.

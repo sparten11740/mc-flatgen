@@ -1,33 +1,25 @@
 package dev.flatgen.biomes.client;
 
 import dev.flatgen.biomes.rules.BiomeInfo;
-import dev.flatgen.biomes.rules.BiomeKinds;
+import dev.flatgen.biomes.rules.BiomeScenes;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.rules.Rect;
+import java.util.List;
 
 /**
- * A biome painted as a little landscape at any size: its sky, its ground topped with its grass, a tree of its leaves
- * where it is wooded, its water where it is wet and the sun over the Overworld, in the biome's own colours and as its
- * kind's scene has it, so a player who cannot read tells a desert from a jungle (docs/design/simple-editor.md).
+ * A biome painted as a little landscape at any size, as {@link BiomeScenes} says it looks: its sky with the sun over
+ * the Overworld, its ground and water, and what stands on the ground, in the biome's own colours where the scene asks
+ * for them, so a player who cannot read tells a desert from a badlands and a taiga from a birch forest.
  */
 final class BiomeLandscape {
-    /** Shares of the picture, in hundredths: the ground's of its height, the grass's of the ground's height. */
-    private static final int GROUND = 30;
-    private static final int GRASS = 25;
-    /** The tree's trunk and crown, in hundredths of the picture's width and height, from its left and the ground. */
-    private static final int TRUNK_X = 22;
-    private static final int TRUNK_WIDTH = 6;
-    private static final int TRUNK_HEIGHT = 18;
-    private static final int CROWN_X = 12;
-    private static final int CROWN_WIDTH = 26;
-    private static final int CROWN_HEIGHT = 28;
     /** The sun's size and its distance from the top, in hundredths of the picture's height. */
     private static final int SUN = 14;
     private static final int SUN_TOP = 12;
     /** The sun's distance from the right, in hundredths of the picture's width: clear of a card's star mark. */
     private static final int SUN_RIGHT = 24;
-    private static final int TRUNK_COLOR = 0xFF6B4A2C;
     private static final int SUN_COLOR = 0xFFFFF3B0;
+    /** How much of the ground its top is, in hundredths of the ground's height. */
+    private static final int TOP = 25;
     private static final int OPAQUE = 0xFF000000;
     private static final int WHOLE = 100;
 
@@ -36,38 +28,49 @@ final class BiomeLandscape {
 
     /** Paints a biome over this area. */
     static void draw(Canvas canvas, BiomeInfo biome, Rect area) {
-        BiomeKinds.Scene scene = BiomeKinds.scene(biome);
+        BiomeScenes.Scene scene = BiomeScenes.of(biome);
         BiomeInfo.Colours colours = biome.colours();
-        boolean ownSky = scene.sky() == BiomeKinds.Scene.OWN;
-        canvas.fill(area, OPAQUE | (ownSky ? colours.sky() : scene.sky()));
-        int groundHeight = share(area.height(), GROUND);
-        Rect ground = new Rect(area.x(), area.bottom() - groundHeight, area.width(), groundHeight);
-        canvas.fill(ground, OPAQUE | scene.ground());
-        if (scene.grass()) {
-            canvas.fill(new Rect(ground.x(), ground.y(), ground.width(), share(groundHeight, GRASS)),
-                    OPAQUE | colours.grass());
-        }
-        int waterWidth = area.width() * scene.water() / WHOLE;
-        Rect water = new Rect(area.right() - waterWidth, ground.y(), waterWidth, groundHeight);
-        canvas.fill(water, OPAQUE | colours.water());
-        if (scene.tree()) {
-            drawTree(canvas, colours.foliage(), area, ground.y());
-        }
+        boolean ownSky = scene.sky() == BiomeScenes.OWN;
+        canvas.fill(area, ownSky ? OPAQUE | colours.sky() : scene.sky());
         if (ownSky) {
             int sun = share(area.height(), SUN);
             canvas.fill(new Rect(area.right() - share(area.width(), SUN_RIGHT) - sun,
                     area.y() + share(area.height(), SUN_TOP), sun, sun), SUN_COLOR);
         }
+        int groundTop = area.bottom() - share(area.height(), BiomeScenes.GROUND_SHARE);
+        Rect ground = new Rect(area.x(), groundTop, area.width(), area.bottom() - groundTop);
+        if (scene.ground().body() != BiomeScenes.NONE) {
+            drawGround(canvas, scene.ground(), colours, ground);
+        }
+        int waterWidth = area.width() * scene.water() / WHOLE;
+        canvas.fill(new Rect(area.right() - waterWidth, ground.y(), waterWidth, ground.height()),
+                OPAQUE | colours.water());
+        scene.patches().forEach(patch -> drawPatch(canvas, patch, colours, area, groundTop));
     }
 
-    /** A tree of these leaves standing on the ground's top. */
-    private static void drawTree(Canvas canvas, int leaves, Rect area, int groundTop) {
-        int trunkHeight = share(area.height(), TRUNK_HEIGHT);
-        canvas.fill(new Rect(area.x() + share(area.width(), TRUNK_X), groundTop - trunkHeight,
-                share(area.width(), TRUNK_WIDTH), trunkHeight), TRUNK_COLOR);
-        int crownHeight = share(area.height(), CROWN_HEIGHT);
-        canvas.fill(new Rect(area.x() + share(area.width(), CROWN_X), groundTop - trunkHeight - crownHeight + 1,
-                share(area.width(), CROWN_WIDTH), crownHeight), OPAQUE | leaves);
+    /** A ground: its colour or its bands, then its top. */
+    private static void drawGround(Canvas canvas, BiomeScenes.Ground look, BiomeInfo.Colours colours, Rect ground) {
+        canvas.fill(ground, look.body());
+        List<Integer> bands = look.bands();
+        for (int index = 0; index < bands.size(); index++) {
+            int top = ground.y() + ground.height() * index / bands.size();
+            int bottom = ground.y() + ground.height() * (index + 1) / bands.size();
+            canvas.fill(new Rect(ground.x(), top, ground.width(), bottom - top), bands.get(index));
+        }
+        if (look.top() != BiomeScenes.NONE) {
+            int top = look.top() == BiomeScenes.OWN ? OPAQUE | colours.grass() : look.top();
+            canvas.fill(new Rect(ground.x(), ground.y(), ground.width(), share(ground.height(), TOP)), top);
+        }
+    }
+
+    /** A rectangle standing on the ground, in the biome's leaves where the scene asks for them. */
+    private static void drawPatch(Canvas canvas, BiomeScenes.Patch patch, BiomeInfo.Colours colours, Rect area,
+            int groundTop) {
+        int height = share(area.height(), patch.height());
+        int bottom = groundTop - area.height() * patch.bottom() / WHOLE;
+        int colour = patch.colour() == BiomeScenes.OWN ? OPAQUE | colours.foliage() : patch.colour();
+        canvas.fill(new Rect(area.x() + area.width() * patch.x() / WHOLE, bottom - height,
+                share(area.width(), patch.width()), height), colour);
     }
 
     /** A share of a length, in hundredths, at least one pixel. */

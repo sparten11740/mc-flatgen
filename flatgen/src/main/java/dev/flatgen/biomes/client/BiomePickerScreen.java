@@ -59,10 +59,12 @@ public final class BiomePickerScreen extends PickerScreen {
     private static final int PANEL_PICTURE = 60;
     private static final int PICK_HEIGHT = 20;
     private static final int FACT_GAP = 4;
-    /** Pictures of the side's choices: the starred, the recent and every biome. */
+    /** Pictures of the side's choices: the starred and the recent biomes. */
     private static final Icon STARRED = Icon.own("starred");
     private static final Icon RECENT = Icon.line("recent");
-    private static final Icon EVERY = Icon.item("minecraft:map");
+    /** The biomes Every biome's picture shows, four in a square, of those the game has. */
+    private static final List<String> EVERY = List.of("minecraft:plains", "minecraft:desert",
+            "minecraft:snowy_plains", "minecraft:ocean");
     private static final int RIM = 0xFF000000;
 
     private final Map<String, BiomeInfo> biomes;
@@ -104,7 +106,7 @@ public final class BiomePickerScreen extends PickerScreen {
         this.current = current;
         this.chosen = biomes.containsKey(current) ? current : entries().get(0).id();
         List<Shelf> kinds = kinds();
-        Shelf every = new Shelf(Component.translatable("flatgen.biomes.every"), EVERY, shown -> shown);
+        Shelf every = new Shelf(Component.translatable("flatgen.biomes.every"), everyPicture(), shown -> shown);
         this.groups = List.of(List.of(
                 new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
                         shown -> picked(shown, picks().starred())),
@@ -113,18 +115,33 @@ public final class BiomePickerScreen extends PickerScreen {
         this.shelf = kinds.isEmpty() ? every : kinds.get(0);
     }
 
-    /** A shelf for each kind of biome that has any, its picture the first of them. */
+    /** A shelf for each kind of biome that has any, its picture the biome the kind names, else its first. */
     private List<Shelf> kinds() {
         List<Shelf> made = new ArrayList<>();
         for (BiomeKinds.Kind kind : BiomeKinds.ALL) {
             Function<List<Search.Entry>, List<Search.Entry>> of = shown -> ofKind(shown, kind);
             List<Search.Entry> any = of.apply(entries());
             if (!any.isEmpty()) {
-                made.add(new Shelf(Component.translatable(kind.name()), new BiomeIcon(biomes.get(any.get(0).id())),
-                        of));
+                String pictured = kind.picture().filter(biomes::containsKey).orElse(any.get(0).id());
+                made.add(new Shelf(Component.translatable(kind.name()), new BiomeIcon(biomes.get(pictured)), of));
             }
         }
         return made;
+    }
+
+    /** Every biome's picture: four of the game's biomes, each a little landscape, in a square. */
+    private Icon everyPicture() {
+        List<BiomeInfo> shown = EVERY.stream().filter(biomes::containsKey).map(biomes::get).toList();
+        return (canvas, x, y) -> drawFour(canvas, shown, x, y);
+    }
+
+    private static void drawFour(Canvas canvas, List<BiomeInfo> shown, int x, int y) {
+        int half = Icon.SIZE / 2;
+        for (int index = 0; index < shown.size(); index++) {
+            BiomeLandscape.draw(canvas, shown.get(index), new Rect(x + index % 2 * half, y + index / 2 * half, half,
+                    half));
+        }
+        canvas.outline(new Rect(x, y, Icon.SIZE, Icon.SIZE), RIM);
     }
 
     /** The biomes shown whose ids are among these, in these ids' order. */

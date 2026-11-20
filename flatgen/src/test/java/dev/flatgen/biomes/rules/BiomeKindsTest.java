@@ -44,17 +44,6 @@ class BiomeKindsTest {
         assertEquals(List.of("caves"), kinds(biome("somemod:grotto", 0.5F, true, "c:caves")));
     }
 
-    @Test
-    void paintsABiomeAsTheFirstOfItsKindsWithAScene() {
-        assertEquals(BiomeKinds.Scene.PLAIN, BiomeKinds.scene(biome("minecraft:plains", 0.8F, true, OVERWORLD)));
-        BiomeKinds.Scene forest = BiomeKinds.scene(biome("minecraft:forest", 0.7F, true, OVERWORLD,
-                "minecraft:is_forest"));
-        assertEquals(true, forest.tree());
-        BiomeKinds.Scene ocean = BiomeKinds.scene(biome("minecraft:ocean", 0.5F, true, OVERWORLD,
-                "minecraft:is_ocean"));
-        assertEquals(100, ocean.water());
-    }
-
     private static List<String> kinds(BiomeInfo biome) {
         return BiomeKinds.ALL.stream().filter(kind -> kind.holds().test(biome))
                 .map(kind -> kind.name().substring(kind.name().lastIndexOf('.') + 1)).toList();
