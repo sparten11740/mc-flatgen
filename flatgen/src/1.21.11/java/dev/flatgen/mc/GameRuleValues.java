@@ -12,7 +12,7 @@ import net.minecraft.world.level.gamerules.GameRule;
 import net.minecraft.world.level.gamerules.GameRules;
 
 /**
- * This version's game rules for {@link GameRuleAccess}. 26.1 keeps them in a registry under new ids; the option
+ * This version's game rules for {@link GameRuleAccess}. 1.21.11 keeps them in a registry under new ids; the option
  * format's 1.21.1 names are turned into them as the game's own update of old worlds turns them, so a rule goes by its
  * old name, its id ({@code minecraft:advance_time}) and its short id ({@code advance_time}) alike.
  */

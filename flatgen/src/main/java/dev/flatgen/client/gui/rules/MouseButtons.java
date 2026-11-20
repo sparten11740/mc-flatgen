@@ -1,6 +1,6 @@
 package dev.flatgen.client.gui.rules;
 
-/** The mouse buttons as the game numbers them, which widgets tell apart. */
+/** The mouse buttons widgets tell apart, as Flatgen numbers them: the game's own numbers up to 26.2. */
 public final class MouseButtons {
     /** The left button: pick, press, drag. */
     public static final int LEFT = 0;
