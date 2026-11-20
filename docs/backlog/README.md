@@ -72,7 +72,7 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F16 | [Works without reading](16-picture-first.md) | doing | F03 to F15 |
+| F16 | [Works without reading](16-picture-first.md) | done | F03 to F15 |
 | F17 | [Pack author support](17-pack-authors.md) | done | F12, F13 |
 | F18 | [Other flat world types](18-other-flat-world-types.md) | done | F01 |
 | F19 | [English and German](19-translations.md) | done | F16 |

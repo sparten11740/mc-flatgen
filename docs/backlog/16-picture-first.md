@@ -1,6 +1,6 @@
 # F16 Works without reading
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F03 to F15
+Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on: F03 to F15
 
 ## Why
 
@@ -18,7 +18,7 @@ alone and with the game's narrator.
   when the feature is done (Control checklist, below).
 - [x] Colour is never the only cue (shape and picture too), for colour-blind players.
 - [x] Keyboard: Tab moves between areas, arrows within one, Enter uses, Escape goes back.
-- [ ] Narration: every control narrates its name and state through Minecraft's narrator.
+- [x] Narration: every control narrates its name and state through Minecraft's narrator.
 - [x] Works at GUI scale 1 to 4 and at the smallest window size.
 
 ## Design
@@ -171,5 +171,11 @@ order at GUI scales 4, 3, 2 and 1, and in the library Tab moves from row to row,
 Save new and Enter saves a preset, all by keyboard. After the M4 review's fixes, on NeoForge in the narrowest window,
 320 by 240 at GUI scale 4: the editor lays its panels out whole (the depth buttons wrapping to a second row) with the
 footer in sight, the library's three rows of controls and a row of cards fit, Tab to the library's grid, Right twice
-and Enter pick the third card, and in the biome picker Tab, Tab, Right, Down and Enter choose Bamboo Jungle. Not tried
-yet: the narrator, which speaks aloud through the system's voice and waits for the owner to be about.
+and Enter pick the third card, and in the biome picker Tab, Tab, Right, Down and Enter choose Bamboo Jungle.
+
+Narration, 2026-11-20, on 1.21.1 NeoForge: a script walked the focus through every control of the editor, the library
+and its menu, the templates and the biome picker with Tab, Right and Down, and read what each hands the narrator with
+`flatgen:narration` (F26), and on 1.21.1 Fabric the editor, the library and the templates. Every control says its kind,
+its name and its state (Selected, ON or OFF, unavailable, a slider's value, an empty field), cards add their facts and
+marks. Two fixes came of it: a template card read its wrapped description as broken sentences, and the biome chosen did
+not say so. Not heard aloud: the system's voice reads these words, which no one listened to.
