@@ -1,5 +1,8 @@
 package dev.flatgen.client.gui;
 
+//? if <1.21 {
+/*import com.mojang.blaze3d.systems.RenderSystem;
+*///?}
 import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
@@ -227,12 +230,17 @@ final class McCanvas implements Canvas {
         Optional.ofNullable(ResourceLocation.tryParse(location)).ifPresent(texture -> blitIcon(texture, x, y));
     }
 
+    /** A 16 by 16 texture at its own size, its clear parts clear: 1.20.1's plain blit leaves blending as it finds it. */
     private void blitIcon(ResourceLocation texture, int x, int y) {
         //? if >=1.21.11 {
         /*graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
-        *///?} else {
+        *///?} else if >=1.21 {
         graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
-        //?}
+        //?} else {
+        /*RenderSystem.enableBlend();
+        graphics.blit(texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
+        RenderSystem.disableBlend();
+        *///?}
     }
 
     /**
