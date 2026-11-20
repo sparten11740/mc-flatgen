@@ -33,6 +33,7 @@ final class BlockGameTests {
         check(blocks.stream().anyMatch(block -> block.id().equals("minecraft:stone")
                 && block.name().equals("Stone") && block.namespace().equals("minecraft")), "stone is not listed");
         check(blocks.stream().noneMatch(block -> block.id().equals("minecraft:air")), "air is listed");
+        check(blocks.get(0).namespace().equals("minecraft"), "the game's own blocks are not first");
     }
 
     private static void traits(GameTestHelper helper) {
@@ -45,13 +46,13 @@ final class BlockGameTests {
         traitsAre("minecraft:short_grass", new LayerHints.Traits(false, false, false, false));
     }
 
-    /** The five tabs of blocks, in the creative inventory's order, grass among the natural blocks. */
+    /** The five tabs of blocks, natural first with grass in it, then building with stone in it. */
     private static void tabs(GameTestHelper helper) {
         List<BlockCatalog.Tab> tabs = BlockCatalog.tabs(FeatureFlags.DEFAULT_FLAGS,
                 helper.getLevel().registryAccess());
         check(tabs.size() == BLOCK_TABS, "there are " + tabs.size() + " tabs of blocks, not " + BLOCK_TABS);
-        check(tabs.get(2).blocks().contains("minecraft:grass_block"), "grass is not among the natural blocks");
-        check(tabs.get(0).blocks().contains("minecraft:stone"), "stone is not among the building blocks");
+        check(tabs.get(0).blocks().contains("minecraft:grass_block"), "grass is not among the natural blocks");
+        check(tabs.get(1).blocks().contains("minecraft:stone"), "stone is not among the building blocks");
     }
 
     private static void traitsAre(String block, LayerHints.Traits expected) {

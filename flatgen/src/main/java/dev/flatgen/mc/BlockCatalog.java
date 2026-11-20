@@ -5,7 +5,7 @@ import dev.flatgen.blocks.rules.LayerHints;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -14,8 +14,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -28,9 +28,14 @@ import net.minecraft.world.level.block.state.BlockState;
  * inventory's tabs they are sorted into.
  */
 public final class BlockCatalog {
-    /** The creative inventory's tabs of blocks, in its order: building, coloured, natural, functional, redstone. */
-    private static final List<String> BLOCK_TABS = List.of("minecraft:building_blocks", "minecraft:colored_blocks",
-            "minecraft:natural_blocks", "minecraft:functional_blocks", "minecraft:redstone_blocks");
+    /**
+     * The creative inventory's tabs of blocks: natural first, as most of a flat world's layers are, then building,
+     * coloured, functional and redstone, as the creative inventory has them.
+     */
+    private static final List<String> BLOCK_TABS = List.of("minecraft:natural_blocks", "minecraft:building_blocks",
+            "minecraft:colored_blocks", "minecraft:functional_blocks", "minecraft:redstone_blocks");
+    /** The game's own namespace, whose blocks the picker lists first. */
+    private static final String GAME = "minecraft";
 
     /**
      * A tab of the creative inventory as a kind of block.
@@ -49,20 +54,31 @@ public final class BlockCatalog {
     }
 
     /**
-     * The creative inventory's tabs of blocks, as the game fills them for these features, mods' blocks put in them
-     * included; each tab the game lacks is left out. Filling them runs mods' code that may expect a world and a player,
-     * which the Create World screen has not got; when it fails, the picker goes without tabs, and the log says why.
+     * The creative inventory's tabs of blocks, each filled as the game fills it for these features, mods' blocks put
+     * in it included. Only these tabs are filled, one by one: filling runs mods' code, which may expect a world or a
+     * server's settings the Create World screen has not got, so a tab whose filling fails is left out, as is one the
+     * game lacks, and the log says why.
      */
     public static List<Tab> tabs(FeatureFlagSet enabled, HolderLookup.Provider registries) {
+        CreativeModeTab.ItemDisplayParameters parameters = new CreativeModeTab.ItemDisplayParameters(enabled, false,
+                registries);
+        List<Tab> tabs = new ArrayList<>();
+        for (String id : BLOCK_TABS) {
+            filled(id, parameters).ifPresent(tabs::add);
+        }
+        return tabs;
+    }
+
+    private static Optional<Tab> filled(String id, CreativeModeTab.ItemDisplayParameters parameters) {
+        Optional<CreativeModeTab> tab = Optional.ofNullable(ResourceLocation.tryParse(id))
+                .flatMap(BuiltInRegistries.CREATIVE_MODE_TAB::getOptional);
         try {
-            CreativeModeTabs.tryRebuildTabContents(enabled, false, registries);
-            return BLOCK_TABS.stream().map(id -> ResourceLocation.tryParse(id)).filter(Objects::nonNull)
-                    .flatMap(id -> BuiltInRegistries.CREATIVE_MODE_TAB.getOptional(id).stream())
-                    .map(BlockCatalog::tab).toList();
+            tab.ifPresent(found -> found.buildContents(parameters));
+            return tab.map(BlockCatalog::tab);
         } catch (RuntimeException failure) {
-            Flatgen.LOGGER.warn("Flatgen could not fill the creative inventory's tabs, so the block picker has none",
+            Flatgen.LOGGER.warn("Flatgen could not fill the creative tab {}, so the block picker goes without it", id,
                     failure);
-            return List.of();
+            return Optional.empty();
         }
     }
 
@@ -75,16 +91,28 @@ public final class BlockCatalog {
                 blocks);
     }
 
-    /** Every block the world's enabled features allow, but air, in the registry's order, as search entries. */
+    /**
+     * Every block the world's enabled features allow as search entries, the game's own first and then the mods', each
+     * in the registry's order; but air, and mods' blocks with no item, which are the parts mods move, light or mark
+     * with rather than blocks to build with, and show no picture.
+     */
     public static List<Search.Entry> blocks(FeatureFlagSet enabled) {
-        List<Search.Entry> entries = new ArrayList<>();
+        List<Search.Entry> games = new ArrayList<>();
+        List<Search.Entry> mods = new ArrayList<>();
         for (Block block : BuiltInRegistries.BLOCK) {
-            if (block.isEnabled(enabled) && !block.defaultBlockState().isAir()) {
-                ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
-                entries.add(new Search.Entry(id.toString(), block.getName().getString(), id.getNamespace()));
+            ResourceLocation id = BuiltInRegistries.BLOCK.getKey(block);
+            if (listed(block, id, enabled)) {
+                (id.getNamespace().equals(GAME) ? games : mods).add(new Search.Entry(id.toString(),
+                        block.getName().getString(), id.getNamespace()));
             }
         }
-        return entries;
+        games.addAll(mods);
+        return games;
+    }
+
+    private static boolean listed(Block block, ResourceLocation id, FeatureFlagSet enabled) {
+        return block.isEnabled(enabled) && !block.defaultBlockState().isAir()
+                && (block.asItem() != Items.AIR || id.getNamespace().equals(GAME));
     }
 
     /**

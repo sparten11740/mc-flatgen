@@ -135,7 +135,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |
 | Pickers | cards | the block, or the biome as a little landscape with its own ground and tree (terracotta bands, an acacia, a spruce, a birch, a mushroom, flowers, the void's dark); starred ones a gold star |
 | Pickers | Cancel | cross |
-| Block picker | side | a gold star (Starred); a clock (Recent); each creative inventory tab's own picture, as the game shows it (Building, Colored, Natural, Functional and Redstone Blocks); four blocks in a square (Every block) |
+| Block picker | side | a gold star (Starred); a clock (Recent); each creative inventory tab's own picture, as the game shows it (Natural, Building, Colored, Functional and Redstone Blocks); four blocks in a square (Every block) |
 | Biome picker | side | own: a gold star (Starred); a clock (Recent); each kind the landscape of a biome of it, as Plains for the usual ones; four little landscapes in a square (Every biome) |
 | Biome picker | the biome chosen | painted larger, its facts' pictures beside their words; Pick a tick with its words |
 | Structures | the three ways to choose | grass block, barrier, chest, each with its box |

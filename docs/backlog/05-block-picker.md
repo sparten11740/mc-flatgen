@@ -37,9 +37,13 @@ scale.
 - `blocks/client/BlockPicker`: the block picker, `BlockPickerScreen`, a `client/gui/ShelvedPickerScreen` as F07's
   biome picker is (a `PickerScreen`: the search field, the mod filter and Cancel; the starred, the recent, the kinds and
   every block down its side), whose cards are block icons. Since 2026-11-20 its kinds are the creative inventory's tabs
-  of blocks (building, coloured, natural, functional, redstone), filled by the game for the world's features with the
-  blocks mods put in them, their names and pictures the game's own (`mc/BlockCatalog.tabs`); a panel of three agents
-  chose it as the next left-out item, as a player who cannot read cannot search but knows those tabs.
+  of blocks, natural first as most of a flat world's layers are, then building, coloured, functional and redstone, each
+  filled by the game for the world's features with the blocks mods put in them, their names and pictures the game's
+  own (`mc/BlockCatalog.tabs`); a panel of three agents chose it as the next left-out item, as a player who cannot read
+  cannot search but knows those tabs. Only these five tabs are filled, one by one, as filling runs mods' code that may
+  want a world or a server's settings the Create World screen has not got: in the test pack Astral Sorcery's
+  did, and filling every tab at once left the picker with none. Every block lists the game's own blocks first, then
+  the mods', and leaves out mods' blocks with no item, the parts they move, light or mark with, which have no picture.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
   which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
@@ -65,3 +69,9 @@ creative inventory's five tabs of blocks down its side, their names and pictures
 grass, podzol, mycelium, dirt path and dirt first, in the creative inventory's order; on 1.20.1 Forge and 26.3 NeoForge
 the side lists the same five tabs and Building Blocks opens on the oak log; a GameTest checks the tabs on every node's
 server. Not tried in game: German names, and a mod's blocks in the tabs.
+
+The owner and a young player, 2026-11-20, in the test pack with alpha.9: the picker was confusing, with no regular blocks to
+be seen but a Create Aeronautics block and blocks without pictures. The log showed why: Astral Sorcery's creative tab
+code wanted its server settings, the filling of every tab at once failed, and the picker fell back to every block in the
+registry's order. Fixed as above; tried on 1.21.1 NeoForge, where the side starts with Natural Blocks and Every block
+with stone. Not tried yet: the pack itself.
