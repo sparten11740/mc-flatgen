@@ -27,6 +27,9 @@ tests run.
   controls; a feature whose widgets need more than that adds a query listing them with keys and bounds, as `screen` does
   (`flatgen:column` with F03: each layer's key, block, height, Y range and bounds; `flatgen:picker` with F05 and F07:
   the open picker's cards in sight, each one's id and bounds), so `click` and `drag` can target them.
+- [x] `flatgen:narration` (with F16) says what the Flatgen screen open now hands the game's narrator for the control
+  with the focus, or else the widget under the mouse, so a script walking the focus checks what a listening player
+  hears without anyone listening.
 - [x] Commands are registered only when Blockpilot is installed; without it nothing of theirs loads, and the jar works
   as before.
 - [x] Compiled against `blockpilot-api` from Blockpilot's GitHub release (the API jar attached to `v1.4.0`), so the

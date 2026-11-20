@@ -7,6 +7,7 @@ import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
@@ -94,6 +95,16 @@ public abstract class FlatgenScreen extends GameScreen {
     protected List<Component> wrapped(Component text, int lineWidth) {
         return font.getSplitter().splitLines(text, lineWidth, McCanvas.style(TextStyle.BODY, pixelsPerUnit())).stream()
                 .<Component>map(part -> Component.literal(part.getString())).toList();
+    }
+
+    /**
+     * The words the screen hands the game's narrator now, for the control with the focus or else the widget under the
+     * mouse, for tools that check them.
+     */
+    public List<String> narratedNow() {
+        List<String> words = new ArrayList<>();
+        updateNarratedWidget(new NarrationWords(words));
+        return words;
     }
 
     /** What every widget that can be found says of itself, placed in the game's GUI pixels for tools that click. */

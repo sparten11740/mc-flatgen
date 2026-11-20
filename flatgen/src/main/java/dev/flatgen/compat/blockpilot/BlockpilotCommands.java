@@ -17,7 +17,8 @@ public final class BlockpilotCommands {
     /** Registers every command. */
     static void register() {
         List<CommandSpec> commands =
-                List.of(EditorQuery.SPEC, ColumnQuery.SPEC, WidgetsQuery.SPEC, PickerQuery.SPEC, OpenEditor.SPEC);
+                List.of(EditorQuery.SPEC, ColumnQuery.SPEC, WidgetsQuery.SPEC, PickerQuery.SPEC, NarrationQuery.SPEC,
+                        OpenEditor.SPEC);
         for (CommandSpec command : commands) {
             BlockpilotApi.register(Flatgen.MOD_ID, command);
         }
