@@ -30,8 +30,7 @@ public final class Label implements Widget {
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
-        icon.draw(canvas, bounds.x(), bounds.y() + (bounds.height() - Icon.SIZE) / 2);
-        canvas.text(text, bounds.x() + Icon.SIZE + GAP, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1,
-                Look.TEXT);
+        icon.draw(canvas, bounds.x(), TextStyle.BODY.pictureTop(bounds.y(), bounds.height()));
+        canvas.text(text, bounds.x() + Icon.SIZE + GAP, TextStyle.BODY.top(bounds.y(), bounds.height()), Look.TEXT);
     }
 }

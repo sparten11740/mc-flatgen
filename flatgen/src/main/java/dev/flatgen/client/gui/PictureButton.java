@@ -47,7 +47,7 @@ public final class PictureButton implements Control {
         boolean canUse = usable.getAsBoolean();
         canvas.button(bounds, hovered, canUse);
         Rect picture = new Rect(bounds.x() + (bounds.width() - Icon.SIZE) / 2,
-                bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
+                TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), Icon.SIZE, Icon.SIZE);
         icon.draw(canvas, picture.x(), picture.y());
         if (!canUse) {
             canvas.dim(picture);

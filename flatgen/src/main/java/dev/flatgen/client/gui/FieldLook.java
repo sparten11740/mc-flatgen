@@ -14,6 +14,6 @@ final class FieldLook {
     /** Draws a field's box and its text. */
     static void draw(Canvas canvas, Rect bounds, boolean lit, Component text, int color) {
         canvas.field(bounds, lit);
-        canvas.text(text, bounds.x() + PADDING, bounds.y() + (bounds.height() - canvas.lineHeight()) / 2 + 1, color);
+        canvas.text(text, bounds.x() + PADDING, TextStyle.BODY.top(bounds.y(), bounds.height()), color);
     }
 }

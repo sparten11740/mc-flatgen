@@ -38,6 +38,15 @@ public enum TextStyle {
         return rowTop + (rowHeight - lineHeight) / 2 + drop;
     }
 
+    /**
+     * Where to draw a picture beside a line of it in a row this tall from this top, so that the picture's middle is
+     * level with the middle of the letters, half a line below the line's top: each centred on its own, the two round
+     * apart on a row of odd height. A picture without words sits there too, so a row of buttons lines up.
+     */
+    public int pictureTop(int rowTop, int rowHeight) {
+        return top(rowTop, rowHeight) + lineHeight / 2 - Icon.SIZE / 2;
+    }
+
     /** How tall a line of it is, in GUI pixels. */
     public int lineHeight() {
         return lineHeight;

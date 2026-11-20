@@ -35,7 +35,7 @@ public record Chip(Icon icon, Supplier<Component> text, int x, int y, int maxWid
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         Component words = canvas.fitted(text.get(), maxWidth - Icon.SIZE - PADDING, TextStyle.BODY);
         canvas.sprite(Look.CHIP, new Rect(x, y, Icon.SIZE + canvas.textWidth(words) + PADDING, HEIGHT));
-        icon.draw(canvas, x, y);
-        canvas.text(words, x + Icon.SIZE, y + (HEIGHT - canvas.lineHeight()) / 2 + 1, Look.TEXT);
+        icon.draw(canvas, x, TextStyle.BODY.pictureTop(y, HEIGHT));
+        canvas.text(words, x + Icon.SIZE, TextStyle.BODY.top(y, HEIGHT), Look.TEXT);
     }
 }

@@ -82,9 +82,9 @@ public final class TextButton implements Control {
         return this;
     }
 
-    /** Draws the picture with its left edge here, in the middle of the button's height, dimmed while unusable. */
-    private void drawPicture(Canvas canvas, int x, boolean usable) {
-        Rect picture = new Rect(x, bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
+    /** Draws the picture with its top left corner here, dimmed while unusable. */
+    private void drawPicture(Canvas canvas, int x, int y, boolean usable) {
+        Rect picture = new Rect(x, y, Icon.SIZE, Icon.SIZE);
         icon.get().draw(canvas, picture.x(), picture.y());
         dimUnless(usable, canvas, picture);
     }
@@ -99,10 +99,11 @@ public final class TextButton implements Control {
         if (icon.isEmpty()) {
             canvas.centeredText(words, bounds, labelColor);
         } else if (bounds.width() < width(canvas.textWidth(words))) {
-            drawPicture(canvas, bounds.x() + (bounds.width() - Icon.SIZE) / 2, usable);
+            drawPicture(canvas, bounds.x() + (bounds.width() - Icon.SIZE) / 2,
+                    TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
         } else {
             int left = bounds.x() + (bounds.width() - Icon.SIZE - PICTURE_GAP - canvas.textWidth(words)) / 2;
-            drawPicture(canvas, left, usable);
+            drawPicture(canvas, left, TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
             canvas.text(words, left + Icon.SIZE + PICTURE_GAP, TextStyle.BODY.top(bounds.y(), bounds.height()),
                     labelColor);
         }
