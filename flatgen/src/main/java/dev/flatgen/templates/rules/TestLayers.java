@@ -22,6 +22,11 @@ final class TestLayers implements Template {
     }
 
     @Override
+    public String about() {
+        return "flatgen.template.test_layers.about";
+    }
+
+    @Override
     public String icon() {
         return "minecraft:redstone";
     }

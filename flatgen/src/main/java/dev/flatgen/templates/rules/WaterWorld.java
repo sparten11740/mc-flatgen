@@ -22,6 +22,11 @@ final class WaterWorld implements Template {
     }
 
     @Override
+    public String about() {
+        return "flatgen.template.water_world.about";
+    }
+
+    @Override
     public String icon() {
         return "minecraft:water_bucket";
     }

@@ -22,6 +22,11 @@ final class AirshipField implements Template {
     }
 
     @Override
+    public String about() {
+        return "flatgen.template.airship_field.about";
+    }
+
+    @Override
     public String icon() {
         return "minecraft:elytra";
     }

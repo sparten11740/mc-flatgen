@@ -23,6 +23,11 @@ final class TallFlat implements Template {
     }
 
     @Override
+    public String about() {
+        return "flatgen.template.tall_flat.about";
+    }
+
+    @Override
     public String icon() {
         return Templates.GRASS;
     }

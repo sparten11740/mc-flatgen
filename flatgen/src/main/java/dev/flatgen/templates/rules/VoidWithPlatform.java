@@ -14,6 +14,11 @@ final class VoidWithPlatform implements Template {
     }
 
     @Override
+    public String about() {
+        return "flatgen.template.void_with_platform.about";
+    }
+
+    @Override
     public String icon() {
         return "minecraft:barrier";
     }

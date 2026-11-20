@@ -12,6 +12,9 @@ public interface Template {
     /** Its name, a translation key. */
     String name();
 
+    /** What it makes, in a line, a translation key. */
+    String about();
+
     /** What its card shows: an item's id, or a 16 by 16 texture's location ending in {@code .png}. */
     String icon();
 

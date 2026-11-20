@@ -12,6 +12,12 @@ The "generator" in Flatgen: some worlds are better described by a few numbers th
 A templates tab with picture cards. Choosing one shows a few sliders; the column and the facts update while sliding;
 Use turns the result into the editor's layers, to change further or save.
 
+Since round 3 of the simple editor (`docs/design/simple-editor.md`) the screen is laid out as that round drew it: the
+templates down the left as cards, each a picture of what it makes, its name and a line on what it is; the chosen one's
+name, what it is and its settings in the middle, numbers as sliders with a step down and up; at the right what it
+makes, its ground in its sky with the air above it on a chip, the world's facts and its layers top first; and a footer
+saying what Use does, with Cancel and Use.
+
 ## Acceptance criteria
 
 - [x] Tall flat: ground height (surface Y), top block, filler block.
@@ -42,3 +48,8 @@ preview and the facts beside the settings; the tall flat's height slider moves b
 the water world puts sand 5 deep under 30 of water in an ocean, and test layers eight alternating concrete layers. Not
 tried in game: the airship field and the void with platform (unit-tested), and choosing the top and filler blocks
 through the block picker.
+
+Round 3, 2026-11-20, on 1.21.1 NeoForge in a dev client with Blockpilot: the cards, the tall flat's settings and what it
+makes (102 stone under grass at Y 40, 280 blocks of air), the water world's step up to 31 deep, the void's "nothing to
+set", and Use puts the tall flat in the editor as one step Undo takes back. Not tried in game: the other nodes, the
+airship field's switch and the block picker from a block row.
