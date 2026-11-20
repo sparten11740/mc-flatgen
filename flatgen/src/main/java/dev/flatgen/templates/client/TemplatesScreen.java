@@ -74,7 +74,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         List<Widget> widgets = new ArrayList<>();
         widgets.add(new WidgetGroup(Templates.ALL.stream().map(choice -> templateButton(choice, row)).toList()));
         int top = row.bottom() + GAP;
-        widgets.add(new Label(Icon.item(template.icon()), Component.translatable(template.name()),
+        widgets.add(new Label(Icon.itemOrTexture(template.icon()), Component.translatable(template.name()),
                 new Rect(body.x(), top, body.width(), Label.height())));
         top += Label.height() + GAP;
         widgets.add(new Preview(new Rect(body.x(), top, PREVIEW_WIDTH, body.bottom() - top)));
@@ -108,7 +108,7 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** A template's picture button, ringed in blue while it is the chosen one. */
     private Widget templateButton(Template choice, FlowLayout row) {
         Rect place = row.next(PictureButton.SIZE);
-        Widget button = new PictureButton(Icon.item(choice.icon()), place, () -> choose(choice),
+        Widget button = new PictureButton(Icon.itemOrTexture(choice.icon()), place, () -> choose(choice),
                 () -> List.of(Component.translatable(choice.name())));
         return choice != template ? button : new WidgetGroup(List.of(button, new Surface(Look.CHOSEN_RING,
                 new Rect(place.x() - 1, place.y() - 1, place.width() + 2, place.height() + 2))));
@@ -163,7 +163,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         @Override
         public Widget number(Parameter.Number number) {
             flow.newRow();
-            Label picture = new Label(Icon.item(number.icon()), Component.empty(), flow.next(Icon.SIZE));
+            Label picture = new Label(Icon.itemOrTexture(number.icon()), Component.empty(), flow.next(Icon.SIZE));
             Slider slider = new Slider(number.id(), flow.next(CONTROL_WIDTH - Icon.SIZE - GAP), number.min(),
                     number.max(), () -> values.number(number), value -> values = values.with(number, value),
                     () -> Component.translatable(number.name(), values.number(number)));
@@ -182,7 +182,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         @Override
         public Widget toggle(Parameter.Toggle toggle) {
             flow.newRow();
-            return new Toggle(Icon.item(toggle.icon()), Component.translatable(toggle.name()),
+            return new Toggle(Icon.itemOrTexture(toggle.icon()), Component.translatable(toggle.name()),
                     flow.next(CONTROL_WIDTH), () -> values.toggle(toggle),
                     () -> values = values.with(toggle, !values.toggle(toggle)), () -> true, List::of);
         }

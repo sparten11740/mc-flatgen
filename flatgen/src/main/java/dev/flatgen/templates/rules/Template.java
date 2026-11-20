@@ -12,7 +12,7 @@ public interface Template {
     /** Its name, a translation key. */
     String name();
 
-    /** The id of the item its card shows. */
+    /** What its card shows: an item's id, or a 16 by 16 texture's location ending in {@code .png}. */
     String icon();
 
     /** Its settings, in the order they are shown. */

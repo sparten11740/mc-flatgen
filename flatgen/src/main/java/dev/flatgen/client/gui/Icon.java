@@ -98,4 +98,9 @@ public interface Icon {
     static Icon texture(String location) {
         return (canvas, x, y) -> canvas.texture(location, x, y);
     }
+
+    /** An item's picture, by its id, or a 16 by 16 texture's, by its location ending in {@code .png}. */
+    static Icon itemOrTexture(String id) {
+        return id.endsWith(".png") ? texture(id) : item(id);
+    }
 }

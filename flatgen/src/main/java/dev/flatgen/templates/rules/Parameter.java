@@ -28,7 +28,7 @@ public interface Parameter {
      *
      * @param id           the setting's id
      * @param name         its name, a translation key
-     * @param icon         the id of the item its slider shows
+     * @param icon         what its slider shows: an item's id, or a texture's location ending in {@code .png}
      * @param min          the least it may be
      * @param max          the most it may be
      * @param defaultValue what it starts at
@@ -64,7 +64,7 @@ public interface Parameter {
      *
      * @param id           the setting's id
      * @param name         its name, a translation key
-     * @param icon         the id of the item its switch shows
+     * @param icon         what its switch shows: an item's id, or a texture's location ending in {@code .png}
      * @param defaultValue whether it starts on
      */
     record Toggle(String id, String name, String icon, boolean defaultValue) implements Parameter {
