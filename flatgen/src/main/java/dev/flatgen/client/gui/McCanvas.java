@@ -230,7 +230,7 @@ final class McCanvas implements Canvas {
         Optional.ofNullable(ResourceLocation.tryParse(location)).ifPresent(texture -> blitIcon(texture, x, y));
     }
 
-    /** A 16 by 16 texture at its own size, its clear parts clear: 1.20.1's plain blit leaves blending as it finds it. */
+    /** A 16 by 16 texture at its own size, its clear parts clear, though 1.20.1's plain blit leaves blending be. */
     private void blitIcon(ResourceLocation texture, int x, int y) {
         //? if >=1.21.11 {
         /*graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, Icon.SIZE, Icon.SIZE, Icon.SIZE, Icon.SIZE);
