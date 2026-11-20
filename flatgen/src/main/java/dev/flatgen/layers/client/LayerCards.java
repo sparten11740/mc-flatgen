@@ -250,8 +250,7 @@ final class LayerCards {
         /** The cards' slots as laid out with this one, which a drag finds its place among. */
         private final ListSlots slots;
         private final Drag drag;
-        /** Whether the mouse's button went down on this card and is held, and at what height, in GUI pixels. */
-        private boolean held;
+        /** The height the mouse's button went down at on this card, in GUI pixels. */
         private int pressedAt;
         private boolean dragging;
 
@@ -281,7 +280,6 @@ final class LayerCards {
                 return false;
             }
             editor.select(index);
-            held = true;
             drag.held = true;
             pressedAt = (int) y;
             return true;
@@ -290,7 +288,7 @@ final class LayerCards {
         /** Lifts the card once the mouse has moved far enough with its button held, then moves it with the mouse. */
         @Override
         public void drag(double x, double y) {
-            if (held && !dragging && Math.abs(y - pressedAt) >= LIFT_AFTER) {
+            if (drag.held && !dragging && Math.abs(y - pressedAt) >= LIFT_AFTER) {
                 dragging = true;
                 drag.active = true;
                 drag.heldAt = pressedAt - card.y();
@@ -303,7 +301,6 @@ final class LayerCards {
 
         @Override
         public void release(double x, double y) {
-            held = false;
             drag.held = false;
             if (dragging) {
                 editor.commitPreview();
