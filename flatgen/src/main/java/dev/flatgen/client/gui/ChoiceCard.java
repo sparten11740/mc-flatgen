@@ -33,7 +33,8 @@ public final class ChoiceCard implements Control {
      * A card of this choice, chosen while {@code chosen} says so, chosen by {@code choose}.
      *
      * @param picture draws the choice's picture in an area
-     * @param about   the lines on what it is, already wrapped to {@link #wordsWidth(int)}
+     * @param about   the lines on what it is, already wrapped to {@link #wordsWidth(int)}; as many as fit are drawn,
+     *                and the narrator says them all as one
      */
     public ChoiceCard(BiConsumer<Canvas, Rect> picture, Component name, List<Component> about, Rect bounds,
             BooleanSupplier chosen, Runnable choose) {
@@ -68,6 +69,9 @@ public final class ChoiceCard implements Control {
                 TextStyle.STRONG);
         y += TextStyle.STRONG.lineHeight();
         for (Component line : about) {
+            if (y + TextStyle.BODY.lineHeight() > bounds.bottom() - PADDING) {
+                return;
+            }
             canvas.text(line, x, y, Look.MUTED);
             y += TextStyle.BODY.lineHeight();
         }
@@ -84,11 +88,12 @@ public final class ChoiceCard implements Control {
         return Keys.uses(keyCode) && Control.use(() -> true, choose);
     }
 
-    /** Its name, "Selected: …" while chosen, as the game says a chosen entry, then what it is. */
+    /** Its name, "Selected: …" while chosen, as the game says a chosen entry, then what it is, its lines as one. */
     @Override
     public Optional<Narration> narration() {
         Component said = chosen.getAsBoolean() ? Component.translatable("narrator.select", name) : name;
-        return Optional.of(Narration.button(said, true, about));
+        String words = String.join(" ", about.stream().map(Component::getString).toList());
+        return Optional.of(Narration.button(said, true, List.of(Component.literal(words))));
     }
 
     @Override

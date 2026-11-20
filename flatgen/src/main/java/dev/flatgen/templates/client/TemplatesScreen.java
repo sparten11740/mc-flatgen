@@ -138,7 +138,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         for (Template each : Templates.ALL) {
             List<Component> about = wrapped(Component.translatable(each.about()), ChoiceCard.wordsWidth(area.width()));
             cards.add(new ChoiceCard((canvas, place) -> drawGround(canvas, madeBy(each), place),
-                    Component.translatable(each.name()), about.subList(0, Math.min(ABOUT_LINES, about.size())),
+                    Component.translatable(each.name()), about,
                     new Rect(area.x(), y, area.width(), cardHeight), () -> each == template, () -> choose(each)));
             y += cardHeight + GAP;
         }
