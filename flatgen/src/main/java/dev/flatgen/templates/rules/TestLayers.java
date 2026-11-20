@@ -26,10 +26,6 @@ final class TestLayers implements Template {
         return "flatgen.template.test_layers.about";
     }
 
-    @Override
-    public String icon() {
-        return "minecraft:redstone";
-    }
 
     @Override
     public List<Parameter> parameters() {

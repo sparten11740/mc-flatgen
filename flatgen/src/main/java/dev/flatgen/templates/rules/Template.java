@@ -15,8 +15,6 @@ public interface Template {
     /** What it makes, in a line, a translation key. */
     String about();
 
-    /** What its card shows: an item's id, or a 16 by 16 texture's location ending in {@code .png}. */
-    String icon();
 
     /** Its settings, in the order they are shown. */
     List<Parameter> parameters();

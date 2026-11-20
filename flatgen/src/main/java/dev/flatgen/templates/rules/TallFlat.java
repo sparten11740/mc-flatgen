@@ -27,10 +27,6 @@ final class TallFlat implements Template {
         return "flatgen.template.tall_flat.about";
     }
 
-    @Override
-    public String icon() {
-        return Templates.GRASS;
-    }
 
     @Override
     public List<Parameter> parameters() {
