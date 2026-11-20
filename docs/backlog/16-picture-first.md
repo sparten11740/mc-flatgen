@@ -42,7 +42,7 @@ action pictures, as beside the column they would read as layers.
 | Biome | the biome's own colours drawn as a little landscape (sky, grass, foliage, water), and its name |
 | Block, a template's block setting | the block itself, and its name |
 | Structures | own: a village house |
-| No slimes | the slime ball with the "no" sign |
+| No slimes | the ladder of the ground's height with an up arrow: it raises the ground |
 | Undo, Redo | own: a hooked arrow curling left, right |
 | Copy code, Share | paper with an "out" badge |
 | Paste code, Paste | paper with an "in" badge |
@@ -113,8 +113,8 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Screen | Control | Picture |
 |---|---|---|
 | Editor | the column, each layer | the layer's block side; the selected one outlined, the focus ring round it |
-| Editor | fact badges | each fact's item, under the "no" sign for no; the snow and slime lines end in theirs |
-| Editor | No slimes | slime ball under the "no" sign |
+| Editor | fact badges | each fact's picture: the ladder for the surface's height, a sunflower for sun, own rain and snow clouds, an own slime's face, a creeper's head for monsters; under the "no" sign for no; the snow and slime lines end in theirs |
+| Editor | No slimes | ladder with an up arrow |
 | Editor | favourites row | each favourite's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
 | Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, Eye of Ender; the chosen one raised; own flat badge |
@@ -129,7 +129,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Copy code, Paste code | paper with an arrow out, in |
 | Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |
 | Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
-| Editor | Mobs spawn | own: a zombie's face, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
+| Editor | Mobs spawn | zombie spawn egg, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
 | Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
 | Pickers | search | spyglass |
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |

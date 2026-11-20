@@ -1,5 +1,5 @@
 {
-  "icon": { "texture": "flatgen:textures/gui/sprites/icon/mobs.png" },
+  "icon": "minecraft:zombie_spawn_egg",
   "group": "flatgen:mobs",
   "group_icon": "minecraft:zombie_head",
   "inverted": true,

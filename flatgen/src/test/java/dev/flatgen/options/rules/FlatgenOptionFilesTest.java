@@ -58,7 +58,7 @@ class FlatgenOptionFilesTest {
     void noMobsShowsMobsSpawningTheOtherWayRound() throws IOException {
         WorldOption option = read("no_mobs");
         assertTrue(option.inverted() && !option.defaultOn());
-        assertTrue(option.icon().texture() && Files.exists(texture(option.icon().id())));
+        assertEquals(new WorldOption.Icon("minecraft:zombie_spawn_egg", false), option.icon());
         assertEquals(new WorldOption.Icon("minecraft:zombie_head", false), option.groupIcon().orElseThrow());
     }
 
