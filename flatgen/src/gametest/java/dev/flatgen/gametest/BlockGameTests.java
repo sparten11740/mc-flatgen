@@ -33,6 +33,7 @@ final class BlockGameTests {
 
     private static void traits(GameTestHelper helper) {
         traitsAre("minecraft:sand", new LayerHints.Traits(true, true, false, true));
+        traitsAre("minecraft:suspicious_gravel", new LayerHints.Traits(true, true, true, true));
         traitsAre("minecraft:stone", new LayerHints.Traits(false, true, false, true));
         traitsAre("minecraft:water", new LayerHints.Traits(false, false, false, false));
         traitsAre("minecraft:torch", new LayerHints.Traits(false, false, false, true));

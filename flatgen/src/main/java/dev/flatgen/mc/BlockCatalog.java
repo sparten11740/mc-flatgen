@@ -11,6 +11,7 @@ import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BrushableBlock;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -31,13 +32,17 @@ public final class BlockCatalog {
         return entries;
     }
 
-    /** What a block is like as a layer; an unknown block is like air. */
+    /**
+     * What a block is like as a layer; an unknown block is like air. Suspicious sand and gravel fall as sand does, though
+     * the game makes them brushable blocks rather than falling ones.
+     */
     public static LayerHints.Traits traits(String id) {
         ResourceLocation location = ResourceLocation.tryParse(id);
         Block block = location == null ? Blocks.AIR : BuiltInRegistries.BLOCK.getOptional(location).orElse(Blocks.AIR);
         BlockState state = block.defaultBlockState();
         boolean whole = state.isCollisionShapeFullBlock(EmptyBlockGetter.INSTANCE, BlockPos.ZERO);
-        return new LayerHints.Traits(block instanceof FallingBlock, whole, state.hasBlockEntity(),
+        boolean falls = block instanceof FallingBlock || block instanceof BrushableBlock;
+        return new LayerHints.Traits(falls, whole, state.hasBlockEntity(),
                 !FallingBlock.isFree(state));
     }
 }
