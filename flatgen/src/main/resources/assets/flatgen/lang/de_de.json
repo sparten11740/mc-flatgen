@@ -1,5 +1,6 @@
 {
   "flatgen.biomes.every": "Alle Biome",
+  "flatgen.biomes.is_chosen": "Gewählt: ein zweiter Klick nimmt es",
   "flatgen.biomes.kind.caves": "Höhlen",
   "flatgen.biomes.kind.dry": "Trocken",
   "flatgen.biomes.kind.end": "Ende",

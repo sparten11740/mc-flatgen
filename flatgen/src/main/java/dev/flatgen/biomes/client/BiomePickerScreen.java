@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -243,9 +244,13 @@ public final class BiomePickerScreen extends PickerScreen {
             }
         }
 
+        /** Whether it is the one chosen, then its facts in words. */
         @Override
         public List<Component> describe(Search.Entry entry) {
-            return facts(entry.id()).stream().flatMap(shown -> FactPictures.words(shown).stream()).toList();
+            Stream<Component> chosenLine = entry.id().equals(chosen)
+                    ? Stream.of(Component.translatable("flatgen.biomes.is_chosen")) : Stream.empty();
+            return Stream.concat(chosenLine, facts(entry.id()).stream()
+                    .flatMap(shown -> FactPictures.words(shown).stream())).toList();
         }
     }
 
