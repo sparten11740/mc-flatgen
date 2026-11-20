@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -223,14 +224,25 @@ public final class LibraryScreen extends FlatgenScreen {
         pickedPreset().ifPresent(preset -> canvas.itemIcon(preset.icon(), x, y));
     }
 
-    /** The grid's one section, made again only when the presets are read again, so the grid keeps its place. */
+    /**
+     * The grid's sections, the player's own presets, then the built-in ones, each in the library's order and left out
+     * when empty; made again only when the presets are read again, so the grid keeps its place.
+     */
     private List<CardGrid.Section> sections() {
         if (sectionsFor != entries) {
             sectionsFor = entries;
-            sections = List.of(new CardGrid.Section(Component.translatable("flatgen.library.presets"), entries.stream()
-                    .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList()));
+            sections = Stream.of(section("flatgen.library.presets", true),
+                    section("flatgen.library.built_in_presets", false))
+                    .filter(section -> !section.entries().isEmpty()).toList();
         }
         return sections;
+    }
+
+    /** The section of the player's own presets, or of the built-in ones, under its heading. */
+    private CardGrid.Section section(String heading, boolean players) {
+        return new CardGrid.Section(Component.translatable(heading), entries.stream()
+                .filter(entry -> entry.isPlayers() == players)
+                .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList());
     }
 
     private void pick(String file) {
