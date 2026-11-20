@@ -3,7 +3,7 @@
 A better superflat screen for Minecraft, in early development. Create World → World Type: Superflat → Customize
 will open Flatgen instead of the vanilla screen:
 
-- **Layers you edit where you see them:** drag to reorder, drag an edge to make a layer deeper, undo anything.
+- **Layers as cards beside the world they make:** drag one to reorder, + and − for its thickness, undo anything.
 - **Every block and biome**, modded ones included, as pictures you can search.
 - **Know your world before you make it:** rain, snow or sun at your surface, whether slimes and monsters spawn.
 - **Presets:** save your own, star favourites, pick a default that is ready the moment you choose Superflat.
@@ -13,9 +13,9 @@ will open Flatgen instead of the vanilla screen:
 - **Works without reading:** every button is a picture; the keyboard and the game's narrator work too. In English and
   German.
 
-![The editor: the layers as a column, the world's facts above the controls, every button a picture](docs/screenshots/editor.png)
+![The editor: the world drawn at the left, the layers as cards, the biome, its facts and the switches at the right](docs/screenshots/editor.png)
 
-| Biomes as cards with their colours and facts | Presets: your own, the game's and Flatgen's | Templates |
+| Biomes by kind, each a little landscape | Presets: your own and the built-in ones | Templates |
 |---|---|---|
 | ![The biome picker](docs/screenshots/biomes.png) | ![The preset library](docs/screenshots/library.png) | ![The templates](docs/screenshots/templates.png) |
 
