@@ -3,6 +3,7 @@ package dev.flatgen.biomes.client;
 import dev.flatgen.biomes.rules.BiomeInfo;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.CardGrid;
+import dev.flatgen.client.gui.GridPickerScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.PickerScreen;
 import dev.flatgen.client.gui.rules.Rect;
@@ -68,11 +69,11 @@ public final class BiomePicker {
                 .map(biome -> new Search.Entry(biome.id(), Names.biome(biome.id()).getString(), biome.namespace()))
                 .sorted(Comparator.comparing(entry -> entry.name().toLowerCase(Locale.ROOT)))
                 .toList();
-        return new PickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.biomes.title"),
-                Component.translatable("flatgen.biomes.search"), Component.translatable("flatgen.biomes.all"),
-                entries, CARD_WIDTH, CARD_HEIGHT, new Cards(biomes, situation),
+        return new GridPickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.biomes.title"),
+                Component.translatable("flatgen.biomes.search"), entries,
                 id -> new BiomeIcon(biomes.get(id).colours()), ClientPlatform.get()::modName, PICKS::read,
-                PICKS::save), onPick);
+                PICKS::save), Component.translatable("flatgen.biomes.all"), CARD_WIDTH, CARD_HEIGHT,
+                new Cards(biomes, situation), onPick);
     }
 
     /**

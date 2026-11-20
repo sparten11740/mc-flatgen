@@ -33,8 +33,8 @@ largest GUI scale.
 - `search/rules/Search` (pure, shared with the biome picker of F07 from the start): matching and ranking (exact id,
   name prefix, word prefix, contains), recent and starred ordering, over plain entries of id, name and namespace.
   Unit-tested once for both pickers.
-- `blocks/client/BlockPicker`: the block picker, a `client/gui/PickerScreen` (the search field, the mod filter and
-  Cancel around a `CardGrid`, shared with F07's biome picker) whose cards are block icons.
+- `blocks/client/BlockPicker`: the block picker, a `client/gui/GridPickerScreen` (a `PickerScreen`: the search field,
+  the mod filter and Cancel, shared with F07's biome picker, over one `CardGrid`) whose cards are block icons.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
   which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one

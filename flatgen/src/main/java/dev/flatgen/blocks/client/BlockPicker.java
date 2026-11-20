@@ -2,6 +2,7 @@ package dev.flatgen.blocks.client;
 
 import dev.flatgen.client.gui.CardGrid;
 import dev.flatgen.client.gui.Canvas;
+import dev.flatgen.client.gui.GridPickerScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.PickerScreen;
@@ -37,12 +38,10 @@ public final class BlockPicker {
 
     /** The picker over the blocks these features allow, going back to {@code parent}, handing on the block picked. */
     public static PickerScreen screen(Screen parent, FeatureFlagSet enabled, Consumer<String> onPick) {
-        return new PickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.blocks.title"),
-                Component.translatable("flatgen.blocks.search"), Component.translatable("flatgen.blocks.all"),
-                BlockCatalog.blocks(enabled), CARD_WIDTH, CARD_HEIGHT, new Cards(), Icon::block,
-                ClientPlatform.get()::modName,
-                PICKS::read, PICKS::save),
-                onPick);
+        return new GridPickerScreen(parent, new PickerScreen.Picker(Component.translatable("flatgen.blocks.title"),
+                Component.translatable("flatgen.blocks.search"), BlockCatalog.blocks(enabled), Icon::block,
+                ClientPlatform.get()::modName, PICKS::read, PICKS::save),
+                Component.translatable("flatgen.blocks.all"), CARD_WIDTH, CARD_HEIGHT, new Cards(), onPick);
     }
 
     /** A block's card: its picture with its marks, and its name below. */
