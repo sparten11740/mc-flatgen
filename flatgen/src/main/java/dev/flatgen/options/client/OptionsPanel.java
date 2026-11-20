@@ -20,8 +20,8 @@ import java.util.Map;
 import net.minecraft.network.chat.Component;
 
 /**
- * The editor's world options: a picture switch for each option installed, under its group's heading, and a locked one
- * for each option the preset names that is no longer installed, kept as it is.
+ * The editor's world options: a picture switch for each option installed, under its group's heading where the group has
+ * more than one, and a locked one for each option the preset names that is no longer installed, kept as it is.
  */
 public final class OptionsPanel implements EditorPanel {
     /** Each group of options on a box of the aside, then the options not installed on a box of their own. */
@@ -39,14 +39,17 @@ public final class OptionsPanel implements EditorPanel {
 
     /**
      * A group's heading, with the picture the first of its options to give one gives the group, else its first option's
-     * own; then a switch for each of its options.
+     * own; then a switch for each of its options. A group of one option shows its switch alone, as a heading would only
+     * say again what the switch says.
      */
     private static List<Widget> group(EditorContext editor, List<WorldOption> group, List<WorldOption> installed,
             FlowLayout flow) {
         List<Widget> widgets = new ArrayList<>();
-        Icon heading = group.stream().flatMap(option -> option.groupIcon().stream()).findFirst()
-                .map(OptionsPanel::icon).orElse(icon(group.get(0).icon()));
-        widgets.add(new Label(heading, groupTitle(group.get(0).group()), flow.line(Label.height())));
+        if (group.size() > 1) {
+            Icon heading = group.stream().flatMap(option -> option.groupIcon().stream()).findFirst()
+                    .map(OptionsPanel::icon).orElse(icon(group.get(0).icon()));
+            widgets.add(new Label(heading, groupTitle(group.get(0).group()), flow.line(Label.height())));
+        }
         group.forEach(option -> widgets.add(toggle(editor, option, installed, flow)));
         return widgets;
     }

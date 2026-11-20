@@ -129,7 +129,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Copy code, Paste code | paper with an arrow out, in |
 | Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |
 | Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
-| Editor | Mobs, Mobs spawn | zombie head; own: a zombie's face, the switch on while mobs spawn (the "no mobs" option shown the other way round) |
+| Editor | Mobs spawn | own: a zombie's face, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
 | Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
 | Pickers | search | compass |
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |

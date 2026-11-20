@@ -40,7 +40,7 @@ Templates placed at the spawn are server data and live where the game keeps stru
 | `effects` | yes | | What the option does, at least one effect (below). |
 | `name` | no | `option.<namespace>.<name>` | Its name on the switch: a translation key, or else the text itself. |
 | `description` | no | `option.<namespace>.<name>.description` | What it does, shown when the switch is hovered: a translation key, or else the text itself. |
-| `group` | no | the namespace | The heading it is shown under. A mod's id shows the mod's name; `<namespace>:<path>` shows the translation of `option_group.<namespace>.<path>`. |
+| `group` | no | the namespace | The heading it is shown under. A mod's id shows the mod's name; `<namespace>:<path>` shows the translation of `option_group.<namespace>.<path>`. A group of one option shows its switch alone, without the heading. |
 | `group_icon` | no | none | The picture of its group's heading, in the same forms as `icon`. The heading shows the first one an option of the group gives, else its first option's icon; give one when a switch's picture would not say what the whole group is about. |
 | `default` | no | `false` | Whether the option is on unless a preset says otherwise. |
 | `inverted` | no | `false` | Whether the switch shows the option the other way round: on while the option is off. An option that stops something, such as Flatgen's "no mobs", is then a switch of that thing, on as the world has it, which a player who reads the picture understands. |
