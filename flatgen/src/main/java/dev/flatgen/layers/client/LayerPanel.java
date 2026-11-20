@@ -1,6 +1,7 @@
 package dev.flatgen.layers.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import dev.flatgen.blocks.client.BlockChoice;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
@@ -75,9 +76,8 @@ public final class LayerPanel implements EditorPanel {
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
     }
 
-    /** Adds a layer above the top one, as one step to undo. */
+    /** Opens the block picker, then adds a layer of the block picked on top, as one step to undo. */
     private static void addOnTop(EditorContext editor) {
-        editor.select(editor.shown().layers().size() - 1);
-        editor.apply(new LayerEdits.Add(true));
+        BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.AddOnTop(block)));
     }
 }

@@ -35,6 +35,21 @@ public final class LayerEdits {
         }
     }
 
+    /**
+     * Adds a layer one block deep of a block on top of the stack, and selects it.
+     *
+     * @param block the block it is of, as the block picker picked it
+     */
+    public record AddOnTop(String block) implements Edit {
+        @Override
+        public EditorState apply(EditorState state, World world) {
+            if (state.height() >= world.height()) {
+                return state;
+            }
+            return inserted(state, state.layers().size(), new Layer(block, 1));
+        }
+    }
+
     /** Adds a copy of the selected layer above it, as deep as the world allows, and selects the copy. */
     public record Duplicate() implements Edit {
         @Override

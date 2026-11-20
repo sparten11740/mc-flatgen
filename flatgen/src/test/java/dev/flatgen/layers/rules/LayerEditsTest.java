@@ -30,6 +30,14 @@ class LayerEditsTest {
     }
 
     @Test
+    void addsALayerOfThePickedBlockOnTopAndSelectsIt() {
+        EditorState added = new LayerEdits.AddOnTop("minecraft:glass").apply(STONE, OVERWORLD);
+        assertEquals(new Layer("minecraft:glass", 1), added.preset().layers().get(added.preset().layers().size() - 1));
+        assertEquals(added.preset().layers().size() - 1, added.selected());
+        assertSame(STONE, new LayerEdits.AddOnTop("minecraft:glass").apply(STONE, new World(-64, 104)));
+    }
+
+    @Test
     void addsStoneToAnEmptyStack() {
         EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, -1);
         EditorState added = new LayerEdits.Add(true).apply(empty, OVERWORLD);

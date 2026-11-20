@@ -7,6 +7,7 @@ import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.preset.rules.Layer;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 
@@ -20,8 +21,12 @@ public final class BlockChoice {
 
     /** Opens the block picker for the selected layer, whose pick sets its block as one step to undo. */
     public static void pick(EditorContext editor) {
-        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(), editor.registries(),
-                block -> editor.apply(new SetBlock(block))));
+        choose(editor, block -> editor.apply(new SetBlock(block)));
+    }
+
+    /** Opens the block picker over the editor, handing the block picked to {@code onPick}; nothing when cancelled. */
+    public static void choose(EditorContext editor, Consumer<String> onPick) {
+        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(), editor.registries(), onPick));
     }
 
     /** A layer's hints (falls, not a whole block, keeps data), each a few words, on one line; empty for none. */
