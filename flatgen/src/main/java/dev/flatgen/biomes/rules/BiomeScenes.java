@@ -12,15 +12,12 @@ import java.util.function.Predicate;
  * rule in a list; the painting only draws what a scene holds.
  */
 public final class BiomeScenes {
-    /** A colour that stands for the biome's own: its sky, its grass or its leaves. */
-    public static final int OWN = -1;
-    /** No colour: a ground with nothing on top. */
+    /** A colour standing for the biome's own sky, grass or leaves; clear, so that no colour painted is it. */
+    public static final int OWN = 0x00000001;
+    /** No colour, clear too: a ground with nothing on top. */
     public static final int NONE = 0;
     /** How much of the picture is ground, in hundredths of its height. */
     public static final int GROUND_SHARE = 30;
-    /** Below this temperature what falls is snow rather than rain, where height does not cool a biome. */
-    private static final float SNOW_BELOW = 0.15F;
-    private static final String OVERWORLD = "minecraft:is_overworld";
     /** The colours of the scenes' parts, ARGB, as the blocks and the dimensions look. */
     private static final int DIRT = 0xFF86603E;
     private static final int SAND = 0xFFDBCF8E;
@@ -129,41 +126,40 @@ public final class BiomeScenes {
     private static final List<Rule<Integer>> SKIES = List.of(
             new Rule<>(named("void"), VOID_SKY),
             new Rule<>(BiomeKinds.CAVE, CAVE_DARK),
-            new Rule<>(tagged("minecraft:is_nether"), NETHER_SKY),
-            new Rule<>(tagged("minecraft:is_end"), END_SKY));
+            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), NETHER_SKY),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), END_SKY));
     /** The ground, the first that holds; grass topped dirt for the rest. */
     private static final List<Rule<Ground>> GROUNDS = List.of(
             new Rule<>(named("void"), NOTHING),
-            new Rule<>(tagged("minecraft:is_badlands"), BADLANDS),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_badlands"), BADLANDS),
             new Rule<>(named("mushroom"), MYCELIUM_TOP),
-            new Rule<>(tagged("minecraft:is_nether"), NETHER),
-            new Rule<>(tagged("minecraft:is_end"), END),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), NETHER),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), END),
             new Rule<>(BiomeKinds.CAVE, STONE_ONLY),
-            new Rule<>(BiomeScenes::snowy, SNOW_ONLY),
-            new Rule<>(tagged("minecraft:is_ocean", "minecraft:is_deep_ocean", "minecraft:is_river",
-                    "minecraft:is_beach"), SAND_ONLY),
+            new Rule<>(BiomeKinds.SNOWY, SNOW_ONLY),
+            new Rule<>(BiomeKinds.WATER, SAND_ONLY),
             new Rule<>(named("meadow"), GRASS),
-            new Rule<>(tagged("minecraft:is_mountain", "minecraft:is_hill"), STONE_GRASS),
-            new Rule<>(tagged("minecraft:is_savanna"), GRASS),
-            new Rule<>(biome -> overworld(biome) && !biome.climate().precipitation(), SAND_ONLY));
+            new Rule<>(BiomeKinds.MOUNTAIN, STONE_GRASS),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_savanna"), GRASS),
+            new Rule<>(BiomeKinds.DRY, SAND_ONLY));
     /** The tree standing on the ground, the first that holds; none for the rest. */
     private static final List<Rule<List<Patch>>> TREES = List.of(
             new Rule<>(named("cherry"), CHERRY),
             new Rule<>(named("birch"), BIRCH),
-            new Rule<>(tagged("minecraft:is_taiga"), SPRUCE),
-            new Rule<>(tagged("minecraft:is_savanna"), ACACIA),
-            new Rule<>(tagged("minecraft:is_jungle"), JUNGLE),
-            new Rule<>(tagged("minecraft:is_forest", "minecraft:allows_surface_slime_spawns", "c:is_swamp"), OAK));
+            new Rule<>(BiomeKinds.tagged("minecraft:is_taiga"), SPRUCE),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_savanna"), ACACIA),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_jungle"), JUNGLE),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_forest").or(BiomeKinds.SWAMP), OAK));
     /** More a biome has, each that holds: a peak behind, a mushroom, flowers. */
     private static final List<Rule<List<Patch>>> EXTRAS = List.of(
-            new Rule<>(tagged("minecraft:is_mountain", "minecraft:is_hill").and(named("meadow").negate()), PEAK),
+            new Rule<>(BiomeKinds.MOUNTAIN.and(named("meadow").negate()), PEAK),
             new Rule<>(named("mushroom"), MUSHROOM),
             new Rule<>(named("meadow").or(named("flower")), FLOWERS));
     /** How much of the ground is water, the first that holds; none for the rest. */
     private static final List<Rule<Integer>> WATERS = List.of(
-            new Rule<>(tagged("minecraft:is_beach"), BEACH_WATER),
-            new Rule<>(tagged("minecraft:is_ocean", "minecraft:is_deep_ocean", "minecraft:is_river"), ALL_WATER),
-            new Rule<>(tagged("minecraft:allows_surface_slime_spawns", "c:is_swamp"), SWAMP_WATER));
+            new Rule<>(BiomeKinds.tagged("minecraft:is_beach"), BEACH_WATER),
+            new Rule<>(BiomeKinds.WATER, ALL_WATER),
+            new Rule<>(BiomeKinds.SWAMP, SWAMP_WATER));
 
     private BiomeScenes() {
     }
@@ -181,21 +177,8 @@ public final class BiomeScenes {
         return rules.stream().filter(rule -> rule.holds().test(biome)).findFirst().map(Rule::look);
     }
 
-    private static boolean overworld(BiomeInfo biome) {
-        return biome.tags().contains(OVERWORLD);
-    }
-
-    private static boolean snowy(BiomeInfo biome) {
-        return overworld(biome) && biome.climate().precipitation() && biome.climate().temperature() < SNOW_BELOW;
-    }
-
     /** The test of a biome's name, the path of its id, having this word in it, as {@code birch_forest} has birch. */
     private static Predicate<BiomeInfo> named(String word) {
         return biome -> biome.id().substring(biome.id().indexOf(':') + 1).contains(word);
-    }
-
-    private static Predicate<BiomeInfo> tagged(String... tags) {
-        List<String> any = List.of(tags);
-        return biome -> biome.tags().stream().anyMatch(any::contains);
     }
 }

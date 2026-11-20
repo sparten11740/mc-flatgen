@@ -2,6 +2,7 @@ package dev.flatgen.biomes.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,14 @@ class BiomeScenesTest {
         BiomeScenes.Scene mushroom = scene("minecraft:mushroom_fields", 0.9F, true, OVERWORLD);
         assertNotEquals(plains.ground(), mushroom.ground());
         assertNotEquals(plains.patches(), mushroom.patches());
+    }
+
+    @Test
+    void paintsTheMushroomsSpotsWhiteAndAModsSwampOf1201AsASwamp() {
+        BiomeScenes.Scene mushroom = scene("minecraft:mushroom_fields", 0.9F, true, OVERWORLD);
+        assertTrue(mushroom.patches().stream().anyMatch(patch -> patch.colour() == 0xFFFFFFFF));
+        BiomeScenes.Scene bog = scene("somemod:bog", 0.8F, true, OVERWORLD, "forge:is_swamp");
+        assertEquals(scene("minecraft:swamp", 0.8F, true, OVERWORLD, "minecraft:allows_surface_slime_spawns"), bog);
     }
 
     private static BiomeScenes.Scene scene(String id, float temperature, boolean precipitation, String... tags) {

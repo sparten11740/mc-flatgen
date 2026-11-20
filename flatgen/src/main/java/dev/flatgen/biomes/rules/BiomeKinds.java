@@ -27,8 +27,16 @@ public final class BiomeKinds {
     /** The game's cave biomes, which no tag of the game's own names. */
     private static final List<String> CAVES = List.of("minecraft:lush_caves", "minecraft:dripstone_caves",
             "minecraft:deep_dark");
-    /** The test of a biome being under the ground, the game's or a mod's, which its picture paints dark. */
+    /** The tests of a biome's kinds that its picture shares ({@link BiomeScenes}): under the ground, snowy, dry, ... */
     static final Predicate<BiomeInfo> CAVE = tagged(MOD_CAVES).or(biome -> CAVES.contains(biome.id()));
+    static final Predicate<BiomeInfo> SNOWY = biome -> overworld(biome) && biome.climate().precipitation()
+            && biome.climate().temperature() < SNOW_BELOW;
+    static final Predicate<BiomeInfo> DRY = biome -> overworld(biome) && !biome.climate().precipitation();
+    static final Predicate<BiomeInfo> SWAMP = tagged(List.of("minecraft:allows_surface_slime_spawns"))
+            .or(tagged(MOD_SWAMPS));
+    static final Predicate<BiomeInfo> WATER = tagged("minecraft:is_ocean", "minecraft:is_deep_ocean",
+            "minecraft:is_river", "minecraft:is_beach");
+    static final Predicate<BiomeInfo> MOUNTAIN = tagged("minecraft:is_mountain", "minecraft:is_hill");
 
     /**
      * A kind of biome.
@@ -47,17 +55,11 @@ public final class BiomeKinds {
             new Kind("flatgen.biomes.kind.forests",
                     tagged("minecraft:is_forest", "minecraft:is_taiga", "minecraft:is_jungle"),
                     Optional.of("minecraft:forest")),
-            new Kind("flatgen.biomes.kind.snowy", biome -> overworld(biome) && biome.climate().precipitation()
-                    && biome.climate().temperature() < SNOW_BELOW, Optional.of("minecraft:snowy_plains")),
-            new Kind("flatgen.biomes.kind.dry", biome -> overworld(biome) && !biome.climate().precipitation(),
-                    Optional.of("minecraft:desert")),
-            new Kind("flatgen.biomes.kind.swamps",
-                    tagged(List.of("minecraft:allows_surface_slime_spawns")).or(tagged(MOD_SWAMPS)),
-                    Optional.of("minecraft:swamp")),
-            new Kind("flatgen.biomes.kind.water", tagged("minecraft:is_ocean", "minecraft:is_deep_ocean",
-                    "minecraft:is_river", "minecraft:is_beach"), Optional.of("minecraft:ocean")),
-            new Kind("flatgen.biomes.kind.mountains", tagged("minecraft:is_mountain", "minecraft:is_hill"),
-                    Optional.of("minecraft:jagged_peaks")),
+            new Kind("flatgen.biomes.kind.snowy", SNOWY, Optional.of("minecraft:snowy_plains")),
+            new Kind("flatgen.biomes.kind.dry", DRY, Optional.of("minecraft:desert")),
+            new Kind("flatgen.biomes.kind.swamps", SWAMP, Optional.of("minecraft:swamp")),
+            new Kind("flatgen.biomes.kind.water", WATER, Optional.of("minecraft:ocean")),
+            new Kind("flatgen.biomes.kind.mountains", MOUNTAIN, Optional.of("minecraft:jagged_peaks")),
             new Kind("flatgen.biomes.kind.caves", CAVE, Optional.of("minecraft:lush_caves")),
             new Kind("flatgen.biomes.kind.nether", tagged("minecraft:is_nether"),
                     Optional.of("minecraft:nether_wastes")),
@@ -71,7 +73,7 @@ public final class BiomeKinds {
     }
 
     /** The test of a biome being in any of these tags, named one by one. */
-    private static Predicate<BiomeInfo> tagged(String... tags) {
+    static Predicate<BiomeInfo> tagged(String... tags) {
         return tagged(List.of(tags));
     }
 
