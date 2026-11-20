@@ -10,7 +10,8 @@ in the format other mods use, so this feature is also the format's first real te
 
 ## What the player gets
 
-Three switches in Flatgen's options panel, each with a picture: always day, always clear weather, no mobs. They
+Three switches in Flatgen's options panel, each with a picture: always day, always clear weather, and mobs spawning,
+the "no mobs" option shown the other way round so its switch is on while mobs spawn. They
 become part of the preset and show under Create World → More → Game Rules as they are set.
 
 ## Acceptance criteria

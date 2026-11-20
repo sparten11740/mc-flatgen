@@ -72,6 +72,6 @@ class OptionChoicesTest {
 
     private static WorldOption option(String id, boolean defaultOn, Effect... effects) {
         return new WorldOption(id, id, id, new WorldOption.Icon("minecraft:clock", false), "flatgen", Optional.empty(),
-                defaultOn, List.of(), List.of(effects));
+                defaultOn, false, List.of(), List.of(effects));
     }
 }

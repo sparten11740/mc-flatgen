@@ -42,6 +42,7 @@ class OptionReaderTest {
         assertEquals("flatgen:time_and_weather", option.group());
         assertEquals(Optional.empty(), option.groupIcon());
         assertEquals(false, option.defaultOn());
+        assertEquals(false, option.inverted());
         assertEquals(List.of(new GameRule("doDaylightCycle", "false"), new FirstStartTime(6000)), option.effects());
         assertTrue(option.actsAtFirstStart());
     }
@@ -86,6 +87,7 @@ class OptionReaderTest {
         assertLeftOut("{" + clock + ", \"default\": \"true\"}", "default");
         assertLeftOut("{" + clock + ", \"name\": 3}", "name");
         assertLeftOut("{" + clock + ", \"group_icon\": 3}", "group_icon");
+        assertLeftOut("{" + clock + ", \"inverted\": \"yes\"}", "inverted");
     }
 
     private static WorldOption read(String id, String json) {

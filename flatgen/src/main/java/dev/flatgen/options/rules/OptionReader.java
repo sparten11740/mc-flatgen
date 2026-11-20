@@ -60,12 +60,13 @@ public final class OptionReader {
             problems.add("its group_icon must be an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
         }
         boolean defaultOn = JsonFields.bool(root, "default", false, problems);
+        boolean inverted = JsonFields.bool(root, "inverted", false, problems);
         List<String> requires = JsonFields.texts(root, "requires", problems);
         if (!problems.isEmpty()) {
             return new Reading(Optional.empty(), problems);
         }
         return new Reading(Optional.of(new WorldOption(id, name, description, icon.get(), group, groupIcon, defaultOn,
-                requires, effects)), problems);
+                inverted, requires, effects)), problems);
     }
 
     private static Optional<WorldOption.Icon> icon(JsonElement icon) {

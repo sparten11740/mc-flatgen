@@ -16,11 +16,13 @@ import java.util.Optional;
  * @param group       the group it is shown in: a mod's id, or {@code <namespace>:<path>} for a group of its own
  * @param groupIcon   the picture of its group's heading, if it gives one; else the group shows its first option's
  * @param defaultOn   whether it is on unless a preset says otherwise
+ * @param inverted    whether its switch shows it the other way round, on while it is off, so a switch that stops
+ *                    something shows that thing, on as the world has it
  * @param requires    the mods it needs, by id; it is hidden while one is missing
  * @param effects     what it does, in order
  */
 public record WorldOption(String id, String name, String description, Icon icon, String group,
-        Optional<Icon> groupIcon, boolean defaultOn, List<String> requires, List<Effect> effects) {
+        Optional<Icon> groupIcon, boolean defaultOn, boolean inverted, List<String> requires, List<Effect> effects) {
     public WorldOption {
         requires = List.copyOf(requires);
         effects = List.copyOf(effects);

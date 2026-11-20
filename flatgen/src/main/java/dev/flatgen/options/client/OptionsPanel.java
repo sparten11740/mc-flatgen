@@ -64,7 +64,7 @@ public final class OptionsPanel implements EditorPanel {
             FlowLayout flow) {
         return new Toggle(icon(option.icon()), Component.translatable(option.name()),
                 flow.line(EditorRegion.ASIDE.rowHeight()),
-                () -> OptionChoices.isOn(option, editor.shown().preset().options()),
+                () -> OptionChoices.isOn(option, editor.shown().preset().options()) != option.inverted(),
                 () -> turnOver(editor, option, installed), () -> true,
                 () -> List.of(Component.translatable(option.description())));
     }

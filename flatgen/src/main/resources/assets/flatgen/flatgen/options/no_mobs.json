@@ -1,7 +1,8 @@
 {
-  "icon": { "texture": "flatgen:textures/gui/sprites/icon/no_mobs.png" },
+  "icon": { "texture": "flatgen:textures/gui/sprites/icon/mobs.png" },
   "group": "flatgen:mobs",
   "group_icon": "minecraft:zombie_head",
+  "inverted": true,
   "effects": [
     { "type": "game_rule", "rule": "doMobSpawning", "value": false }
   ]

@@ -50,10 +50,14 @@ class FlatgenOptionFilesTest {
         assertEquals("option.flatgen.no_mobs", option.name());
     }
 
-    /** No mobs shows a zombie under the "no" sign, and its group's heading the zombie's head (F16). */
+    /**
+     * No mobs is shown the other way round, a switch of a zombie on while mobs spawn, so a player who cannot read sees
+     * mobs on as the world has them; its group's heading shows the zombie's head (F16).
+     */
     @Test
-    void noMobsShowsFlatgensOwnPictureUnderTheZombiesHead() throws IOException {
+    void noMobsShowsMobsSpawningTheOtherWayRound() throws IOException {
         WorldOption option = read("no_mobs");
+        assertTrue(option.inverted() && !option.defaultOn());
         assertTrue(option.icon().texture() && Files.exists(texture(option.icon().id())));
         assertEquals(new WorldOption.Icon("minecraft:zombie_head", false), option.groupIcon().orElseThrow());
     }
