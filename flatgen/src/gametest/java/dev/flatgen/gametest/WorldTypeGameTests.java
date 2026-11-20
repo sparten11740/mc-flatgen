@@ -23,8 +23,8 @@ import net.minecraft.world.level.levelgen.presets.WorldPreset;
 
 /**
  * The world types Flatgen edits besides Superflat (F18, F25): those it can edit whole, told from the game's and from
- * the fixture's, one with a flat overworld only, one with every dimension flat and one that changes the End some other
- * way; and those flat beyond the overworld, which the library offers as presets.
+ * the fixture's, one with a flat overworld only, one with every dimension flat, one that changes the End some other way
+ * and one with a flat Nether but such an End; and those flat beyond the overworld, which the library offers as presets.
  */
 final class WorldTypeGameTests {
     private WorldTypeGameTests() {
@@ -46,6 +46,10 @@ final class WorldTypeGameTests {
         expect(registries, "minecraft:normal", false);
         expect(registries, "minecraft:large_biomes", false);
         expect(registries, "flatgen_fixture:end_sea", false);
+        expect(registries, "flatgen_fixture:flat_nether_end_sea", false);
+        //? if >=26.2 {
+        /*expect(registries, "minecraft:flat_all_dimensions", true);
+        *///?}
     }
 
     private static void presets(GameTestHelper helper) {
