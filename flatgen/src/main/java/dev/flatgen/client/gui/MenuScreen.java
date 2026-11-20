@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -27,7 +28,8 @@ public final class MenuScreen extends FlatgenScreen {
     private static final int BELOW = 2;
 
     private final Screen parent;
-    private final Rect button;
+    /** Where the button that opened the menu is now, as the screen behind lays it out again when the window changes. */
+    private final Supplier<Rect> button;
     private final List<List<Row>> groups;
     /** The panel as last laid out, outside which a click closes the menu. */
     private Rect panel = new Rect(0, 0, 0, 0);
@@ -42,9 +44,9 @@ public final class MenuScreen extends FlatgenScreen {
     /**
      * A menu titled so, the narrator's name for it, under {@code button} on {@code parent}, of these groups of rows.
      *
-     * @param button where the button that opened it is, in GUI pixels
+     * @param button where the button that opened it is, in GUI pixels, as {@code parent} last laid it out
      */
-    public MenuScreen(Component title, Screen parent, Rect button, List<List<Row>> groups) {
+    public MenuScreen(Component title, Screen parent, Supplier<Rect> button, List<List<Row>> groups) {
         super(title);
         this.parent = parent;
         this.button = button;
@@ -72,8 +74,9 @@ public final class MenuScreen extends FlatgenScreen {
     protected List<Widget> layOut(int width, int height) {
         int rows = groups.stream().mapToInt(List::size).sum();
         int panelHeight = 2 * PADDING + rows * ROW + (groups.size() - 1) * SEPARATOR;
-        int x = Math.max(PageFrame.MARGIN, Math.min(button.right(), width - PageFrame.MARGIN) - WIDTH);
-        panel = new Rect(x, button.bottom() + BELOW, WIDTH, panelHeight);
+        Rect under = button.get();
+        int x = Math.max(PageFrame.MARGIN, Math.min(under.right(), width - PageFrame.MARGIN) - WIDTH);
+        panel = new Rect(x, under.bottom() + BELOW, WIDTH, panelHeight);
         List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.TOOLTIP, panel)));
         int y = panel.y() + PADDING;
         for (int index = 0; index < groups.size(); index++) {

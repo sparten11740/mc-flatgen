@@ -116,6 +116,8 @@ public final class LibraryScreen extends FlatgenScreen {
     private TextField nameField;
     private String query = "";
     private CardGrid grid;
+    /** The menu's button as last laid out, which the menu opens under. */
+    private Rect moreButton = new Rect(0, 0, 0, 0);
     /** What the last share, paste or import said; nothing before one. */
     private Component message = Component.empty();
 
@@ -165,6 +167,7 @@ public final class LibraryScreen extends FlatgenScreen {
         int searchX = titleX + titleWidth + 2 * GAP;
         Rect more = new Rect(width - PageFrame.MARGIN - PictureButton.SIZE, top, PictureButton.SIZE,
                 PictureButton.SIZE);
+        moreButton = more;
         Component saveLabel = Component.translatable("flatgen.library.save_new");
         int saveWidth = TextButton.width(textWidth(saveLabel));
         Rect save = new Rect(more.x() - GAP - saveWidth, top, saveWidth, PictureButton.SIZE);
@@ -176,7 +179,7 @@ public final class LibraryScreen extends FlatgenScreen {
                         Component.translatable("flatgen.library.search"), query, this::search),
                 new TextButton(Icon.badged(BOOK_TO_WRITE, "badge_plus"), () -> saveLabel, save, this::saveNew,
                         () -> true, () -> List.of(Component.translatable("flatgen.library.save_new_tip"))),
-                new PictureButton(Icon.line("more"), more, () -> openMenu(more),
+                new PictureButton(Icon.line("more"), more, this::openMenu,
                         () -> List.of(Component.translatable("flatgen.library.more"))));
     }
 
@@ -255,8 +258,8 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     /** Opens the menu of the rest under its button: pasting and the folder, the exports, the library's settings. */
-    private void openMenu(Rect button) {
-        Screens.show(new MenuScreen(Component.translatable("flatgen.library.more"), this, button,
+    private void openMenu() {
+        Screens.show(new MenuScreen(Component.translatable("flatgen.library.more"), this, () -> moreButton,
                 List.of(fileRows(), exportRows(), settingRows())));
     }
 
