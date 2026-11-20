@@ -321,10 +321,10 @@ public final class TemplatesScreen extends FlatgenScreen {
                     step(number, Icon.line("plus"), "flatgen.templates.raise", 1, raise)));
         }
 
-        /** A button stepping a number by this much, kept within its range. */
+        /** A button stepping a number by this much, greyed where its range ends. */
         private PictureButton step(Parameter.Number number, Icon icon, String key, int by, Rect where) {
-            return new PictureButton(icon, where,
-                    () -> values = values.with(number, number.within(values.number(number) + by)),
+            return new PictureButton(icon, where, () -> values = values.with(number, values.number(number) + by),
+                    () -> number.within(values.number(number) + by) != values.number(number),
                     () -> List.of(Component.translatable(key), Component.translatable(number.name(),
                             values.number(number))));
         }
