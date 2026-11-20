@@ -2,21 +2,21 @@ package dev.flatgen.library.client;
 
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.CardGrid;
-import dev.flatgen.client.gui.CycleButton;
+import dev.flatgen.client.gui.Caption;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
+import dev.flatgen.client.gui.MenuItem;
+import dev.flatgen.client.gui.MenuScreen;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
-import dev.flatgen.client.gui.TextLines;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
-import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -33,6 +33,7 @@ import dev.flatgen.mc.Clipboard;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.Screens;
 import dev.flatgen.mc.SystemFiles;
+import dev.flatgen.platform.ClientPlatform;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
@@ -40,43 +41,54 @@ import dev.flatgen.preset.rules.PresetJson;
 import dev.flatgen.search.rules.Search;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 
 /**
- * The preset library (F11), opened from the editor: the player's saved presets as cards (a small picture of the column,
- * the top block's icon and the name; a barrier on one naming parts the game lacks or that cannot be read). The editor's
- * preset can be saved as a new preset or over one; a card picked can be applied (a step to undo), renamed, duplicated
- * or deleted. Overwriting, deleting and applying one with missing parts ask first.
+ * The preset library (F11), opened from the editor, as round 3 of docs/design/simple-editor.md drew it: a header with
+ * Back, a search, saving the editor's preset as a new one and a menu of the rest (pasting, the folder, the exports and
+ * the library's settings); the player's presets and the built-in ones as cards, each its layers standing in the sky
+ * over its name (a barrier on one naming parts the game lacks or that cannot be read, a bed on the default); and a
+ * footer for the card picked: its name to change, renaming, copying, sharing, the default, saving over, deleting and
+ * Use (a step to undo). Saving over, deleting and using one with missing parts ask first.
  */
 public final class LibraryScreen extends FlatgenScreen {
-    /** A row of controls, in GUI pixels. */
-    private static final int ROW_HEIGHT = 20;
-    private static final int GAP = 4;
-    private static final int NAME_WIDTH = 100;
-    /** Space keeping Save over and Delete, which cannot be undone, apart from the other buttons, in GUI pixels. */
-    private static final int DANGER_GAP = 8;
-    /** A card's size, and the size of its column picture, in GUI pixels. */
-    private static final int CARD_WIDTH = 64;
-    private static final int CARD_HEIGHT = 64;
-    private static final int PICTURE_WIDTH = 16;
-    private static final int PICTURE_HEIGHT = 40;
-    private static final int PADDING = 4;
+    /** Space between the header's and the footer's parts, in GUI pixels. */
+    private static final int GAP = 6;
+    /** Widths in GUI pixels: the search field and the field of the picked preset's name. */
+    private static final int SEARCH_WIDTH = 130;
+    private static final int NAME_WIDTH = 110;
+    /** A card's least width and its height, in GUI pixels: eight across the narrowest screen. */
+    private static final int CARD_WIDTH = 70;
+    private static final int CARD_HEIGHT = 80;
+    /** The sky on a card, the layers standing in it, and the space above the sky, in GUI pixels. */
+    private static final int SKY_WIDTH = 32;
+    private static final int SKY_HEIGHT = 40;
+    private static final int TOWER_WIDTH = 13;
+    private static final int TOWER_HEIGHT = 28;
+    private static final int CARD_TOP = 6;
+    /** Space between a card and the next, which its panel leaves at each side, in GUI pixels. */
+    private static final int CARD_INSET = 2;
+    /** Space between a card's sky, name and source, and around a source's words on its chip, in GUI pixels. */
+    private static final int CARD_SPACING = 3;
+    private static final int CHIP_PADDING = 4;
+    /** The colour of the sky on a card, ARGB: the overworld's. */
+    private static final int SKY = 0xFF9CC3F7;
+    /** The picked preset's layers in the footer, in GUI pixels. */
+    private static final int PICKED_WIDTH = 7;
+    private static final int PICKED_HEIGHT = 16;
     /** The mark of the default preset, the one Superflat starts with. */
     private static final Icon DEFAULT = Icon.item("minecraft:red_bed");
-    /** The mark of a built-in preset, which can be used and copied but not changed. */
+    /** A book, which stands for the built-in presets in the setting of which of them show. */
     private static final Icon BUILT_IN = Icon.item("minecraft:book");
-    /**
-     * The width of a switch, in GUI pixels: its picture, its name and its box, the German "Mit Flachland starten" the
-     * longest; two fill the narrowest screen's 296 pixels between the margins.
-     */
-    private static final int TOGGLE_WIDTH = 146;
     /** A preset of the player's own, written in: with a plus, saved as a new one; with a circular arrow, over one. */
     private static final Icon BOOK_TO_WRITE = Icon.item("minecraft:writable_book");
     /** Saving over a preset and deleting one, which cannot be undone, on their buttons and their questions. */
@@ -92,15 +104,18 @@ public final class LibraryScreen extends FlatgenScreen {
     private final PresetStore store;
     private Choices choices;
     private List<PresetLibrary.Entry> entries = List.of();
-    /** The grid's sections, and the presets they were made for. */
+    /** The grid's sections, and the presets and the search they were made for. */
     private List<CardGrid.Section> sections = List.of();
-    private List<PresetLibrary.Entry> sectionsFor;
+    private List<Object> sectionsFor;
     /** The parts each preset names that the game lacks, by file, worked out as the presets are read. */
     private final Map<String, MissingIds> missing = new HashMap<>();
     /** The file of the card picked; none before one is. */
     private Optional<String> picked = Optional.empty();
+    /** What the picked preset's name field holds. */
     private String name = "";
     private TextField nameField;
+    private String query = "";
+    private CardGrid grid;
     /** What the last share, paste or import said; nothing before one. */
     private Component message = Component.empty();
 
@@ -111,33 +126,29 @@ public final class LibraryScreen extends FlatgenScreen {
         this.store = PresetStore.player();
         this.choices = ChoicesFile.read();
         reload();
-        this.name = PresetLibrary.newName(Component.translatable("flatgen.library.new_name").getString(), names());
     }
 
+    /** The header, the cards with what the last action said under them, and the footer of the card picked. */
     @Override
     protected List<Widget> layOut(int width, int height) {
         PageFrame frame = new PageFrame(width, height);
         Rect body = frame.body();
-        FlowLayout rows = new FlowLayout(new Rect(body.x(), body.y(), body.width(), 0), ROW_HEIGHT, GAP);
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new WidgetGroup(nameRow(rows)));
-        rows.newRow();
-        widgets.add(new WidgetGroup(actionRow(rows)));
-        rows.newRow();
-        widgets.add(new WidgetGroup(switchRow(rows)));
-        widgets.add(new TextLines(rows.line(font.lineHeight), () -> List.of(message)));
-        int gridTop = rows.bottom() + GAP;
-        widgets.add(new CardGrid(new Rect(body.x(), gridTop, body.width(), body.bottom() - gridTop), CARD_WIDTH,
+        int line = TextStyle.BODY.lineHeight();
+        List<Widget> widgets = new ArrayList<>(header(width));
+        grid = new CardGrid(new Rect(body.x(), body.y(), body.width(), body.height() - line - GAP), CARD_WIDTH,
                 CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
-                file -> choose(choices.toggleFavourite(file))));
-        List<Rect> actions = frame.actions(actionWidth(Component.translatable("flatgen.library.back")),
-                actionWidth(Component.translatable("flatgen.library.apply")));
-        widgets.add(new TextButton(Icon.BACK, Component.translatable("flatgen.library.back"), actions.get(0),
-                this::onClose));
-        widgets.add(new TextButton(Icon.line("check"), () -> Component.translatable("flatgen.library.apply"),
-                actions.get(1), this::apply, () -> pickedPreset().isPresent(),
-                () -> List.of(Component.translatable("flatgen.library.apply_tip"))).kind(Look.ButtonKind.PRIMARY));
+                file -> choose(choices.toggleFavourite(file)));
+        widgets.add(grid);
+        widgets.add(new Caption(() -> message, new Rect(body.x(), body.bottom() - line, body.width(), line),
+                TextStyle.BODY, Look.MUTED));
+        widgets.addAll(footer(frame));
         return widgets;
+    }
+
+    /** Nothing but the frame's lines: the title is a widget after Back. */
+    @Override
+    protected void drawBehind(Canvas canvas) {
+        drawFrameLines(canvas);
     }
 
     @Override
@@ -145,62 +156,150 @@ public final class LibraryScreen extends FlatgenScreen {
         Screens.show(editor.screen());
     }
 
-    /** The first row, an area of its own: the name, saving and renaming, then Use and Back. */
-    private List<Widget> nameRow(FlowLayout rows) {
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Label(Icon.item("minecraft:name_tag"), Component.empty(), rows.next(Icon.SIZE)));
-        nameField = new TextField("name", rows.next(NAME_WIDTH), Component.translatable("flatgen.library.name"), name,
+    /** Back, the title and the search at the left; saving as new and the menu of the rest at the right. */
+    private List<Widget> header(int width) {
+        int top = (PageFrame.HEADER - PictureButton.SIZE) / 2;
+        Rect back = new Rect(PageFrame.MARGIN, top, PictureButton.SIZE, PictureButton.SIZE);
+        int titleX = back.right() + GAP;
+        int titleWidth = textWidth(getTitle(), TextStyle.TITLE);
+        Rect glass = new Rect(titleX + titleWidth + 2 * GAP, top, Icon.SIZE, PictureButton.SIZE);
+        Rect more = new Rect(width - PageFrame.MARGIN - PictureButton.SIZE, top, PictureButton.SIZE,
+                PictureButton.SIZE);
+        Component saveLabel = Component.translatable("flatgen.library.save_new");
+        int saveWidth = TextButton.width(textWidth(saveLabel));
+        Rect save = new Rect(more.x() - GAP - saveWidth, top, saveWidth, PictureButton.SIZE);
+        int searchWidth = Math.min(SEARCH_WIDTH, save.x() - 2 * GAP - glass.right());
+        return List.of(new PictureButton(Icon.BACK, back, this::onClose,
+                        () -> List.of(Component.translatable("flatgen.library.back"))),
+                new Caption(this::getTitle, new Rect(titleX, 0, titleWidth, PageFrame.HEADER), TextStyle.TITLE,
+                        Look.TEXT),
+                new WidgetGroup(List.of(new Label(Icon.item("minecraft:spyglass"), Component.empty(), glass),
+                        new TextField("search", new Rect(glass.right() + GAP / 2, top, searchWidth, PictureButton.SIZE),
+                                Component.translatable("flatgen.library.search"), query, this::search))),
+                new TextButton(Icon.badged(BOOK_TO_WRITE, "badge_plus"), () -> saveLabel, save, this::saveNew,
+                        () -> true, () -> List.of(Component.translatable("flatgen.library.save_new_tip"))),
+                new PictureButton(Icon.line("more"), more, () -> openMenu(more),
+                        () -> List.of(Component.translatable("flatgen.library.more"))));
+    }
+
+    /**
+     * The card picked, its layers and its name to change, at the left; what can be done with it at the right, Use
+     * last, the others showing their pictures alone when their words do not fit.
+     */
+    private List<Widget> footer(PageFrame frame) {
+        Rect row = frame.footerRow();
+        int footerTop = frame.height() - PageFrame.FOOTER;
+        int line = TextStyle.BODY.lineHeight();
+        int pickedTop = footerTop + (PageFrame.FOOTER - line - row.height()) / 2;
+        Rect layers = new Rect(row.x(), footerTop + (PageFrame.FOOTER - PICKED_HEIGHT) / 2, PICKED_WIDTH,
+                PICKED_HEIGHT);
+        Rect field = new Rect(layers.right() + GAP, pickedTop + line, NAME_WIDTH, row.height());
+        nameField = new TextField("name", field, Component.translatable("flatgen.library.name"), name,
                 text -> name = text);
-        widgets.add(nameField);
-        widgets.add(picture(Icon.badged(BOOK_TO_WRITE, "badge_plus"), "flatgen.library.save_new",
-                "flatgen.library.save_new_tip", rows, this::saveNew, () -> !name.isBlank()));
-        widgets.add(picture(Icon.item("minecraft:anvil"), "flatgen.library.rename", "flatgen.library.rename_tip", rows,
-                this::rename, () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()));
+        List<Widget> widgets = new ArrayList<>(List.of((canvas, mouseX, mouseY) -> drawPickedLayers(canvas, layers),
+                new Caption(() -> Component.translatable("flatgen.library.is_picked"), new Rect(field.x(), pickedTop,
+                        NAME_WIDTH, line), TextStyle.BODY, Look.MUTED), nameField));
+        widgets.addAll(actions(frame, row.right() - field.right() - 2 * GAP));
+        return widgets;
+    }
+
+    /** What can be done with the card picked, in this much room, Use last. */
+    private List<Widget> actions(PageFrame frame, int room) {
+        List<Action> actions = List.of(
+                new Action(Icon.item("minecraft:anvil"), "flatgen.library.rename", "flatgen.library.rename_tip",
+                        this::rename,
+                        () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()),
+                new Action(Icon.badged(this::drawPickedIcon, "badge_copy"), "flatgen.library.duplicate",
+                        "flatgen.library.duplicate_tip", this::duplicate, () -> pickedPreset().isPresent()),
+                new Action(Icon.TO_CLIPBOARD, "flatgen.library.share", "flatgen.library.share_tip", this::share,
+                        () -> pickedPreset().isPresent()),
+                new Action(SAVE_OVER, "flatgen.library.overwrite", "flatgen.library.overwrite_tip", this::overwrite,
+                        this::pickedIsPlayers),
+                new Action(DELETE, "flatgen.library.delete", "flatgen.library.delete_tip", this::delete,
+                        this::pickedIsPlayers));
+        Component defaultLabel = Component.translatable("flatgen.library.default");
+        Component useLabel = Component.translatable("flatgen.library.apply");
+        int toggleWidth = Toggle.width(textWidth(defaultLabel));
+        int useWidth = actionWidth(useLabel);
+        int[] widths = actions.stream().mapToInt(action -> TextButton.width(textWidth(action.label()))).toArray();
+        if (IntStream.of(widths).sum() + toggleWidth + useWidth + (actions.size() + 1) * GAP > room) {
+            Arrays.fill(widths, PictureButton.SIZE);
+        }
+        List<Rect> places = frame.actions(IntStream.concat(IntStream.of(widths), IntStream.of(toggleWidth, useWidth))
+                .toArray());
+        List<Widget> widgets = new ArrayList<>();
+        for (int index = 0; index < actions.size(); index++) {
+            widgets.add(actions.get(index).button(places.get(index)));
+        }
+        widgets.add(new Toggle(DEFAULT, defaultLabel, places.get(actions.size()),
+                () -> picked.isPresent() && picked.equals(choices.defaultFile()),
+                () -> choose(choices.toggleDefault(picked.get())), () -> pickedPreset().isPresent(),
+                () -> List.of(Component.translatable("flatgen.library.default_tip"))));
+        widgets.add(new TextButton(Icon.line("check"), () -> useLabel, places.get(actions.size() + 1), this::apply,
+                () -> pickedPreset().isPresent(), () -> List.of(Component.translatable("flatgen.library.apply_tip")))
+                .kind(Look.ButtonKind.PRIMARY));
         return widgets;
     }
 
     /**
-     * The second row: copying, sharing, pasting, the folder, exports for a server and as a datapack, the built-ins,
-     * then what cannot be undone.
+     * One of the footer's buttons for the card picked: its picture, the translation keys of its name and of what it
+     * does, which its tooltip says, what it does and whether it can now.
      */
-    private List<Widget> actionRow(FlowLayout rows) {
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(picture(Icon.badged(this::drawPicked, "badge_copy"), "flatgen.library.duplicate",
-                "flatgen.library.duplicate_tip", rows, this::duplicate, () -> pickedPreset().isPresent()));
-        widgets.add(picture(Icon.TO_CLIPBOARD, "flatgen.library.share", "flatgen.library.share_tip", rows, this::share,
-                () -> pickedPreset().isPresent()));
-        widgets.add(picture(Icon.FROM_CLIPBOARD, "flatgen.library.paste", "flatgen.library.paste_tip", rows,
-                this::paste, () -> true));
-        widgets.add(picture(Icon.own("folder"), "flatgen.library.folder", "flatgen.library.folder_tip", rows,
-                () -> SystemFiles.openFolder(store.folder()), () -> true));
-        widgets.add(picture(Icon.own("server"), "flatgen.library.server", "flatgen.library.server_tip", rows,
-                this::server, () -> pickedPreset().isPresent()));
-        widgets.add(picture(Icon.item("minecraft:bundle"), "flatgen.library.datapack", "flatgen.library.datapack_tip",
-                rows, this::datapack, () -> pickedPreset().isPresent()));
-        widgets.add(new CycleButton(BUILT_INS, () -> choices.builtIns().ordinal(),
-                rows.next(CycleButton.width(BUILT_INS.size())), () -> choose(choices.nextBuiltIns()),
-                () -> List.of(Component.translatable(builtInsName(choices.builtIns())),
-                        Component.translatable("flatgen.library.built_ins_tip"))));
-        rows.next(DANGER_GAP);
-        widgets.add(picture(SAVE_OVER, "flatgen.library.overwrite", "flatgen.library.overwrite_tip", rows,
-                this::overwrite, this::pickedIsPlayers));
-        widgets.add(picture(DELETE, "flatgen.library.delete", "flatgen.library.delete_tip", rows, this::delete,
-                this::pickedIsPlayers));
-        return widgets;
+    private record Action(Icon icon, String key, String tipKey, Runnable run, BooleanSupplier usable) {
+        Component label() {
+            return Component.translatable(key);
+        }
+
+        TextButton button(Rect place) {
+            return new TextButton(icon, this::label, place, run, usable,
+                    () -> List.of(label(), Component.translatable(tipKey)));
+        }
     }
 
-    /** The third row: the default and starting on Superflat. */
-    private List<Widget> switchRow(FlowLayout rows) {
-        List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Toggle(DEFAULT, Component.translatable("flatgen.library.default"), rows.next(TOGGLE_WIDTH),
-                () -> picked.isPresent() && picked.equals(choices.defaultFile()),
-                () -> choose(choices.toggleDefault(picked.get())), () -> pickedPreset().isPresent(),
-                () -> List.of(Component.translatable("flatgen.library.default_tip"))));
-        widgets.add(new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"),
-                rows.next(TOGGLE_WIDTH), () -> choices.startOnSuperflat(),
-                () -> choose(choices.toggleStartOnSuperflat()), () -> true,
-                () -> List.of(Component.translatable("flatgen.library.start_tip"))));
-        return widgets;
+    /** Opens the menu of the rest under its button: pasting and the folder, the exports, the library's settings. */
+    private void openMenu(Rect button) {
+        Screens.show(new MenuScreen(Component.translatable("flatgen.library.more"), this, button,
+                List.of(fileRows(), exportRows(), settingRows())));
+    }
+
+    /** The menu's rows for adding presets: pasting one, and the folder to drop files in. */
+    private List<MenuScreen.Row> fileRows() {
+        return List.of(menuAction(Icon.FROM_CLIPBOARD, "flatgen.library.paste", "flatgen.library.paste_tip",
+                        this::paste, () -> true),
+                menuAction(Icon.own("folder"), "flatgen.library.folder", "flatgen.library.folder_tip",
+                        () -> SystemFiles.openFolder(store.folder()), () -> true));
+    }
+
+    /** The menu's rows for the picked preset's exports: the server's lines and a datapack. */
+    private List<MenuScreen.Row> exportRows() {
+        return List.of(menuAction(Icon.own("server"), "flatgen.library.server", "flatgen.library.server_tip",
+                        this::server, () -> pickedPreset().isPresent()),
+                menuAction(Icon.item("minecraft:bundle"), "flatgen.library.datapack", "flatgen.library.datapack_tip",
+                        this::datapack, () -> pickedPreset().isPresent()));
+    }
+
+    /** The menu's rows for the library's settings, which keep it open: starting on Superflat, the built-ins shown. */
+    private List<MenuScreen.Row> settingRows() {
+        return List.of(MenuScreen.staying(this::startSwitch), MenuScreen.staying(this::builtInsRow));
+    }
+
+    private Toggle startSwitch(Rect place) {
+        return new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"), place,
+                () -> choices.startOnSuperflat(), () -> choose(choices.toggleStartOnSuperflat()), () -> true,
+                () -> List.of(Component.translatable("flatgen.library.start_tip")));
+    }
+
+    /** The built-ins setting: its picture and name as it is now; a click shows the next. */
+    private MenuItem builtInsRow(Rect place) {
+        return new MenuItem(this::drawBuiltIns, () -> Component.translatable(builtInsName(choices.builtIns())), place,
+                () -> choose(choices.nextBuiltIns()), () -> true,
+                () -> List.of(Component.translatable("flatgen.library.built_ins_tip")));
+    }
+
+    /** A row of the menu that closes it and does something, its tooltip its name and what it does, by their keys. */
+    private static MenuScreen.Row menuAction(Icon icon, String key, String tipKey, Runnable action,
+            BooleanSupplier usable) {
+        return MenuScreen.action(icon, Component.translatable(key), Component.translatable(tipKey), usable, action);
     }
 
     /** The built-ins setting's name for a state, by its translation key. */
@@ -212,37 +311,49 @@ public final class LibraryScreen extends FlatgenScreen {
         };
     }
 
-    /** A picture button, its tooltip its name and what it does, by their translation keys. */
-    private static PictureButton picture(Icon icon, String name, String tip, FlowLayout rows, Runnable action,
-            BooleanSupplier usable) {
-        return new PictureButton(icon, rows.next(PictureButton.SIZE), action, usable,
-                () -> List.of(Component.translatable(name), Component.translatable(tip)));
+    /** Draws the built-ins setting's picture as it is now. */
+    private void drawBuiltIns(Canvas canvas, int x, int y) {
+        BUILT_INS.get(choices.builtIns().ordinal()).draw(canvas, x, y);
     }
 
     /** Draws the picked preset's picture; nothing before one is picked. */
-    private void drawPicked(Canvas canvas, int x, int y) {
+    private void drawPickedIcon(Canvas canvas, int x, int y) {
         pickedPreset().ifPresent(preset -> canvas.itemIcon(preset.icon(), x, y));
     }
 
+    /** Draws the picked preset's layers in the footer; nothing before one is picked. */
+    private void drawPickedLayers(Canvas canvas, Rect area) {
+        pickedPreset().ifPresent(preset -> ColumnPicture.draw(canvas, preset.layers(),
+                Biomes.waterColor(preset.biome(), editor.registries()), area));
+    }
+
     /**
-     * The grid's sections, the player's own presets, then the built-in ones, each in the library's order and left out
-     * when empty; made again only when the presets are read again, so the grid keeps its place.
+     * The grid's sections, the player's own presets, then the built-in ones, each in the library's order, narrowed to
+     * what is searched for and left out when empty; made again only when the presets are read again or the search
+     * changes, so the grid keeps its place.
      */
     private List<CardGrid.Section> sections() {
-        if (sectionsFor != entries) {
-            sectionsFor = entries;
-            sections = Stream.of(section("flatgen.library.presets", true),
-                    section("flatgen.library.built_in_presets", false))
+        List<Object> key = List.of(entries, query);
+        if (!key.equals(sectionsFor)) {
+            sectionsFor = key;
+            sections = Stream.of(section("flatgen.library.presets", "flatgen.library.presets_where", true),
+                    section("flatgen.library.built_in_presets", "flatgen.library.built_in_where", false))
                     .filter(section -> !section.entries().isEmpty()).toList();
         }
         return sections;
     }
 
-    /** The section of the player's own presets, or of the built-in ones, under its heading. */
-    private CardGrid.Section section(String heading, boolean players) {
-        return new CardGrid.Section(Component.translatable(heading), entries.stream()
-                .filter(entry -> entry.isPlayers() == players)
-                .map(entry -> new Search.Entry(entry.key(), entry.name(), "")).toList());
+    /** The section of the player's own presets, or of the built-in ones, under its heading and where they are from. */
+    private CardGrid.Section section(String heading, String detail, boolean players) {
+        List<Search.Entry> cards = entries.stream().filter(entry -> entry.isPlayers() == players)
+                .map(entry -> new Search.Entry(entry.key(), entry.name(), entry.namespace().orElse(""))).toList();
+        return new CardGrid.Section(Component.translatable(heading), Component.translatable(detail),
+                query.isBlank() ? cards : Search.find(cards, query));
+    }
+
+    private void search(String text) {
+        query = text;
+        grid.toTop();
     }
 
     private void pick(String file) {
@@ -250,8 +361,10 @@ public final class LibraryScreen extends FlatgenScreen {
         entry(file).ifPresent(entry -> nameField.show(entry.name()));
     }
 
+    /** Saves the editor's preset as a new one under a name of its own, picked so it can be renamed at once. */
     private void saveNew() {
-        saved(store.saveNew(editor.shown().preset().withTopBlockIcon().withName(name.strip())))
+        String newName = PresetLibrary.newName(Component.translatable("flatgen.library.new_name").getString(), names());
+        saved(store.saveNew(editor.shown().preset().withTopBlockIcon().withName(newName)))
                 .ifPresent(this::reloadPicking);
     }
 
@@ -433,36 +546,55 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     /**
-     * A preset's card: its column, its icon and its name, a barrier when it is broken or names missing parts; its
-     * tooltip, and so the narrator, says in words what its marks show: picked, the default, built in.
+     * A preset's card: its layers standing in the sky, a bed on the default and a barrier when it is broken or names
+     * missing parts, its name, and for a built-in the mod or pack it comes from; its tooltip, and so the narrator, says
+     * in words what its marks show: picked, the default, built in.
      */
     private final class Cards implements CardGrid.Cards {
         @Override
-        public void draw(Canvas canvas, Search.Entry card, Rect place) {
-            if (picked.filter(card.id()::equals).isPresent()) {
-                canvas.sprite(Look.CHOSEN, place);
-            }
+        public void draw(Canvas canvas, Search.Entry card, Rect cell) {
+            Rect place = new Rect(cell.x() + CARD_INSET, cell.y() + CARD_INSET, cell.width() - 2 * CARD_INSET,
+                    cell.height() - 2 * CARD_INSET);
+            canvas.sprite(picked.filter(card.id()::equals).isPresent() ? Look.CHOSEN : Look.PANEL, place);
             Optional<PresetLibrary.Entry> entry = entry(card.id());
             Optional<Preset> preset = entry.flatMap(PresetLibrary.Entry::preset);
-            int x = place.x() + PADDING;
-            int y = place.y() + PADDING;
+            Rect sky = new Rect(place.x() + (place.width() - SKY_WIDTH) / 2, place.y() + CARD_TOP, SKY_WIDTH,
+                    SKY_HEIGHT);
+            canvas.fill(sky, SKY);
+            Rect tower = new Rect(sky.x() + (SKY_WIDTH - TOWER_WIDTH) / 2, sky.bottom() - TOWER_HEIGHT, TOWER_WIDTH,
+                    TOWER_HEIGHT);
             preset.ifPresent(found -> ColumnPicture.draw(canvas, found.layers(),
-                    Biomes.waterColor(found.biome(), editor.registries()), new Rect(x, y, PICTURE_WIDTH,
-                            PICTURE_HEIGHT)));
-            preset.ifPresent(found -> canvas.itemIcon(found.icon(), x + PICTURE_WIDTH + PADDING, y));
-            int markX = x + PICTURE_WIDTH + Icon.SIZE + 2 * PADDING;
+                    Biomes.waterColor(found.biome(), editor.registries()), tower));
+            drawMarks(canvas, card, preset, place, sky);
+            Rect name = new Rect(place.x() + CARD_SPACING, sky.bottom() + CARD_SPACING,
+                    place.width() - 2 * CARD_SPACING, TextStyle.BODY.lineHeight());
+            canvas.centeredText(canvas.fitted(Component.literal(card.name()), name.width(), TextStyle.BODY), name,
+                    Look.TEXT);
+            if (!card.namespace().isEmpty()) {
+                drawSource(canvas, Component.literal(ClientPlatform.get().modName(card.namespace())), place,
+                        name.bottom() + CARD_SPACING);
+            }
+        }
+
+        /** A bed on the default preset's card, at its top left; a barrier on the sky of one broken or lacking parts. */
+        private void drawMarks(Canvas canvas, Search.Entry card, Optional<Preset> preset, Rect place, Rect sky) {
             if (choices.defaultFile().filter(card.id()::equals).isPresent()) {
-                DEFAULT.draw(canvas, markX, y);
+                DEFAULT.draw(canvas, place.x() + CARD_SPACING, place.y() + CARD_SPACING);
             }
-            if (entry.filter(found -> !found.isPlayers()).isPresent()) {
-                BUILT_IN.draw(canvas, markX, y + Icon.SIZE + PADDING);
+            if (preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty()) {
+                Icon.MISSING.draw(canvas, sky.x() + (SKY_WIDTH - Icon.SIZE) / 2, sky.y() + CARD_SPACING);
             }
-            boolean warned = preset.isEmpty() || !missing.getOrDefault(card.id(), MissingIds.NONE).isEmpty();
-            if (warned) {
-                Icon.MISSING.draw(canvas, x + PICTURE_WIDTH + PADDING, y + Icon.SIZE + PADDING);
-            }
-            canvas.text(canvas.fitted(Component.literal(card.name()), place.width() - 2 * PADDING, TextStyle.BODY), x,
-                    y + PICTURE_HEIGHT + PADDING, Look.TEXT);
+        }
+
+        /** The mod or pack a built-in comes from, on a chip in the middle of the card from this height. */
+        private void drawSource(Canvas canvas, Component source, Rect place, int top) {
+            int most = place.width() - 2 * CARD_SPACING;
+            Component fitted = canvas.fitted(source, most - 2 * CHIP_PADDING, TextStyle.BODY);
+            int chipWidth = Math.min(most, canvas.textWidth(fitted, TextStyle.BODY) + 2 * CHIP_PADDING);
+            Rect chip = new Rect(place.x() + (place.width() - chipWidth) / 2, top, chipWidth,
+                    TextStyle.BODY.lineHeight() + 2);
+            canvas.sprite(Look.CHIP, chip);
+            canvas.centeredText(fitted, chip, Look.MUTED);
         }
 
         @Override

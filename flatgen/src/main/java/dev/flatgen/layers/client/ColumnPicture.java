@@ -10,14 +10,15 @@ import java.util.List;
 public final class ColumnPicture {
     /** The thinnest a layer is drawn, in GUI pixels. */
     private static final int THINNEST_LAYER = 1;
-    private static final int BACKGROUND = 0xFF101010;
 
     private ColumnPicture() {
     }
 
-    /** Draws the layers, the bottom one lowest, filling this rectangle; water tinted with this colour. */
+    /**
+     * Draws the layers, the bottom one lowest, filling this rectangle; water tinted with this colour, and air left
+     * clear, showing what is behind, such as a card's sky.
+     */
     public static void draw(Canvas canvas, List<Layer> layers, int fluidColor, Rect area) {
-        canvas.fill(area, BACKGROUND);
         if (layers.isEmpty()) {
             return;
         }

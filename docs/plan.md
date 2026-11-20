@@ -106,13 +106,14 @@ unchanged on every version.
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
 biome pickers, the block picker as its one-grid `GridPickerScreen`; the grid also the preset library), `Toggle` (world
 options, structures, templates), `PictureButton`, `PictureTab` (the editor's dimensions), `Badge` (facts), `Slider`
-(templates), `CycleButton` (a setting of a few states, with its pips), `QuestionScreen` (asking before what cannot be
-undone), `Icon` with Flatgen's own pictures (`tools/sprites.py`) and the look's line drawings, `Label`, `Caption`,
-`Chip`, `Surface`, `TextField`, `TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the keys controls
-answer alike. Flatgen's screens count in GUI pixels of their own (`rules/LayoutScale`) and draw in one look: the colours
-and sprites of `Look`, the fonts of `TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md).
-The sprites are the game's GUI sprites; 1.20.1, which has none, draws them through `GuiSprites` in its tree, and its
-fonts are rewritten by the build (3.2).
+(templates), `CycleButton` (a setting of a few states, with its pips), `MenuScreen` and its `MenuItem` (a menu opened
+from a button, as the library's), `QuestionScreen` (asking before what cannot be undone), `Icon` with Flatgen's own
+pictures (`tools/sprites.py`) and the look's line drawings, `Label`, `Caption`, `Chip`, `Surface`, `TextField`,
+`TextLines`; `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike. Flatgen's screens
+count in GUI pixels of their own (`rules/LayoutScale`) and draw in one look: the colours and sprites of `Look`, the
+fonts of `TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md). The sprites are the game's
+GUI sprites; 1.20.1, which has none, draws them through `GuiSprites` in its tree, and its fonts are rewritten by the
+build (3.2).
 
 ### 3.4 Extension points
 

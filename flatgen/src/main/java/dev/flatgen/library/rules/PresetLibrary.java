@@ -22,6 +22,8 @@ public final class PresetLibrary {
     public static final String FILE_ENDING = ".json";
     /** The name a preset gets when it has none. */
     private static final String UNNAMED = "preset";
+    /** The parts of a built-in's key: its source, then its id's namespace and path, as game:minecraft:classic_flat. */
+    private static final int ID_PARTS = 3;
 
     private PresetLibrary() {
     }
@@ -71,6 +73,15 @@ public final class PresetLibrary {
         /** Whether it is the player's own, which they may rename, save over and delete; built-ins they may not. */
         public boolean isPlayers() {
             return kind.editable();
+        }
+
+        /**
+         * The namespace of a built-in's id, the mod's or pack's it comes from, as {@code minecraft}; none for the
+         * player's own.
+         */
+        public Optional<String> namespace() {
+            String[] parts = key.split(":", ID_PARTS);
+            return isPlayers() || parts.length < ID_PARTS ? Optional.empty() : Optional.of(parts[1]);
         }
     }
 

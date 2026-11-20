@@ -34,6 +34,13 @@ class PresetLibraryTest {
     }
 
     @Test
+    void aBuiltInComesFromItsIdsNamespaceAndThePlayersOwnFromNone() {
+        assertEquals(Optional.of("minecraft"), CLASSIC.namespace());
+        assertEquals(Optional.of("flatgen"), STARTER.namespace());
+        assertEquals(Optional.empty(), TALL.namespace());
+    }
+
+    @Test
     void ordersThePlayersOwnBeforeTheGamesAndThenPacks() {
         assertEquals(List.of(TALL, CLASSIC, STARTER), PresetLibrary.ordered(List.of(STARTER, CLASSIC, TALL), Set.of(),
                 List.of()));
