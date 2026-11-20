@@ -73,14 +73,16 @@ and fully qualified names alike, and fails on a reference against this table (F0
 
 - Stonecutter, set up as in Blockpilot: each node is `<minecraft>-<loader>`, built by `build.<loader>.gradle.kts`, with
   its versions in `flatgen/versions/<node>/gradle.properties`. The checked-in node is `1.21.1-neoforge`.
-- `src/main` is shared by every node. `src/<range>` (first `src/1.21.1`) is a version tree, serving its version up to
+- `src/main` is shared by every node. `src/<range>` (first `src/1.20.1`) is a version tree, serving its version up to
   the next tree's, for the classes that differ between versions. A class lives in `src/main` until a version built
   needs it to differ; then it moves into the trees, one copy per range, as each node reads one tree only. So that such
   a move stays small, the game's API that may change (world creation, drawing, input) is called from `mc/` and the
   GUI toolkit's base classes (3.3), not from features. Tree classes sit in the package they belong to and keep its
   dependency rules.
 - A plain rename between versions is a rename rule in `stonecutter.gradle.kts`, naming the release that introduced it;
-  a small difference is a `//? if` block; anything larger is a tree class.
+  a small difference is a `//? if` block; anything larger is a tree class. Resources whose format differs by release
+  are kept once, in the latest format, and the build adapts them for a node from its properties: 1.20.1's data packs
+  read structures from `structures/`, and its TrueType fonts need other sizes and shifts to look as they do later.
 - The GameTests (`src/gametest`) have no version trees: their loaders' glue, a whole different registration from 1.21.5
   on, is a `//? if` block as Glowline's is, the one place a difference that large is not a tree class.
 - Loader code lives in `platform/<loader>/`; each loader's build excludes the others' folders. Shared code names no

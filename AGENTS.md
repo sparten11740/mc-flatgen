@@ -2,7 +2,8 @@
 
 Flatgen is a Minecraft client mod that replaces the superflat customisation screen with a preset editor. One source
 tree builds it with Stonecutter, the setup of Blockpilot (github.com/sparten11740/mc-blockpilot), for each node
-`<minecraft>-<loader>`: v1 is `1.21.1-neoforge` and `1.21.1-fabric`. `docs/plan.md` is the plan and architecture;
+`<minecraft>-<loader>`: v1 is `1.21.1-neoforge` and `1.21.1-fabric`, and the ports add 1.20.1 on Forge and Fabric
+and 1.21.11, 26.1, 26.2 and 26.3 on NeoForge and Fabric. `docs/plan.md` is the plan and architecture;
 `docs/backlog/` is the work, one file per feature, worked through in its index's order; `README.md` is for players.
 
 ## Build and run
@@ -19,7 +20,7 @@ tree builds it with Stonecutter, the setup of Blockpilot (github.com/sparten1174
 - `settings.gradle.kts`: the nodes. `flatgen/stonecutter.gradle.kts`: loader constants and rename rules.
   `flatgen/build.<loader>.gradle.kts`: each loader's build; `flatgen/common.gradle.kts`: what every node does alike.
   `flatgen/versions/<node>/gradle.properties`: each node's versions.
-- `flatgen/src/main`: shared by every node. `flatgen/src/<range>` (first `1.21.1`): a version tree, serving its version
+- `flatgen/src/main`: shared by every node. `flatgen/src/<range>` (first `1.20.1`): a version tree, serving its version
   up to the next tree's, for the classes that differ between versions. A class moves there only when a version built
   needs it to differ (`docs/plan.md` 3.2).
 - Packages and the direction they may depend in: `docs/plan.md` 3.1. Each feature has its own package; its logic in
