@@ -228,7 +228,8 @@ def main():
         os.remove(os.path.join(OUT, name))
     for name, (fill, border, border_width, radius) in sorted(PANELS.items()):
         logical, size, pixels = draw_panel(fill, border, border_width, radius)
-        write(name, size, pixels, '{"type": "nine_slice", "width": %d, "height": %d, "border": %d}'
+        write(name, size, pixels,
+              '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}
     icons.update({name: (ICONS[source][0], ICONS[source][1], True) for name, source in MIRRORED.items()})

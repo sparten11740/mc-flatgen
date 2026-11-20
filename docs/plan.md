@@ -113,8 +113,9 @@ the templates), `QuestionScreen` (asking before what cannot be undone), `Icon` w
 `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike. Flatgen's screens count in GUI
 pixels of their own (`rules/LayoutScale`) and draw in one look: the colours and sprites of `Look`, the fonts of
 `TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md). The sprites are the game's GUI
-sprites; 1.20.1, which has none, draws them through `GuiSprites` in its tree, and its fonts are rewritten by the build
-(3.2).
+sprites; 1.20.1, which has none, and 1.21.1 draw them through `GuiSprites` in their trees, cut in nine and stretched, as
+1.21.1's own drawing tiles their edges and middles one draw call each, thousands a frame for a sheet, until 1.21.11
+batches them and stretches the middle (`stretch_inner`); and its fonts are rewritten by the build (3.2).
 
 ### 3.4 Extension points
 

@@ -135,13 +135,12 @@ final class McCanvas implements Canvas {
         Optional.ofNullable(ResourceLocation.tryParse(id)).ifPresent(sprite -> sprite(sprite, area));
     }
 
+    /** A sprite over an area: from 1.21.11 as the game draws it, before through {@link GuiSprites}, cut in nine. */
     private void sprite(ResourceLocation sprite, Rect area) {
         //? if >=1.21.11 {
         /*graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, area.x(), area.y(), area.width(), area.height());
-        *///?} else if >=1.21 {
-        graphics.blitSprite(sprite, area.x(), area.y(), area.width(), area.height());
-        //?} else
-        /*GuiSprites.draw(graphics, sprite, area);*/
+        *///?} else
+        GuiSprites.draw(graphics, sprite, area);
     }
 
     @Override
