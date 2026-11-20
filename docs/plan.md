@@ -24,7 +24,7 @@ Default, Amplified or other noise world types.
 
 1. **Own mod, not a fork of FlatEdit+.** FlatEdit+ on 1.21.1 is its oldest build, lacks favourites, defaults, biome
    facts and modded structures, needs BoxLib and is GPL-3.0; Flatgen is Apache-2.0 OR MIT like the owner's other mods.
-2. **The Customize button is the only way in.** One mixin both loaders share, at the return of
+2. **The Customize button is the only way in.** One mixin every loader shares, at the return of
    `WorldCreationUiState#getPresetEditor`, hands the game Flatgen's editor for Superflat and for mods' world types
    that are superflat underneath (F18); it took the place of NeoForge's `RegisterPresetEditorsEvent`, which registers
    editors by world type before the world types mods add are known.
@@ -33,7 +33,8 @@ Default, Amplified or other noise world types.
    through public methods (F12) and its own screens.
 4. **Client mod.** Flatgen works on the client only and servers never need it, yet both jars load harmlessly on one,
    so a modpack can ship them everywhere: Fabric's entrypoint and mixin are client-only, NeoForge builds the mod on the
-   client only, and neither side asks the other for it when connecting. The one server-side step, setting the clock on
+   client only, Forge (1.20.1) builds it everywhere but wires it only on a client, and neither side asks the other for
+   it when connecting. The one server-side step, setting the clock on
    a new world's first start for "always day" (F10), runs on the integrated server inside the client.
 5. **GUI behind a toolkit of Flatgen's own** (3.3), as the game's GUI drawing changed in 1.21.6 and 26.1 and its input
    events in 1.21.9.
@@ -109,7 +110,9 @@ with its pips), `QuestionScreen` (asking before what cannot be undone), `Icon` w
 (`tools/sprites.py`) and the look's line drawings, `Label`, `Caption`, `Chip`, `Surface`, `TextField`, `TextLines`;
 `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike. Flatgen's screens count in GUI
 pixels of their own (`rules/LayoutScale`) and draw in one look: the colours and sprites of `Look`, the fonts of
-`TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md).
+`TextStyle`, all written by `tools/modern_look.py` (docs/design/simple-editor.md). The sprites are the game's GUI
+sprites; 1.20.1, which has none, draws them through `GuiSprites` in its tree, and its fonts are rewritten by the build
+(3.2).
 
 ### 3.4 Extension points
 
@@ -140,7 +143,7 @@ Things that grow are lists of small classes behind an interface, so adding one n
 
 - **Unit tests** for every `rules` package: no game, fast, on every node's build.
 - **GameTests** for what needs the game: settings conversions, generation of a preset's chunks, facts against the
-  game's own rules. NeoForge runs them in `runGameTestServer`, Fabric in `runGameTest`.
+  game's own rules. NeoForge and Forge run them in `runGameTestServer`, Fabric in `runGameTest`.
 - **Play tests** in a dev client with Blockpilot (its safety level at `all`, which lets it drive the Create World
   screen): open Customize, edit, apply, create the world, check it; screenshots of every screen.
 - **Boot test** of each jar as players run it, before a release (F20).

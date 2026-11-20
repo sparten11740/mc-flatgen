@@ -10,10 +10,10 @@ stonecutter parameters {
     constants.match(current.project.substringAfterLast('-'), "fabric", "forge", "neoforge")
 
     // Plain renames between Minecraft versions, as Blockpilot's are: each names the earliest release known to have the
-    // new name and swaps it in for the nodes from that release on, the rules in the order of their releases. src/main
-    // and src/1.21.1 keep the names of the node they are checked in for (1.21.1), src/1.21.11 those of 1.21.11 and
-    // src/26.1 those of 26.1; rules run over all of them, so a new text must not appear in the code the nodes share
-    // (docs/plan.md 3.2).
+    // new name and swaps it in for the nodes from that release on, the rules in the order of their releases. src/main,
+    // src/1.20.1 and src/1.21.1 keep the names of the node they are checked in for (1.21.1), as what differs below it
+    // goes in src/1.20.1 rather than in rules; src/1.21.11 keeps those of 1.21.11 and src/26.1 those of 26.1; rules run
+    // over all of them, so a new text must not appear in the code the nodes share (docs/plan.md 3.2).
     fun rename(since: String, from: String, to: String) =
         replacements.string(current.parsed >= since) { replace(from, to) }
 
