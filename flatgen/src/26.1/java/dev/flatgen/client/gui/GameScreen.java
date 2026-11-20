@@ -167,7 +167,21 @@ abstract class GameScreen extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        return key(event.key()) || super.keyPressed(event);
+        return key(keyCode(event)) || super.keyPressed(event);
+    }
+
+    /**
+     * The key pressed, as Flatgen's shortcuts compare it with {@code InputConstants.KEY_...}: from 26.3, where those
+     * name a key by its place on the keyboard, a letter is the letter the keyboard's layout puts there, as the game's
+     * own shortcuts read it.
+     */
+    private static int keyCode(KeyEvent event) {
+        //? if >=26.3 {
+        /*int letter = event.shortcutKey();
+        boolean isLetter = letter >= InputConstants.KEYCODE_A && letter <= InputConstants.KEYCODE_Z;
+        return isLetter ? InputConstants.KEY_A + letter - InputConstants.KEYCODE_A : event.key();
+        *///?} else
+        return event.key();
     }
 
     /** A character typed, one beyond Java's char range given as its two halves. */
