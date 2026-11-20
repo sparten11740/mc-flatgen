@@ -76,7 +76,7 @@ final class LayerCards {
         Drag drag = new Drag();
         ScrollGroup cards = new ScrollGroup(area, top -> layOut(editor, area, top, drag));
         chosen(editor, area).ifPresent(cards::revealContent);
-        return List.of(cards, new FollowChosen(editor, area, cards));
+        return List.of(cards, new FollowChosen(editor, area, cards, drag));
     }
 
     /**
@@ -225,10 +225,12 @@ final class LayerCards {
     }
 
     /**
-     * A card's drag, which the cards and the card lifted under the mouse share: whether a card is dragged, how far
-     * below its top it was taken, and where the mouse is.
+     * A card's drag, which the cards, the card lifted under the mouse and the list's following share: whether the
+     * mouse's button is held on a card, whether a card is dragged, how far below its top it was taken, and where the
+     * mouse is.
      */
     private static final class Drag {
+        private boolean held;
         private boolean active;
         private int heldAt;
         private int mouseY;
@@ -280,6 +282,7 @@ final class LayerCards {
             }
             editor.select(index);
             held = true;
+            drag.held = true;
             pressedAt = (int) y;
             return true;
         }
@@ -301,6 +304,7 @@ final class LayerCards {
         @Override
         public void release(double x, double y) {
             held = false;
+            drag.held = false;
             if (dragging) {
                 editor.commitPreview();
                 dragging = false;
@@ -406,25 +410,28 @@ final class LayerCards {
 
     /**
      * Keeps the chosen layer's card in sight: when the chosen layer changes, by a click, the arrow keys or an edit, the
-     * list scrolls to its card. It draws nothing of its own.
+     * list scrolls to its card, though not while the mouse's button is held on a card, as scrolling lays the cards out
+     * anew and the card held would never hear the button let go; it follows once it is. It draws nothing of its own.
      */
     private static final class FollowChosen implements Widget {
         private final EditorContext editor;
         private final Rect area;
         private final ScrollGroup cards;
+        private final Drag drag;
         private int followed;
 
-        FollowChosen(EditorContext editor, Rect area, ScrollGroup cards) {
+        FollowChosen(EditorContext editor, Rect area, ScrollGroup cards, Drag drag) {
             this.editor = editor;
             this.area = area;
             this.cards = cards;
+            this.drag = drag;
             this.followed = editor.shown().selected();
         }
 
         @Override
         public void draw(Canvas canvas, int mouseX, int mouseY) {
             int selected = editor.shown().selected();
-            if (selected != followed) {
+            if (selected != followed && !drag.held) {
                 followed = selected;
                 chosen(editor, area).ifPresent(cards::revealContent);
             }
