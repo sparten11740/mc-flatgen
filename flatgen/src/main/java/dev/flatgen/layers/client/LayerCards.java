@@ -52,6 +52,9 @@ final class LayerCards {
     /** The count's pill on the block's tile: its height and the space at each side of the number, in GUI pixels. */
     private static final int COUNT_HEIGHT = 10;
     private static final int COUNT_PADDING = 3;
+    /** How far below and right of a lifted card its shadow falls, in GUI pixels, and the shadow's colour, ARGB. */
+    private static final int SHADOW_OFFSET = 2;
+    private static final int SHADOW = 0x80000000;
 
     private LayerCards() {
     }
@@ -61,18 +64,23 @@ final class LayerCards {
      * the chosen layer changes, by a click, a key or an edit.
      */
     static List<Widget> list(EditorContext editor, Rect area) {
-        ScrollGroup cards = new ScrollGroup(area, top -> layOut(editor, area, top));
+        Drag drag = new Drag();
+        ScrollGroup cards = new ScrollGroup(area, top -> layOut(editor, area, top, drag));
         chosen(editor, area).ifPresent(cards::revealContent);
         return List.of(cards, new FollowChosen(editor, area, cards));
     }
 
-    /** Every layer's card, top first, in this area with the first card's top here, as the list scrolls. */
-    private static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top) {
+    /**
+     * Every layer's card, top first, in this area with the first card's top here, as the list scrolls, and the card
+     * lifted while one is dragged.
+     */
+    private static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top, Drag drag) {
         ListSlots slots = slots(editor, new Rect(area.x(), top, area.width(), 0));
         List<Widget> widgets = new ArrayList<>();
         for (int place = 0; place < slots.count(); place++) {
-            widgets.addAll(card(editor, slots.count() - 1 - place, slots.at(place), slots));
+            widgets.addAll(card(editor, slots.count() - 1 - place, slots.at(place), slots, drag));
         }
+        widgets.add(new LiftedCard(editor, slots, drag));
         return new ScrollGroup.Laid(widgets, slots.bottom());
     }
 
@@ -89,10 +97,10 @@ final class LayerCards {
     }
 
     /** One layer's card: its background, which selects it and is dragged by its grip, and its controls. */
-    private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots) {
+    private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Background(editor, index, card, slots));
+        widgets.add(new Background(editor, index, card, slots, drag));
         Rect tile = new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
         widgets.add(new PictureButton(blockPicture(editor, index), tile, () -> pick(editor, index),
                 () -> Stream.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
@@ -202,8 +210,19 @@ final class LayerCards {
     }
 
     /**
+     * A card's drag by its grip, which the cards and the card lifted under the mouse share: whether a card is dragged,
+     * how far below its top it was taken, and where the mouse is.
+     */
+    private static final class Drag {
+        private boolean active;
+        private int heldAt;
+        private int mouseY;
+    }
+
+    /**
      * A card's background, outlined while its layer is chosen: a click selects the layer, and a press on the grip at
-     * its left drags the layer, the cards showing it at the place it would land, until let go there.
+     * its left, which shows the hand, drags the layer to another place, the card lifted under the mouse and the place
+     * it would land left empty, until let go there.
      */
     private static final class Background implements Widget {
         private final EditorContext editor;
@@ -211,13 +230,15 @@ final class LayerCards {
         private final Rect card;
         /** The cards' slots as laid out with this one, which a drag finds its place among. */
         private final ListSlots slots;
+        private final Drag drag;
         private boolean dragging;
 
-        Background(EditorContext editor, int index, Rect card, ListSlots slots) {
+        Background(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
             this.editor = editor;
             this.index = index;
             this.card = card;
             this.slots = slots;
+            this.drag = drag;
         }
 
         @Override
@@ -226,6 +247,9 @@ final class LayerCards {
             canvas.sprite(chosen ? Look.CHOSEN : Look.PANEL, card);
             canvas.sprite(Look.icon("grip"), new Rect(card.x() + (GRIP_WIDTH - Icon.SIZE) / 2,
                     card.y() + (card.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE));
+            if (grip().contains(mouseX, mouseY)) {
+                canvas.showHand();
+            }
         }
 
         @Override
@@ -234,13 +258,17 @@ final class LayerCards {
                 return false;
             }
             editor.select(index);
-            dragging = x < card.x() + GRIP_WIDTH;
+            dragging = grip().contains(x, y);
+            drag.active = dragging;
+            drag.heldAt = (int) y - card.y();
+            drag.mouseY = (int) y;
             return true;
         }
 
         @Override
         public void drag(double x, double y) {
             if (dragging) {
+                drag.mouseY = (int) y;
                 editor.preview(new LayerEdits.Move(slots.count() - 1 - slots.placeAt(y)));
             }
         }
@@ -250,7 +278,50 @@ final class LayerCards {
             if (dragging) {
                 editor.commitPreview();
                 dragging = false;
+                drag.active = false;
             }
+        }
+
+        /** The grip at the card's left, which a drag starts on. */
+        private Rect grip() {
+            return new Rect(card.x(), card.y(), GRIP_WIDTH, card.height());
+        }
+    }
+
+    /**
+     * While a card is dragged by its grip, that card lifted under the mouse over the others, with a shadow, and the
+     * place it would land left empty and ringed; nothing otherwise. The lifted card is drawn by the card's own widgets.
+     */
+    private static final class LiftedCard implements Widget {
+        private final EditorContext editor;
+        private final ListSlots slots;
+        private final Drag drag;
+
+        LiftedCard(EditorContext editor, ListSlots slots, Drag drag) {
+            this.editor = editor;
+            this.slots = slots;
+            this.drag = drag;
+        }
+
+        @Override
+        public void draw(Canvas canvas, int mouseX, int mouseY) {
+            int index = editor.shown().selected();
+            if (!drag.active || index < 0) {
+                return;
+            }
+            canvas.showHand();
+            Rect landing = slots.at(slots.count() - 1 - index);
+            int top = Math.max(slots.at(0).y(), Math.min(slots.at(slots.count() - 1).y(), drag.mouseY - drag.heldAt));
+            Rect lifted = new Rect(landing.x(), top, landing.width(), landing.height());
+            canvas.raised(() -> drawLifted(canvas, index, landing, lifted));
+        }
+
+        private void drawLifted(Canvas canvas, int index, Rect landing, Rect lifted) {
+            canvas.fill(landing, Look.BACKGROUND);
+            canvas.sprite(Look.CHOSEN_RING, landing);
+            canvas.fill(new Rect(lifted.x() + SHADOW_OFFSET, lifted.y() + SHADOW_OFFSET, lifted.width(),
+                    lifted.height()), SHADOW);
+            card(editor, index, lifted, slots, new Drag()).forEach(widget -> widget.draw(canvas, -1, -1));
         }
     }
 

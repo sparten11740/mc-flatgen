@@ -93,6 +93,12 @@ public interface Canvas {
      */
     void focusRing(Rect area);
 
+    /** Draws what a drawing draws over everything drawn so far, items too, as a card lifted off a list is. */
+    void raised(Runnable drawing);
+
+    /** Shows the hand as the mouse's pointer for this frame, over what can be grabbed. */
+    void showHand();
+
     /** Darkens what is drawn in a rectangle, an item there too, as a control that cannot be used is drawn. */
     void dim(Rect area);
 

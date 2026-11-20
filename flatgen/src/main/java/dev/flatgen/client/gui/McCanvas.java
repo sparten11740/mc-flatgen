@@ -7,13 +7,17 @@ import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
 import dev.flatgen.mc.Items;
+//? if <1.21.11 {
+import dev.flatgen.mc.MousePointer;
+//?}
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 //? if >=1.21.11 {
-/*import net.minecraft.client.renderer.RenderPipelines;
+/*import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.FontDescription;
 *///?}
 import net.minecraft.network.chat.Component;
@@ -50,6 +54,8 @@ final class McCanvas implements Canvas {
     private final LayoutScale scale;
     /** Whether an item was drawn in the layer drawn into now, which what goes over it leaves (from 1.21.11). */
     private boolean itemsInLayer;
+    /** Whether the hand was asked for as the mouse's pointer this frame, which the frame's end shows (to 1.21.1). */
+    private boolean handShown;
     private List<Component> tooltip = List.of();
     private int tooltipX;
     private int tooltipY;
@@ -210,6 +216,25 @@ final class McCanvas implements Canvas {
     }
 
     /** Draws above the items drawn so far. */
+    @Override
+    public void raised(Runnable drawing) {
+        //? if >=1.21.11 {
+        /*graphics.nextStratum();
+        itemsInLayer = false;
+        drawing.run();
+        *///?} else {
+        overItems(drawing);
+        //?}
+    }
+
+    @Override
+    public void showHand() {
+        //? if >=1.21.11 {
+        /*graphics.requestCursor(CursorTypes.POINTING_HAND);
+        *///?} else
+        handShown = true;
+    }
+
     private void overItems(Runnable draw) {
         //? if >=1.21.11 {
         /*if (itemsInLayer) {
@@ -279,10 +304,13 @@ final class McCanvas implements Canvas {
     }
 
     /**
-     * Draws the tooltip a widget asked for over everything else, in the look's dark box and body text, kept inside
-     * the screen.
+     * Shows the mouse's pointer asked for (to 1.21.1; later the game shows the one asked for itself), then draws the
+     * tooltip a widget asked for over everything else, in the look's dark box and body text, kept inside the screen.
      */
     void finish() {
+        //? if <1.21.11 {
+        MousePointer.hand(handShown);
+        //?}
         if (tooltip.isEmpty()) {
             return;
         }

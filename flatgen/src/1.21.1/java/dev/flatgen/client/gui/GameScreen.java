@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.LayoutScale;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
+import dev.flatgen.mc.MousePointer;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -117,6 +118,13 @@ abstract class GameScreen extends Screen {
         graphics.pose().translate(0, 0, OVER_BEHIND);
         graphics.fill(0, 0, graphics.guiWidth(), graphics.guiHeight(), Look.SCRIM);
         graphics.pose().popPose();
+    }
+
+    /** Puts the arrow back as the screen goes, as this version leaves the pointer as a screen set it. */
+    @Override
+    public void removed() {
+        MousePointer.hand(false);
+        super.removed();
     }
 
     @Override
