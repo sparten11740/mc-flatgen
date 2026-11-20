@@ -3,7 +3,8 @@
 // starts and stops with it: faults of remapping, mixin configs and metadata show only in a jar as it ships
 // (docs/backlog/20-release-v1.md). Flatgen is a client mod, so a server must load its jar and otherwise be
 // unaffected. Each node's jar in build/libs boots on the loader version its node is built with and on the oldest one
-// its metadata accepts (neo_min_version, fabric_loader_min_version). A boot holds when the server lists Flatgen among
+// its metadata accepts (neo_min_version, forge_min_version, fabric_loader_min_version), and 1.20.1's Forge jar on
+// NeoForge 47.1 too (boot_neoforge_version). A boot holds when the server lists Flatgen among
 // its mods, logs no error naming it, finishes starting and stops cleanly when told to.
 //
 //   node tools/boot.mjs [node...]
@@ -16,7 +17,8 @@
 // macOS's java_home. The exit code is 0 when every boot held and 1 when one failed.
 import { spawn, spawnSync } from "node:child_process";
 import { once } from "node:events";
-import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { closeSync, copyFileSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, rmSync, writeFileSync }
+  from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { createInterface } from "node:readline";
@@ -27,20 +29,25 @@ const BOOTS = join(ROOT, "build", "boot");
 const BOOT_SECONDS = 600;
 // The Fabric installer whose server launcher Fabric boots start from.
 const FABRIC_INSTALLER = "1.1.2";
-// The argument file an installed NeoForge server starts from, by system.
+// The argument file an installed Forge or NeoForge server starts from, by system.
 const ARGS_FILE = process.platform === "win32" ? "win_args.txt" : "unix_args.txt";
-// The Maven repository the NeoForge installers come from.
+// The Maven repositories the Forge and NeoForge installers come from.
 const NEOFORGED_MAVEN = "https://maven.neoforged.net/releases";
+const FORGE_MAVEN = "https://maven.minecraftforge.net";
 // A line of a server's log that names the mod as an error: what a broken jar leaves.
 const MOD_ERROR = new RegExp(`(ERROR|FATAL|Exception).*\\b${treeProperties().mod_id}\\b`, "i");
 // A line of a server's log that lists the mod as loaded: Fabric's "- flatgen 1.0.0+..." and NeoForge's mod file line.
 const MOD_LISTED = new RegExp(`(- ${treeProperties().mod_id} \\d|${treeProperties().mod_id}-[\\w.+-]+\\.jar)`);
 
-/** A NeoForge server of this version: its installer, and the argument file the installer writes to start from. */
-function neoForgeServer(version) {
-  const argsFile = `libraries/net/neoforged/neoforge/${version}/${ARGS_FILE}`;
+/**
+ * A Forge or NeoForge server: its installer, a Maven artifact at the path and version given, and the argument file the
+ * installer writes to start from.
+ */
+function installedServer(maven, path, version) {
+  const artifact = path.slice(path.lastIndexOf("/") + 1);
+  const argsFile = `libraries/${path}/${version}/${ARGS_FILE}`;
   return {
-    installer: `${NEOFORGED_MAVEN}/net/neoforged/neoforge/${version}/neoforge-${version}-installer.jar`,
+    installer: `${maven}/${path}/${version}/${artifact}-${version}-installer.jar`,
     argsFile,
     launch: () => [`@${argsFile}`, "nogui"],
   };
@@ -54,25 +61,30 @@ function fabricServer(minecraft, loader) {
   };
 }
 
-// Each loader's servers: the versions a node's jar boots on (the one it is built with, the oldest it accepts) and the
-// server of a version.
+// Each loader's servers a node's jar boots on, by the version each is named for: the loader version it is built with
+// and the oldest it accepts, and for 1.20.1's Forge jar NeoForge 47.1 too, which still called itself Forge.
 const SERVERS = {
-  neoforge: {
-    versions: (node) => [node.neo_version, node.neo_min_version],
-    server: (node, version) => neoForgeServer(version),
-  },
-  fabric: {
-    versions: (node) => [node.fabric_loader_version, node.fabric_loader_min_version],
-    server: (node, version) => fabricServer(node.minecraft_version, version),
-  },
+  neoforge: (node) => [node.neo_version, node.neo_min_version]
+    .map((version) => ({ version, server: installedServer(NEOFORGED_MAVEN, "net/neoforged/neoforge", version) })),
+  forge: (node) => [node.forge_version, node.forge_min_version]
+    .map((version) => ({ version, server: forgeServer(FORGE_MAVEN, "net/minecraftforge/forge", node, version) }))
+    .concat([{ version: `neoforge-${node.boot_neoforge_version}`,
+      server: forgeServer(NEOFORGED_MAVEN, "net/neoforged/forge", node, node.boot_neoforge_version) }]),
+  fabric: (node) => [node.fabric_loader_version, node.fabric_loader_min_version]
+    .map((version) => ({ version, server: fabricServer(node.minecraft_version, version) })),
 };
 
-/** The boots of one node, one a server version. */
+/** A server of Forge, or of NeoForge before it renamed itself, versioned by the game's version and its own. */
+function forgeServer(maven, path, node, version) {
+  return installedServer(maven, path, `${node.minecraft_version}-${version}`);
+}
+
+/** The boots of one node, one a server, each server once where the oldest version accepted is the one built with. */
 function bootsOf(name) {
   const node = nodeProperties(name);
-  const servers = SERVERS[loaderOf(name)];
-  return servers.versions(node).map((version) => ({ name: `${name}-on-${version}`, java: node.java_version,
-    jar: jarOf(name), server: servers.server(node, version) }));
+  const boots = SERVERS[loaderOf(name)](node).map(({ version, server }) => ({ name: `${name}-on-${version}`,
+    java: node.java_version, jar: jarOf(name), server }));
+  return boots.filter((boot, index) => boots.findIndex((other) => other.name === boot.name) === index);
 }
 
 // --- Java ------------------------------------------------------------------------------------------------------------
@@ -188,6 +200,12 @@ async function run(boot, folder, java) {
   return { ...seen, exit };
 }
 
+/** Whether the server's debug log lists the mod: Forge names the mods it found there only. */
+function listedInDebugLog(folder) {
+  const log = join(folder, "logs", "debug.log");
+  return existsSync(log) && MOD_LISTED.test(readFileSync(log, "utf8"));
+}
+
 /** Boots one jar on one server; whether it held. */
 async function boot(item) {
   const folder = join(BOOTS, item.name);
@@ -203,6 +221,7 @@ async function boot(item) {
   await install(item, folder, java);
   prepare(item, folder);
   const seen = await run(item, folder, java);
+  seen.listed ||= listedInDebugLog(folder);
   const held = seen.listed && seen.errors.length === 0 && seen.up && seen.exit === 0;
   const what = `${seen.listed ? "listed" : "not listed"}, ${seen.errors.length} errors naming it, `
     + `${seen.up ? "up" : "never up"}, exit ${seen.exit ?? "none"}`;

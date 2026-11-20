@@ -17,7 +17,7 @@ val treeDir = parent!!.projectDir
 extra["metadataTemplates"] = listOf("META-INF/mods.toml", "pack.mcmeta")
 extra["loaderMetadata"] = mapOf(
     "loader_version_range" to prop("loader_version_range"),
-    "forge_version_range" to prop("forge_version_range"),
+    "forge_min_version" to prop("forge_min_version"),
     "minecraft_version_range" to prop("minecraft_version_range"),
     "pack_format" to prop("pack_format"),
 )
