@@ -19,7 +19,7 @@ public interface Fact {
     /**
      * What a fact shows.
      *
-     * @param icon  the id of the item its picture is
+     * @param icon  its picture: an item's id, or a 16 by 16 texture's location ending in {@code .png}
      * @param no    whether the picture is struck through, saying "no"
      * @param words what it says, a line each
      */
@@ -51,7 +51,7 @@ public interface Fact {
      *
      * @param y     the Y it is drawn at
      * @param color its colour, ARGB
-     * @param icon  the id of the item that pictures what it marks, drawn at its end
+     * @param icon  the picture of what it marks, drawn at its end: an item's id or a texture's location
      */
     record Marker(int y, int color, String icon) {
     }

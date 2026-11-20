@@ -12,7 +12,7 @@ public final class FactPictures {
 
     /** A fact's picture, struck through when it says no. */
     public static Icon icon(Fact.Shown shown) {
-        Icon icon = Icon.item(shown.icon());
+        Icon icon = Icon.itemOrTexture(shown.icon());
         return shown.no() ? Icon.struck(icon) : icon;
     }
 

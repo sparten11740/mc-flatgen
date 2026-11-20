@@ -17,27 +17,27 @@ public final class Facts {
     /** The lines' colours and pictures: where slimes stop spawning, and where rain turns to snow. */
     private static final int SLIME_GREEN = 0xFF7FD34F;
     private static final int SNOW_BLUE = 0xFF8FD8FF;
-    private static final String SLIME_BALL = "minecraft:slime_ball";
-    private static final String SNOWBALL = "minecraft:snowball";
+    private static final String SLIME = "flatgen:textures/gui/sprites/icon/slime.png";
+    private static final String SNOW = "flatgen:textures/gui/sprites/icon/snow.png";
 
     private Facts() {
     }
 
-    /** The Y mobs stand at, a block of grass with the number in words. */
+    /** The Y mobs stand at, a ladder, as a template's ground at a Y has, with the number in words. */
     static final class Surface implements Fact {
         @Override
         public Shown show(Situation situation) {
-            return new Shown("minecraft:grass_block", false,
+            return new Shown("minecraft:ladder", false,
                     List.of(new Words("flatgen.facts.surface", List.of(situation.facts().surfaceY()))));
         }
     }
 
-    /** What falls at the surface: the sun for nothing, a bucket of water for rain, a snowball for snow. */
+    /** What falls at the surface: the sun for nothing, a rain cloud for rain, a snow cloud for snow. */
     static final class Weather implements Fact {
         private static final Map<WorldFacts.Weather, String> ICONS = Map.of(
                 WorldFacts.Weather.NONE, "minecraft:sunflower",
-                WorldFacts.Weather.RAIN, "minecraft:water_bucket",
-                WorldFacts.Weather.SNOW, SNOWBALL);
+                WorldFacts.Weather.RAIN, "flatgen:textures/gui/sprites/icon/rain.png",
+                WorldFacts.Weather.SNOW, SNOW);
 
         @Override
         public Shown show(Situation situation) {
@@ -61,7 +61,7 @@ public final class Facts {
         @Override
         public Optional<Marker> marker(Situation situation) {
             OptionalInt line = WorldFacts.snowLine(situation.biome().climate());
-            return line.isPresent() ? Optional.of(new Marker(line.getAsInt(), SNOW_BLUE, SNOWBALL)) : Optional.empty();
+            return line.isPresent() ? Optional.of(new Marker(line.getAsInt(), SNOW_BLUE, SNOW)) : Optional.empty();
         }
     }
 
@@ -81,24 +81,24 @@ public final class Facts {
             if (none) {
                 words.add(Words.of("flatgen.facts.no_slimes_here"));
             }
-            return new Shown(SLIME_BALL, none, words);
+            return new Shown(SLIME, none, words);
         }
 
         /** Where slimes stop spawning in slime chunks, when slimes spawn in the biome at all. */
         @Override
         public Optional<Marker> marker(Situation situation) {
             boolean slimes = situation.mobSpawning() && situation.biome().spawns().slimes();
-            return slimes ? Optional.of(new Marker(WorldFacts.SLIME_CHUNK_MAX_Y, SLIME_GREEN, SLIME_BALL))
+            return slimes ? Optional.of(new Marker(WorldFacts.SLIME_CHUNK_MAX_Y, SLIME_GREEN, SLIME))
                     : Optional.empty();
         }
     }
 
-    /** Whether monsters spawn; struck through when they do not. */
+    /** Whether monsters spawn, a creeper's head; struck through when they do not. */
     static final class Monsters implements Fact {
         @Override
         public Shown show(Situation situation) {
             boolean monsters = situation.facts().hostileMobs();
-            return new Shown("minecraft:skeleton_skull", !monsters,
+            return new Shown("minecraft:creeper_head", !monsters,
                     List.of(Words.of(monsters ? "flatgen.facts.monsters" : "flatgen.facts.no_monsters")));
         }
     }
