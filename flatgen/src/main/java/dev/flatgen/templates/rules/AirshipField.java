@@ -27,6 +27,11 @@ final class AirshipField implements Template {
     }
 
     @Override
+    public String icon() {
+        return "minecraft:elytra";
+    }
+
+    @Override
     public List<Parameter> parameters() {
         return List.of(SURFACE, CLEAR);
     }

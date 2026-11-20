@@ -27,6 +27,11 @@ final class WaterWorld implements Template {
     }
 
     @Override
+    public String icon() {
+        return "minecraft:water_bucket";
+    }
+
+    @Override
     public List<Parameter> parameters() {
         return List.of(WATER, FLOOR, FLOOR_DEPTH);
     }

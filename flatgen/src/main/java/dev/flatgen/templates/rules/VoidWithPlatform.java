@@ -19,6 +19,11 @@ final class VoidWithPlatform implements Template {
     }
 
     @Override
+    public String icon() {
+        return "minecraft:stone";
+    }
+
+    @Override
     public List<Parameter> parameters() {
         return List.of();
     }

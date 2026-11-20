@@ -144,9 +144,9 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Library | Back, search | left arrow; spyglass |
 | Library | Save current as new, More | writable book with a plus badge; three dots |
 | Library | the menu | paper in (paste), folder, own server rack (server lines, F21), bundle (datapack), grass block with its box (Start on Superflat), book or a grass block or book under the "no" sign (the built-ins shown) |
-| Library | the footer | the picked preset's layers; anvil (Rename), the preset with a copy badge (Copy), paper out (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
-| Library | cards | the preset's layers in the sky; marks for default (red bed), missing parts (barrier), starred (gold star); a built-in's mod or pack on a chip |
-| Templates | the templates | a card each: a picture of what it makes, its name and a line on what it is |
+| Library | the footer | the picked preset's layers; name tag (Rename), the preset with a copy badge (Copy), paper out (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
+| Library | cards | the preset's layers in the sky with its own item beside them; marks for default (red bed), missing parts (barrier), starred (gold star); a built-in's mod or pack on a chip |
+| Templates | the templates | a card each: a picture of what it makes with the template's item over it (grass block, elytra, water bucket, stone, redstone), its name and a line on what it is |
 | Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider; minus and plus for its steps |
 | Templates | block settings | the block |
 | Templates | switches | the switch's item, with its box |

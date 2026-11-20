@@ -28,6 +28,11 @@ final class TallFlat implements Template {
     }
 
     @Override
+    public String icon() {
+        return Templates.GRASS;
+    }
+
+    @Override
     public List<Parameter> parameters() {
         return List.of(SURFACE, TOP, FILLER);
     }

@@ -15,6 +15,9 @@ public interface Template {
     /** What it makes, in a line, a translation key. */
     String about();
 
+    /** What its card shows over the picture of what it makes, so alike templates are told apart: an item's id. */
+    String icon();
+
     /** Its settings, in the order they are shown. */
     List<Parameter> parameters();
 

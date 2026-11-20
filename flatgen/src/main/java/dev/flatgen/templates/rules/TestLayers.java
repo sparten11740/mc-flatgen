@@ -27,6 +27,11 @@ final class TestLayers implements Template {
     }
 
     @Override
+    public String icon() {
+        return "minecraft:redstone";
+    }
+
+    @Override
     public List<Parameter> parameters() {
         return List.of(COUNT, FIRST, SECOND);
     }

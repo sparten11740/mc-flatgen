@@ -137,7 +137,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         int y = area.y();
         for (Template each : Templates.ALL) {
             List<Component> about = wrapped(Component.translatable(each.about()), ChoiceCard.wordsWidth(area.width()));
-            cards.add(new ChoiceCard((canvas, place) -> drawGround(canvas, madeBy(each), place),
+            cards.add(new ChoiceCard((canvas, place) -> drawCardPicture(canvas, each, place),
                     Component.translatable(each.name()), about,
                     new Rect(area.x(), y, area.width(), cardHeight), () -> each == template, () -> choose(each)));
             y += cardHeight + GAP;
@@ -244,6 +244,12 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** The blocks of air above the ground the template makes, and the Y of the world's top. */
     private Component air() {
         return LayerText.air(editor.world(), height(made()));
+    }
+
+    /** A template card's picture: what it makes, and the template's own item over its sky. */
+    private void drawCardPicture(Canvas canvas, Template shown, Rect place) {
+        drawGround(canvas, madeBy(shown), place);
+        canvas.itemIcon(shown.icon(), place.x() + (place.width() - Icon.SIZE) / 2, place.y() + 1);
     }
 
     /** A preset's ground standing in its biome's sky, as tall against the sky as against the world. */
