@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -64,7 +65,7 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
     /** A tab's shelf: its blocks among those shown, in the creative inventory's order. */
     private static Shelf shelf(BlockCatalog.Tab tab) {
         Map<String, Integer> order = new HashMap<>();
-        tab.blocks().forEach(block -> order.putIfAbsent(block, order.size()));
+        tab.blocks().forEach(block -> order.put(block, order.size()));
         return new Shelf(tab.name(), Icon.item(tab.icon()), shown -> shown.stream()
                 .filter(entry -> order.containsKey(entry.id()))
                 .sorted(Comparator.comparing(entry -> order.get(entry.id()))).toList());
@@ -73,14 +74,9 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
     /** Every block, its picture four blocks in a square. */
     @Override
     protected Shelf every() {
-        return new Shelf(Component.translatable("flatgen.blocks.every"), BlockPickerScreen::drawFour, all -> all);
-    }
-
-    private static void drawFour(Canvas canvas, int x, int y) {
-        int half = Icon.SIZE / 2;
-        for (int index = 0; index < EVERY.size(); index++) {
-            canvas.blockIcon(EVERY.get(index), new Rect(x + index % 2 * half, y + index / 2 * half, half, half));
-        }
+        return new Shelf(Component.translatable("flatgen.blocks.every"), Icon.quartered(EVERY.stream()
+                .<BiConsumer<Canvas, Rect>>map(block -> (canvas, area) -> canvas.blockIcon(block, area)).toList()),
+                all -> all);
     }
 
     /** The grid of blocks. */

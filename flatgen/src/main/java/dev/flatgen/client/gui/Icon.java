@@ -1,6 +1,8 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Rect;
+import java.util.List;
+import java.util.function.BiConsumer;
 
 /** A picture 16 GUI pixels square that a widget shows beside or in place of words: an item, a block or a texture. */
 @FunctionalInterface
@@ -81,6 +83,21 @@ public interface Icon {
     /** One of Flatgen's own pictures, by its name in {@code textures/gui/sprites/icon/}, such as {@code undo}. */
     static Icon own(String name) {
         return sprite("flatgen:icon/" + name);
+    }
+
+    /**
+     * Up to four pictures, each drawn in a quarter of an icon, left to right and top to bottom, as a picture of every
+     * entry of a kind: each draws itself in the area it is given.
+     */
+    static Icon quartered(List<BiConsumer<Canvas, Rect>> parts) {
+        return (canvas, x, y) -> drawQuartered(parts, canvas, x, y);
+    }
+
+    private static void drawQuartered(List<BiConsumer<Canvas, Rect>> parts, Canvas canvas, int x, int y) {
+        int half = SIZE / 2;
+        for (int index = 0; index < parts.size(); index++) {
+            parts.get(index).accept(canvas, new Rect(x + index % 2 * half, y + index / 2 * half, half, half));
+        }
     }
 
     /** This picture with a badge over it, one of Flatgen's own drawn where an item's count goes, such as a plus. */

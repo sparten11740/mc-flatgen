@@ -7,7 +7,8 @@ import dev.flatgen.client.gui.rules.Rect;
 
 /** A biome's picture as an icon: its landscape ({@link BiomeLandscape}) 16 pixels square, framed. */
 final class BiomeIcon implements Icon {
-    private static final int RIM = 0xFF000000;
+    /** The dark frame round a biome's picture, ARGB, which parts its sky from a dark screen. */
+    static final int RIM = 0xFF000000;
 
     private final BiomeInfo biome;
 

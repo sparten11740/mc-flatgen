@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -56,7 +57,6 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
     /** The biomes Every biome's picture shows, four in a square, of those the game has. */
     private static final List<String> EVERY = List.of("minecraft:plains", "minecraft:desert",
             "minecraft:snowy_plains", "minecraft:ocean");
-    private static final int RIM = 0xFF000000;
 
     private final Map<String, BiomeInfo> biomes;
     private final Function<BiomeInfo, Situation> situation;
@@ -102,18 +102,17 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
     /** Every biome, its picture four of the game's biomes, each a little landscape, in a square. */
     @Override
     protected Shelf every() {
-        List<BiomeInfo> shown = EVERY.stream().filter(biomes::containsKey).map(biomes::get).toList();
-        return new Shelf(Component.translatable("flatgen.biomes.every"), (canvas, x, y) -> drawFour(canvas, shown, x,
+        Icon four = Icon.quartered(EVERY.stream().filter(biomes::containsKey).map(biomes::get)
+                .<BiConsumer<Canvas, Rect>>map(biome -> (canvas, area) -> BiomeLandscape.draw(canvas, biome, area))
+                .toList());
+        return new Shelf(Component.translatable("flatgen.biomes.every"), (canvas, x, y) -> drawFramed(canvas, four, x,
                 y), all -> all);
     }
 
-    private static void drawFour(Canvas canvas, List<BiomeInfo> shown, int x, int y) {
-        int half = Icon.SIZE / 2;
-        for (int index = 0; index < shown.size(); index++) {
-            BiomeLandscape.draw(canvas, shown.get(index), new Rect(x + index % 2 * half, y + index / 2 * half, half,
-                    half));
-        }
-        canvas.outline(new Rect(x, y, Icon.SIZE, Icon.SIZE), RIM);
+    /** A picture, framed as a biome's picture is. */
+    private static void drawFramed(Canvas canvas, Icon picture, int x, int y) {
+        picture.draw(canvas, x, y);
+        canvas.outline(new Rect(x, y, Icon.SIZE, Icon.SIZE), BiomeIcon.RIM);
     }
 
     private List<Search.Entry> ofKind(List<Search.Entry> shown, BiomeKinds.Kind kind) {
@@ -227,7 +226,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
             } else {
                 BiomeLandscape.draw(canvas, shown, area);
             }
-            canvas.outline(area, RIM);
+            canvas.outline(area, BiomeIcon.RIM);
         }
     }
 
