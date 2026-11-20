@@ -1,5 +1,6 @@
 package dev.flatgen.mc;
 
+import dev.flatgen.Flatgen;
 import dev.flatgen.blocks.rules.LayerHints;
 import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
@@ -49,13 +50,20 @@ public final class BlockCatalog {
 
     /**
      * The creative inventory's tabs of blocks, as the game fills them for these features, mods' blocks put in them
-     * included; each tab the game lacks is left out.
+     * included; each tab the game lacks is left out. Filling them runs mods' code that may expect a world and a player,
+     * which the Create World screen has not got; when it fails, the picker goes without tabs, and the log says why.
      */
     public static List<Tab> tabs(FeatureFlagSet enabled, HolderLookup.Provider registries) {
-        CreativeModeTabs.tryRebuildTabContents(enabled, false, registries);
-        return BLOCK_TABS.stream().map(id -> ResourceLocation.tryParse(id)).filter(Objects::nonNull)
-                .flatMap(id -> BuiltInRegistries.CREATIVE_MODE_TAB.getOptional(id).stream())
-                .map(BlockCatalog::tab).toList();
+        try {
+            CreativeModeTabs.tryRebuildTabContents(enabled, false, registries);
+            return BLOCK_TABS.stream().map(id -> ResourceLocation.tryParse(id)).filter(Objects::nonNull)
+                    .flatMap(id -> BuiltInRegistries.CREATIVE_MODE_TAB.getOptional(id).stream())
+                    .map(BlockCatalog::tab).toList();
+        } catch (RuntimeException failure) {
+            Flatgen.LOGGER.warn("Flatgen could not fill the creative inventory's tabs, so the block picker has none",
+                    failure);
+            return List.of();
+        }
     }
 
     private static Tab tab(CreativeModeTab tab) {
