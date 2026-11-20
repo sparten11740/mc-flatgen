@@ -11,7 +11,8 @@ import java.util.Optional;
 /**
  * Reads a world option's file. Only the icon and the effects are required; the name and description default to the
  * keys {@code option.<namespace>.<name>} and {@code option.<namespace>.<name>.description}, the group to the
- * namespace. An option with a part it cannot read is left out whole, never half applied.
+ * namespace, and the group's picture to none of its own. An option with a part it cannot read is left out whole, never
+ * half applied.
  */
 public final class OptionReader {
     /** The version of the format this Flatgen reads; a file of a later one is left out. */
@@ -54,13 +55,17 @@ public final class OptionReader {
         String name = JsonFields.text(root, "name", key, problems);
         String description = JsonFields.text(root, "description", key + ".description", problems);
         String group = JsonFields.text(root, "group", id.substring(0, Math.max(0, id.indexOf(':'))), problems);
+        Optional<WorldOption.Icon> groupIcon = icon(root.get("group_icon"));
+        if (root.has("group_icon") && groupIcon.isEmpty()) {
+            problems.add("its group_icon must be an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
+        }
         boolean defaultOn = JsonFields.bool(root, "default", false, problems);
         List<String> requires = JsonFields.texts(root, "requires", problems);
         if (!problems.isEmpty()) {
             return new Reading(Optional.empty(), problems);
         }
-        return new Reading(Optional.of(new WorldOption(id, name, description, icon.get(), group, defaultOn, requires,
-                effects)), problems);
+        return new Reading(Optional.of(new WorldOption(id, name, description, icon.get(), group, groupIcon, defaultOn,
+                requires, effects)), problems);
     }
 
     private static Optional<WorldOption.Icon> icon(JsonElement icon) {

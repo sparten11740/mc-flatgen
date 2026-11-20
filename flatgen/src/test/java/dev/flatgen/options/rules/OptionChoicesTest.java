@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class OptionChoicesTest {
     }
 
     private static WorldOption option(String id, boolean defaultOn, Effect... effects) {
-        return new WorldOption(id, id, id, new WorldOption.Icon("minecraft:clock", false), "flatgen", defaultOn,
-                List.of(), List.of(effects));
+        return new WorldOption(id, id, id, new WorldOption.Icon("minecraft:clock", false), "flatgen", Optional.empty(),
+                defaultOn, List.of(), List.of(effects));
     }
 }

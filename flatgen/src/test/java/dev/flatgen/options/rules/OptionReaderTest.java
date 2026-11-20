@@ -40,6 +40,7 @@ class OptionReaderTest {
         assertEquals("option.flatgen.always_day.description", option.description());
         assertEquals(new WorldOption.Icon("minecraft:clock", false), option.icon());
         assertEquals("flatgen:time_and_weather", option.group());
+        assertEquals(Optional.empty(), option.groupIcon());
         assertEquals(false, option.defaultOn());
         assertEquals(List.of(new GameRule("doDaylightCycle", "false"), new FirstStartTime(6000)), option.effects());
         assertTrue(option.actsAtFirstStart());
@@ -60,6 +61,13 @@ class OptionReaderTest {
     }
 
     @Test
+    void readsThePictureAnOptionGivesItsGroup() {
+        WorldOption option = read("test:option", "{\"icon\": \"minecraft:clock\", \"group_icon\": {\"texture\":"
+                + " \"test:textures/group.png\"}, \"effects\": [{\"type\": \"first_start_time\", \"time\": 1}]}");
+        assertEquals(Optional.of(new WorldOption.Icon("test:textures/group.png", true)), option.groupIcon());
+    }
+
+    @Test
     void leavesOutAWholeOptionWithAPartItCannotRead() {
         assertLeftOut("{\"icon\": \"minecraft:clock\", \"effects\": [{\"type\": \"weather\"}]}", "no effect type");
         assertLeftOut("{\"icon\": \"minecraft:clock\", \"effects\": [{\"type\": \"game_rule\", \"rule\": \"x\"},"
@@ -77,6 +85,7 @@ class OptionReaderTest {
         assertLeftOut("{" + clock + ", \"requires\": \"skyliners\"}", "requires");
         assertLeftOut("{" + clock + ", \"default\": \"true\"}", "default");
         assertLeftOut("{" + clock + ", \"name\": 3}", "name");
+        assertLeftOut("{" + clock + ", \"group_icon\": 3}", "group_icon");
     }
 
     private static WorldOption read(String id, String json) {

@@ -3,6 +3,7 @@ package dev.flatgen.options.rules;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * A switch in Flatgen's editor that does something to the world being created, added by a mod or pack as a file
@@ -13,12 +14,13 @@ import java.util.Map;
  * @param description what it does, a translation key or the text itself
  * @param icon        its picture
  * @param group       the group it is shown in: a mod's id, or {@code <namespace>:<path>} for a group of its own
+ * @param groupIcon   the picture of its group's heading, if it gives one; else the group shows its first option's
  * @param defaultOn   whether it is on unless a preset says otherwise
  * @param requires    the mods it needs, by id; it is hidden while one is missing
  * @param effects     what it does, in order
  */
-public record WorldOption(String id, String name, String description, Icon icon, String group, boolean defaultOn,
-        List<String> requires, List<Effect> effects) {
+public record WorldOption(String id, String name, String description, Icon icon, String group,
+        Optional<Icon> groupIcon, boolean defaultOn, List<String> requires, List<Effect> effects) {
     public WorldOption {
         requires = List.copyOf(requires);
         effects = List.copyOf(effects);

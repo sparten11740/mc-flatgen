@@ -40,7 +40,8 @@ Templates placed at the spawn are server data and live where the game keeps stru
 | `effects` | yes | | What the option does, at least one effect (below). |
 | `name` | no | `option.<namespace>.<name>` | Its name on the switch: a translation key, or else the text itself. |
 | `description` | no | `option.<namespace>.<name>.description` | What it does, shown when the switch is hovered: a translation key, or else the text itself. |
-| `group` | no | the namespace | The heading it is shown under. A mod's id shows the mod's name; `<namespace>:<path>` shows the translation of `option_group.<namespace>.<path>`. A group's picture is its first option's icon. |
+| `group` | no | the namespace | The heading it is shown under. A mod's id shows the mod's name; `<namespace>:<path>` shows the translation of `option_group.<namespace>.<path>`. |
+| `group_icon` | no | none | The picture of its group's heading, in the same forms as `icon`. The heading shows the first one an option of the group gives, else its first option's icon; give one when a switch's picture would not say what the whole group is about. |
 | `default` | no | `false` | Whether the option is on unless a preset says otherwise. |
 | `requires` | no | none | Mod ids; the option is hidden while one of them is missing, for packs that ship options for other mods. |
 | `format` | no | `1` | The version of this format. A file of a later format than the Flatgen reading it is left out. |
