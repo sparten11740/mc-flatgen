@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -69,7 +68,8 @@ public final class BiomePickerScreen extends PickerScreen {
     private final Function<BiomeInfo, Situation> situation;
     private final Component now;
     private final String current;
-    private final List<Shelf> shelves;
+    /** The side's groups of shelves, parted by gaps: the starred and the recent biomes, each kind, every biome. */
+    private final List<List<Shelf>> groups;
     private final Map<String, List<Fact.Shown>> facts = new HashMap<>();
     /** The shelf the grid shows. */
     private Shelf shelf;
@@ -79,13 +79,11 @@ public final class BiomePickerScreen extends PickerScreen {
     /**
      * What the side lists: the biomes starred, picked lately, of a kind or every one.
      *
-     * @param name     its name
-     * @param picture  its picture
-     * @param of       its biomes among those given, in their order
-     * @param newGroup whether a gap parts it from the shelf above
+     * @param name    its name
+     * @param picture its picture
+     * @param of      its biomes among those given, in their order
      */
-    private record Shelf(Component name, Icon picture, Function<List<Search.Entry>, List<Search.Entry>> of,
-            boolean newGroup) {
+    private record Shelf(Component name, Icon picture, Function<List<Search.Entry>, List<Search.Entry>> of) {
     }
 
     /**
@@ -104,25 +102,25 @@ public final class BiomePickerScreen extends PickerScreen {
         this.now = now;
         this.current = current;
         this.chosen = biomes.containsKey(current) ? current : entries().get(0).id();
-        this.shelves = shelves();
-        this.shelf = shelves.get(2);
+        List<Shelf> kinds = kinds();
+        Shelf every = new Shelf(Component.translatable("flatgen.biomes.every"), EVERY, shown -> shown);
+        this.groups = List.of(List.of(
+                new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
+                        shown -> picked(shown, picks().starred())),
+                new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
+                        shown -> picked(shown, picks().recent()))), kinds, List.of(every));
+        this.shelf = kinds.isEmpty() ? every : kinds.get(0);
     }
 
-    /** The starred and the recent biomes, then each kind of biome that has any, the last of them every biome. */
-    private List<Shelf> shelves() {
-        List<Shelf> made = new ArrayList<>(List.of(
-                new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
-                        shown -> picked(shown, picks().starred()), false),
-                new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
-                        shown -> picked(shown, picks().recent()), false)));
-        BiomeKinds.Kind every = BiomeKinds.ALL.get(BiomeKinds.ALL.size() - 1);
+    /** A shelf for each kind of biome that has any, its picture the first of them. */
+    private List<Shelf> kinds() {
+        List<Shelf> made = new ArrayList<>();
         for (BiomeKinds.Kind kind : BiomeKinds.ALL) {
             Function<List<Search.Entry>, List<Search.Entry>> of = shown -> ofKind(shown, kind);
             List<Search.Entry> any = of.apply(entries());
             if (!any.isEmpty()) {
-                made.add(new Shelf(Component.translatable(kind.name()),
-                        kind == every ? EVERY : new BiomeIcon(biomes.get(any.get(0).id())), of,
-                        made.size() == 2 || kind == every));
+                made.add(new Shelf(Component.translatable(kind.name()), new BiomeIcon(biomes.get(any.get(0).id())),
+                        of));
             }
         }
         return made;
@@ -174,12 +172,14 @@ public final class BiomePickerScreen extends PickerScreen {
     /** A row for each shelf, gaps parting its groups. */
     private List<Widget> side(Rect area) {
         List<Widget> rows = new ArrayList<>();
-        int y = area.y();
-        for (Shelf each : shelves) {
-            y += each.newGroup() ? SIDE_SEPARATOR : 0;
-            rows.add(new PictureTab(each.picture(), each::name, new Rect(area.x(), y, area.width(), SIDE_ROW),
-                    () -> shelf == each, () -> show(each), () -> List.of(each.name())));
-            y += SIDE_ROW;
+        int y = area.y() - SIDE_SEPARATOR;
+        for (List<Shelf> group : groups) {
+            y += SIDE_SEPARATOR;
+            for (Shelf each : group) {
+                rows.add(new PictureTab(each.picture(), each::name, new Rect(area.x(), y, area.width(), SIDE_ROW),
+                        () -> shelf == each, () -> show(each), () -> List.of(each.name())));
+                y += SIDE_ROW;
+            }
         }
         return rows;
     }
@@ -249,7 +249,7 @@ public final class BiomePickerScreen extends PickerScreen {
         }
     }
 
-    /** A biome painted over an area, as the supplier has it now, framed. */
+    /** A biome painted over an area, as the supplier has it now, framed; a barrier for one the game lacks. */
     private static final class Painted implements Widget {
         private final Supplier<BiomeInfo> biome;
         private final Rect area;
@@ -261,7 +261,13 @@ public final class BiomePickerScreen extends PickerScreen {
 
         @Override
         public void draw(Canvas canvas, int mouseX, int mouseY) {
-            Optional.ofNullable(biome.get()).ifPresent(shown -> BiomeLandscape.draw(canvas, shown, area));
+            BiomeInfo shown = biome.get();
+            if (shown == null) {
+                Icon.MISSING.draw(canvas, area.x() + (area.width() - Icon.SIZE) / 2,
+                        area.y() + (area.height() - Icon.SIZE) / 2);
+            } else {
+                BiomeLandscape.draw(canvas, shown, area);
+            }
             canvas.outline(area, RIM);
         }
     }

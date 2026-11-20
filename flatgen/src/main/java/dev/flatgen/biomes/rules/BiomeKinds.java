@@ -7,8 +7,7 @@ import java.util.function.Predicate;
 /**
  * The kinds of biome the biome picker sorts by (docs/design/simple-editor.md, round 3): each a test on a biome's tags
  * and climate, so a mod's biomes sort in by the game's tags as the game's own do, and most with the scene a biome of it
- * is painted as. A biome may be of several kinds, and every biome is of the last; a new kind is one more entry in
- * {@link #ALL}.
+ * is painted as. A biome may be of several kinds or of none; a new kind is one more entry in {@link #ALL}.
  */
 public final class BiomeKinds {
     /** Below this temperature what falls is snow rather than rain, where height does not cool a biome. */
@@ -21,6 +20,9 @@ public final class BiomeKinds {
             "minecraft:swamp", "minecraft:jungle", "minecraft:taiga", "minecraft:snowy_plains", "minecraft:desert",
             "minecraft:savanna", "minecraft:badlands", "minecraft:mushroom_fields", "minecraft:ocean",
             "minecraft:the_void");
+    /** The tags mods put their cave biomes in, as 1.21's common tags, 1.20.1 Fabric's and 1.20.1 Forge's name them. */
+    private static final String[] MOD_CAVES = {"c:is_cave", "c:is_underground", "c:caves", "c:underground",
+        "forge:is_cave", "forge:is_underground"};
     /** The game's cave biomes, which no tag of the game's own names. */
     private static final List<String> CAVES = List.of("minecraft:lush_caves", "minecraft:dripstone_caves",
             "minecraft:deep_dark");
@@ -65,7 +67,7 @@ public final class BiomeKinds {
     public record Kind(String name, Optional<Scene> scene, Predicate<BiomeInfo> holds) {
     }
 
-    /** Every kind, in the order the picker lists them; the last, every biome. */
+    /** Every kind, in the order the picker lists them. */
     public static final List<Kind> ALL = List.of(
             new Kind("flatgen.biomes.kind.usual", Optional.empty(),
                     biome -> USUAL.contains(biome.id())),
@@ -77,20 +79,18 @@ public final class BiomeKinds {
             new Kind("flatgen.biomes.kind.dry", scene(Scene.OWN, SAND, false, false, 0),
                     biome -> overworld(biome) && !biome.climate().precipitation()),
             new Kind("flatgen.biomes.kind.swamps", scene(Scene.OWN, DIRT, true, true, SWAMP_WATER),
-                    tagged("minecraft:allows_surface_slime_spawns", "c:is_swamp")),
+                    tagged("minecraft:allows_surface_slime_spawns", "c:is_swamp", "c:swamp", "forge:is_swamp")),
             new Kind("flatgen.biomes.kind.water", scene(Scene.OWN, SAND, false, false, ALL_WATER),
                     tagged("minecraft:is_ocean", "minecraft:is_deep_ocean", "minecraft:is_river",
                             "minecraft:is_beach")),
             new Kind("flatgen.biomes.kind.mountains", scene(Scene.OWN, STONE, true, false, 0),
                     tagged("minecraft:is_mountain", "minecraft:is_hill")),
             new Kind("flatgen.biomes.kind.caves", scene(CAVE_DARK, STONE, false, false, 0),
-                    biome -> CAVES.contains(biome.id()) || tagged("c:is_cave", "c:is_underground").test(biome)),
+                    biome -> CAVES.contains(biome.id()) || tagged(MOD_CAVES).test(biome)),
             new Kind("flatgen.biomes.kind.nether", scene(NETHER_SKY, NETHERRACK, false, false, 0),
                     tagged("minecraft:is_nether")),
             new Kind("flatgen.biomes.kind.end", scene(END_SKY, END_STONE, false, false, 0),
-                    tagged("minecraft:is_end")),
-            new Kind("flatgen.biomes.kind.every", Optional.empty(),
-                    biome -> true));
+                    tagged("minecraft:is_end")));
 
     private BiomeKinds() {
     }

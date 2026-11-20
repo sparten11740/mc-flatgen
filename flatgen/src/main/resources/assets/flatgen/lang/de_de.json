@@ -1,8 +1,8 @@
 {
+  "flatgen.biomes.every": "Alle Biome",
   "flatgen.biomes.kind.caves": "Höhlen",
   "flatgen.biomes.kind.dry": "Trocken",
   "flatgen.biomes.kind.end": "Ende",
-  "flatgen.biomes.kind.every": "Alle Biome",
   "flatgen.biomes.kind.forests": "Wälder",
   "flatgen.biomes.kind.mountains": "Berge",
   "flatgen.biomes.kind.nether": "Nether",
@@ -10,7 +10,7 @@
   "flatgen.biomes.kind.swamps": "Sümpfe",
   "flatgen.biomes.kind.usual": "Übliche",
   "flatgen.biomes.kind.water": "Wasser",
-  "flatgen.biomes.now": "Jetziges Biom: %s",
+  "flatgen.biomes.now": "%s – jetziges Biom",
   "flatgen.biomes.pick": "%s wählen",
   "flatgen.biomes.search": "Biome suchen",
   "flatgen.biomes.title": "Biom wählen",

@@ -14,29 +14,34 @@ class BiomeKindsTest {
 
     @Test
     void sortsTheGamesBiomesByTheirTagsAndClimate() {
-        assertEquals(List.of("usual", "every"), kinds(biome("minecraft:plains", 0.8F, true, OVERWORLD)));
-        assertEquals(List.of("usual", "forests", "every"),
+        assertEquals(List.of("usual"), kinds(biome("minecraft:plains", 0.8F, true, OVERWORLD)));
+        assertEquals(List.of("usual", "forests"),
                 kinds(biome("minecraft:forest", 0.7F, true, OVERWORLD, "minecraft:is_forest")));
-        assertEquals(List.of("usual", "dry", "every"), kinds(biome("minecraft:desert", 2F, false, OVERWORLD)));
-        assertEquals(List.of("snowy", "every"), kinds(biome("minecraft:ice_spikes", 0F, true, OVERWORLD)));
-        assertEquals(List.of("usual", "swamps", "every"),
+        assertEquals(List.of("usual", "dry"), kinds(biome("minecraft:desert", 2F, false, OVERWORLD)));
+        assertEquals(List.of("snowy"), kinds(biome("minecraft:ice_spikes", 0F, true, OVERWORLD)));
+        assertEquals(List.of("usual", "swamps"),
                 kinds(biome("minecraft:swamp", 0.8F, true, OVERWORLD, "minecraft:allows_surface_slime_spawns")));
-        assertEquals(List.of("caves", "every"), kinds(biome("minecraft:lush_caves", 0.5F, true, OVERWORLD)));
-        assertEquals(List.of("nether", "every"),
+        assertEquals(List.of("caves"), kinds(biome("minecraft:lush_caves", 0.5F, true, OVERWORLD)));
+        assertEquals(List.of("nether"),
                 kinds(biome("minecraft:basalt_deltas", 2F, false, "minecraft:is_nether")));
     }
 
     @Test
     void sortsAModsBiomesByTheGamesTags() {
-        assertEquals(List.of("water", "every"),
+        assertEquals(List.of("water"),
                 kinds(biome("somemod:coral_lagoon", 0.9F, true, OVERWORLD, "minecraft:is_ocean")));
-        assertEquals(List.of("caves", "every"), kinds(biome("somemod:crystal_cave", 0.5F, true, "c:is_cave")));
+        assertEquals(List.of("caves"), kinds(biome("somemod:crystal_cave", 0.5F, true, "c:is_cave")));
     }
 
     @Test
-    void everyBiomeIsOfTheLastKind() {
-        assertEquals("flatgen.biomes.kind.every", BiomeKinds.ALL.get(BiomeKinds.ALL.size() - 1).name());
-        assertEquals(List.of("every"), kinds(biome("somemod:odd", 0.5F, true)));
+    void aBiomeOfNoKindIsOfNone() {
+        assertEquals(List.of(), kinds(biome("somemod:odd", 0.5F, true)));
+    }
+
+    @Test
+    void sortsAModsSwampsAndCavesByTheTagsOf1201Too() {
+        assertEquals(List.of("swamps"), kinds(biome("somemod:bog", 0.8F, true, "forge:is_swamp")));
+        assertEquals(List.of("caves"), kinds(biome("somemod:grotto", 0.5F, true, "c:caves")));
     }
 
     @Test
