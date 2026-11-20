@@ -58,6 +58,8 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** Widths in GUI pixels: the templates down the left and what the chosen one makes at the right. */
     private static final int LIST_WIDTH = 160;
     private static final int PREVIEW_WIDTH = 150;
+    /** How far below the top of a card's picture the template's item sits, in GUI pixels. */
+    private static final int CARD_ICON_TOP = 1;
     /** The most lines a template's card shows of what it is. */
     private static final int ABOUT_LINES = 2;
     /** A row of the settings, in GUI pixels. */
@@ -249,7 +251,7 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** A template card's picture: what it makes, and the template's own item over its sky. */
     private void drawCardPicture(Canvas canvas, Template shown, Rect place) {
         drawGround(canvas, madeBy(shown), place);
-        canvas.itemIcon(shown.icon(), place.x() + (place.width() - Icon.SIZE) / 2, place.y() + 1);
+        canvas.itemIcon(shown.icon(), place.x() + (place.width() - Icon.SIZE) / 2, place.y() + CARD_ICON_TOP);
     }
 
     /** A preset's ground standing in its biome's sky, as tall against the sky as against the world. */

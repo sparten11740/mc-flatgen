@@ -19,6 +19,7 @@ public final class Facts {
     private static final int SNOW_BLUE = 0xFF8FD8FF;
     private static final String SLIME = "flatgen:textures/gui/sprites/icon/slime.png";
     private static final String SNOW = "flatgen:textures/gui/sprites/icon/snow.png";
+    private static final String RAIN = "flatgen:textures/gui/sprites/icon/rain.png";
 
     private Facts() {
     }
@@ -36,7 +37,7 @@ public final class Facts {
     static final class Weather implements Fact {
         private static final Map<WorldFacts.Weather, String> ICONS = Map.of(
                 WorldFacts.Weather.NONE, "minecraft:sunflower",
-                WorldFacts.Weather.RAIN, "flatgen:textures/gui/sprites/icon/rain.png",
+                WorldFacts.Weather.RAIN, RAIN,
                 WorldFacts.Weather.SNOW, SNOW);
 
         @Override
