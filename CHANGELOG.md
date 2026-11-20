@@ -13,9 +13,9 @@ Customize opens Flatgen in place of the game's screen:
   edge in the world to make it deeper; undo and redo everything.
 - **Simple, or Advanced:** Advanced, remembered between games, adds the Y levels, thicknesses to type, structures,
   the game's superflat code copied and pasted with the wrong part named, and the game's own editor.
-- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star; hints for layers that
-  fall or slow the game; biomes sorted by kind, each painted as a little landscape, with what it does to the world in
-  words.
+- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star; blocks sorted by the
+  creative inventory's tabs, biomes by kind, each biome painted as a little landscape with what it does to the world
+  in words; hints for layers that fall or slow the game.
 - **Know the world before you make it:** the surface's height, rain, snow or sun there, whether slimes and monsters
   spawn, and lines on the column where snow starts and slimes stop.
 - **Structures, decorations and lakes,** every structure set the game knows, modded ones too, marked where the biome

@@ -15,8 +15,8 @@ included.
 
 - **Layers as cards beside the world they make.** Drag a card to move a layer, + and − for its thickness, undo
   anything; Advanced adds Y levels, codes and the game's own editor.
-- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star; biomes sorted by kind,
-  each a little landscape.
+- **Every block and biome, modded ones too,** as pictures you search, filter by mod and star; blocks sorted by the
+  creative inventory's tabs, biomes by kind, each a little landscape.
 - **Know your world before you make it:** rain, snow or sun at your surface, whether slimes and monsters spawn.
 - **Structures, decorations and lakes,** every structure set of every mod, marked where your biome will not have it.
 - **Always day, always clear, mobs or none:** saved with the preset, no more `/time set day` in every new world.
