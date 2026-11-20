@@ -5,7 +5,6 @@ import dev.flatgen.client.gui.CardGrid;
 import dev.flatgen.client.gui.Caption;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
-import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.MenuItem;
 import dev.flatgen.client.gui.MenuScreen;
@@ -16,7 +15,6 @@ import dev.flatgen.client.gui.TextField;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
-import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
@@ -162,19 +160,18 @@ public final class LibraryScreen extends FlatgenScreen {
         PictureButton back = backButton();
         int titleX = back.bounds().right() + GAP;
         int titleWidth = textWidth(getTitle(), TextStyle.TITLE);
-        Rect glass = new Rect(titleX + titleWidth + 2 * GAP, top, Icon.SIZE, PictureButton.SIZE);
+        int searchX = titleX + titleWidth + 2 * GAP;
         Rect more = new Rect(width - PageFrame.MARGIN - PictureButton.SIZE, top, PictureButton.SIZE,
                 PictureButton.SIZE);
         Component saveLabel = Component.translatable("flatgen.library.save_new");
         int saveWidth = TextButton.width(textWidth(saveLabel));
         Rect save = new Rect(more.x() - GAP - saveWidth, top, saveWidth, PictureButton.SIZE);
-        int searchWidth = Math.min(SEARCH_WIDTH, save.x() - 2 * GAP - glass.right());
+        int searchWidth = Math.min(TextField.searchWidth(SEARCH_WIDTH), save.x() - 2 * GAP - searchX);
         return List.of(back,
                 new Caption(this::getTitle, new Rect(titleX, 0, titleWidth, PageFrame.HEADER), TextStyle.TITLE,
                         Look.TEXT),
-                new WidgetGroup(List.of(new Label(Icon.item("minecraft:spyglass"), Component.empty(), glass),
-                        new TextField("search", new Rect(glass.right() + GAP / 2, top, searchWidth, PictureButton.SIZE),
-                                Component.translatable("flatgen.library.search"), query, this::search))),
+                TextField.search(new Rect(searchX, top, searchWidth, PictureButton.SIZE),
+                        Component.translatable("flatgen.library.search"), query, this::search),
                 new TextButton(Icon.badged(BOOK_TO_WRITE, "badge_plus"), () -> saveLabel, save, this::saveNew,
                         () -> true, () -> List.of(Component.translatable("flatgen.library.save_new_tip"))),
                 new PictureButton(Icon.line("more"), more, () -> openMenu(more),

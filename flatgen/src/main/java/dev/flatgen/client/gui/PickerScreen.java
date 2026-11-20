@@ -36,8 +36,6 @@ public abstract class PickerScreen extends FlatgenScreen {
     /** Widths in GUI pixels: the search field and the mod filter. */
     private static final int SEARCH_WIDTH = 150;
     private static final int MOD_WIDTH = 130;
-    /** The search field's picture, as the creative inventory's search tab has it. */
-    private static final Icon SEARCH = Icon.item("minecraft:spyglass");
     /** The mod filter's picture while it shows every mod. */
     private static final Icon ALL_MODS = Icon.own("all_mods");
 
@@ -98,13 +96,12 @@ public abstract class PickerScreen extends FlatgenScreen {
         int headerTop = sheet.y() + PADDING;
         Rect close = new Rect(sheet.right() - PADDING - ROW_HEIGHT, headerTop, ROW_HEIGHT, ROW_HEIGHT);
         Rect modPlace = new Rect(close.x() - GAP - MOD_WIDTH, headerTop, MOD_WIDTH, ROW_HEIGHT);
-        Rect searchPlace = new Rect(modPlace.x() - GAP - SEARCH_WIDTH, headerTop, SEARCH_WIDTH, ROW_HEIGHT);
-        Rect glass = new Rect(searchPlace.x() - Icon.SIZE - GAP / 2, headerTop, Icon.SIZE, ROW_HEIGHT);
+        int searchWidth = TextField.searchWidth(SEARCH_WIDTH);
+        Rect search = new Rect(modPlace.x() - GAP - searchWidth, headerTop, searchWidth, ROW_HEIGHT);
         int bodyTop = headerTop + ROW_HEIGHT + PADDING;
         List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.SHEET, sheet)));
-        widgets.addAll(header(new Rect(left, headerTop, glass.x() - GAP - left, ROW_HEIGHT)));
-        widgets.add(new WidgetGroup(List.of(new Label(SEARCH, Component.empty(), glass),
-                new TextField("search", searchPlace, picker.searchHint(), query, this::search),
+        widgets.addAll(header(new Rect(left, headerTop, search.x() - GAP - left, ROW_HEIGHT)));
+        widgets.add(new WidgetGroup(List.of(TextField.search(search, picker.searchHint(), query, this::search),
                 new TextButton((canvas, x, y) -> modPicture().draw(canvas, x, y), this::modLabel, modPlace,
                         this::nextMod, () -> true, List::of))));
         widgets.addAll(body(new Rect(left, bodyTop, sheet.width() - 2 * PADDING, sheet.bottom() - PADDING - bodyTop)));

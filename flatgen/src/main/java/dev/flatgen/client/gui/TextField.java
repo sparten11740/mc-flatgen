@@ -17,6 +17,9 @@ public final class TextField implements Control {
     private static final int MOST_CHARACTERS = 64;
     /** The first character a player can type; those below are controls. */
     private static final char FIRST_TYPED = ' ';
+    /** The picture before a search, a spyglass, and the space between it and the field, in GUI pixels. */
+    private static final Icon SEARCH = Icon.item("minecraft:spyglass");
+    private static final int SEARCH_GAP = 3;
 
     private final String name;
     private final Rect bounds;
@@ -25,6 +28,20 @@ public final class TextField implements Control {
     private final TypedText typed =
             new TypedText(text -> text.chars().allMatch(character -> character >= FIRST_TYPED), MOST_CHARACTERS);
     private boolean keyboard;
+
+    /** The width a search takes with a field this wide, in GUI pixels: the spyglass and the space before the field. */
+    public static int searchWidth(int fieldWidth) {
+        return Icon.SIZE + SEARCH_GAP + fieldWidth;
+    }
+
+    /** A search: the spyglass, then a field filling the rest of this place, handing its text to {@code onChange}. */
+    public static Widget search(Rect place, Component hint, String text, Consumer<String> onChange) {
+        Rect glass = new Rect(place.x(), place.y(), Icon.SIZE, place.height());
+        int fieldX = glass.right() + SEARCH_GAP;
+        return new WidgetGroup(List.of(new Label(SEARCH, Component.empty(), glass),
+                new TextField("search", new Rect(fieldX, place.y(), place.right() - fieldX, place.height()), hint, text,
+                        onChange)));
+    }
 
     /**
      * A box with a hint, starting with some text, handing its text to {@code onChange} each time it changes.
