@@ -105,8 +105,9 @@ Left out, for the owner to decide on:
   the layers, the layers, the world, the aside, the footer) and shows what only Advanced shows while the editor says
   Advanced is on; adding a panel still changes no other.
 - **Cards.** `LayerCards` draws a card per layer, top first, from the existing widgets and edits: every control selects
-  its layer, then makes the edit the layer controls always made; dragging a card's grip previews the move as the
-  column's drag did. The block picker opens from the card's block.
+  its layer, then makes the edit the layer controls always made; dragging a card by its grip or any part of it that is
+  no control, which shows the hand, previews the move as the column's drag did, the card lifting once the mouse has
+  moved a few pixels so a click still only selects. The block picker opens from the card's block.
 - **The column** keeps everything it did and draws the stack at the bottom, under the air the world has above it, in
   the dimension's air colour.
 - **Sheets.** A picker or a question stands over the screen it came from, which is drawn dimmed behind it

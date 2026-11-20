@@ -29,10 +29,11 @@ import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
 
 /**
- * The layers as cards, top first (F29): each with a grip to drag it to another place, its block with how many blocks
- * thick the layer is, which opens the block picker, its name, thinner and thicker, and remove; in Advanced also its Ys
- * and id, its thickness to type and a copy. The chosen layer's card is outlined. Every control works on its own card's
- * layer, which it selects first, so the column and the cards always show the same layer chosen.
+ * The layers as cards, top first (F29): each dragged to another place by its grip or any part of it that is no control,
+ * with its block with how many blocks thick the layer is, which opens the block picker, its name, thinner and thicker,
+ * and remove; in Advanced also its Ys and id, its thickness to type and a copy. The chosen layer's card is outlined.
+ * Every control works on its own card's layer, which it selects first, so the column and the cards always show the same
+ * layer chosen.
  */
 final class LayerCards {
     /** A card's height and the space between cards, in GUI pixels. */
@@ -40,7 +41,7 @@ final class LayerCards {
     private static final int CARD_GAP = 4;
     /** Space inside a card at its sides, in GUI pixels. */
     private static final int PADDING = 6;
-    /** The width of the grip at a card's left, which a drag starts on, in GUI pixels. */
+    /** The width of the grip at a card's left, which shows where a card is taken to drag it, in GUI pixels. */
     private static final int GRIP_WIDTH = 18;
     /** The block's tile, and the picture of the block on it, in GUI pixels. */
     private static final int TILE = 27;
@@ -58,6 +59,8 @@ final class LayerCards {
     private static final int SQUARE_GAP = 2;
     /** The most blocks shown one square each; a thicker layer shows this many less one, folded, then one more. */
     private static final int MOST_SQUARES = 5;
+    /** How far the mouse moves with its button held on a card before the card lifts, in GUI pixels; less is a click. */
+    private static final int LIFT_AFTER = 3;
     /** How far below and right of a lifted card its shadow falls, in GUI pixels, and the shadow's colour, ARGB. */
     private static final int SHADOW_OFFSET = 2;
     private static final int SHADOW = 0x80000000;
@@ -102,11 +105,10 @@ final class LayerCards {
         return selected < 0 ? Optional.empty() : Optional.of(slots.at(slots.count() - 1 - selected));
     }
 
-    /** One layer's card: its background, which selects it and is dragged by its grip, and its controls. */
+    /** One layer's card: its background, which selects it and drags it where no control is, and its controls. */
     private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new Background(editor, index, card, slots, drag));
         Rect tile = new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
         widgets.add(new PictureButton(blockPicture(editor, index), tile, () -> pick(editor, index),
                 () -> Stream.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
@@ -139,6 +141,8 @@ final class LayerCards {
                 new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of));
         int nameX = tile.right() + 2 * SPACING;
         widgets.addAll(words(editor, index, new Rect(nameX, card.y(), thinner.x() - SPACING - nameX, card.height())));
+        List<Rect> controls = widgets.stream().flatMap(widget -> widget.focusArea().stream()).toList();
+        widgets.add(0, new Background(editor, index, card, controls, slots, drag));
         return widgets;
     }
 
@@ -221,8 +225,8 @@ final class LayerCards {
     }
 
     /**
-     * A card's drag by its grip, which the cards and the card lifted under the mouse share: whether a card is dragged,
-     * how far below its top it was taken, and where the mouse is.
+     * A card's drag, which the cards and the card lifted under the mouse share: whether a card is dragged, how far
+     * below its top it was taken, and where the mouse is.
      */
     private static final class Drag {
         private boolean active;
@@ -231,23 +235,29 @@ final class LayerCards {
     }
 
     /**
-     * A card's background, outlined while its layer is chosen: a click selects the layer, and a press on the grip at
-     * its left, which shows the hand, drags the layer to another place, the card lifted under the mouse and the place
-     * it would land left empty, until let go there.
+     * A card's background, outlined while its layer is chosen, showing the hand wherever no control of the card is: a
+     * press there selects the layer, and moving the mouse on drags the layer to another place, the card lifted under
+     * the mouse and the place it would land left empty, until let go there.
      */
     private static final class Background implements Widget {
         private final EditorContext editor;
         private final int index;
         private final Rect card;
+        /** Where the card's controls are, which take the mouse's presses themselves. */
+        private final List<Rect> controls;
         /** The cards' slots as laid out with this one, which a drag finds its place among. */
         private final ListSlots slots;
         private final Drag drag;
+        /** Whether the mouse's button went down on this card and is held, and at what height, in GUI pixels. */
+        private boolean held;
+        private int pressedAt;
         private boolean dragging;
 
-        Background(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
+        Background(EditorContext editor, int index, Rect card, List<Rect> controls, ListSlots slots, Drag drag) {
             this.editor = editor;
             this.index = index;
             this.card = card;
+            this.controls = controls;
             this.slots = slots;
             this.drag = drag;
         }
@@ -258,26 +268,30 @@ final class LayerCards {
             canvas.sprite(chosen ? Look.CHOSEN : Look.PANEL, card);
             canvas.sprite(Look.icon("grip"), new Rect(card.x() + (GRIP_WIDTH - Icon.SIZE) / 2,
                     card.y() + (card.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE));
-            if (grip().contains(mouseX, mouseY)) {
+            if (free(mouseX, mouseY)) {
                 canvas.showHand();
             }
         }
 
         @Override
         public boolean click(double x, double y, int button, Modifiers modifiers) {
-            if (button != MouseButtons.LEFT || !card.contains(x, y)) {
+            if (button != MouseButtons.LEFT || !free(x, y)) {
                 return false;
             }
             editor.select(index);
-            dragging = grip().contains(x, y);
-            drag.active = dragging;
-            drag.heldAt = (int) y - card.y();
-            drag.mouseY = (int) y;
+            held = true;
+            pressedAt = (int) y;
             return true;
         }
 
+        /** Lifts the card once the mouse has moved far enough with its button held, then moves it with the mouse. */
         @Override
         public void drag(double x, double y) {
+            if (held && !dragging && Math.abs(y - pressedAt) >= LIFT_AFTER) {
+                dragging = true;
+                drag.active = true;
+                drag.heldAt = pressedAt - card.y();
+            }
             if (dragging) {
                 drag.mouseY = (int) y;
                 editor.preview(new LayerEdits.Move(slots.count() - 1 - slots.placeAt(y)));
@@ -286,6 +300,7 @@ final class LayerCards {
 
         @Override
         public void release(double x, double y) {
+            held = false;
             if (dragging) {
                 editor.commitPreview();
                 dragging = false;
@@ -293,15 +308,15 @@ final class LayerCards {
             }
         }
 
-        /** The grip at the card's left, which a drag starts on. */
-        private Rect grip() {
-            return new Rect(card.x(), card.y(), GRIP_WIDTH, card.height());
+        /** Whether a point is on the card where none of its controls is. */
+        private boolean free(double x, double y) {
+            return card.contains(x, y) && controls.stream().noneMatch(control -> control.contains(x, y));
         }
     }
 
     /**
-     * While a card is dragged by its grip, that card lifted under the mouse over the others, with a shadow, and the
-     * place it would land left empty and ringed; nothing otherwise. The lifted card is drawn by the card's own widgets.
+     * While a card is dragged, that card lifted under the mouse over the others, with a shadow, and the place it would
+     * land left empty and ringed; nothing otherwise. The lifted card is drawn by the card's own widgets.
      */
     private static final class LiftedCard implements Widget {
         private final EditorContext editor;
