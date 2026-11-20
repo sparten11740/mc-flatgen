@@ -46,40 +46,53 @@ sourceSets.matching { it.name == "gametest" }.all {
 // What differs between Minecraft versions: one tree per range.
 apply(from = treeDir.resolve("version-sources.gradle.kts"))
 // The GameTests' structures, in the data folder the node's release reads them from: structure/ as from 1.21, or the
-// folder its properties name (structures/ up to 1.20.x).
+// folder its properties name (structures/ up to 1.20.x). Only a data pack's own structure folder moves; worldgen's
+// keeps its name.
 findProperty("structure_folder")?.toString()?.let { folder ->
+    val structures = Regex("^(data/[^/]+/)structure/")
     tasks.matching { it.name == "processGametestResources" }.configureEach {
-        (this as ProcessResources).eachFile { path = path.replace("/structure/", "/$folder/") }
+        inputs.property("structureFolder", folder)
+        (this as ProcessResources).eachFile { path = structures.replace(path, "\$1$folder/") }
     }
 }
-// Flatgen's fonts as the node's release must be told them to draw them as the others do: a release that sizes a
-// TrueType font by its whole height rather than its em, and sets its glyphs elsewhere, has them written larger and
-// lower by what its properties give (1.20.1): one factor, and how far down each text style's glyphs go. Each shift is
-// rounded to the glyphs' own pixels, as many to a GUI pixel as the definition oversamples, so letters stay on whole
-// window pixels.
-findProperty("ttf_size_factor")?.toString()?.toDouble()?.let { factor ->
-    val shifts = property("ttf_shift_down").toString().split(",")
-        .associate { it.substringBefore(":") to it.substringAfter(":").toDouble() }
-    val oversample = property("ttf_oversample_factor").toString().toInt()
-    val size = Regex("\"size\": ([0-9.]+)")
-    val shift = Regex("\"oversample\": ([0-9]+), \"shift\": \\[0, 0]")
+// Flatgen's fonts on a release that draws TrueType fonts with stb_truetype (1.20.1) rather than FreeType, which sizes a
+// font by its whole height rather than its em, sets its glyphs higher and leaves them between pixels: each definition
+// is written larger by Inter's whole height in ems, each text style's glyphs lower by what was measured against
+// 1.21.11's screens, rounded to whole window pixels (the definition's own oversample), and drawn this many times finer
+// than the window's pixels so thin strokes do not fade. A definition of a style not measured fails the build.
+val interHeightInEms = 1.2099609375
+val stbShiftsDown = mapOf("body" to 1.5, "strong" to 1.5, "title" to 0.0)
+val stbFiner = 2
+if (findProperty("stb_truetype")?.toString() == "true") {
     tasks.named<ProcessResources>("processResources") {
-        inputs.property("ttfSizeFactor", factor)
-        inputs.property("ttfShiftDown", shifts.toString())
-        inputs.property("ttfOversampleFactor", oversample)
-        shifts.forEach { (style, down) ->
-            filesMatching("assets/$modId/font/${style}_*.json") {
-                filter { line -> size.replace(line) { "\"size\": ${it.groupValues[1].toDouble() * factor}" } }
-                filter { line ->
-                    shift.replace(line) {
-                        val pixels = it.groupValues[1].toInt()
-                        val shifted = Math.round(down * pixels).toDouble() / pixels
-                        "\"oversample\": ${pixels * oversample}, \"shift\": [0, $shifted]"
-                    }
-                }
-            }
+        inputs.property("stbFonts", "$interHeightInEms $stbShiftsDown $stbFiner")
+        doLast {
+            destinationDir.resolve("assets/$modId/font").listFiles { file -> file.extension == "json" }.orEmpty()
+                .forEach { file -> stbFont(file, interHeightInEms, stbShiftsDown, stbFiner) }
         }
     }
+}
+
+/** A font definition rewritten for stb_truetype, as described above. */
+fun stbFont(file: File, heightInEms: Double, shiftsDown: Map<String, Double>, finer: Int) {
+    val style = file.name.substringBefore("_")
+    val down = shiftsDown[style] ?: throw GradleException("$file is of a text style not measured for stb_truetype")
+    @Suppress("UNCHECKED_CAST")
+    val definition = groovy.json.JsonSlurper().parse(file) as Map<String, Any>
+    @Suppress("UNCHECKED_CAST")
+    val fonts = (definition["providers"] as List<MutableMap<String, Any>>).filter { it["type"] == "ttf" }
+    if (fonts.isEmpty()) {
+        throw GradleException("$file has no TrueType font to rewrite for stb_truetype")
+    }
+    fonts.forEach { font ->
+        val pixels = (font["oversample"] as Number).toInt()
+        @Suppress("UNCHECKED_CAST")
+        val shift = font["shift"] as? List<Number> ?: listOf(0, 0)
+        font["size"] = (font["size"] as Number).toDouble() * heightInEms
+        font["oversample"] = pixels * finer
+        font["shift"] = listOf(shift[0], shift[1].toDouble() + Math.round(down * pixels).toDouble() / pixels)
+    }
+    file.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(definition)) + "\n")
 }
 
 // Where the GameTests leave word that they played, which each loader's GameTest run is told: a game that never started,

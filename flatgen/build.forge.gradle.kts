@@ -92,9 +92,12 @@ dependencies {
 // the refmap, which only this build writes.
 tasks.processResources {
     exclude("$modId-fabric.mixins.json")
-    filesMatching("$modId.mixins.json") {
-        val refmap = "\"refmap\": \"$modId.refmap.json\","
-        filter { line -> line.replace("\"required\": true,", "\"required\": true,\n  $refmap") }
+    doLast {
+        val config = destinationDir.resolve("$modId.mixins.json")
+        @Suppress("UNCHECKED_CAST")
+        val read = groovy.json.JsonSlurper().parse(config) as MutableMap<String, Any>
+        read["refmap"] = "$modId.refmap.json"
+        config.writeText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(read)) + "\n")
     }
 }
 tasks.named<ProcessResources>("processGametestResources") {
@@ -102,7 +105,7 @@ tasks.named<ProcessResources>("processGametestResources") {
 }
 
 // The jar a player installs is the one with the game's intermediate names, in the root build/libs beside every other
-// node's; the development one stays in this node's build/libs.
+// node's; the development one stays in this node's build/devlibs.
 tasks.named<Jar>("jar") {
     archiveClassifier = "dev"
     manifest.attributes("MixinConfigs" to "$modId.mixins.json")
