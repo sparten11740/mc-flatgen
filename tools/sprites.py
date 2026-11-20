@@ -37,6 +37,11 @@ MATERIALS = {
     "Y": (0x1E3A10, 0x3E6E22, 0x5A9432, 0x7CBA4E),  # grass: a flat stack's top stripe
     "D": (0x2E1A0C, 0x5A3820, 0x76492A, 0x936038),  # dirt: a flat stack's middle stripe
     "H": (0x2A100C, 0x7A2E22, 0x9A4030, 0xBC5A44),  # rough rock: the hills a dimension has as the game makes it
+    "Z": (0x1F4F8F, 0x4C8BD6, 0x6BA6EC, 0x9CC8FF),  # a day's sky
+    "L": (0x55606B, 0xC4CCD4, 0xE4E9EE, 0xFFFFFF),  # a white cloud
+    "M": (0x2B3138, 0x5E6873, 0x7B8692, 0x9DA8B4),  # a grey rain cloud
+    "T": (0x5A9AF0, 0x5A9AF0, 0x5A9AF0, 0x5A9AF0),  # raindrops, flat as a sign is drawn
+    "X": (0xE03A3A, 0xE03A3A, 0xE03A3A, 0xE03A3A),  # the "no" sign's red ring and slash, flat as a sign is drawn
 }
 
 PICTURES = {
@@ -308,6 +313,60 @@ HHHHHHHHHHHHHHHH
 ..........PPQQQ.
 ............QQQ.
 ............QQQ.
+................
+"""),
+    "time_and_weather": ("inside", """
+................
+................
+........JJJJ....
+.......JJJJJJ...
+......JJJJJJJJ..
+......JJJJJJJJ..
+...LLLJJJJJJJJ..
+..LLLLLLLJJJJ...
+..LLLLLLLLLJ....
+.LLLLLLLLLLLL...
+LLLLLLLLLLLLLL..
+LLLLLLLLLLLLLL..
+.LLLLLLLLLLLL...
+................
+................
+................
+"""),
+    "always_clear": ("inside", """
+................
+....MMM.........
+...MMMMM.MMM....
+..MMMMMMMMMMM...
+.MMMMMMMMMMMMMM.
+.MMMMMMMMMMMMMM.
+..MMMMMMMMMMMM..
+.........XXXX...
+..T..T..X....X..
+..T..T.X.X....X.
+.......X..X...X.
+..T....X...X..X.
+..T..T.X....X.X.
+.....T..X....X..
+.........XXXX...
+................
+"""),
+    "always_day": ("inside", """
+................
+.ZZZZZZZZZZZZZZ.
+.ZZZZZZJJZZZZZZ.
+.ZZJZZZZZZZZJZZ.
+.ZZZZZJJJJZZZZZ.
+.ZZZZJJJJJJZZZZ.
+.ZJZZJJJJJJZZJZ.
+.ZJZZJJJJJJZZJZ.
+.ZZZZJJJJJJZZZZ.
+.ZZZZZJJJJZZZZZ.
+.ZZJZZZZZZZZJZZ.
+.ZZZZZZJJZZZZZZ.
+.YYYYYYYYYYYYYY.
+.DDDDDDDDDDDDDD.
+.DDDDDDDDDDDDDD.
 ................
 """),
 }

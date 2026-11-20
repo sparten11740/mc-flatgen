@@ -1,6 +1,7 @@
 package dev.flatgen.options.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +24,23 @@ class FlatgenOptionFilesTest {
     @Test
     void alwaysClearStopsTheWeather() throws IOException {
         assertEquals(List.of(new GameRule("doWeatherCycle", "false")), read("always_clear").effects());
+    }
+
+    /** The time and weather group's pictures are Flatgen's own, and its heading has one of its own (F16). */
+    @Test
+    void timeAndWeatherShowFlatgensOwnPictures() throws IOException {
+        WorldOption clear = read("always_clear");
+        WorldOption day = read("always_day");
+        List<WorldOption.Icon> pictures = List.of(clear.icon(), day.icon(), clear.groupIcon().orElseThrow());
+        pictures.forEach(picture -> assertTrue(picture.texture() && Files.exists(texture(picture.id())),
+                picture.id() + " is not a texture Flatgen ships"));
+    }
+
+    /** Where a texture is among Flatgen's resources, by its location. */
+    private static Path texture(String location) {
+        int colon = location.indexOf(':');
+        return OPTIONS.resolve("../../../" + location.substring(0, colon) + "/" + location.substring(colon + 1))
+                .normalize();
     }
 
     @Test

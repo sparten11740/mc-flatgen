@@ -1,5 +1,5 @@
 {
-  "icon": "minecraft:clock",
+  "icon": { "texture": "flatgen:textures/gui/sprites/icon/always_day.png" },
   "group": "flatgen:time_and_weather",
   "effects": [
     { "type": "game_rule", "rule": "doDaylightCycle", "value": false },

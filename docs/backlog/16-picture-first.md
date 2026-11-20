@@ -127,7 +127,8 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Add above, Add below, Copy layer, Remove layer | own: layer bar with plus above, below, the block with a copy badge, bar with minus |
 | Editor | Undo, Redo | own: hooked arrows |
 | Editor | Copy code, Paste code | paper with an arrow out, in |
-| Editor | world options | each option's own picture, a ticked or empty box; a missing one the barrier |
+| Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |
+| Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
 | Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
 | Pickers | search | compass |
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |

@@ -143,11 +143,11 @@ opened again.
 
 ## Examples
 
-Flatgen's own "always day" (F10):
+Flatgen's own "always day" (F10), with a picture of its own:
 
 ```json
 {
-  "icon": "minecraft:clock",
+  "icon": { "texture": "flatgen:textures/gui/sprites/icon/always_day.png" },
   "group": "flatgen:time_and_weather",
   "effects": [
     { "type": "game_rule", "rule": "doDaylightCycle", "value": false },

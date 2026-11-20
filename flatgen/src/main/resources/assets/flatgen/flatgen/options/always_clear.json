@@ -1,6 +1,7 @@
 {
-  "icon": "minecraft:sunflower",
+  "icon": { "texture": "flatgen:textures/gui/sprites/icon/always_clear.png" },
   "group": "flatgen:time_and_weather",
+  "group_icon": { "texture": "flatgen:textures/gui/sprites/icon/time_and_weather.png" },
   "effects": [
     { "type": "game_rule", "rule": "doWeatherCycle", "value": false }
   ]
