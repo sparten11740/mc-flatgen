@@ -44,8 +44,8 @@ action pictures, as beside the column they would read as layers.
 | Structures | own: a village house |
 | No slimes | the ladder of the ground's height with an up arrow: it raises the ground |
 | Undo, Redo | own: a hooked arrow curling left, right |
-| Copy code, Share | paper with an "out" badge |
-| Paste code, Paste | paper with an "in" badge |
+| Copy code, Share | paper with a big green arrow going up and out |
+| Paste code, Paste | paper with a big blue arrow coming down and in |
 | Add above, Add below | own: a layer bar with a plus above it, below it |
 | Remove layer | own: a layer bar with a minus |
 | Copy layer, Copy preset | the thing's own picture with a "copy" badge of two small sheets |
