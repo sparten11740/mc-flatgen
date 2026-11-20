@@ -20,7 +20,7 @@ public final class BlockChoice {
 
     /** Opens the block picker for the selected layer, whose pick sets its block as one step to undo. */
     public static void pick(EditorContext editor) {
-        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(),
+        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(), editor.registries(),
                 block -> editor.apply(new SetBlock(block))));
     }
 

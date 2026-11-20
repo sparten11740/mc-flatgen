@@ -351,7 +351,7 @@ public final class TemplatesScreen extends FlatgenScreen {
         }
 
         private void pick(Parameter.Block block) {
-            Screens.show(BlockPicker.screen(TemplatesScreen.this, editor.enabledFeatures(),
+            Screens.show(BlockPicker.screen(TemplatesScreen.this, editor.enabledFeatures(), editor.registries(),
                     picked -> values = values.with(block, picked)));
         }
     }

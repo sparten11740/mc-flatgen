@@ -14,6 +14,9 @@ import net.minecraft.world.flag.FeatureFlags;
 
 /** The block picker's blocks and what each is like as a layer (F05), as the game's own blocks are. */
 final class BlockGameTests {
+    /** The creative inventory's tabs of blocks: building, coloured, natural, functional, redstone. */
+    private static final int BLOCK_TABS = 5;
+
     private BlockGameTests() {
     }
 
@@ -21,6 +24,7 @@ final class BlockGameTests {
         Map<String, Consumer<GameTestHelper>> tests = new LinkedHashMap<>();
         tests.put("the picker lists the game's blocks but air", BlockGameTests::catalog);
         tests.put("blocks are what they are like as layers", BlockGameTests::traits);
+        tests.put("the creative inventory's tabs of blocks sort the blocks", BlockGameTests::tabs);
         return tests;
     }
 
@@ -39,6 +43,15 @@ final class BlockGameTests {
         traitsAre("minecraft:torch", new LayerHints.Traits(false, false, false, true));
         traitsAre("minecraft:chest", new LayerHints.Traits(false, false, true, true));
         traitsAre("minecraft:short_grass", new LayerHints.Traits(false, false, false, false));
+    }
+
+    /** The five tabs of blocks, in the creative inventory's order, grass among the natural blocks. */
+    private static void tabs(GameTestHelper helper) {
+        List<BlockCatalog.Tab> tabs = BlockCatalog.tabs(FeatureFlags.DEFAULT_FLAGS,
+                helper.getLevel().registryAccess());
+        check(tabs.size() == BLOCK_TABS, "there are " + tabs.size() + " tabs of blocks, not " + BLOCK_TABS);
+        check(tabs.get(2).blocks().contains("minecraft:grass_block"), "grass is not among the natural blocks");
+        check(tabs.get(0).blocks().contains("minecraft:stone"), "stone is not among the building blocks");
     }
 
     private static void traitsAre(String block, LayerHints.Traits expected) {

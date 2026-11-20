@@ -33,8 +33,12 @@ largest GUI scale.
 - `search/rules/Search` (pure, shared with the biome picker of F07 from the start): matching and ranking (exact id,
   name prefix, word prefix, contains), recent and starred ordering, over plain entries of id, name and namespace.
   Unit-tested once for both pickers.
-- `blocks/client/BlockPicker`: the block picker, a `client/gui/GridPickerScreen` (a `PickerScreen`: the search field,
-  the mod filter and Cancel, shared with F07's biome picker, over one `CardGrid`) whose cards are block icons.
+- `blocks/client/BlockPicker`: the block picker, `BlockPickerScreen`, a `client/gui/ShelvedPickerScreen` as F07's
+  biome picker is (a `PickerScreen`: the search field, the mod filter and Cancel; the starred, the recent, the kinds and
+  every block down its side), whose cards are block icons. Since 2026-11-20 its kinds are the creative inventory's tabs
+  of blocks (building, coloured, natural, functional, redstone), filled by the game for the world's features with the
+  blocks mods put in them, their names and pictures the game's own (`mc/BlockCatalog.tabs`); a panel of three agents
+  chose it as the next left-out item, as a player who cannot read cannot search but knows those tabs.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
   which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
@@ -45,7 +49,7 @@ largest GUI scale.
 
 ## Tests
 
-- Unit: `SearchTest`, `PicksTest`, `PickSectionsTest`, `BlockRulesTest` (the edit and the hints), `TypedTextTest`,
+- Unit: `SearchTest`, `PicksTest`, `BlockRulesTest` (the edit and the hints), `TypedTextTest`,
   `PickerRowsTest`.
 - GameTests on both nodes: the picker lists the game's blocks but air; sand, stone, water, a torch and a chest have
   the traits the hints read.
@@ -54,3 +58,8 @@ largest GUI scale.
   stone, both kept in `blocks.json`; the mod filter showed the loader's name for the mod; sand picked for the bottom
   layer showed the falling hint. On Fabric, andesite picked through a search set the dirt layer.
 - Not tried: a modded block (the dev runs have no block mods); blocks without an item drawn in the grid.
+
+Kinds, 2026-11-20, on 1.21.1 NeoForge in a dev client with Blockpilot: the picker opens on Building Blocks with the
+creative inventory's five tabs of blocks down its side, their names and pictures the game's, and Natural Blocks shows
+grass, podzol, mycelium, dirt path and dirt first, in the creative inventory's order; a GameTest checks the tabs on
+every node's server. Not tried in game: the other nodes, German names, and a mod's blocks in the tabs.
