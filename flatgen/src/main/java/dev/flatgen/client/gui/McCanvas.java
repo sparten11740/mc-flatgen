@@ -215,7 +215,7 @@ final class McCanvas implements Canvas {
                 area.height() + 2 * RING_SPREAD));
     }
 
-    /** Draws above the items drawn so far. */
+    /** Draws in a stratum of its own above everything drawn so far, from 1.21.11; above the items before then. */
     @Override
     public void raised(Runnable drawing) {
         //? if >=1.21.11 {
@@ -235,6 +235,7 @@ final class McCanvas implements Canvas {
         handShown = true;
     }
 
+    /** Draws above the items drawn so far. */
     private void overItems(Runnable draw) {
         //? if >=1.21.11 {
         /*if (itemsInLayer) {

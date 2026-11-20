@@ -127,12 +127,12 @@ public final class ScrollGroup implements Widget {
         return window.contains(x, y) ? widgets.narrationAt(x, y) : Optional.empty();
     }
 
-    /** Scrolls so that a part of the widgets is in the window, as far as it fits. */
     /** Scrolls so an area of the content, as it lies with the content scrolled to its top, is in sight. */
     public void revealContent(Rect area) {
         reveal(new Rect(area.x(), area.y() - scroll, area.width(), area.height()));
     }
 
+    /** Scrolls so that a part of the widgets is in the window, as far as it fits. */
     @Override
     public void reveal(Rect area) {
         int scrolled = Scrolling.showing(scroll, area, window, hidden());
@@ -147,7 +147,6 @@ public final class ScrollGroup implements Widget {
         return widgets.describe();
     }
 
-    /** Places the widgets for the scroll, which moves them up. */
     /** Lays the content out a little inside the window's top, so its first border never touches the clip. */
     private void layOut() {
         int top = window.y() - scroll + INSET;
