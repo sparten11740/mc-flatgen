@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.mc.BlockSides;
 import dev.flatgen.mc.Items;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -59,7 +60,7 @@ final class McCanvas implements Canvas {
 
     /** The style of text in a text style's font at this many window pixels per GUI pixel. */
     static Style style(TextStyle textStyle, int pixelsPerUnit) {
-        ResourceLocation id = ResourceLocation.parse(textStyle.font(pixelsPerUnit));
+        ResourceLocation id = Objects.requireNonNull(ResourceLocation.tryParse(textStyle.font(pixelsPerUnit)));
         //? if >=1.21.11 {
         /*return Style.EMPTY.withFont(new FontDescription.Resource(id));
         *///?} else {

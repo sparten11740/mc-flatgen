@@ -19,7 +19,6 @@ import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
-import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 
@@ -51,7 +50,7 @@ public final class WorldCreation {
     /** The Nether's or the End's superflat settings (F22), when the world on the screen has that dimension flat. */
     public static Optional<FlatLevelGeneratorSettings> flatSettings(WorldCreationContext context,
             Dimension dimension) {
-        return WorldTypes.flatSettings(context.selectedDimensions().dimensions(), dimension);
+        return WorldTypes.flatSettings(WorldTypes.byKey(context.selectedDimensions()), dimension);
     }
 
     /**
@@ -68,10 +67,9 @@ public final class WorldCreation {
      */
     public static void applyOtherDimensions(CreateWorldScreen screen,
             Map<Dimension, Optional<FlatLevelGeneratorSettings>> settings) {
-        Map<ResourceKey<LevelStem>, LevelStem> own = worldType(screen)
-                .map(type -> type.value().createWorldDimensions().dimensions()).orElse(Map.of());
-        screen.getUiState().updateDimensions((registries, dimensions) -> new WorldDimensions(
-                WorldTypes.withOtherDimensions(dimensions.dimensions(), own, settings)));
+        Map<ResourceKey<LevelStem>, LevelStem> own = worldType(screen).map(WorldTypes::dimensions).orElse(Map.of());
+        screen.getUiState().updateDimensions((registries, dimensions) -> WorldTypes.of(
+                WorldTypes.withOtherDimensions(WorldTypes.byKey(dimensions), own, settings)));
     }
 
     /** The world being created, but with these superflat settings; the Create World screen stays as it is. */
@@ -109,7 +107,7 @@ public final class WorldCreation {
      * for a dimension the world lacks.
      */
     public static DimensionType dimensionType(WorldCreationContext context, Dimension dimension) {
-        Map<ResourceKey<LevelStem>, LevelStem> dimensions = context.selectedDimensions().dimensions();
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = WorldTypes.byKey(context.selectedDimensions());
         return dimensions.getOrDefault(WorldTypes.stemKey(dimension), dimensions.get(LevelStem.OVERWORLD)).type()
                 .value();
     }

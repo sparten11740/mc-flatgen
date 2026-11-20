@@ -1,6 +1,7 @@
 package dev.flatgen.mc;
 
 import com.google.gson.JsonElement;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
@@ -37,7 +38,7 @@ public final class FlatSettings {
     /** The preset of these settings, under this name and icon. */
     public static PresetReading toPreset(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries,
             String name, String icon) {
-        JsonElement json = FlatLevelGeneratorSettings.CODEC.encodeStart(ops(registries), settings).getOrThrow();
+        JsonElement json = orThrow(FlatLevelGeneratorSettings.CODEC.encodeStart(ops(registries), settings));
         return VanillaSettings.fromJson(json.getAsJsonObject(), name, icon);
     }
 
@@ -47,7 +48,7 @@ public final class FlatSettings {
      * @throws IllegalStateException when the game refuses the settings, as it does an unknown block
      */
     public static FlatLevelGeneratorSettings toSettings(Preset preset, HolderLookup.Provider registries) {
-        return FlatLevelGeneratorSettings.CODEC.parse(ops(registries), VanillaSettings.toJson(preset)).getOrThrow();
+        return orThrow(FlatLevelGeneratorSettings.CODEC.parse(ops(registries), VanillaSettings.toJson(preset)));
     }
 
     /**
@@ -90,6 +91,18 @@ public final class FlatSettings {
     public static Stack toStack(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries) {
         Preset read = toPreset(settings, registries, "", "").preset();
         return new Stack(read.layers(), read.biome());
+    }
+
+    /**
+     * A codec's result, or its error as an exception.
+     *
+     * @throws IllegalStateException with the game's message when the codec refused
+     */
+    public static <T> T orThrow(DataResult<T> result) {
+        //? if >=1.21 {
+        return result.getOrThrow();
+        //?} else
+        /*return result.getOrThrow(false, message -> { throw new IllegalStateException(message); });*/
     }
 
     /** The game's ops for JSON that names registry entries of these registries. */

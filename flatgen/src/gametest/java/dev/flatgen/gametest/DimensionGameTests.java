@@ -113,9 +113,9 @@ final class DimensionGameTests {
             RegistryAccess registries) {
         String json = Exports.worldPreset(OptionsAtDone.settings(preset, registries, List.of()),
                 FlatSettings.otherDimensions(preset, registries), registries);
-        WorldPreset decoded = WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries), JsonParser.parseString(json))
-                .getOrThrow();
-        return decoded.createWorldDimensions().dimensions();
+        WorldPreset decoded = FlatSettings.orThrow(
+                WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries), JsonParser.parseString(json)));
+        return WorldTypes.byKey(decoded.createWorldDimensions());
     }
 
     private static void checkFlat(LevelStem stem, Stack stack, RegistryAccess registries, String name) {

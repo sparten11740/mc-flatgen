@@ -41,7 +41,7 @@ public final class FlatWorldTypes {
     }
 
     private static PresetReading reading(Holder.Reference<WorldPreset> type, HolderLookup.Provider registries) {
-        Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = WorldTypes.dimensions(type);
         String name = Component.translatable(type.key().location().toLanguageKey("generator")).getString();
         PresetReading overworld = FlatSettings.toPreset(WorldTypes.flatSettings(dimensions, Dimension.OVERWORLD)
                 .orElseThrow(), registries, name, "");

@@ -46,8 +46,8 @@ public final class Exports {
 
     /** Superflat settings as one line of JSON, as a server's {@code generator-settings} reads them. */
     public static String generatorSettings(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries) {
-        return COMPACT.toJson(FlatLevelGeneratorSettings.CODEC.encodeStart(FlatSettings.ops(registries), settings)
-                .getOrThrow());
+        return COMPACT.toJson(FlatSettings.orThrow(
+                FlatLevelGeneratorSettings.CODEC.encodeStart(FlatSettings.ops(registries), settings)));
     }
 
     /**
@@ -65,7 +65,7 @@ public final class Exports {
                 WorldTypes.withOtherDimensions(normal, normal, others));
         LevelStem overworld = dimensions.get(LevelStem.OVERWORLD);
         dimensions.put(LevelStem.OVERWORLD, new LevelStem(overworld.type(), new FlatLevelSource(settings)));
-        return JsonFields.PRETTY.toJson(WorldPreset.DIRECT_CODEC.encodeStart(FlatSettings.ops(registries),
-                new WorldPreset(dimensions)).getOrThrow());
+        return JsonFields.PRETTY.toJson(FlatSettings.orThrow(
+                WorldPreset.DIRECT_CODEC.encodeStart(FlatSettings.ops(registries), new WorldPreset(dimensions))));
     }
 }

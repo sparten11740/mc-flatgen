@@ -54,8 +54,8 @@ final class ExportGameTests {
             throw new UncheckedIOException(exception);
         }
         check("minecraft:flat".equals(read.getProperty("level-type")), "level-type " + read.getProperty("level-type"));
-        FlatLevelGeneratorSettings settings = FlatLevelGeneratorSettings.CODEC.parse(FlatSettings.ops(registries),
-                JsonParser.parseString(read.getProperty("generator-settings"))).getOrThrow();
+        FlatLevelGeneratorSettings settings = FlatSettings.orThrow(FlatLevelGeneratorSettings.CODEC.parse(
+                FlatSettings.ops(registries), JsonParser.parseString(read.getProperty("generator-settings"))));
         check(layers(settings).equals(layers(OptionsAtDone.settings(GLASS, registries, List.of()))),
                 "the server's layers are " + layers(settings));
     }
@@ -63,8 +63,8 @@ final class ExportGameTests {
     private static void worldPreset(GameTestHelper helper) {
         RegistryAccess registries = helper.getLevel().registryAccess();
         FlatLevelGeneratorSettings settings = OptionsAtDone.settings(GLASS, registries, List.of());
-        WorldPreset preset = WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
-                JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))).getOrThrow();
+        WorldPreset preset = FlatSettings.orThrow(WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
+                JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))));
         Holder<WorldPreset> type = Holder.direct(preset);
         check(WorldTypes.editableWhole(type, registries)
                 && WorldTypes.flatDimensions(type).equals(EnumSet.of(Dimension.OVERWORLD)),

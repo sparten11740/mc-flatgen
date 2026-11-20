@@ -2,7 +2,10 @@ package dev.flatgen.mc;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.DynamicOps;
-import com.mojang.serialization.JsonOps;
+//? if <1.21 {
+/*import com.mojang.serialization.Lifecycle;
+import net.minecraft.core.MappedRegistry;
+*///?}
 import dev.flatgen.preset.rules.Dimension;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -18,6 +21,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.levelgen.FlatLevelSource;
+import net.minecraft.world.level.levelgen.WorldDimensions;
 import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 import net.minecraft.world.level.levelgen.presets.WorldPreset;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
@@ -33,7 +37,7 @@ public final class WorldTypes {
      * as is the game's Flat All Dimensions from 26.2 on, and a type that makes the End some other way is not.
      */
     public static boolean editableWhole(Holder<WorldPreset> type, HolderLookup.Provider registries) {
-        Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
+        Map<ResourceKey<LevelStem>, LevelStem> dimensions = dimensions(type);
         Set<Dimension> flat = flatDimensions(dimensions);
         return flat.contains(Dimension.OVERWORLD) && defaultDimensions(registries)
                 .filter(normal -> written(normal, flat, registries).equals(written(dimensions, flat, registries)))
@@ -42,7 +46,7 @@ public final class WorldTypes {
 
     /** The dimensions Flatgen edits that a world type makes flat. */
     public static Set<Dimension> flatDimensions(Holder<WorldPreset> type) {
-        return flatDimensions(type.value().createWorldDimensions().dimensions());
+        return flatDimensions(dimensions(type));
     }
 
     private static Set<Dimension> flatDimensions(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
@@ -61,14 +65,40 @@ public final class WorldTypes {
     /** The dimensions of the Default world type, by their keys; none when the registries lack it. */
     public static Optional<Map<ResourceKey<LevelStem>, LevelStem>> defaultDimensions(
             HolderLookup.Provider registries) {
-        return registries.lookupOrThrow(Registries.WORLD_PRESET).get(WorldPresets.NORMAL)
-                .map(preset -> preset.value().createWorldDimensions().dimensions());
+        return registries.lookupOrThrow(Registries.WORLD_PRESET).get(WorldPresets.NORMAL).map(WorldTypes::dimensions);
+    }
+
+    /** The dimensions a world type makes, by their keys. */
+    public static Map<ResourceKey<LevelStem>, LevelStem> dimensions(Holder<WorldPreset> type) {
+        return byKey(type.value().createWorldDimensions());
+    }
+
+    /** A world's dimensions by their keys, which 1.20.1 keeps in a registry of their own. */
+    public static Map<ResourceKey<LevelStem>, LevelStem> byKey(WorldDimensions dimensions) {
+        //? if >=1.21 {
+        return dimensions.dimensions();
+        //?} else {
+        /*Map<ResourceKey<LevelStem>, LevelStem> byKey = new LinkedHashMap<>();
+        dimensions.dimensions().entrySet().forEach(dimension -> byKey.put(dimension.getKey(), dimension.getValue()));
+        return byKey;
+        *///?}
+    }
+
+    /** A world's dimensions of these, by their keys. */
+    public static WorldDimensions of(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
+        //? if >=1.21 {
+        return new WorldDimensions(dimensions);
+        //?} else {
+        /*MappedRegistry<LevelStem> registry = new MappedRegistry<>(Registries.LEVEL_STEM, Lifecycle.stable());
+        dimensions.forEach((key, stem) -> registry.register(key, stem, Lifecycle.stable()));
+        return new WorldDimensions(registry.freeze());
+        *///?}
     }
 
     /** The dimensions but those left out, as the game writes them, so two world types' can be compared. */
     private static Map<String, Optional<JsonElement>> written(Map<ResourceKey<LevelStem>, LevelStem> dimensions,
             Set<Dimension> leftOut, HolderLookup.Provider registries) {
-        DynamicOps<JsonElement> ops = registries.createSerializationContext(JsonOps.INSTANCE);
+        DynamicOps<JsonElement> ops = FlatSettings.ops(registries);
         Map<String, Optional<JsonElement>> written = new TreeMap<>();
         dimensions.forEach((key, stem) -> written.put(key.location().toString(),
                 LevelStem.CODEC.encodeStart(ops, stem).result()));

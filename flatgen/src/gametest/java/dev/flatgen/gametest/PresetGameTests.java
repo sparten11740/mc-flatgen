@@ -95,7 +95,8 @@ final class PresetGameTests {
     }
 
     private static JsonElement json(FlatLevelGeneratorSettings settings, HolderLookup.Provider registries) {
-        return FlatLevelGeneratorSettings.CODEC.encodeStart(FlatSettings.ops(registries), settings).getOrThrow();
+        return FlatSettings.orThrow(
+                FlatLevelGeneratorSettings.CODEC.encodeStart(FlatSettings.ops(registries), settings));
     }
 
     private static String blockId(BlockState state) {

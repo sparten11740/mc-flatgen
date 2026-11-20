@@ -73,7 +73,7 @@ final class WorldTypeGameTests {
     }
 
     private static void expect(HolderLookup.Provider registries, String type, boolean whole) {
-        ResourceKey<WorldPreset> key = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.parse(type));
+        ResourceKey<WorldPreset> key = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.tryParse(type));
         boolean found = WorldTypes.editableWhole(registries.lookupOrThrow(Registries.WORLD_PRESET)
                 .getOrThrow(key), registries);
         check(found == whole, type + (whole ? " is not told as" : " is told as") + " one Flatgen can edit whole");

@@ -52,7 +52,7 @@ final class FactGameTests {
         ServerLevel level = helper.getLevel();
         for (String id : BIOMES) {
             Biome biome = level.registryAccess().lookupOrThrow(Registries.BIOME)
-                    .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.parse(id))).value();
+                    .getOrThrow(ResourceKey.create(Registries.BIOME, ResourceLocation.tryParse(id))).value();
             HEIGHTS.forEach(y -> weatherAgrees(level, id, biome, y));
         }
     }
