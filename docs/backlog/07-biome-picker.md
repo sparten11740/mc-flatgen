@@ -33,9 +33,9 @@ it.
 
 ## Design
 
-- The biome picker is a `PickerScreen` of its own, `biomes/client/BiomePickerScreen`, as the block picker is the
-  one-grid `GridPickerScreen`: the sheet, searching, the mod filter, the picks and stars and the grid are the base's and
-  `search/rules`'; the side, the cards and the panel the biome picker's.
+- The biome picker is `biomes/client/BiomePickerScreen`, a `client/gui/ShelvedPickerScreen` as the block picker is:
+  the sheet, searching, the mod filter, the picks and stars, the shelves down the side and the grid are the base's and
+  `search/rules`'; the kinds, the cards and the panel the biome picker's.
 - The kinds are `biomes/rules/BiomeKinds`, a list of tests on a biome's tags and climate (`BiomeInfo` carries the tags
   `mc/Biomes` reads), each naming the biome that pictures it; a new kind is one more entry.
 - How a biome is painted is `biomes/rules/BiomeScenes`: lists of rules on its tags, name and climate pick its sky, its

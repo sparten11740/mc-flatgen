@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
  * A picker, a sheet over the screen it came from: every entry of its kind as cards, found by typing and narrowed to
  * one mod by the search, the mod filter and Close at the right of its header. Picking one hands it on and goes back, as
  * Close and Escape go back without; the picks and stars are kept in the picker's own file for next time. The header's
- * left and the sheet below it are each picker's own: {@link GridPickerScreen} shows one grid, the biome picker more.
+ * left and the sheet below it are each picker's own; {@link ShelvedPickerScreen} adds the shelves both pickers have.
  */
 public abstract class PickerScreen extends FlatgenScreen {
     /** The most room left around the sheet at the screen's sides and top and bottom, in GUI pixels. */

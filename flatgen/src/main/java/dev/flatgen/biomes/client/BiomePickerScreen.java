@@ -7,13 +7,11 @@ import dev.flatgen.client.gui.CardGrid;
 import dev.flatgen.client.gui.Caption;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Look;
-import dev.flatgen.client.gui.PickerScreen;
-import dev.flatgen.client.gui.PictureTab;
+import dev.flatgen.client.gui.ShelvedPickerScreen;
 import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
-import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.facts.client.FactPictures;
 import dev.flatgen.facts.rules.Fact;
@@ -38,15 +36,11 @@ import net.minecraft.network.chat.Component;
  * in the middle; and at the right the biome chosen, painted larger, with what it does to the world in words beside
  * their pictures and a button that picks it. A click on a card chooses its biome, a second click picks it.
  */
-public final class BiomePickerScreen extends PickerScreen {
-    /** Space between the side, the grid and the panel, in GUI pixels. */
+public final class BiomePickerScreen extends ShelvedPickerScreen {
+    /** Space between the grid and the panel, and in the header, in GUI pixels. */
     private static final int GAP = 8;
-    /** Widths in GUI pixels: the side and the panel at the right. */
-    private static final int SIDE_WIDTH = 92;
+    /** The panel's width at the right, in GUI pixels. */
     private static final int PANEL_WIDTH = 132;
-    /** A shelf's row on the side, and the space parting the side's groups, in GUI pixels. */
-    private static final int SIDE_ROW = 18;
-    private static final int SIDE_SEPARATOR = 6;
     /** The dimension's biome now in the header, painted, in GUI pixels. */
     private static final int NOW_WIDTH = 26;
     /** A card, the landscape on it and the space inside its edge, in GUI pixels. */
@@ -59,9 +53,6 @@ public final class BiomePickerScreen extends PickerScreen {
     private static final int PANEL_PICTURE = 60;
     private static final int PICK_HEIGHT = 20;
     private static final int FACT_GAP = 4;
-    /** Pictures of the side's choices: the starred and the recent biomes. */
-    private static final Icon STARRED = Icon.own("starred");
-    private static final Icon RECENT = Icon.line("recent");
     /** The biomes Every biome's picture shows, four in a square, of those the game has. */
     private static final List<String> EVERY = List.of("minecraft:plains", "minecraft:desert",
             "minecraft:snowy_plains", "minecraft:ocean");
@@ -71,23 +62,9 @@ public final class BiomePickerScreen extends PickerScreen {
     private final Function<BiomeInfo, Situation> situation;
     private final Component now;
     private final String current;
-    /** The side's groups of shelves, parted by gaps: the starred and the recent biomes, each kind, every biome. */
-    private final List<List<Shelf>> groups;
     private final Map<String, List<Fact.Shown>> facts = new HashMap<>();
-    /** The shelf the grid shows. */
-    private Shelf shelf;
     /** The biome chosen, which the panel shows and its button picks. */
     private String chosen;
-
-    /**
-     * What the side lists: the biomes starred, picked lately, of a kind or every one.
-     *
-     * @param name    its name
-     * @param picture its picture
-     * @param of      its biomes among those given, in their order
-     */
-    private record Shelf(Component name, Icon picture, Function<List<Search.Entry>, List<Search.Entry>> of) {
-    }
 
     /**
      * A picker of these biomes going back to {@code parent}, handing a picked biome's id to {@code onPick}.
@@ -105,18 +82,11 @@ public final class BiomePickerScreen extends PickerScreen {
         this.now = now;
         this.current = current;
         this.chosen = biomes.containsKey(current) ? current : entries().get(0).id();
-        List<Shelf> kinds = kinds();
-        Shelf every = new Shelf(Component.translatable("flatgen.biomes.every"), everyPicture(), shown -> shown);
-        this.groups = List.of(List.of(
-                new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
-                        shown -> picked(shown, picks().starred())),
-                new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
-                        shown -> picked(shown, picks().recent()))), kinds, List.of(every));
-        this.shelf = kinds.isEmpty() ? every : kinds.get(0);
     }
 
     /** A shelf for each kind of biome that has any, its picture the biome the kind names, else its first. */
-    private List<Shelf> kinds() {
+    @Override
+    protected List<Shelf> kinds() {
         List<Shelf> made = new ArrayList<>();
         for (BiomeKinds.Kind kind : BiomeKinds.ALL) {
             Function<List<Search.Entry>, List<Search.Entry>> of = shown -> ofKind(shown, kind);
@@ -129,10 +99,12 @@ public final class BiomePickerScreen extends PickerScreen {
         return made;
     }
 
-    /** Every biome's picture: four of the game's biomes, each a little landscape, in a square. */
-    private Icon everyPicture() {
+    /** Every biome, its picture four of the game's biomes, each a little landscape, in a square. */
+    @Override
+    protected Shelf every() {
         List<BiomeInfo> shown = EVERY.stream().filter(biomes::containsKey).map(biomes::get).toList();
-        return (canvas, x, y) -> drawFour(canvas, shown, x, y);
+        return new Shelf(Component.translatable("flatgen.biomes.every"), (canvas, x, y) -> drawFour(canvas, shown, x,
+                y), all -> all);
     }
 
     private static void drawFour(Canvas canvas, List<BiomeInfo> shown, int x, int y) {
@@ -142,11 +114,6 @@ public final class BiomePickerScreen extends PickerScreen {
                     half));
         }
         canvas.outline(new Rect(x, y, Icon.SIZE, Icon.SIZE), RIM);
-    }
-
-    /** The biomes shown whose ids are among these, in these ids' order. */
-    private static List<Search.Entry> picked(List<Search.Entry> shown, List<String> ids) {
-        return ids.stream().flatMap(id -> shown.stream().filter(entry -> entry.id().equals(id)).limit(1)).toList();
     }
 
     private List<Search.Entry> ofKind(List<Search.Entry> shown, BiomeKinds.Kind kind) {
@@ -167,39 +134,15 @@ public final class BiomePickerScreen extends PickerScreen {
                         TextStyle.STRONG, Look.TEXT));
     }
 
-    /** The side at the left, the panel at the right and the grid between. */
+    /** The grid, and the panel of the biome chosen at the right. */
     @Override
-    protected List<Widget> body(Rect area) {
+    protected List<Widget> beside(Rect area) {
         Rect panel = new Rect(area.right() - PANEL_WIDTH, area.y(), PANEL_WIDTH, area.height());
-        int gridX = area.x() + SIDE_WIDTH + GAP;
         List<Widget> widgets = new ArrayList<>();
-        widgets.add(new WidgetGroup(side(new Rect(area.x(), area.y(), SIDE_WIDTH, area.height()))));
-        widgets.add(grid(new Rect(gridX, area.y(), panel.x() - GAP - gridX, area.height()), CARD_WIDTH, CARD_HEIGHT,
-                new Cards(), this::choose));
+        widgets.add(grid(new Rect(area.x(), area.y(), panel.x() - GAP - area.x(), area.height()), CARD_WIDTH,
+                CARD_HEIGHT, new Cards(), this::choose));
         widgets.addAll(panel(panel));
         return widgets;
-    }
-
-    /** The shelf's biomes under its name, or what a search found among every biome shown. */
-    @Override
-    protected List<CardGrid.Section> sections(List<Search.Entry> shown, String searched) {
-        return List.of(searched.isBlank() ? new CardGrid.Section(shelf.name(), shelf.of().apply(shown))
-                : new CardGrid.Section(Component.translatable("flatgen.picks.found"), Search.find(shown, searched)));
-    }
-
-    /** A row for each shelf, gaps parting its groups. */
-    private List<Widget> side(Rect area) {
-        List<Widget> rows = new ArrayList<>();
-        int y = area.y() - SIDE_SEPARATOR;
-        for (List<Shelf> group : groups) {
-            y += SIDE_SEPARATOR;
-            for (Shelf each : group) {
-                rows.add(new PictureTab(each.picture(), each::name, new Rect(area.x(), y, area.width(), SIDE_ROW),
-                        () -> shelf == each, () -> show(each), () -> List.of(each.name())));
-                y += SIDE_ROW;
-            }
-        }
-        return rows;
     }
 
     /** The biome chosen: painted, its name and its mod, its facts in words, and the button that picks it. */
@@ -220,12 +163,6 @@ public final class BiomePickerScreen extends PickerScreen {
                 new TextButton(Icon.line("check"),
                         () -> Component.translatable("flatgen.biomes.pick", Names.biome(chosen)), pick,
                         () -> pick(chosen), () -> true, List::of).kind(Look.ButtonKind.PRIMARY));
-    }
-
-    /** Shows a shelf's biomes, from the grid's top. */
-    private void show(Shelf shown) {
-        shelf = shown;
-        showAnew();
     }
 
     /** Chooses a biome, or picks it when it is chosen already. */
