@@ -6,14 +6,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
  * A picker that sorts its entries onto shelves down its side, as round 3 of docs/design/simple-editor.md drew the biome
  * picker: the starred and the recent entries, then each kind the picker has, then every entry, gaps parting the three;
- * the grid beside shows the shelf chosen, or what a search found among every entry. A player who cannot read browses
- * by the shelves' pictures instead of searching. The biome and the block pickers are this screen.
+ * the grid beside shows the shelf chosen, or what a search found among every entry. It opens on the player's own
+ * picks, starred or recent, when there are any, else on the first kind. A player who cannot read browses by the
+ * shelves' pictures instead of searching. The biome and the block pickers are this screen.
  */
 public abstract class ShelvedPickerScreen extends PickerScreen {
     /** The side's width, a shelf's row on it, the space parting its groups and the space beside it, in GUI pixels. */
@@ -73,17 +75,23 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
                 : new CardGrid.Section(Component.translatable("flatgen.picks.found"), Search.find(shown, searched)));
     }
 
-    /** The side's groups: the picks, the kinds, every entry; made once, the first kind shown, else every entry. */
+    /**
+     * The side's groups: the picks, the kinds, every entry; made once, showing first the starred or else the recent
+     * entries where there are any, else the first kind, else every entry. The picks show whatever the mod chosen, as a
+     * star does.
+     */
     private List<List<Shelf>> groups() {
         if (groups == null) {
+            List<Shelf> own = List.of(
+                    new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
+                            shown -> picked(entries(), picks().starred())),
+                    new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
+                            shown -> picked(entries(), picks().recent())));
             List<Shelf> kinds = kinds();
             Shelf all = every();
-            groups = List.of(List.of(
-                    new Shelf(Component.translatable("flatgen.picks.starred"), STARRED,
-                            shown -> picked(shown, picks().starred())),
-                    new Shelf(Component.translatable("flatgen.picks.recent"), RECENT,
-                            shown -> picked(shown, picks().recent()))), kinds, List.of(all));
-            shelf = kinds.isEmpty() ? all : kinds.get(0);
+            groups = List.of(own, kinds, List.of(all));
+            shelf = Stream.of(own, kinds, List.of(all)).flatMap(List::stream)
+                    .filter(each -> each == all || !each.of().apply(entries()).isEmpty()).findFirst().orElse(all);
         }
         return groups;
     }
