@@ -7,7 +7,7 @@ import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
-import net.minecraft.network.chat.Component;
+import dev.flatgen.layers.client.LayerText;
 
 /** How much air is above the stack, up to the world's top, on a chip over the world's picture. */
 final class SummaryPanel implements EditorPanel {
@@ -21,13 +21,7 @@ final class SummaryPanel implements EditorPanel {
     /** How much air is above the ground, up to the world's top, on a chip at the top of the world. */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
-        layout.add(EditorRegion.WORLD, Chip.inCorner(Icon.line("arrow_up"), () -> air(editor),
-                layout.area(EditorRegion.WORLD)));
-    }
-
-    /** The blocks of air above the ground, and the Y of the world's top. */
-    private static Component air(EditorContext editor) {
-        int top = editor.world().floor() + editor.world().height() - 1;
-        return Component.translatable("flatgen.editor.air", editor.world().height() - editor.shown().height(), top);
+        layout.add(EditorRegion.WORLD, Chip.inCorner(Icon.line("arrow_up"),
+                () -> LayerText.air(editor.world(), editor.shown().height()), layout.area(EditorRegion.WORLD)));
     }
 }

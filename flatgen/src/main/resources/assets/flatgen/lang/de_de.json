@@ -81,7 +81,6 @@
   "flatgen.layer.y_range": "Y %s bis %s",
   "flatgen.library.apply": "Nehmen",
   "flatgen.library.apply_tip": "Die gewählte Vorlage in den Editor legen",
-  "flatgen.library.back": "Zurück",
   "flatgen.library.built_in_presets": "Mitgelieferte Vorlagen",
   "flatgen.library.built_in_where": "vom Spiel, von Flatgen und deinen Mods",
   "flatgen.library.built_ins.hidden": "Mitgelieferte: versteckt",

@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -56,6 +57,12 @@ public abstract class FlatgenScreen extends GameScreen {
     protected final void drawFrameLines(Canvas canvas) {
         canvas.fill(new Rect(0, PageFrame.HEADER, width, 1), Look.DIVIDER);
         canvas.fill(new Rect(0, height - PageFrame.FOOTER, width, 1), Look.DIVIDER);
+    }
+
+    /** Back, at the left of the header, going back as Escape does. */
+    protected final PictureButton backButton() {
+        return new PictureButton(Icon.BACK, new Rect(PageFrame.MARGIN, (PageFrame.HEADER - PictureButton.SIZE) / 2,
+                PictureButton.SIZE, PictureButton.SIZE), this::onClose, () -> List.of(CommonComponents.GUI_BACK));
     }
 
     /** The control the focus starts on when Tab is first pressed; the first control by default. */

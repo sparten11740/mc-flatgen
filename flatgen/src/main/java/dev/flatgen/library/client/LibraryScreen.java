@@ -159,8 +159,8 @@ public final class LibraryScreen extends FlatgenScreen {
     /** Back, the title and the search at the left; saving as new and the menu of the rest at the right. */
     private List<Widget> header(int width) {
         int top = (PageFrame.HEADER - PictureButton.SIZE) / 2;
-        Rect back = new Rect(PageFrame.MARGIN, top, PictureButton.SIZE, PictureButton.SIZE);
-        int titleX = back.right() + GAP;
+        PictureButton back = backButton();
+        int titleX = back.bounds().right() + GAP;
         int titleWidth = textWidth(getTitle(), TextStyle.TITLE);
         Rect glass = new Rect(titleX + titleWidth + 2 * GAP, top, Icon.SIZE, PictureButton.SIZE);
         Rect more = new Rect(width - PageFrame.MARGIN - PictureButton.SIZE, top, PictureButton.SIZE,
@@ -169,8 +169,7 @@ public final class LibraryScreen extends FlatgenScreen {
         int saveWidth = TextButton.width(textWidth(saveLabel));
         Rect save = new Rect(more.x() - GAP - saveWidth, top, saveWidth, PictureButton.SIZE);
         int searchWidth = Math.min(SEARCH_WIDTH, save.x() - 2 * GAP - glass.right());
-        return List.of(new PictureButton(Icon.BACK, back, this::onClose,
-                        () -> List.of(Component.translatable("flatgen.library.back"))),
+        return List.of(back,
                 new Caption(this::getTitle, new Rect(titleX, 0, titleWidth, PageFrame.HEADER), TextStyle.TITLE,
                         Look.TEXT),
                 new WidgetGroup(List.of(new Label(Icon.item("minecraft:spyglass"), Component.empty(), glass),

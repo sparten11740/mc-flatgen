@@ -81,7 +81,6 @@
   "flatgen.layer.y_range": "Y %s to %s",
   "flatgen.library.apply": "Use",
   "flatgen.library.apply_tip": "Put the picked preset in the editor",
-  "flatgen.library.back": "Back",
   "flatgen.library.built_in_presets": "Built-in presets",
   "flatgen.library.built_in_where": "the game's, Flatgen's and your mods'",
   "flatgen.library.built_ins.hidden": "Built-ins: hidden",
