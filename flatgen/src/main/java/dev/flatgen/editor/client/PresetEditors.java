@@ -43,9 +43,9 @@ public final class PresetEditors {
      */
     public static Optional<PresetEditor> editorFor(Holder<WorldPreset> type, Optional<PresetEditor> found,
             HolderLookup.Provider registries) {
-        boolean flatUnderneath = found.isEmpty() && SettingsFile.read().enabled()
-                && WorldTypes.flatUnderneath(type, registries);
-        return edits(type) || flatUnderneath ? Optional.of(EDITOR) : found;
+        boolean editableWhole = found.isEmpty() && SettingsFile.read().enabled()
+                && WorldTypes.editableWhole(type, registries);
+        return edits(type) || editableWhole ? Optional.of(EDITOR) : found;
     }
 
     /**
@@ -53,6 +53,6 @@ public final class PresetEditors {
      * it can edit whole.
      */
     public static boolean mayHaveEdited(Holder<WorldPreset> type, HolderLookup.Provider registries) {
-        return edits(type) || WorldTypes.flatUnderneath(type, registries);
+        return edits(type) || WorldTypes.editableWhole(type, registries);
     }
 }

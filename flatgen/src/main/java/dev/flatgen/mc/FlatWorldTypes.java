@@ -30,7 +30,7 @@ public final class FlatWorldTypes {
     public static Map<String, PresetReading> presets(HolderLookup.Provider registries) {
         Map<String, PresetReading> presets = new LinkedHashMap<>();
         registries.lookupOrThrow(Registries.WORLD_PRESET).listElements()
-                .filter(type -> WorldTypes.flatUnderneath(type, registries) && flatBeyondOverworld(type))
+                .filter(type -> flatBeyondOverworld(type) && WorldTypes.editableWhole(type, registries))
                 .sorted(Comparator.comparing((Holder.Reference<WorldPreset> type) -> type.key().location()))
                 .forEach(type -> presets.put(type.key().location().toString(), reading(type, registries)));
         return presets;

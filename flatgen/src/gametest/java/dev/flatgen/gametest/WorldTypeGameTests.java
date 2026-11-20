@@ -32,13 +32,13 @@ final class WorldTypeGameTests {
 
     static Map<String, Consumer<GameTestHelper>> tests() {
         Map<String, Consumer<GameTestHelper>> tests = new LinkedHashMap<>();
-        tests.put("world types Flatgen can edit whole are told from the others", WorldTypeGameTests::flatUnderneath);
+        tests.put("world types Flatgen can edit whole are told from the others", WorldTypeGameTests::editableWhole);
         tests.put("world types flat beyond the overworld are presets with their Nether and End",
                 WorldTypeGameTests::presets);
         return tests;
     }
 
-    private static void flatUnderneath(GameTestHelper helper) {
+    private static void editableWhole(GameTestHelper helper) {
         HolderLookup.Provider registries = helper.getLevel().registryAccess();
         expect(registries, "minecraft:flat", true);
         expect(registries, "flatgen_fixture:airship_ready", true);
@@ -70,7 +70,7 @@ final class WorldTypeGameTests {
 
     private static void expect(HolderLookup.Provider registries, String type, boolean whole) {
         ResourceKey<WorldPreset> key = ResourceKey.create(Registries.WORLD_PRESET, ResourceLocation.parse(type));
-        boolean found = WorldTypes.flatUnderneath(registries.lookupOrThrow(Registries.WORLD_PRESET)
+        boolean found = WorldTypes.editableWhole(registries.lookupOrThrow(Registries.WORLD_PRESET)
                 .getOrThrow(key), registries);
         check(found == whole, type + (whole ? " is not told as" : " is told as") + " one Flatgen can edit whole");
     }

@@ -32,9 +32,9 @@ public final class WorldTypes {
      * type's or, for the Nether and the End, which Flatgen edits too (F22), flat. So a mod's "airship ready" type is,
      * as is the game's Flat All Dimensions from 26.2 on, and a type that makes the End some other way is not.
      */
-    public static boolean flatUnderneath(Holder<WorldPreset> type, HolderLookup.Provider registries) {
+    public static boolean editableWhole(Holder<WorldPreset> type, HolderLookup.Provider registries) {
         Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
-        Set<Dimension> flat = flatDimensions(type);
+        Set<Dimension> flat = flatDimensions(dimensions);
         return flat.contains(Dimension.OVERWORLD) && defaultDimensions(registries)
                 .filter(normal -> written(normal, flat, registries).equals(written(dimensions, flat, registries)))
                 .isPresent();
@@ -42,7 +42,10 @@ public final class WorldTypes {
 
     /** The dimensions Flatgen edits that a world type makes flat. */
     public static Set<Dimension> flatDimensions(Holder<WorldPreset> type) {
-        Map<ResourceKey<LevelStem>, LevelStem> dimensions = type.value().createWorldDimensions().dimensions();
+        return flatDimensions(type.value().createWorldDimensions().dimensions());
+    }
+
+    private static Set<Dimension> flatDimensions(Map<ResourceKey<LevelStem>, LevelStem> dimensions) {
         return Arrays.stream(Dimension.values()).filter(dimension -> flatSettings(dimensions, dimension).isPresent())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(Dimension.class)));
     }

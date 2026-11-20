@@ -27,7 +27,7 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
   after the game or NeoForge's list found its own editor. With it the NeoForge event went too: one way in for both
   loaders is simpler than two that must agree.
 - `editor/client/PresetEditors.editorFor` decides: Flatgen's editor for Superflat, and for a type with no editor of
-  its own that `mc/WorldTypes.flatUnderneath` finds Flatgen can edit whole (a flat overworld, and every other
+  its own that `mc/WorldTypes.editableWhole` finds Flatgen can edit whole (a flat overworld, and every other
   dimension written as the Default world type writes it, or, from F25, a flat Nether or End, which F22 edits); else
   the editor the game found.
 - World options Done set on such a type are taken back when the screen leaves it for a type Flatgen does not edit, as

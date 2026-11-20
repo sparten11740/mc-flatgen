@@ -66,7 +66,7 @@ final class ExportGameTests {
         WorldPreset preset = WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
                 JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))).getOrThrow();
         Holder<WorldPreset> type = Holder.direct(preset);
-        check(WorldTypes.flatUnderneath(type, registries)
+        check(WorldTypes.editableWhole(type, registries)
                 && WorldTypes.flatDimensions(type).equals(EnumSet.of(Dimension.OVERWORLD)),
                 "the world preset is not the Default world type with a superflat overworld");
     }
