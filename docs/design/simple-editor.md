@@ -84,7 +84,6 @@ Left out, for the owner to decide on:
   picker's kinds of block, and the biome picker's landscape cards;
 - small squares under a card's name picturing its thickness, and an illustration in the empty Nether;
 - "+" lines between cards, and the favourite presets as named columns;
-- remembering Advanced in the settings file;
 - windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small;
   respecting a smaller GUI scale the player chose is not done either;
 - the aside lays all panels out again as it scrolls, which costs nothing a player notices but is not the simplest.

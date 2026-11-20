@@ -9,14 +9,20 @@ import org.junit.jupiter.api.Test;
 class SettingsTest {
     @Test
     void readsWhatItWrites() {
-        Settings off = new Settings(false);
+        Settings off = new Settings(false, false);
         assertEquals(off, Settings.fromJson(off.toJson()));
         assertEquals(Settings.DEFAULTS, Settings.fromJson(Settings.DEFAULTS.toJson()));
     }
 
     @Test
     void readsTheEnabledSwitch() {
-        assertEquals(new Settings(false), Settings.fromJson("{\"enabled\": false}"));
+        assertEquals(new Settings(false, false), Settings.fromJson("{\"enabled\": false}"));
+    }
+
+    @Test
+    void readsTheAdvancedSwitch() {
+        assertEquals(new Settings(true, true), Settings.fromJson("{\"advanced\": true}"));
+        assertEquals(new Settings(true, true), Settings.DEFAULTS.withAdvanced(true));
     }
 
     @Test
@@ -31,7 +37,7 @@ class SettingsTest {
 
     @Test
     void ignoresKeysItDoesNotKnow() {
-        assertEquals(new Settings(false), Settings.fromJson("{\"enabled\": false, \"fromALaterVersion\": 3}"));
+        assertEquals(new Settings(false, false), Settings.fromJson("{\"enabled\": false, \"fromALaterVersion\": 3}"));
     }
 
     @Test

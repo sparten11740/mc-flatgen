@@ -22,4 +22,14 @@ public final class SettingsFile {
     static Settings read(Path file) {
         return ConfigFiles.read(file, Settings::fromJson, Settings.DEFAULTS, Settings::toJson);
     }
+
+    /** Keeps the player's settings, as the editor changes one; whether the file could be written. */
+    public static boolean write(Settings settings) {
+        return write(ConfigFiles.file(FILE_NAME), settings);
+    }
+
+    /** Writes the settings to this file; whether it could be written. */
+    static boolean write(Path file, Settings settings) {
+        return ConfigFiles.write(file, settings.toJson());
+    }
 }

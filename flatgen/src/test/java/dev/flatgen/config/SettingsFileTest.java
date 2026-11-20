@@ -1,6 +1,7 @@
 package dev.flatgen.config;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import dev.flatgen.config.rules.Settings;
 import java.io.IOException;
@@ -25,7 +26,15 @@ class SettingsFileTest {
     void readsWhatThePlayerWrote() throws IOException {
         Path file = folder.resolve("flatgen.json");
         Files.writeString(file, "{\"enabled\": false}");
-        assertEquals(new Settings(false), SettingsFile.read(file));
+        assertEquals(new Settings(false, false), SettingsFile.read(file));
+    }
+
+    @Test
+    void readsWhatItWrote() {
+        Path file = folder.resolve("flatgen.json");
+        Settings advanced = Settings.DEFAULTS.withAdvanced(true);
+        assertTrue(SettingsFile.write(file, advanced));
+        assertEquals(advanced, SettingsFile.read(file));
     }
 
     @Test

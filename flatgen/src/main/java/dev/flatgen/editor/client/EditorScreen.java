@@ -17,6 +17,7 @@ import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.Modifiers;
 import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.config.SettingsFile;
 import dev.flatgen.dimensions.client.DimensionTabs;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
@@ -77,9 +78,9 @@ public final class EditorScreen extends FlatgenScreen {
     private static final String ICON = "minecraft:grass_block";
     /**
      * Whether the editor shows everything, for adults who build flat worlds, rather than the simple view a child can
-     * work out; remembered until the game closes.
+     * work out; kept in the player's settings, so it stays as they left it.
      */
-    private static boolean advanced;
+    private boolean advanced = SettingsFile.read().advanced();
 
     private final CreateWorldScreen parent;
     private final WorldCreationContext context;
@@ -249,7 +250,7 @@ public final class EditorScreen extends FlatgenScreen {
             placed.put(EditorRegion.ASIDE, new Rect(aside.x(), asideTop, aside.width(), 0));
             EditorLayout layout = new EditorLayout(placed, EditorScreen.this::textWidth);
             shownPanels().forEach(panel -> panel.layOut(editor, layout));
-            if (EditorScreen.advanced) {
+            if (EditorScreen.this.advanced) {
                 Rect place = layout.flow(EditorRegion.ASIDE).line(EditorRegion.ASIDE.rowHeight());
                 layout.add(EditorRegion.ASIDE, new TextButton(Icon.line("external"),
                         Component.translatable("flatgen.editor.vanilla"), place, EditorScreen.this::openVanilla));
@@ -333,6 +334,7 @@ public final class EditorScreen extends FlatgenScreen {
     /** Turns Advanced on or off, which lays the editor out again. */
     private void turnAdvancedOver() {
         advanced = !advanced;
+        SettingsFile.write(SettingsFile.read().withAdvanced(advanced));
         rebuildWidgets();
     }
 

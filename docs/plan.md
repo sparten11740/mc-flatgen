@@ -133,9 +133,9 @@ Things that grow are lists of small classes behind an interface, so adding one n
 ### 3.5 Storage
 
 - Each feature that keeps a player's choices owns one file named after it, so a feature's data never grows another's
-  class: `config/flatgen/flatgen.json` (the `config` feature: whether Flatgen is on), `library.json` (F12: favourites,
-  the default, recents, start on Superflat, which built-ins show), `blocks.json` and `biomes.json` (F05, F07: recent
-  and starred).
+  class: `config/flatgen/flatgen.json` (the `config` feature: whether Flatgen is on, and whether the editor opens in
+  Advanced), `library.json` (F12: favourites, the default, recents, start on Superflat, which built-ins show),
+  `blocks.json` and `biomes.json` (F05, F07: recent and starred).
 - `config/flatgen/presets/*.json`: one preset per file, format of F02, written atomically.
 - `config/flatgen/exports/`: datapacks exported by F21.
 
