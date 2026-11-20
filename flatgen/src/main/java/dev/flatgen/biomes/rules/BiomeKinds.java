@@ -20,9 +20,10 @@ public final class BiomeKinds {
             "minecraft:swamp", "minecraft:jungle", "minecraft:taiga", "minecraft:snowy_plains", "minecraft:desert",
             "minecraft:savanna", "minecraft:badlands", "minecraft:mushroom_fields", "minecraft:ocean",
             "minecraft:the_void");
-    /** The tags mods put their cave biomes in, as 1.21's common tags, 1.20.1 Fabric's and 1.20.1 Forge's name them. */
-    private static final String[] MOD_CAVES = {"c:is_cave", "c:is_underground", "c:caves", "c:underground",
-        "forge:is_cave", "forge:is_underground"};
+    /** The tags mods put their swamps and caves in, as 1.21's common tags, 1.20.1 Fabric's and Forge's name them. */
+    private static final List<String> MOD_SWAMPS = List.of("c:is_swamp", "c:swamp", "forge:is_swamp");
+    private static final List<String> MOD_CAVES = List.of("c:is_cave", "c:is_underground", "c:caves", "c:underground",
+            "forge:is_cave", "forge:is_underground");
     /** The game's cave biomes, which no tag of the game's own names. */
     private static final List<String> CAVES = List.of("minecraft:lush_caves", "minecraft:dripstone_caves",
             "minecraft:deep_dark");
@@ -79,14 +80,14 @@ public final class BiomeKinds {
             new Kind("flatgen.biomes.kind.dry", scene(Scene.OWN, SAND, false, false, 0),
                     biome -> overworld(biome) && !biome.climate().precipitation()),
             new Kind("flatgen.biomes.kind.swamps", scene(Scene.OWN, DIRT, true, true, SWAMP_WATER),
-                    tagged("minecraft:allows_surface_slime_spawns", "c:is_swamp", "c:swamp", "forge:is_swamp")),
+                    tagged(List.of("minecraft:allows_surface_slime_spawns")).or(tagged(MOD_SWAMPS))),
             new Kind("flatgen.biomes.kind.water", scene(Scene.OWN, SAND, false, false, ALL_WATER),
                     tagged("minecraft:is_ocean", "minecraft:is_deep_ocean", "minecraft:is_river",
                             "minecraft:is_beach")),
             new Kind("flatgen.biomes.kind.mountains", scene(Scene.OWN, STONE, true, false, 0),
                     tagged("minecraft:is_mountain", "minecraft:is_hill")),
             new Kind("flatgen.biomes.kind.caves", scene(CAVE_DARK, STONE, false, false, 0),
-                    biome -> CAVES.contains(biome.id()) || tagged(MOD_CAVES).test(biome)),
+                    tagged(MOD_CAVES).or(biome -> CAVES.contains(biome.id()))),
             new Kind("flatgen.biomes.kind.nether", scene(NETHER_SKY, NETHERRACK, false, false, 0),
                     tagged("minecraft:is_nether")),
             new Kind("flatgen.biomes.kind.end", scene(END_SKY, END_STONE, false, false, 0),
@@ -109,9 +110,13 @@ public final class BiomeKinds {
         return biome.tags().contains(OVERWORLD);
     }
 
-    /** The test of a biome being in any of these tags. */
+    /** The test of a biome being in any of these tags, named one by one. */
     private static Predicate<BiomeInfo> tagged(String... tags) {
-        List<String> any = List.of(tags);
+        return tagged(List.of(tags));
+    }
+
+    /** The test of a biome being in any of these tags. */
+    private static Predicate<BiomeInfo> tagged(List<String> any) {
         return biome -> biome.tags().stream().anyMatch(any::contains);
     }
 }
