@@ -17,6 +17,18 @@ final class FieldLook {
         canvas.text(text, bounds.x() + PADDING, TextStyle.BODY.top(bounds.y(), bounds.height()), color);
     }
 
+    /**
+     * Draws a field square and flat, its inside filling the area, outlined in the accent colour while it has the
+     * keyboard, and its text in the middle of it.
+     */
+    static void drawFlat(Canvas canvas, Rect bounds, boolean lit, Component text, int color) {
+        canvas.fill(bounds, Look.FIELD_INSIDE);
+        if (lit) {
+            canvas.outline(bounds, Look.ACCENT);
+        }
+        canvas.centeredText(text, bounds, color);
+    }
+
     /** Draws a field's box and its text in the middle of it, as a number's. */
     static void drawCentred(Canvas canvas, Rect bounds, boolean lit, Component text, int color) {
         canvas.field(bounds, lit);

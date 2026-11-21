@@ -24,6 +24,8 @@ public final class Look {
     public static final int ON_PRIMARY = 0xFFFFFFFF;
     public static final int ON_ACCENT = 0xFFD6E7FF;
     public static final int ON_VIVID = 0xFFFFFFFF;
+    /** A field's inside, as the look's field sprites fill it. */
+    public static final int FIELD_INSIDE = 0xFF16181B;
     /** A button's edge, and the line parting the parts of a box several buttons share. */
     public static final int EDGE = 0xFF33373E;
     /** The dashed edge of what is not there yet, such as the row a new layer would take. */

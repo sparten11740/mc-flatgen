@@ -28,6 +28,8 @@ public final class NumberField implements Control {
     private final IntConsumer onEnter;
     private final TypedText typed = new TypedText(text -> text.matches("-?\\d*"), MOST_CHARACTERS);
     private boolean keyboard;
+    /** Whether it is drawn square and flat, filling its place in a box it shares, as between a stepper's buttons. */
+    private boolean flat;
 
     /**
      * A box showing a number from {@code value}, handing a typed one to {@code onEnter}.
@@ -43,10 +45,20 @@ public final class NumberField implements Control {
         this.onEnter = onEnter;
     }
 
+    /** The field drawn square and flat, filling its place in a box it shares, as between a stepper's buttons. */
+    public NumberField flat() {
+        this.flat = true;
+        return this;
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         String text = keyboard ? typed.text() + "_" : shown();
-        FieldLook.drawCentred(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
+        if (flat) {
+            FieldLook.drawFlat(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
+        } else {
+            FieldLook.drawCentred(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
+        }
     }
 
     @Override
