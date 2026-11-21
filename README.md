@@ -21,6 +21,10 @@ Create World → World Type: Superflat → Customize opens Flatgen instead of th
 |---|---|---|
 | ![The biome picker](docs/screenshots/biomes.png) | ![The preset library](docs/screenshots/library.png) | ![The templates](docs/screenshots/templates.png) |
 
+| Every block, sorted by the creative inventory's tabs | A flat Nether and End |
+|---|---|
+| ![The block picker](docs/screenshots/blocks.png) | ![A flat Nether](docs/screenshots/nether.png) |
+
 Worlds made with Flatgen are plain superflat worlds: they open without the mod.
 
 Mods and modpacks can add switches of their own, such as an airport at the spawn, as data files with no code:
