@@ -26,7 +26,7 @@ preset as a World Type.
   picture) puts the lines on the clipboard, and Datapack (a bundle) writes `config/flatgen/exports/<name>.zip`,
   replacing an earlier export of that name, and opens the folder. A player's preset's zip is named after its file
   (`glass_2.zip`), a built-in's after its name.
-- Both make the world Done would: `OptionsAtDone.settings`, the preset's superflat settings with the structure sets its
+- Both make the world Done would: `PresetAtDone.settings`, the preset's superflat settings with the structure sets its
   world options add. A preset naming parts the game lacks asks first, as Use does, whether to go on with stand-ins
   (the library asks and names the zip, so `exports` knows nothing of the library). Options' game rules and first-start
   effects are not part of a world's generator, so neither export carries them, as both buttons' tooltips say.

@@ -10,7 +10,7 @@ import dev.flatgen.mc.ClientTasks;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
-import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.PresetAtDone;
 import dev.flatgen.preset.rules.MissingIds;
 import dev.flatgen.preset.rules.Preset;
 import java.util.Map;
@@ -76,7 +76,7 @@ public final class DefaultPresets {
             chosenSuperflat(screen);
         }
         if (!now.edited() && was.edited()) {
-            OptionsAtDone.withdraw(screen, InstalledOptions.load());
+            PresetAtDone.withdraw(screen, InstalledOptions.load());
         }
     }
 
@@ -110,6 +110,6 @@ public final class DefaultPresets {
         if (!missing.isEmpty()) {
             Flatgen.LOGGER.warn("Flatgen's default preset names what this game lacks, used without it: {}", missing);
         }
-        OptionsAtDone.apply(screen, MissingParts.replaced(preset, missing), registries, InstalledOptions.load());
+        PresetAtDone.apply(screen, MissingParts.replaced(preset, missing), registries, InstalledOptions.load());
     }
 }

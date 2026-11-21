@@ -24,11 +24,10 @@ public final class OptionSessions {
     /**
      * What the last Done applied to a screen.
      *
-     * @param options       the options, set otherwise than their default
-     * @param addedSets     the structure sets options added beyond those the player chose
-     * @param structuresOff whether it turned the game's Generate Structures off
+     * @param options   the options, set otherwise than their default
+     * @param addedSets the structure sets options added beyond those the player chose
      */
-    private record Applied(Map<String, Boolean> options, Set<String> addedSets, boolean structuresOff) {
+    private record Applied(Map<String, Boolean> options, Set<String> addedSets) {
     }
 
     /** The options last applied to this screen, set otherwise than their default; none before the first Done. */
@@ -52,12 +51,6 @@ public final class OptionSessions {
                 applied.options(), installed, GameRuleAccess.values(screen)));
     }
 
-    /** Whether the last Done turned the game's Generate Structures off on this screen. */
-    static boolean turnedStructuresOff(CreateWorldScreen screen) {
-        Applied applied = APPLIED.get(screen);
-        return applied != null && applied.structuresOff();
-    }
-
     /** Whether options were applied to this screen before. */
     static boolean has(CreateWorldScreen screen) {
         return APPLIED.containsKey(screen);
@@ -69,8 +62,7 @@ public final class OptionSessions {
     }
 
     /** Remembers what Done applied to this screen. */
-    static void remember(CreateWorldScreen screen, Map<String, Boolean> options, Set<String> addedSets,
-            boolean structuresOff) {
-        APPLIED.put(screen, new Applied(Map.copyOf(options), Set.copyOf(addedSets), structuresOff));
+    static void remember(CreateWorldScreen screen, Map<String, Boolean> options, Set<String> addedSets) {
+        APPLIED.put(screen, new Applied(Map.copyOf(options), Set.copyOf(addedSets)));
     }
 }

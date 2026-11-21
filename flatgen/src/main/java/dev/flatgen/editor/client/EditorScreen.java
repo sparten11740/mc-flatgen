@@ -35,7 +35,7 @@ import dev.flatgen.mc.Screens;
 import dev.flatgen.mc.WorldCreation;
 import dev.flatgen.options.InstalledOptions;
 import dev.flatgen.options.OptionSessions;
-import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.PresetAtDone;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Preset;
@@ -339,7 +339,7 @@ public final class EditorScreen extends FlatgenScreen {
     }
 
     private void done() {
-        OptionsAtDone.apply(parent, history.current().preset(), context.worldgenLoadContext(), worldOptions);
+        PresetAtDone.apply(parent, history.current().preset(), context.worldgenLoadContext(), worldOptions);
         onClose();
     }
 

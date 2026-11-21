@@ -7,7 +7,7 @@ import dev.flatgen.exports.PresetExports;
 import dev.flatgen.mc.Exports;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldTypes;
-import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.PresetAtDone;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
@@ -56,13 +56,13 @@ final class ExportGameTests {
         check("minecraft:flat".equals(read.getProperty("level-type")), "level-type " + read.getProperty("level-type"));
         FlatLevelGeneratorSettings settings = FlatSettings.orThrow(FlatLevelGeneratorSettings.CODEC.parse(
                 FlatSettings.ops(registries), JsonParser.parseString(read.getProperty("generator-settings"))));
-        check(layers(settings).equals(layers(OptionsAtDone.settings(GLASS, registries, List.of()))),
+        check(layers(settings).equals(layers(PresetAtDone.settings(GLASS, registries, List.of()))),
                 "the server's layers are " + layers(settings));
     }
 
     private static void worldPreset(GameTestHelper helper) {
         RegistryAccess registries = helper.getLevel().registryAccess();
-        FlatLevelGeneratorSettings settings = OptionsAtDone.settings(GLASS, registries, List.of());
+        FlatLevelGeneratorSettings settings = PresetAtDone.settings(GLASS, registries, List.of());
         WorldPreset preset = FlatSettings.orThrow(WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries),
                 JsonParser.parseString(Exports.worldPreset(settings, Map.of(), registries))));
         Holder<WorldPreset> type = Holder.direct(preset);

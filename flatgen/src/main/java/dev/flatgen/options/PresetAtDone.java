@@ -10,6 +10,7 @@ import dev.flatgen.options.rules.Effect;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.structures.GenerateStructuresSessions;
 import dev.flatgen.structures.rules.GenerateStructures;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,8 +28,8 @@ import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
  * for a world with no structures. An option turned off since the last Done puts its game rules back to the game's
  * defaults.
  */
-public final class OptionsAtDone {
-    private OptionsAtDone() {
+public final class PresetAtDone {
+    private PresetAtDone() {
     }
 
     /**
@@ -57,7 +58,7 @@ public final class OptionsAtDone {
         FirstStarts.expect(generator, WorldCreation.describe(generator, registries), on.stream()
                 .flatMap(option -> option.effects().stream()).filter(Effect::actsAtFirstStart).toList());
         if (!OptionSessions.has(screen)) {
-            WorldCreation.listen(screen, OptionsAtDone::follow);
+            WorldCreation.listen(screen, PresetAtDone::follow);
         }
         setGameRules(screen, applied, turnedOff);
         GenerateStructures structures = generateStructures(screen)
@@ -66,7 +67,8 @@ public final class OptionsAtDone {
         warnIfAny("Flatgen keeps these world options in the preset, which are not installed: {}",
                 OptionChoices.missing(preset.options(), installed));
         OptionSessions.remember(screen, preset.options(),
-                AddStructures.newlyAdded(preset, applied.structureSets(), knownSets), structures.byFlatgen());
+                AddStructures.newlyAdded(preset, applied.structureSets(), knownSets));
+        GenerateStructuresSessions.remember(screen, structures.byFlatgen());
     }
 
     /**
@@ -83,6 +85,7 @@ public final class OptionsAtDone {
         warnIfAny("Flatgen could not put these game rules back: {}",
                 GameRuleAccess.set(screen, GameRuleAccess.defaults(applied.gameRules().keySet())));
         WorldCreation.generateStructures(screen, generateStructures(screen).withdrawn().on());
+        GenerateStructuresSessions.remember(screen, false);
         FirstStarts.forget();
         OptionSessions.forget(screen);
     }
@@ -99,7 +102,7 @@ public final class OptionsAtDone {
     /** The game's Generate Structures switch on the screen as it is now, and whether Flatgen turned it off. */
     private static GenerateStructures generateStructures(CreateWorldScreen screen) {
         return new GenerateStructures(WorldCreation.generatesStructures(screen),
-                OptionSessions.turnedStructuresOff(screen));
+                GenerateStructuresSessions.turnedOff(screen));
     }
 
     private static void warnIfAny(String message, List<String> names) {

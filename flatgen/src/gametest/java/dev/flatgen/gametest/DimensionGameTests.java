@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import dev.flatgen.mc.Exports;
 import dev.flatgen.mc.FlatSettings;
 import dev.flatgen.mc.WorldTypes;
-import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.PresetAtDone;
 import dev.flatgen.preset.rules.Dimension;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.MissingIds;
@@ -111,7 +111,7 @@ final class DimensionGameTests {
 
     private static Map<ResourceKey<LevelStem>, LevelStem> dimensions(Preset preset,
             RegistryAccess registries) {
-        String json = Exports.worldPreset(OptionsAtDone.settings(preset, registries, List.of()),
+        String json = Exports.worldPreset(PresetAtDone.settings(preset, registries, List.of()),
                 FlatSettings.otherDimensions(preset, registries), registries);
         WorldPreset decoded = FlatSettings.orThrow(
                 WorldPreset.DIRECT_CODEC.parse(FlatSettings.ops(registries), JsonParser.parseString(json)));

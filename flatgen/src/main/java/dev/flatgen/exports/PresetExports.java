@@ -5,7 +5,7 @@ import dev.flatgen.exports.rules.DatapackFiles;
 import dev.flatgen.exports.rules.ServerProperties;
 import dev.flatgen.mc.Exports;
 import dev.flatgen.mc.FlatSettings;
-import dev.flatgen.options.OptionsAtDone;
+import dev.flatgen.options.PresetAtDone;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
 import java.io.ByteArrayOutputStream;
@@ -42,7 +42,7 @@ public final class PresetExports {
 
     /** The {@code server.properties} lines for a preset. */
     public static String serverLines(Preset preset, HolderLookup.Provider registries, List<WorldOption> installed) {
-        return ServerProperties.lines(Exports.generatorSettings(OptionsAtDone.settings(preset, registries, installed),
+        return ServerProperties.lines(Exports.generatorSettings(PresetAtDone.settings(preset, registries, installed),
                 registries));
     }
 
@@ -54,7 +54,7 @@ public final class PresetExports {
      */
     public static Optional<Path> datapack(Preset preset, String id, HolderLookup.Provider registries,
             List<WorldOption> installed) {
-        String worldPreset = Exports.worldPreset(OptionsAtDone.settings(preset, registries, installed),
+        String worldPreset = Exports.worldPreset(PresetAtDone.settings(preset, registries, installed),
                 FlatSettings.otherDimensions(preset, registries), registries);
         Map<String, String> files = DatapackFiles.of(new DatapackFiles.Pack(Exports.packFormats(), id, preset.name(),
                 worldPreset));
