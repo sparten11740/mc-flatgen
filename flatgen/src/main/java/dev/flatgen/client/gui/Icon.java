@@ -4,7 +4,10 @@ import dev.flatgen.client.gui.rules.Rect;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-/** A picture 16 GUI pixels square that a widget shows beside or in place of words: an item, a block or a texture. */
+/**
+ * A picture 16 GUI pixels tall that a widget shows beside or in place of words: an item, a block or a texture, square,
+ * or a few pictures in a row, wider.
+ */
 @FunctionalInterface
 public interface Icon {
     /** The size of an icon, in GUI pixels. */
@@ -18,8 +21,40 @@ public interface Icon {
     /** Text coming in from the clipboard: paper with an arrow in. */
     Icon FROM_CLIPBOARD = badged(item("minecraft:paper"), "badge_in");
 
+    /** How far the next picture of a row starts after one, in GUI pixels, the line drawings' insets overlapping. */
+    int ROW_STEP = 12;
+
     /** Draws the picture with its top left corner here. */
     void draw(Canvas canvas, int x, int y);
+
+    /** How wide the picture is, in GUI pixels: an icon's size, more for a row. */
+    default int width() {
+        return SIZE;
+    }
+
+    /** These pictures side by side, left to right, as one picture, such as a stack, an arrow and the clipboard. */
+    static Icon inRow(List<Icon> parts) {
+        return new Row(List.copyOf(parts));
+    }
+
+    /**
+     * Pictures side by side as one.
+     *
+     * @param parts the pictures, left to right
+     */
+    record Row(List<Icon> parts) implements Icon {
+        @Override
+        public void draw(Canvas canvas, int x, int y) {
+            for (int index = 0; index < parts.size(); index++) {
+                parts.get(index).draw(canvas, x + index * ROW_STEP, y);
+            }
+        }
+
+        @Override
+        public int width() {
+            return SIZE + ROW_STEP * Math.max(0, parts.size() - 1);
+        }
+    }
 
     /** An item's picture, by its id, such as {@code minecraft:clock}. */
     static Icon item(String id) {

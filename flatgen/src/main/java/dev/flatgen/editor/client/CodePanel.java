@@ -1,13 +1,16 @@
 package dev.flatgen.editor.client;
 
 import dev.flatgen.client.gui.Icon;
-import dev.flatgen.client.gui.PictureButton;
+import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.rules.FlowLayout;
+import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
+import dev.flatgen.layers.client.ColumnPicture;
 import dev.flatgen.layers.rules.LayerEdits;
+import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Clipboard;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.VanillaCode;
@@ -18,21 +21,45 @@ import net.minecraft.network.chat.Component;
 /** Copying the game's superflat code for the layers, and pasting one, which says which part is wrong when it is. */
 final class CodePanel implements EditorPanel {
 
-    /** In Advanced, copying and pasting the code, a picture button each, in the bar above the layers. */
+    /** How many of the stack's top layers the code buttons' stack shows, a band each, and its inset in its icon. */
+    private static final int PICTURED_LAYERS = 3;
+    private static final int STACK_INSET = 4;
+
+    /**
+     * In Advanced, copying and pasting the code in the bar above the layers, each saying so in words beside pictures
+     * that run opposite ways: the stack to the clipboard, and the clipboard to the stack.
+     */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
         if (!editor.advanced()) {
             return;
         }
         FlowLayout bar = layout.flow(EditorRegion.LAYERS_BAR);
-        int size = EditorRegion.LAYERS_BAR.rowHeight();
+        Icon stack = (canvas, x, y) -> ColumnPicture.draw(canvas, topLayers(editor),
+                Biomes.waterColor(editor.shown().biome(), editor.registries()),
+                new Rect(x + STACK_INSET, y + 1, Icon.SIZE - 2 * STACK_INSET, Icon.SIZE - 2));
+        Icon clipboard = Icon.line("clipboard");
+        Icon arrow = Icon.line("arrow_right");
         layout.add(EditorRegion.LAYERS_BAR, List.of(
-                new PictureButton(Icon.TO_CLIPBOARD, bar.next(size), () -> copy(editor),
-                        () -> List.of(Component.translatable("flatgen.code.copy"),
-                                Component.translatable("flatgen.code.copy_tip"))),
-                new PictureButton(Icon.FROM_CLIPBOARD, bar.next(size), () -> paste(editor),
-                        () -> List.of(Component.translatable("flatgen.code.paste"),
-                                Component.translatable("flatgen.code.paste_tip")))));
+                codeButton(editor, bar, Icon.inRow(List.of(stack, arrow, clipboard)), "flatgen.code.copy",
+                        "flatgen.code.copy_tip", () -> copy(editor)),
+                codeButton(editor, bar, Icon.inRow(List.of(clipboard, arrow, stack)), "flatgen.code.paste",
+                        "flatgen.code.paste_tip", () -> paste(editor))));
+    }
+
+    /** A button of the bar with these pictures and words, its tip saying what it does. */
+    private static TextButton codeButton(EditorContext editor, FlowLayout bar, Icon picture, String words, String tip,
+            Runnable action) {
+        Component label = Component.translatable(words);
+        return new TextButton(picture, () -> label, bar.next(TextButton.width(picture, editor.textWidth(label))),
+                action, () -> true, () -> List.of(Component.translatable(tip)));
+    }
+
+    /** The stack's top layers, a block each, as the code buttons picture it: the others would be too thin to see. */
+    private static List<Layer> topLayers(EditorContext editor) {
+        List<Layer> layers = editor.shown().layers();
+        return layers.subList(Math.max(0, layers.size() - PICTURED_LAYERS), layers.size()).stream()
+                .map(layer -> new Layer(layer.block(), 1)).toList();
     }
 
     /** Puts the game's superflat code for the layers and biome on the clipboard. */

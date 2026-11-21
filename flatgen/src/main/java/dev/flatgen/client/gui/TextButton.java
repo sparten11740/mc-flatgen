@@ -76,6 +76,11 @@ public final class TextButton implements Control {
         return PICTURE_GAP + Icon.SIZE + labelWidth + 2 * LABEL_PADDING;
     }
 
+    /** How wide a button with this picture, perhaps wider than an icon, is whose label is this wide, in GUI pixels. */
+    public static int width(Icon picture, int labelWidth) {
+        return width(labelWidth) + picture.width() - Icon.SIZE;
+    }
+
     /** The button drawn as one of the look's kinds, such as the green one that goes ahead. */
     public TextButton kind(Look.ButtonKind buttonKind) {
         this.kind = buttonKind;
@@ -84,7 +89,7 @@ public final class TextButton implements Control {
 
     /** Draws the picture with its top left corner here, dimmed while unusable. */
     private void drawPicture(Canvas canvas, int x, int y, boolean usable) {
-        Rect picture = new Rect(x, y, Icon.SIZE, Icon.SIZE);
+        Rect picture = new Rect(x, y, icon.get().width(), Icon.SIZE);
         icon.get().draw(canvas, picture.x(), picture.y());
         dimUnless(usable, canvas, picture);
     }
@@ -98,13 +103,14 @@ public final class TextButton implements Control {
         int labelColor = usable ? kind.label() : Look.DISABLED;
         if (icon.isEmpty()) {
             canvas.centeredText(words, bounds, labelColor);
-        } else if (bounds.width() < width(canvas.textWidth(words))) {
-            drawPicture(canvas, bounds.x() + (bounds.width() - Icon.SIZE) / 2,
+        } else if (bounds.width() < width(icon.get(), canvas.textWidth(words))) {
+            drawPicture(canvas, bounds.x() + (bounds.width() - icon.get().width()) / 2,
                     TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
         } else {
-            int left = bounds.x() + (bounds.width() - Icon.SIZE - PICTURE_GAP - canvas.textWidth(words)) / 2;
+            int pictureWidth = icon.get().width();
+            int left = bounds.x() + (bounds.width() - pictureWidth - PICTURE_GAP - canvas.textWidth(words)) / 2;
             drawPicture(canvas, left, TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
-            canvas.text(words, left + Icon.SIZE + PICTURE_GAP, TextStyle.BODY.top(bounds.y(), bounds.height()),
+            canvas.text(words, left + pictureWidth + PICTURE_GAP, TextStyle.BODY.top(bounds.y(), bounds.height()),
                     labelColor);
         }
         List<Component> lines = tooltip.get();

@@ -47,3 +47,8 @@ Flatgen's fields have no selection or clipboard of their own.
 - Played with Blockpilot: on NeoForge, Copy code put the classic flat's code on the clipboard; pasting the tall flat
   made its layers; a broken layer, an unknown block and a stack of 400 changed nothing and said why; Undo took the
   paste back. On Fabric, Water World's code pasted, and a broken one was refused with its message.
+
+2026-11-21: Copy code and Paste code say so in words beside pictures that run opposite ways, as round 4b of the design
+canvas drew them and the owner approved: the stack in its own top blocks, an arrow and a clipboard for copying, the
+clipboard, an arrow and the stack for pasting; a narrow bar shows the pictures alone. Tried on 1.21.1 NeoForge in a dev
+client.

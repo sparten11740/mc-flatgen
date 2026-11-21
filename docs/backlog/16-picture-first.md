@@ -44,8 +44,8 @@ action pictures, as beside the column they would read as layers.
 | Structures | own: a village house |
 | No slimes | the ladder of the ground's height with an up arrow: it raises the ground |
 | Undo, Redo | own: a hooked arrow curling left, right |
-| Copy code, Share | paper with a big green arrow going up and out |
-| Paste code, Paste | paper with a big blue arrow coming down and in |
+| Share | paper with a big green arrow going up and out |
+| Paste | paper with a big blue arrow coming down and in |
 | Add above, Add below | own: a layer bar with a plus above it, below it |
 | Remove layer | own: a layer bar with a minus |
 | Copy layer, Copy preset | the thing's own picture with a "copy" badge of two small sheets |
@@ -126,7 +126,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Surface at Y | ladder |
 | Editor | Add above, Add below, Copy layer, Remove layer | own: layer bar with plus above, below, the block with a copy badge, bar with minus |
 | Editor | Undo, Redo | own: hooked arrows |
-| Editor | Copy code, Paste code | paper with an arrow out, in |
+| Editor | Copy code, Paste code | the stack's top blocks, an arrow and a clipboard, each way, with words |
 | Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |
 | Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
 | Editor | Mobs spawn | zombie spawn egg, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |

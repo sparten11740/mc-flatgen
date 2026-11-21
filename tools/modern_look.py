@@ -90,6 +90,8 @@ ICONS = {
                               (13, 2), ("arc", 13, 4, 2, 270, 360), (15, 5)]]}),
     "arrow_left": (INK, {"lines": [[(19, 12), (5, 12)], [(12, 5), (5, 12), (12, 19)]]}),
     "slab": (INK, {"rects": [(3, 8.5, 18, 7, 3.5)]}),
+    "clipboard": (INK, {"rects": [(5, 4, 14, 18, 2)], "lines": [[(9, 3), (15, 3)], [(8.5, 11), (15.5, 11)],
+                                                                [(8.5, 15), (15.5, 15)]]}),
     "arrow_up": (INK, {"lines": [[(12, 19), (12, 5)], [(5, 12), (12, 5), (19, 12)]]}),
     "external": (MUTED, {"lines": [[(15, 3), (21, 3), (21, 9)], [(10, 14), (21, 3)],
                                    [(18, 13), (18, 19), (16, 21), (5, 21), (3, 19), (3, 8), (5, 6), (11, 6)]]}),
@@ -101,7 +103,7 @@ ICONS = {
     "falls": ("#1a1200", {"lines": [[(12, 5), (12, 19)], [(19, 12), (12, 19), (5, 12)]]}),
 }
 # Icons that are another drawn mirrored, left to right.
-MIRRORED = {"redo": "undo"}
+MIRRORED = {"redo": "undo", "arrow_right": "arrow_left"}
 # How much coarser than the panels an icon's texture is: its 24 unit square is drawn about 8 GUI pixels wide.
 ICON_DOWNSCALE = 3
 # The width of an icon's strokes and a dot's radius, in its 24 unit square.
