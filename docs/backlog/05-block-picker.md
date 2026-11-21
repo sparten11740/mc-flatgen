@@ -82,3 +82,8 @@ Layout, 2026-11-20, as the owner asked: all the blocks chosen at first with rows
 and the tabs to switch to down the side; the cards' words kept clear of the focus ring; Add layer on top opening the
 picker first. Tried on 1.21.1 NeoForge: the picker opens on All blocks with Recent and Starred rows, picking glass from
 Add layer on top adds a glass layer on top, cancelling adds nothing, and Undo takes the glass back.
+
+2026-11-21: a picker ignores clicks for the first 400 ms after it opens, as the seams between layer cards (F04) open it
+from the middle of the screen, where a quick second click would otherwise pick whatever card came to be under the mouse.
+Tried on 1.21.1 NeoForge: a seam and a card clicked a tick apart leave the picker open, the card clicked again a second
+later is added there.

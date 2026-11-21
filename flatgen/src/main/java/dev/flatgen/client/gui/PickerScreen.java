@@ -7,6 +7,7 @@ import dev.flatgen.search.rules.Search;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,11 +39,18 @@ public abstract class PickerScreen extends FlatgenScreen {
     private static final int MOD_WIDTH = 130;
     /** The mod filter's picture while it shows every mod. */
     private static final Icon ALL_MODS = Icon.own("all_mods");
+    /**
+     * How soon after the picker opens a click is taken for the second click of a double click that opened it, and
+     * ignored, in milliseconds, so that it does not pick whatever card came to be under the mouse.
+     */
+    private static final long SECOND_CLICK_MILLIS = 400;
 
     private final Screen parent;
     private final Picker picker;
     private final Consumer<String> onPick;
     private final List<String> mods;
+    /** When the picker opened, by {@link System#nanoTime()}. */
+    private final long openedAt = System.nanoTime();
     private Picks picks;
     private String query = "";
     /** The mod the grid is narrowed to, by its place in {@link #mods}; -1 for every mod. */
@@ -84,6 +92,13 @@ public abstract class PickerScreen extends FlatgenScreen {
     /** The grid, as last laid out. */
     public CardGrid grid() {
         return grid;
+    }
+
+    /** A click, unless it comes so soon after the picker opened that it is the second of a double click. */
+    @Override
+    protected boolean click(double x, double y, int button) {
+        boolean secondClick = System.nanoTime() - openedAt < TimeUnit.MILLISECONDS.toNanos(SECOND_CLICK_MILLIS);
+        return secondClick || super.click(x, y, button);
     }
 
     /** The sheet: the picker's own header at its left, the search, the mod filter and Close at its right. */
