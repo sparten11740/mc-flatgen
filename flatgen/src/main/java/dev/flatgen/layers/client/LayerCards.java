@@ -56,8 +56,12 @@ final class LayerCards {
     private static final int FIELD = 30;
     /** Space between a card's controls, in GUI pixels. */
     private static final int SPACING = 4;
-    /** How far the lines parting a thickness's minus and plus stay from its box's top and bottom, in GUI pixels. */
+    /**
+     * How far the line parting a thickness's minus and plus stays from its box's top and bottom, and how far its field
+     * stands inside the box, so that the field's rounded edge shows, in GUI pixels.
+     */
     private static final int STEPPER_LINE_INSET = 4;
+    private static final int FIELD_INSET = 2;
     /** The count's pill on the block's tile: its height and the space at each side of the number, in GUI pixels. */
     private static final int COUNT_HEIGHT = 10;
     private static final int COUNT_PADDING = 3;
@@ -114,13 +118,13 @@ final class LayerCards {
         return new Rect(tile.x() + (TILE - PICTURE) / 2, tile.y() + (TILE - PICTURE) / 2, PICTURE, PICTURE);
     }
 
-    /** The box a thickness's minus, number and plus share, a line parting minus and plus from what is between. */
+    /** The box a thickness's minus, number and plus share, a line parting minus and plus when no field is between. */
     private static void drawStepper(Canvas canvas, Rect stepper, Rect thinner, Rect thicker) {
         canvas.sprite(Look.BUTTON, stepper);
-        canvas.fill(new Rect(thinner.right(), stepper.y() + STEPPER_LINE_INSET, 1,
-                stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
-        canvas.fill(new Rect(thicker.x() - 1, stepper.y() + STEPPER_LINE_INSET, 1,
-                stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
+        if (thinner.right() == thicker.x()) {
+            canvas.fill(new Rect(thicker.x(), stepper.y() + STEPPER_LINE_INSET, 1,
+                    stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
+        }
     }
 
     /**
@@ -182,7 +186,8 @@ final class LayerCards {
         widgets.add(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
                 new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of).flat());
         if (editor.advanced()) {
-            Rect field = new Rect(thinner.right(), middle, FIELD, BUTTON);
+            Rect field = new Rect(thinner.right() + FIELD_INSET, middle + FIELD_INSET, FIELD - 2 * FIELD_INSET,
+                    BUTTON - 2 * FIELD_INSET);
             widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
                     .append(" · ").append(Names.block(block(editor, index))), field, () -> height(editor, index),
                     height -> act(editor, index, new LayerEdits.SetHeight(height))));
