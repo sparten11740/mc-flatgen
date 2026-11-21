@@ -22,7 +22,7 @@ public final class TextButton implements Control {
     /** Space at each side of the label, in GUI pixels. */
     private static final int LABEL_PADDING = 6;
 
-    private final Optional<Icon> icon;
+    private final Icon icon;
     private final Supplier<Component> label;
     private final Rect bounds;
     private final Runnable action;
@@ -31,44 +31,20 @@ public final class TextButton implements Control {
     /** What the button does, which its colour says. */
     private Look.ButtonKind kind = Look.ButtonKind.PLAIN;
 
-    /** A button always usable, without a tooltip. */
-    public TextButton(Component label, Rect bounds, Runnable action) {
-        this(() -> label, bounds, action, () -> true, List::of);
-    }
-
-    /**
-     * A button usable while {@code active} says so, with a tooltip whose lines may change, empty for none.
-     */
-    public TextButton(Component label, Rect bounds, Runnable action, BooleanSupplier active,
-            Supplier<List<Component>> tooltip) {
-        this(() -> label, bounds, action, active, tooltip);
-    }
-
-    /** A button whose label may change, usable while {@code active} says so, with a tooltip, empty for none. */
-    public TextButton(Supplier<Component> label, Rect bounds, Runnable action, BooleanSupplier active,
-            Supplier<List<Component>> tooltip) {
-        this(Optional.empty(), label, bounds, action, active, tooltip);
-    }
-
     /** A button with a picture before its label, which may change, usable while {@code active} says so. */
     public TextButton(Icon icon, Supplier<Component> label, Rect bounds, Runnable action, BooleanSupplier active,
             Supplier<List<Component>> tooltip) {
-        this(Optional.of(icon), label, bounds, action, active, tooltip);
-    }
-
-    /** A button with a picture before its label, always usable, without a tooltip. */
-    public TextButton(Icon icon, Component label, Rect bounds, Runnable action) {
-        this(Optional.of(icon), () -> label, bounds, action, () -> true, List::of);
-    }
-
-    private TextButton(Optional<Icon> icon, Supplier<Component> label, Rect bounds, Runnable action,
-            BooleanSupplier active, Supplier<List<Component>> tooltip) {
         this.icon = icon;
         this.label = label;
         this.bounds = bounds;
         this.action = action;
         this.active = active;
         this.tooltip = tooltip;
+    }
+
+    /** A button with a picture before its label, always usable, without a tooltip. */
+    public TextButton(Icon icon, Component label, Rect bounds, Runnable action) {
+        this(icon, () -> label, bounds, action, () -> true, List::of);
     }
 
     /** How wide a button with a picture is whose label is this wide, in GUI pixels. */
@@ -89,8 +65,8 @@ public final class TextButton implements Control {
 
     /** Draws the picture with its top left corner here, dimmed while unusable. */
     private void drawPicture(Canvas canvas, int x, int y, boolean usable) {
-        Rect picture = new Rect(x, y, icon.get().width(), Icon.SIZE);
-        icon.get().draw(canvas, picture.x(), picture.y());
+        Rect picture = new Rect(x, y, icon.width(), Icon.SIZE);
+        icon.draw(canvas, picture.x(), picture.y());
         dimUnless(usable, canvas, picture);
     }
 
@@ -101,13 +77,11 @@ public final class TextButton implements Control {
         canvas.sprite(Look.button(kind, hovered, usable), bounds);
         Component words = label.get();
         int labelColor = usable ? kind.label() : Look.DISABLED;
-        if (icon.isEmpty()) {
-            canvas.centeredText(words, bounds, labelColor);
-        } else if (bounds.width() < width(icon.get(), canvas.textWidth(words))) {
-            drawPicture(canvas, bounds.x() + (bounds.width() - icon.get().width()) / 2,
+        if (bounds.width() < width(icon, canvas.textWidth(words))) {
+            drawPicture(canvas, bounds.x() + (bounds.width() - icon.width()) / 2,
                     bounds.y() + (bounds.height() - Icon.SIZE) / 2, usable);
         } else {
-            int pictureWidth = icon.get().width();
+            int pictureWidth = icon.width();
             int left = bounds.x() + (bounds.width() - pictureWidth - PICTURE_GAP - canvas.textWidth(words)) / 2;
             drawPicture(canvas, left, TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
             canvas.text(words, left + pictureWidth + PICTURE_GAP, TextStyle.BODY.top(bounds.y(), bounds.height()),

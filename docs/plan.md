@@ -106,9 +106,10 @@ unchanged on every version.
 Shared widgets used by several features live once in `client/gui/`: `PickerScreen` and its `CardGrid` (the block and
 biome pickers, both `ShelvedPickerScreen`s with shelves of kinds down their side; the grid also the preset library),
 `Toggle` (world options, structures, templates), `PictureButton`, `PictureTab` (the editor's dimensions), `Badge`
-(facts), `Slider` (templates), `CycleButton` (a setting of a few states, with its pips), `MenuScreen` and its `MenuItem`
-(a menu opened from a button, as the library's), `ChoiceCard` (one of a few choices with a picture and a line on it, as
-the templates), `QuestionScreen` (asking before what cannot be undone), `Icon` with Flatgen's own pictures
+(facts), `Slider` (templates), `Stepper` (a number's step down and up in one box, as a layer's thickness and the
+templates' settings), `GhostRow` (a row not there yet, as the cards' New layer), `MenuScreen` and its `MenuItem` (a menu
+opened from a button, as the library's), `ChoiceCard` (one of a few choices with a picture and a line on it, as the
+templates), `QuestionScreen` (asking before what cannot be undone), `Icon` with Flatgen's own pictures
 (`tools/sprites.py`) and the look's line drawings, `Label`, `Caption`, `Chip`, `Surface`, `TextField`, `TextLines`;
 `Control` is what the keyboard's focus moves to, `Keys` the keys controls answer alike. Flatgen's screens count in GUI
 pixels of their own (`rules/LayoutScale`) and draw in one look: the colours and sprites of `Look`, the fonts of
