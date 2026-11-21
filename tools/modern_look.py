@@ -34,6 +34,10 @@ CHEQUERS = 4
 CHEQUER_GREYS = ("#596069", "#454b53")
 FACE_LIGHT = {"top": 1.0, "left": 0.8, "right": 0.62}
 
+# The flat field between a stepper's buttons: its inside, and the border along its top and bottom, the button's, and its
+# width, in GUI pixels, so the box the buttons share keeps its edge across the field.
+FIELD_BAND = ("#16181b", "#33373e", 0.4)
+
 # Each panel: its fill, its border and the border's width, its corner radius, in Flatgen GUI pixels, a third of the
 # design canvas's at 1920 by 1080. A fill of None leaves the inside clear.
 PANELS = {
@@ -253,6 +257,18 @@ def placeholder_pixel(px, py, greys):
     return tuple(round(c / len(hits)) for c in channels) + (round(255 * len(hits) / len(samples)),)
 
 
+def draw_band(fill, border, border_width):
+    """A square band, its border along its top and bottom only: its size in GUI pixels and its pixels."""
+    logical = 4
+    size = logical * DENSITY
+    edge = border_width * DENSITY
+
+    def row(py):
+        covered = max(0.0, min(1.0, edge - py)) + max(0.0, min(1.0, py + 1 - (size - edge)))
+        return mix(fill, border, 1.0, 1.0 - min(1.0, covered))
+    return logical, size, [[row(py)] * size for py in range(size)]
+
+
 def mix(fill, border, outer, inner):
     """A pixel covered by the panel's outer edge this much, and by its inside this much."""
     edge = max(0.0, outer - inner)
@@ -300,6 +316,9 @@ def main():
         write(name, size, pixels,
               '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
+    logical, size, pixels = draw_band(*FIELD_BAND)
+    write("field_band", size, pixels,
+          '{"type": "nine_slice", "width": %d, "height": %d, "border": 1, "stretch_inner": true}' % (logical, logical))
     size, pixels = draw_placeholder()
     write("placeholder_block", size, pixels, '{"type": "stretch"}')
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}

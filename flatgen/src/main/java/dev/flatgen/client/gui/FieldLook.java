@@ -18,11 +18,11 @@ final class FieldLook {
     }
 
     /**
-     * Draws a field square and flat, its inside filling the area, outlined in the accent colour while it has the
-     * keyboard, and its text in the middle of it.
+     * Draws a field square and flat, filling the area with the edge of the box it stands in along its top and bottom,
+     * outlined in the accent colour while it has the keyboard, and its text in the middle of it.
      */
     static void drawFlat(Canvas canvas, Rect bounds, boolean lit, Component text, int color) {
-        canvas.fill(bounds, Look.FIELD_INSIDE);
+        canvas.sprite(Look.FIELD_BAND, bounds);
         if (lit) {
             canvas.outline(bounds, Look.ACCENT);
         }
