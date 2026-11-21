@@ -10,8 +10,18 @@ import net.minecraft.network.chat.Component;
  * versions; each version's {@link McCanvas} draws these through them (docs/plan.md 3.3). Colours are ARGB.
  */
 public interface Canvas {
+    /** Length of each dash of a dashed line, and of the gap after it, in GUI pixels. */
+    int DASH = 3;
+
     /** Fills a rectangle with a colour. */
     void fill(Rect area, int color);
+
+    /** Draws a dashed line one pixel tall, from {@code x} this wide. */
+    default void dashedLine(int x, int y, int width, int color) {
+        for (int from = x; from < x + width; from += 2 * DASH) {
+            fill(new Rect(from, y, Math.min(DASH, x + width - from), 1), color);
+        }
+    }
 
     /** Draws a one-pixel line around the inside of a rectangle. */
     void outline(Rect area, int color);

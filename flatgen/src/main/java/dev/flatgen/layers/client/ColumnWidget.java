@@ -50,8 +50,6 @@ public final class ColumnWidget implements Widget {
     private static final int WHEEL_BLOCKS = 1;
     private static final int SHIFT_WHEEL_BLOCKS = 10;
     private static final int CONTROL_WHEEL_BLOCKS = 100;
-    /** Length of each dash of a marker line, and of the gap after it, in GUI pixels. */
-    private static final int DASH = 3;
     private static final int LINE_BETWEEN_LAYERS = 0x80000000;
     private static final int DROP_LINE = 0xFFFFD040;
 
@@ -298,9 +296,7 @@ public final class ColumnWidget implements Widget {
             return;
         }
         int lineY = stackTop() + pixel.getAsInt() - scroll;
-        for (int x = column.x(); x < column.right(); x += 2 * DASH) {
-            canvas.fill(new Rect(x, lineY, Math.min(DASH, column.right() - x), 1), marker.color());
-        }
+        canvas.dashedLine(column.x(), lineY, column.width(), marker.color());
         marker.picture().draw(canvas, column.right() - Icon.SIZE - 1, lineY - Icon.SIZE / 2);
     }
 
