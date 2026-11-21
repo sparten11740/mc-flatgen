@@ -1,9 +1,7 @@
 package dev.flatgen.preset.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -17,13 +15,6 @@ class PresetTest {
     @Test
     void addsUpItsLayersHeights() {
         assertEquals(104, TestPresets.TALL_FLAT.height());
-    }
-
-    @Test
-    void fitsAWorldAsTallAsItOrTaller() {
-        assertTrue(TestPresets.TALL_FLAT.fitsWorld(104));
-        assertTrue(TestPresets.TALL_FLAT.fitsWorld(384));
-        assertFalse(TestPresets.TALL_FLAT.fitsWorld(103));
     }
 
     @Test

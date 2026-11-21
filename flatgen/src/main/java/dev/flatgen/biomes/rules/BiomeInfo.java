@@ -31,9 +31,24 @@ public record BiomeInfo(String id, Colours colours, Climate climate, Spawns spaw
         /** Fully opaque, as a colour drawn from an RGB one needs. */
         private static final int OPAQUE = 0xFF000000;
 
-        /** The colours a card shows, in order: grass, leaves, water and sky, each ARGB and opaque. */
-        public List<Integer> swatches() {
-            return List.of(OPAQUE | grass, OPAQUE | foliage, OPAQUE | water, OPAQUE | sky);
+        /** The colour of grass, ARGB and opaque, as it is drawn. */
+        public int grassArgb() {
+            return OPAQUE | grass;
+        }
+
+        /** The colour of leaves, ARGB and opaque, as it is drawn. */
+        public int foliageArgb() {
+            return OPAQUE | foliage;
+        }
+
+        /** The colour of water, ARGB and opaque, as it is drawn. */
+        public int waterArgb() {
+            return OPAQUE | water;
+        }
+
+        /** The colour of the sky, ARGB and opaque, as it is drawn. */
+        public int skyArgb() {
+            return OPAQUE | sky;
         }
     }
 

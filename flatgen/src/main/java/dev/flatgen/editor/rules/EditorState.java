@@ -54,11 +54,6 @@ public record EditorState(Preset preset, Dimension edited, int selected) {
         return height() <= world.height();
     }
 
-    /** The selected layer's block; none when there are no layers. */
-    public Optional<String> selectedBlock() {
-        return selected < 0 ? Optional.empty() : Optional.of(layers().get(selected).block());
-    }
-
     /** The same preset with another layer selected. */
     public EditorState select(int layer) {
         return new EditorState(preset, edited, layer);

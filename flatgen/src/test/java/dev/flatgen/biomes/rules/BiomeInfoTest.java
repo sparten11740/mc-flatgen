@@ -12,7 +12,8 @@ class BiomeInfoTest {
 
     @Test
     void showsGrassLeavesWaterAndSkyOpaque() {
-        assertEquals(List.of(0xFF91BD59, 0xFF77AB2F, 0xFF3F76E4, 0xFF78A7FF), PLAINS_COLOURS.swatches());
+        assertEquals(List.of(0xFF91BD59, 0xFF77AB2F, 0xFF3F76E4, 0xFF78A7FF), List.of(PLAINS_COLOURS.grassArgb(),
+                PLAINS_COLOURS.foliageArgb(), PLAINS_COLOURS.waterArgb(), PLAINS_COLOURS.skyArgb()));
     }
 
     @Test

@@ -20,7 +20,6 @@ final class BiomeLandscape {
     private static final int SUN_COLOR = 0xFFFFF3B0;
     /** How much of the ground its top is, in hundredths of the ground's height. */
     private static final int TOP = 25;
-    private static final int OPAQUE = 0xFF000000;
     private static final int WHOLE = 100;
 
     private BiomeLandscape() {
@@ -31,7 +30,7 @@ final class BiomeLandscape {
         BiomeScenes.Scene scene = BiomeScenes.of(biome);
         BiomeInfo.Colours colours = biome.colours();
         boolean ownSky = scene.sky() == BiomeScenes.OWN;
-        canvas.fill(area, ownSky ? OPAQUE | colours.sky() : scene.sky());
+        canvas.fill(area, ownSky ? colours.skyArgb() : scene.sky());
         if (ownSky) {
             int sun = share(area.height(), SUN);
             canvas.fill(new Rect(area.right() - share(area.width(), SUN_RIGHT) - sun,
@@ -44,7 +43,7 @@ final class BiomeLandscape {
         }
         int waterWidth = area.width() * scene.water() / WHOLE;
         canvas.fill(new Rect(area.right() - waterWidth, ground.y(), waterWidth, ground.height()),
-                OPAQUE | colours.water());
+                colours.waterArgb());
         scene.patches().forEach(patch -> drawPatch(canvas, patch, colours, area, groundTop));
     }
 
@@ -58,7 +57,7 @@ final class BiomeLandscape {
             canvas.fill(new Rect(ground.x(), top, ground.width(), bottom - top), bands.get(index));
         }
         if (look.top() != BiomeScenes.NONE) {
-            int top = look.top() == BiomeScenes.OWN ? OPAQUE | colours.grass() : look.top();
+            int top = look.top() == BiomeScenes.OWN ? colours.grassArgb() : look.top();
             canvas.fill(new Rect(ground.x(), ground.y(), ground.width(), share(ground.height(), TOP)), top);
         }
     }
@@ -68,7 +67,7 @@ final class BiomeLandscape {
             int groundTop) {
         int height = share(area.height(), patch.height());
         int bottom = groundTop - area.height() * patch.bottom() / WHOLE;
-        int colour = patch.colour() == BiomeScenes.OWN ? OPAQUE | colours.foliage() : patch.colour();
+        int colour = patch.colour() == BiomeScenes.OWN ? colours.foliageArgb() : patch.colour();
         canvas.fill(new Rect(area.x() + area.width() * patch.x() / WHOLE, bottom - height,
                 share(area.width(), patch.width()), height), colour);
     }

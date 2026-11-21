@@ -23,6 +23,7 @@ import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.WidgetGroup;
 import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.dimensions.rules.DimensionColours;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.facts.client.FactPictures;
 import dev.flatgen.facts.client.FactsNow;
@@ -72,7 +73,6 @@ public final class TemplatesScreen extends FlatgenScreen {
     private static final int PREVIEW_PADDING = 6;
     private static final int LAYER_ROW = 18;
     private static final int WHOLE = 100;
-    private static final int OPAQUE = 0xFF000000;
 
     private final EditorContext editor;
     /** The world the template makes now, as the facts need it. */
@@ -246,7 +246,7 @@ public final class TemplatesScreen extends FlatgenScreen {
 
     /** The blocks of air above the ground the template makes. */
     private Component air() {
-        return LayerText.air(editor.world(), height(made()));
+        return LayerText.air(editor.world(), made().height());
     }
 
     /** A template card's picture: what it makes, and the template's own item over its sky. */
@@ -257,15 +257,11 @@ public final class TemplatesScreen extends FlatgenScreen {
 
     /** A preset's ground standing in its biome's sky, as tall against the sky as against the world. */
     private void drawGround(Canvas canvas, Preset preset, Rect sky) {
-        canvas.fill(sky, OPAQUE | Biomes.info(preset.biome(), editor.registries()).map(BiomeInfo::colours)
-                .map(BiomeInfo.Colours::sky).orElse(0));
-        int ground = Math.max(THINNEST_GROUND, sky.height() * height(preset) / Math.max(1, editor.world().height()));
+        canvas.fill(sky, Biomes.info(preset.biome(), editor.registries()).map(BiomeInfo::colours)
+                .map(BiomeInfo.Colours::skyArgb).orElse(DimensionColours.OVERWORLD_SKY));
+        int ground = Math.max(THINNEST_GROUND, sky.height() * preset.height() / Math.max(1, editor.world().height()));
         ColumnPicture.draw(canvas, preset.layers(), Biomes.waterColor(preset.biome(), editor.registries()),
                 new Rect(sky.x(), sky.bottom() - ground, sky.width(), ground));
-    }
-
-    private static int height(Preset preset) {
-        return preset.layers().stream().mapToInt(Layer::height).sum();
     }
 
     /** The layers the template makes, top first, each its block's picture, its name and how thick it is. */

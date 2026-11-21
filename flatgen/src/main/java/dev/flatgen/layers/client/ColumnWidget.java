@@ -254,7 +254,7 @@ public final class ColumnWidget implements Widget {
     /** How tall the stack is drawn ({@link ColumnLayout#stackSpace}), with room for the figure standing on it. */
     private int stackSpace(List<Layer> layers) {
         return ColumnLayout.stackSpace(column.height(), StandingFigure.HEIGHT,
-                layers.stream().mapToInt(Layer::height).sum(), editor.world().height(),
+                Layer.total(layers), editor.world().height(),
                 new ColumnLayout.Least(layers.size() * SMALLEST_SHARE, column.height() * GROUND_PERCENT / 100));
     }
 

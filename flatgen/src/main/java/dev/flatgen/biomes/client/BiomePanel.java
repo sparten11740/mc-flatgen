@@ -15,7 +15,6 @@ import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.client.FactsNow;
-import dev.flatgen.mc.Biomes;
 import dev.flatgen.mc.Names;
 import java.util.HashMap;
 import java.util.List;

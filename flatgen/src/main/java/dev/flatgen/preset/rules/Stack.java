@@ -15,6 +15,6 @@ public record Stack(List<Layer> layers, String biome) {
 
     /** How tall the stack is, in blocks. */
     public int height() {
-        return layers.stream().mapToInt(Layer::height).sum();
+        return Layer.total(layers);
     }
 }

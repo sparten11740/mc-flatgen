@@ -16,8 +16,8 @@ class EditorStateTest {
     void keepsTheSelectionWithinTheLayersAndGivesItsBlock() {
         EditorState top = new EditorState(TestPresets.TALL_FLAT, Dimension.OVERWORLD, 99);
         assertEquals(3, top.selected());
-        assertEquals(Optional.of("minecraft:grass_block"), top.selectedBlock());
-        assertEquals(Optional.of("minecraft:bedrock"), top.select(-5).selectedBlock());
+        assertEquals("minecraft:grass_block", top.layers().get(top.selected()).block());
+        assertEquals(0, top.select(-5).selected());
     }
 
     @Test
@@ -55,6 +55,5 @@ class EditorStateTest {
     void selectsNothingAndGivesNoBlockWithoutLayers() {
         EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, 2);
         assertEquals(-1, empty.selected());
-        assertEquals(Optional.empty(), empty.selectedBlock());
     }
 }

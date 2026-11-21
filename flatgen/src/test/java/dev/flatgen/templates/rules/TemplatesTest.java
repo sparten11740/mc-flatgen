@@ -62,7 +62,7 @@ class TemplatesTest {
     }
 
     private static void assertFits(Preset preset, World world, String template) {
-        assertTrue(preset.fitsWorld(world.height()), template + " is too tall: " + preset.height());
+        assertTrue(preset.height() <= world.height(), template + " is too tall: " + preset.height());
         assertTrue(preset.layers().stream().allMatch(layer -> layer.height() >= 1), template + " has an empty layer");
     }
 }

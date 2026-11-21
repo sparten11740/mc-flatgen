@@ -120,11 +120,6 @@ public record Preset(String name, String icon, List<Layer> layers, String biome,
 
     /** How tall the stack is, in blocks. */
     public int height() {
-        return layers.stream().mapToInt(Layer::height).sum();
-    }
-
-    /** Whether the stack fits a world this many blocks tall; layers above the top would be cut off. */
-    public boolean fitsWorld(int worldHeight) {
-        return height() <= worldHeight;
+        return Layer.total(layers);
     }
 }

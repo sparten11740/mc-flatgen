@@ -77,7 +77,7 @@ final class CodePanel implements EditorPanel {
         if (problems.isEmpty()) {
             problems.addAll(CodeChecks.unknownIds(reading, editor.shown().preset(), editor.registries()));
         }
-        int height = reading.layers().stream().mapToInt(Layer::height).sum();
+        int height = Layer.total(reading.layers());
         if (problems.isEmpty() && height > editor.world().height()) {
             problems.add(new VanillaCode.Problem(VanillaCode.Kind.TOO_TALL, 0, code.length(), code));
         }
