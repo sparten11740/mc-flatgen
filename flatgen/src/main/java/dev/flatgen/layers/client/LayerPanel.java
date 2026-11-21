@@ -1,10 +1,8 @@
 package dev.flatgen.layers.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import dev.flatgen.blocks.client.BlockChoice;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
-import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
@@ -20,8 +18,9 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 
 /**
- * The editor's layers: their cards ({@link LayerCards}) in the middle, adding a layer on top in the bar above them and,
- * in Advanced, the ground's Y to type; and their keys (arrows, Alt with arrows, Delete, Insert, Control+D).
+ * The editor's layers: their cards ({@link LayerCards}) in the middle, with the row and the seams that add a layer,
+ * and in Advanced the ground's Y to type in the bar above them; and their keys (arrows, Alt with arrows, Delete,
+ * Insert, which adds a layer above the chosen one, and Control+D).
  */
 public final class LayerPanel implements EditorPanel {
     /** How wide the field to type the ground's Y is, in GUI pixels. */
@@ -39,10 +38,6 @@ public final class LayerPanel implements EditorPanel {
         if (editor.advanced()) {
             layout.add(EditorRegion.LAYERS_BAR, groundRow(editor, layout.flow(EditorRegion.LAYERS_BAR)));
         }
-        layout.button(EditorRegion.LAYERS_BAR, Icon.line("add_layer"),
-                Component.translatable("flatgen.editor.add_on_top"), () -> addOnTop(editor),
-                () -> LayerText.roomLeft(editor.shown(), editor.world()) > 0,
-                () -> LayerText.whyFull(editor.shown(), editor.world())).kind(Look.ButtonKind.ACCENT);
         layout.add(EditorRegion.LAYERS, LayerCards.list(editor, layout.area(EditorRegion.LAYERS)));
     }
 
@@ -55,7 +50,7 @@ public final class LayerPanel implements EditorPanel {
             case InputConstants.KEY_DOWN -> modifiers.alt() ? () -> editor.apply(new LayerEdits.Move(selected - 1))
                     : () -> editor.select(Math.max(0, selected - 1));
             case InputConstants.KEY_DELETE, InputConstants.KEY_BACKSPACE -> () -> editor.apply(new LayerEdits.Remove());
-            case InputConstants.KEY_INSERT -> () -> editor.apply(new LayerEdits.Add(true));
+            case InputConstants.KEY_INSERT -> () -> LayerCards.insert(editor, selected + 1);
             case InputConstants.KEY_D -> modifiers.control() ? () -> editor.apply(new LayerEdits.Duplicate()) : null;
             default -> null;
         };
@@ -74,11 +69,5 @@ public final class LayerPanel implements EditorPanel {
                 new NumberField("surface", label, bar.next(FIELD),
                         () -> editor.world().floor() + editor.shown().height(),
                         y -> editor.apply(new LayerEdits.SurfaceAt(y))));
-    }
-
-    /** Opens the block picker, then adds a layer of the block picked on top, as one step to undo. */
-    private static void addOnTop(EditorContext editor) {
-        int top = editor.shown().layers().size();
-        BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.Insert(block, top)));
     }
 }

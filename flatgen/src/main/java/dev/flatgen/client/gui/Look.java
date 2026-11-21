@@ -24,6 +24,8 @@ public final class Look {
     public static final int ON_PRIMARY = 0xFFFFFFFF;
     public static final int ON_ACCENT = 0xFFD6E7FF;
     public static final int ON_VIVID = 0xFFFFFFFF;
+    /** The dashed edge of what is not there yet, such as the row a new layer would take. */
+    public static final int GHOST_EDGE = 0xFF4A5059;
 
     /** A raised surface holding a group of controls. */
     public static final String PANEL = sprite("panel");
@@ -32,6 +34,11 @@ public final class Look {
     /** A card that is chosen, and the ring around a picture button that is. */
     public static final String CHOSEN = sprite("card_chosen");
     public static final String CHOSEN_RING = sprite("ring_chosen");
+    /** The faint face of what is not there yet, and its face while the mouse is over it or it has the focus. */
+    public static final String GHOST = sprite("ghost");
+    public static final String GHOST_LIT = sprite("ghost_lit");
+    /** A block not there yet, chequered, as large as a block's picture. */
+    public static final String PLACEHOLDER_BLOCK = sprite("placeholder_block");
     /** A plain button's face, and its face while the mouse is over it. */
     public static final String BUTTON = sprite("button");
     public static final String BUTTON_LIT = sprite("button_lit");

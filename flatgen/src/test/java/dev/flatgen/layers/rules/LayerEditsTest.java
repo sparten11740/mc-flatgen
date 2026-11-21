@@ -19,17 +19,6 @@ class LayerEditsTest {
     private static final EditorState STONE = new EditorState(TestPresets.TALL_FLAT, Dimension.OVERWORLD, 1);
 
     @Test
-    void addsALayerOfTheSelectedBlockAboveOrBelowAndSelectsIt() {
-        EditorState above = new LayerEdits.Add(true).apply(STONE, OVERWORLD);
-        assertEquals(new Layer("minecraft:stone", 1), above.preset().layers().get(2));
-        assertEquals(2, above.selected());
-        EditorState below = new LayerEdits.Add(false).apply(STONE, OVERWORLD);
-        assertEquals(new Layer("minecraft:stone", 1), below.preset().layers().get(1));
-        assertEquals(1, below.selected());
-        assertEquals(5, below.preset().layers().size());
-    }
-
-    @Test
     void insertsALayerOfThePickedBlockAtItsPlaceAndSelectsIt() {
         int top = STONE.layers().size();
         EditorState onTop = new LayerEdits.Insert("minecraft:glass", top).apply(STONE, OVERWORLD);
@@ -49,19 +38,6 @@ class LayerEditsTest {
         assertEquals(top, new LayerEdits.Insert("minecraft:glass", top + 3).apply(STONE, OVERWORLD).selected());
         assertEquals(0, new LayerEdits.Insert("minecraft:glass", -1).apply(STONE, OVERWORLD).selected());
         assertSame(STONE, new LayerEdits.Insert("minecraft:glass", 1).apply(STONE, new World(-64, 104)));
-    }
-
-    @Test
-    void addsStoneToAnEmptyStack() {
-        EditorState empty = new EditorState(TestPresets.TALL_FLAT.withLayers(List.of()), Dimension.OVERWORLD, -1);
-        EditorState added = new LayerEdits.Add(true).apply(empty, OVERWORLD);
-        assertEquals(List.of(new Layer(LayerEdits.FIRST_BLOCK, 1)), added.preset().layers());
-        assertEquals(0, added.selected());
-    }
-
-    @Test
-    void addsNothingToAStackAsTallAsTheWorld() {
-        assertSame(STONE, new LayerEdits.Add(true).apply(STONE, new World(-64, 104)));
     }
 
     @Test

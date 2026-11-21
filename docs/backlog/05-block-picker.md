@@ -9,11 +9,11 @@ of blocks, so finding one has to be quick, and the picture has to be enough for 
 
 ## What the player gets
 
-A block picker opened from the button showing the selected layer's block, and from Add layer on top, which adds a layer
-of the block picked: all the blocks, the game's own first, with a row of the blocks picked lately and a row of the
-starred ones above them; the creative inventory's tabs down its side to narrow them to one; a search by typing and a
-filter by mod. Clicking one picks it and goes back. It is a screen of its own rather than a grid beside the column,
-which has no room for one at the largest GUI scale.
+A block picker opened from the button showing the selected layer's block, and from the row above the layers and the
+seams between them, which add a layer of the block picked there: all the blocks, the game's own first, with a row of the
+blocks picked lately and a row of the starred ones above them; the creative inventory's tabs down its side to narrow
+them to one; a search by typing and a filter by mod. Clicking one picks it and goes back. It is a screen of its own
+rather than a grid beside the column, which has no room for one at the largest GUI scale.
 
 ## Acceptance criteria
 

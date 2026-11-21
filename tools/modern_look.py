@@ -24,12 +24,24 @@ DENSITY = SHARPEST
 # Samples taken across each texture pixel, each way, to smooth the edges.
 SAMPLES = 4
 
+# The placeholder block, a layer not there yet: how many GUI pixels it is drawn at (LayerCards' block picture), the
+# chequers along each edge of its faces, the chequer's two greys, and how much light each face gets, as the game lights
+# a block's top and its two sides in the inventory.
+PLACEHOLDER = 22
+# A block's edge in the inventory, as a share of its picture: ten pixels of sixteen.
+CUBE_EDGE = 0.625
+CHEQUERS = 4
+CHEQUER_GREYS = ("#596069", "#454b53")
+FACE_LIGHT = {"top": 1.0, "left": 0.8, "right": 0.62}
+
 # Each panel: its fill, its border and the border's width, its corner radius, in Flatgen GUI pixels, a third of the
 # design canvas's at 1920 by 1080. A fill of None leaves the inside clear.
 PANELS = {
     "panel": ("#1d2024", "#2e3238", 0.4, 5),
     "sheet": ("#1a1c20", "#2e3238", 0.4, 8),
     "card_chosen": ("#1c2633", "#5aa9ff", 0.7, 5),
+    "ghost": ("#ffffff0c", "#ffffff0c", 0.4, 5),
+    "ghost_lit": ("#5aa9ff1f", "#5aa9ff1f", 0.4, 5),
     "button": ("#23262b", "#33373e", 0.4, 4),
     "button_lit": ("#2c3036", "#4a5059", 0.4, 4),
     "button_off": ("#1b1d21", "#2a2d32", 0.4, 4),
@@ -76,8 +88,6 @@ ICONS = {
     "copy": (INK, {"rects": [(9, 9, 13, 13, 2)],
                    "lines": [[(5, 15), (4, 15), ("arc", 4, 13, 2, 90, 180), (2, 4), ("arc", 4, 4, 2, 180, 270),
                               (13, 2), ("arc", 13, 4, 2, 270, 360), (15, 5)]]}),
-    "add_layer": (INK, {"lines": [[(3, 13), (21, 13)], [(3, 17), (21, 17)], [(3, 21), (21, 21)],
-                                  [(12, 2), (12, 9)], [(8.5, 5.5), (15.5, 5.5)]]}),
     "arrow_left": (INK, {"lines": [[(19, 12), (5, 12)], [(12, 5), (5, 12), (12, 19)]]}),
     "arrow_up": (INK, {"lines": [[(12, 19), (12, 5)], [(5, 12), (12, 5), (19, 12)]]}),
     "external": (MUTED, {"lines": [[(15, 3), (21, 3), (21, 9)], [(10, 14), (21, 3)],
@@ -184,6 +194,63 @@ def draw_panel(fill, border, border_width, radius):
     return logical, size, pixels
 
 
+def placeholder_face(x, y):
+    """
+    The face of the placeholder cube a point of its square is on, and where on that face, each way from 0 to 1. The cube
+    stands as the game draws a block in the inventory: an edge of CUBE_EDGE of the picture, turned 45 degrees and tipped
+    30, so its top is half as tall as it is wide and its sides are its edge times cos 30.
+    """
+    edge = PLACEHOLDER * CUBE_EDGE
+    width = edge * math.sqrt(2)
+    top = width / 2
+    side = edge * math.cos(math.radians(30))
+    left = (PLACEHOLDER - width) / 2
+    up = (PLACEHOLDER - top - side) / 2
+    corner = (left, up + top / 2)
+    middle = (left + width / 2, up + top)
+    faces = (("top", corner, (width / 2, -top / 2), (width / 2, top / 2)),
+             ("left", corner, (width / 2, top / 2), (0, side)),
+             ("right", middle, (width / 2, -top / 2), (0, side)))
+    for name, origin, along, down in faces:
+        dx, dy = x - origin[0], y - origin[1]
+        det = along[0] * down[1] - along[1] * down[0]
+        u = (dx * down[1] - dy * down[0]) / det
+        v = (along[0] * dy - along[1] * dx) / det
+        if 0 <= u < 1 and 0 <= v < 1:
+            return name, u, v
+    return None
+
+
+def draw_placeholder():
+    """The placeholder cube's pixels: its faces chequered in two greys, each face lit as the game lights a block."""
+    size = PLACEHOLDER * DENSITY
+    greys = [rgba(grey) for grey in CHEQUER_GREYS]
+    pixels = []
+    for py in range(size):
+        row = []
+        for px in range(size):
+            row.append(placeholder_pixel(px, py, greys))
+        pixels.append(row)
+    return size, pixels
+
+
+def placeholder_pixel(px, py, greys):
+    """One pixel of the placeholder cube, the samples that fall on its faces averaged."""
+    samples = []
+    for sy in range(SAMPLES):
+        for sx in range(SAMPLES):
+            samples.append(placeholder_face((px + (sx + .5) / SAMPLES) / DENSITY,
+                                            (py + (sy + .5) / SAMPLES) / DENSITY))
+    hits = [face for face in samples if face]
+    if not hits:
+        return (0, 0, 0, 0)
+    channels = [0.0, 0.0, 0.0]
+    for name, u, v in hits:
+        grey = greys[(int(u * CHEQUERS) + int(v * CHEQUERS)) % 2]
+        channels = [channels[i] + grey[i] * FACE_LIGHT[name] for i in range(3)]
+    return tuple(round(c / len(hits)) for c in channels) + (round(255 * len(hits) / len(samples)),)
+
+
 def mix(fill, border, outer, inner):
     """A pixel covered by the panel's outer edge this much, and by its inside this much."""
     edge = max(0.0, outer - inner)
@@ -231,6 +298,8 @@ def main():
         write(name, size, pixels,
               '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
+    size, pixels = draw_placeholder()
+    write("placeholder_block", size, pixels, '{"type": "stretch"}')
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}
     icons.update({name: (ICONS[source][0], ICONS[source][1], True) for name, source in MIRRORED.items()})
     for name, (color, shapes, mirrored) in sorted(icons.items()):

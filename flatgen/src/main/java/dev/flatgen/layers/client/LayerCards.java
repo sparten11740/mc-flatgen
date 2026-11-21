@@ -4,11 +4,13 @@ import dev.flatgen.blocks.client.BlockChoice;
 import dev.flatgen.blocks.client.BlockMarks;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Caption;
+import dev.flatgen.client.gui.GhostRow;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.Seam;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.ListSlots;
@@ -33,12 +35,13 @@ import net.minecraft.network.chat.Component;
  * with its block with how many blocks thick the layer is, which opens the block picker, its name, thinner and thicker,
  * and remove; in Advanced also its Ys and id, its thickness to type and a copy. The chosen layer's card is outlined.
  * Every control works on its own card's layer, which it selects first, so the column and the cards always show the same
- * layer chosen.
+ * layer chosen. Above the cards, a row not there yet adds a layer on top, and the seam under each card adds one there;
+ * both ask for the block first.
  */
 final class LayerCards {
-    /** A card's height and the space between cards, in GUI pixels. */
+    /** A card's height, and the seam between cards and under the last, which adds a layer there, in GUI pixels. */
     private static final int CARD_HEIGHT = 35;
-    private static final int CARD_GAP = 4;
+    private static final int SEAM = 10;
     /** Space inside a card at its sides, in GUI pixels. */
     private static final int PADDING = 6;
     /** The width of the grip at a card's left, which shows where a card is taken to drag it, in GUI pixels. */
@@ -73,10 +76,47 @@ final class LayerCards {
      * the chosen layer changes, by a click, a key or an edit.
      */
     static List<Widget> list(EditorContext editor, Rect area) {
+        Rect newRow = new Rect(area.x(), area.y(), area.width(), CARD_HEIGHT);
+        int cardsTop = newRow.bottom() + SEAM;
+        Rect cardsArea = new Rect(area.x(), cardsTop, area.width(), area.bottom() - cardsTop);
         Drag drag = new Drag();
-        ScrollGroup cards = new ScrollGroup(area, top -> layOut(editor, area, top, drag));
-        chosen(editor, area).ifPresent(cards::revealContent);
-        return List.of(cards, new FollowChosen(editor, area, cards, drag));
+        ScrollGroup cards = new ScrollGroup(cardsArea, top -> layOut(editor, cardsArea, top, drag));
+        chosen(editor, cardsArea).ifPresent(cards::revealContent);
+        return List.of(newRow(editor, newRow), cards, new FollowChosen(editor, cardsArea, cards, drag));
+    }
+
+    /** Opens the block picker, then adds a layer of the block picked at a place, as one step to undo. */
+    static void insert(EditorContext editor, int at) {
+        BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.Insert(block, at)));
+    }
+
+    /** The row above the cards that adds a layer on top, or the first layer of an empty stack. */
+    private static GhostRow newRow(EditorContext editor, Rect row) {
+        Rect tile = tile(row);
+        Component words = Component.translatable(editor.shown().layers().isEmpty() ? "flatgen.editor.new_layer"
+                : "flatgen.editor.new_layer_on_top");
+        return new GhostRow(row, tile, picture(tile), tile.right() + 2 * SPACING, words,
+                () -> insert(editor, editor.shown().layers().size()), () -> roomLeft(editor) > 0,
+                () -> LayerText.whyFull(editor.shown(), editor.world()));
+    }
+
+    /** The seam under a layer's card, which adds a layer below it, hidden while a card is dragged. */
+    private static Seam seam(EditorContext editor, int index, Rect card, Drag drag) {
+        return new Seam(new Rect(card.x(), card.bottom(), card.width(), SEAM), tile(card).x() + TILE / 2,
+                Component.translatable("flatgen.editor.add_here"), () -> insert(editor, index), () -> !drag.active,
+                () -> roomLeft(editor) > 0, () -> LayerText.whyFull(editor.shown(), editor.world()));
+    }
+
+    /** The square at a card's left holding its block's picture. */
+    private static Rect tile(Rect card) {
+        return new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
+    }
+
+    /** Where a block's picture is drawn on its tile, as the tile's picture button draws it. */
+    private static Rect picture(Rect tile) {
+        int inset = (Icon.SIZE - PICTURE) / 2;
+        return new Rect(tile.x() + (TILE - Icon.SIZE) / 2 + inset, TextStyle.BODY.pictureTop(tile.y(), TILE) + inset,
+                PICTURE, PICTURE);
     }
 
     /**
@@ -87,15 +127,17 @@ final class LayerCards {
         ListSlots slots = slots(editor, new Rect(area.x(), top, area.width(), 0));
         List<Widget> widgets = new ArrayList<>();
         for (int place = 0; place < slots.count(); place++) {
-            widgets.addAll(card(editor, slots.count() - 1 - place, slots.at(place), slots, drag));
+            int index = slots.count() - 1 - place;
+            widgets.addAll(card(editor, index, slots.at(place), slots, drag));
+            widgets.add(seam(editor, index, slots.at(place), drag));
         }
         widgets.add(new LiftedCard(editor, slots, drag));
-        return new ScrollGroup.Laid(widgets, slots.bottom());
+        return new ScrollGroup.Laid(widgets, slots.bottom() + SEAM);
     }
 
     /** The cards' slots, the top layer's first, from this area's top. */
     private static ListSlots slots(EditorContext editor, Rect area) {
-        return new ListSlots(area, editor.shown().layers().size(), CARD_HEIGHT, CARD_GAP);
+        return new ListSlots(area, editor.shown().layers().size(), CARD_HEIGHT, SEAM);
     }
 
     /** Where the chosen layer's card is with the list at its top, if a layer is chosen. */
@@ -109,7 +151,7 @@ final class LayerCards {
     private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         List<Widget> widgets = new ArrayList<>();
-        Rect tile = new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
+        Rect tile = tile(card);
         widgets.add(new PictureButton(blockPicture(editor, index), tile, () -> pick(editor, index),
                 () -> Stream.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
                         Component.translatable("flatgen.editor.pick_block"))

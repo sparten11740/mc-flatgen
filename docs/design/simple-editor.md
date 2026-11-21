@@ -83,13 +83,24 @@ Left out, for the owner to decide on:
 - nothing of round 3's screens: the biome picker's, the library's and the templates' layouts came after (F07, F11 and
   F14), and the block picker's kinds as the creative inventory's tabs (F05);
 - an illustration in the empty Nether;
-- "+" lines between cards, and the favourite presets as named columns;
+- the favourite presets as named columns;
 - windows smaller than 1280 by 720 window pixels draw at one window pixel per Flatgen pixel, so text there is small (at
   the launchers' default 854 by 480, half the game's own); respecting a smaller GUI scale the player chose is not done
   either. On 2026-11-20 a panel of three agents ranked it second after the block picker's kinds: fonts exist for whole
   pixels only and the layouts need 640 by 360, so it needs a fractional scale, giving up sharp pixels, or a second,
   smaller layout of every screen, which is large; left for the owner to weigh;
 - the aside lays all panels out again as it scrolls, which costs nothing a player notices but is not the simplest.
+
+## Round 4: adding a layer
+
+A young player missed, several times, that the blue Add layer on top button in the bar added layers. Round 4 drew
+three directions for adding (A, a row not there yet above the cards and a plus on every seam; B, a plain button and
+plus handles on the chosen card; C, a rail of pluses beside the cards); the owner chose A and asked for it refined
+(round 4b): the row as large as a card with a chequered placeholder block as large as a block's picture and no
+tooltip, the seam as a ghost line (one of three drawn) that turns into a slim "Add a layer here" strip under the
+mouse, Duplicate as the placeholder block on the layer's own block, and Copy code and Paste code with words and
+pictures running opposite ways (stack to clipboard, clipboard to stack). Built in the game: the row, the seams and
+Insert asking for the block first (F04).
 
 ## How it is built in the game
 

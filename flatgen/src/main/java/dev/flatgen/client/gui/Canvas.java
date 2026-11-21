@@ -12,6 +12,8 @@ import net.minecraft.network.chat.Component;
 public interface Canvas {
     /** Length of each dash of a dashed line, and of the gap after it, in GUI pixels. */
     int DASH = 3;
+    /** How far a dashed frame's sides stop short of its corners, in GUI pixels, so that it reads as rounded. */
+    int DASH_CORNER = 4;
 
     /** Fills a rectangle with a colour. */
     void fill(Rect area, int color);
@@ -20,6 +22,18 @@ public interface Canvas {
     default void dashedLine(int x, int y, int width, int color) {
         for (int from = x; from < x + width; from += 2 * DASH) {
             fill(new Rect(from, y, Math.min(DASH, x + width - from), 1), color);
+        }
+    }
+
+    /** Draws a dashed frame one pixel wide around the inside of a rectangle, its corners left open. */
+    default void dashedFrame(Rect area, int color) {
+        int across = area.width() - 2 * DASH_CORNER;
+        dashedLine(area.x() + DASH_CORNER, area.y(), across, color);
+        dashedLine(area.x() + DASH_CORNER, area.bottom() - 1, across, color);
+        for (int from = area.y() + DASH_CORNER; from < area.bottom() - DASH_CORNER; from += 2 * DASH) {
+            int dash = Math.min(DASH, area.bottom() - DASH_CORNER - from);
+            fill(new Rect(area.x(), from, 1, dash), color);
+            fill(new Rect(area.right() - 1, from, 1, dash), color);
         }
     }
 

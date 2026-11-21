@@ -12,27 +12,7 @@ import java.util.List;
  * would make it taller than the world goes as far as the world allows, or is not made.
  */
 public final class LayerEdits {
-    /** The block of a layer added to an empty stack, which has no selected layer to copy. */
-    static final String FIRST_BLOCK = "minecraft:stone";
-
     private LayerEdits() {
-    }
-
-    /**
-     * Adds a layer one block deep above or below the selected one, of its block, and selects it.
-     *
-     * @param above whether it goes above the selected layer rather than below
-     */
-    public record Add(boolean above) implements Edit {
-        @Override
-        public EditorState apply(EditorState state, World world) {
-            if (state.height() >= world.height()) {
-                return state;
-            }
-            String block = state.selectedBlock().orElse(FIRST_BLOCK);
-            int at = state.selected() < 0 ? 0 : state.selected() + (above ? 1 : 0);
-            return inserted(state, at, new Layer(block, 1));
-        }
     }
 
     /**

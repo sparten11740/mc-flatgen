@@ -24,9 +24,9 @@ keys for everything, undo for every change.
   number, quick heights (1, 2, 3, 5, 10, 50, 100). The wheel over the Y numbers scrolls a tall column instead.
 - [x] "Surface at Y": type the Y the surface should be at; the selected layer's height changes to get there.
 - [x] Undo and redo (buttons, Ctrl+Z, Ctrl+Y and Ctrl+Shift+Z) for every change, including block and biome changes.
-- [x] Keyboard: arrows select, Alt+↑/↓ move, Delete removes, Ctrl+D duplicates, Insert adds. On a Mac, Ctrl is the
-  Command key, as the game has it; a number field with the keyboard takes its keys first, and Escape gives the
-  keyboard back rather than closing the editor.
+- [x] Keyboard: arrows select, Alt+↑/↓ move, Delete removes, Ctrl+D duplicates, Insert adds above the selected layer,
+  asking for the block first. On a Mac, Ctrl is the Command key, as the game has it; a number field with the keyboard
+  takes its keys first, and Escape gives the keyboard back rather than closing the editor.
 - [x] The stack can never get taller than the world; the control that would go over it stops at the top and says
   why in its tooltip ("The world is 384 blocks tall"); the picture comes with F16.
 
@@ -54,3 +54,14 @@ keys for everything, undo for every change.
   copy, remove, the keys (up, Alt+down, Delete, Insert, Command+Z), dragging a layer's edge, dragging a layer to the
   top, and the wheel alone, with Shift and with Command, checking `flatgen:editor` after each; Done and Create New
   World made a world whose `level.dat` holds exactly the edited stack. A shorter run on Fabric did the same.
+
+2026-11-21: adding a layer as round 4 of the design canvas drew it, direction A, which the owner chose after a young
+player missed, several times, that the blue Add layer on top button in the bar added layers. Above the cards stands a
+row not there yet, as large as a card: a dashed edge, a chequered placeholder block as large as a block's picture with a
+plus, and New layer on top (New layer on an empty stack), with no tooltip as its words say it. Under each card a seam
+adds a layer there: a faint dashed line with a plus under the blocks, which the mouse turns into a slim strip saying Add
+a layer here. Both, and Insert, open the block picker first; cancelling adds nothing, and a full world greys them and
+says why. The seams hide while a card is dragged. Under the keyboard's focus a seam shows the focus ring rather than its
+strip, as a widget is not told it keeps the focus. Tried on 1.21.1 NeoForge: a seam's strip and the row lit under the
+mouse, sand added between Grass Block and the layer below it, Insert opening the picker, cancelling adding nothing, and
+an empty stack showing New layer alone.
