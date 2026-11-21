@@ -23,8 +23,8 @@ alone and with the game's narrator.
 
 ## Design
 
-Decided on 2026-11-19 by a panel of three agents (a UX designer for children who cannot read yet, a long-time
-Minecraft and modpack player, an accessibility engineer who knows the game's GUI code), while the owner was away; the owner may
+Decided on 2026-11-19 by a panel of three agents (a UX designer for children who cannot read yet, a long-time Minecraft
+and modpack player, an accessibility engineer who knows the game's GUI code), while the owner was away; the owner may
 revisit any of it.
 
 ### Pictures
@@ -173,11 +173,11 @@ Save new and Enter saves a preset, all by keyboard. After the M4 review's fixes,
 footer in sight, the library's three rows of controls and a row of cards fit, Tab to the library's grid, Right twice
 and Enter pick the third card, and in the biome picker Tab, Tab, Right, Down and Enter choose Bamboo Jungle.
 
-Pictures, 2026-11-20: after the owner found the starred mark reading as a house and the Recent clock as a yellow ball, a fresh
-agent, a designer for children who cannot read, judged every picture of the round 3 screens from screenshots. Changed
-from it: the biomes painted with their own ground and tree, the facts' pictures (rain and snow clouds, a slime's face, a
-creeper's head, the ladder for the surface), No slimes a ladder going up, Presets and Templates a bookshelf and a
-crafting table, Mobs spawn a spawn egg, Every biome four landscapes, each preset's and template's item on its card,
+Pictures, 2026-11-20: after the owner found the starred mark reading as a house and the Recent clock as a yellow ball, a
+fresh agent, a designer for children who cannot read, judged every picture of the round 3 screens from screenshots.
+Changed from it: the biomes painted with their own ground and tree, the facts' pictures (rain and snow clouds, a slime's
+face, a creeper's head, the ladder for the surface), No slimes a ladder going up, Presets and Templates a bookshelf and
+a crafting table, Mobs spawn a spawn egg, Every biome four landscapes, each preset's and template's item on its card,
 Rename a name tag, and big opposite arrows for copying and pasting; suspicious sand and gravel now carry the falls mark.
 Kept: the falls mark's arrow on its warning disc, as a falling block drawn that small read as a plug; the iron shovel of
 a floor's depth; Copy code and the layer's copy as two pictures, as one copies a preset and the other a layer.

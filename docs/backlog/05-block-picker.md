@@ -37,15 +37,15 @@ which has no room for one at the largest GUI scale.
 - `blocks/client/BlockPicker`: the block picker, `BlockPickerScreen`, a `client/gui/ShelvedPickerScreen` as F07's biome
   picker is (a `PickerScreen`: the search field, the mod filter and Cancel; shelves down its side), whose cards are
   block icons: its side holds all the blocks, chosen at first, and the kinds, and the grid's rows of recent and starred
-  blocks stand over the shelf's, as the owner asked for after trying shelves of picks with a young player. Since 2026-11-20 its kinds
-  are the creative inventory's tabs of blocks, natural first as most of a flat world's layers are, then building,
-  coloured, functional and redstone, each filled by the game for the world's features with the blocks mods put in them,
-  their names and pictures the game's own (`mc/BlockCatalog.tabs`); a panel of three agents chose it as the next
-  left-out item, as a player who cannot read cannot search but knows those tabs. Only these five tabs are filled, one by
-  one, as filling runs mods' code that may want a world or a server's settings the Create World screen has not got: in
-  the test pack Astral Sorcery's did, and filling every tab at once left the picker with none. Every block lists
-  the game's own blocks first, then the mods', and leaves out mods' blocks with no item, the parts they move, light or
-  mark with, which have no picture.
+  blocks stand over the shelf's, as asked for after shelves of picks were tried in play. Since 2026-11-20 its kinds are
+  the creative inventory's tabs of blocks, natural first as most of a flat world's layers are, then building, coloured,
+  functional and redstone, each filled by the game for the world's features with the blocks mods put in them, their
+  names and pictures the game's own (`mc/BlockCatalog.tabs`); a panel of three agents chose it as the next left-out
+  item, as a player who cannot read cannot search but knows those tabs. Only these five tabs are filled, one by one, as
+  filling runs mods' code that may want a world or a server's settings the Create World screen has not got: in the test
+  pack Astral Sorcery's did, and filling every tab at once left the picker with none. Every block lists the game's own
+  blocks first, then the mods', and leaves out mods' blocks with no item, the parts they move, light or mark with, which
+  have no picture.
 - `blocks/rules/SetBlock`: the edit, one step to undo; `blocks/rules/LayerHints`: the hints from a block's traits,
   which `mc/BlockCatalog` reads from the game; the starred and recent blocks are `search/rules/Picks`.
 - The toolkit gains `TextField`, block icons on the `Canvas` and buttons whose label changes; config files share one
@@ -72,13 +72,13 @@ grass, podzol, mycelium, dirt path and dirt first, in the creative inventory's o
 the side lists the same five tabs and Building Blocks opens on the oak log; a GameTest checks the tabs on every node's
 server. Not tried in game: German names, and a mod's blocks in the tabs.
 
-The owner and a young player, 2026-11-20, in the test pack with alpha.9: the picker was confusing, with no regular blocks to
-be seen but a Create Aeronautics block and blocks without pictures. The log showed why: Astral Sorcery's creative tab
-code wanted its server settings, the filling of every tab at once failed, and the picker fell back to every block in the
-registry's order. Fixed as above; tried on 1.21.1 NeoForge, where the side starts with Natural Blocks and Every block
-with stone. Not tried yet: the pack itself.
+Played on 2026-11-20 in the test pack with alpha.9: the picker was confusing, with no regular blocks to be seen but a
+Create Aeronautics block and blocks without pictures. The log showed why: Astral Sorcery's creative tab code wanted its
+server settings, the filling of every tab at once failed, and the picker fell back to every block in the registry's
+order. Fixed as above; tried on 1.21.1 NeoForge, where the side starts with Natural Blocks and Every block with stone.
+Not tried yet: the pack itself.
 
-Layout, 2026-11-20, as the owner asked: all the blocks chosen at first with rows of the recent and the starred over them and
-the tabs to switch to down the side; the cards' words kept clear of the focus ring; Add layer on top opening the picker
-first. Tried on 1.21.1 NeoForge: the picker opens on All blocks with Recent and Starred rows, picking glass from Add
-layer on top adds a glass layer on top, cancelling adds nothing, and Undo takes the glass back.
+Layout, 2026-11-20, as the owner asked: all the blocks chosen at first with rows of the recent and the starred over them
+and the tabs to switch to down the side; the cards' words kept clear of the focus ring; Add layer on top opening the
+picker first. Tried on 1.21.1 NeoForge: the picker opens on All blocks with Recent and Starred rows, picking glass from
+Add layer on top adds a glass layer on top, cancelling adds nothing, and Undo takes the glass back.

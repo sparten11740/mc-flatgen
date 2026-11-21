@@ -4,8 +4,8 @@ Milestone: M3 presets · Release: v1 · Status: done · Depends on: F02, F03
 
 ## Why
 
-The saves of the test instance are 21 superflat worlds with four layer stacks, entered again and again. Saved
-presets end that, and they are the base for favourites, the default and sharing.
+The saves of the test instance are 21 superflat worlds with four layer stacks, entered again and again. Saved presets
+end that, and they are the base for favourites, the default and sharing.
 
 ## What the player gets
 

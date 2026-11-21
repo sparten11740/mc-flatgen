@@ -13,9 +13,8 @@ page that says what Flatgen does.
 - [ ] Boot test: a dedicated server of each loader starts with the jar in its mods folder and is unaffected (client
   mod), and a client of each loader starts with it (`tools/boot.mjs`, as in Glowline), also on the oldest loader
   versions the metadata accepts (NeoForge 21.1.1, Fabric Loader 0.16.14).
-- [ ] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender
-  present: Customize, editing, presets, a world created and loaded. Copying the jar into the instance is asked for
-  first.
+- [ ] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender present:
+  Customize, editing, presets, a world created and loaded. Copying the jar into the instance is asked for first.
 - [x] GitHub Actions: build and release workflows as in Glowline, run on request.
 - [ ] README with screenshots; Modrinth and CurseForge pages; changelog from the `feat` and `fix` commit subjects.
 - [ ] Version `1.0.0`, tag `v1.0.0`.
@@ -30,7 +29,7 @@ page that says what Flatgen does.
 - `.github/workflows/build.yml` runs on request and for release tags: the pictures as `tools/sprites.py` writes them,
   `./gradlew build` with its tests and GameTests, then the boot of each jar. `release.yml` runs on a tag `v<version>`
   matching `mod_version`, writes the notes from the `feat` and `fix` subjects since the last tag, and makes a GitHub
-  release with the jars; Modrinth and CurseForge uploads join once the owner has made the projects.
+  release with the jars; Modrinth and CurseForge uploads join once the projects are made.
 
 ## Tests
 
@@ -40,20 +39,20 @@ page that says what Flatgen does.
 
 Locally, 2026-11-19: `node tools/boot.mjs` booted the Fabric jar on Fabric Loader 0.20.1 and 0.16.14 and the NeoForge
 jar on NeoForge 21.1.248 and 21.1.1, each listed, without errors naming Flatgen, up and stopped cleanly; the first boot
-on 21.1.1, right after installing that server, did not exit after stopping and was cut off, and every boot since
-(three, one of them with no mods) exited at once. The workflows have not run: they run on GitHub, which waits for the owner.
+on 21.1.1, right after installing that server, did not exit after stopping and was cut off, and every boot since (three,
+one of them with no mods) exited at once. The workflows have not run: they run on GitHub, which waits for the owner.
 
 2026-11-19, later: the README has screenshots of the editor, the biome picker, the library and the templates;
 `CHANGELOG.md` and `docs/release/store-page.md` draft 1.0.0's changelog and the Modrinth and CurseForge text, nothing
-published. `0.1.0-alpha.2` (`chore(release)`) is the build for the test instance, its jars booting on all four
-servers (sha256: NeoForge `2c69bf3e…4185f`, Fabric `e2360bd6…77b8`); the owner approved copying it into the instance, which
+published. `0.1.0-alpha.2` (`chore(release)`) is the build for the test instance, its jars booting on all four servers
+(sha256: NeoForge `2c69bf3e…4185f`, Fabric `e2360bd6…77b8`); the owner approved copying it into the instance, which
 waits for the share to be mounted.
 
 Later that evening: `0.1.0-alpha.2` was never copied, as the instance has Blockpilot 1.1.1 and NeoForge would have
 refused to start beside it (fixed by letting an older Blockpilot stand); `0.1.0-alpha.3`'s NeoForge jar is in the
 instance's mods folder with the owner's yes (sha256 `055b140f…89ad5`), waiting to be played there.
 
-2026-11-20, afternoon: the owner and a young player played alpha.9 to alpha.12 in the instance. What they found was fixed in between:
-the block picker's tabs, emptied by Astral Sorcery's tab code (alpha.10), its layout with all blocks and rows of recent
-and starred (alpha.11), and lag on every Flatgen screen, which 1.21.1's tiled drawing of nine-sliced sprites caused
-(alpha.12); with alpha.12 the owner found the screens smooth.
+2026-11-20, afternoon: alpha.9 to alpha.12 were played in the instance. What play found was fixed in between: the block
+picker's tabs, emptied by Astral Sorcery's tab code (alpha.10), its layout with all blocks and rows of recent and
+starred (alpha.11), and lag on every Flatgen screen, which 1.21.1's tiled drawing of nine-sliced sprites caused
+(alpha.12); with alpha.12 the screens were found smooth.

@@ -20,8 +20,8 @@ it.
 
 ## Acceptance criteria
 
-- [x] Every biome in the registry of the world being created, modded and datapack biomes included (Biomes O' Plenty
-  and Oh The Biomes We've Gone in the test pack).
+- [x] Every biome in the registry of the world being created, modded and datapack biomes included (Biomes O' Plenty and
+  Oh The Biomes We've Gone in the test pack).
 - [x] Card: translated name and the biome's grass, foliage, water and sky colour (since round 3 painted as a
   landscape), and the pictures of F08's facts that differ from biome to biome (weather, slimes, monsters) for the world
   as the editor has it (since round 3 in the panel for the biome chosen, and in each card's tooltip).

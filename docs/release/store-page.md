@@ -1,7 +1,7 @@
 # Store page (draft)
 
-The text for Flatgen's Modrinth and CurseForge pages, kept here until the owner makes the projects. Nothing is published
-from this file.
+The text for Flatgen's Modrinth and CurseForge pages, kept here until the projects are made. Nothing is published from
+this file.
 
 ## Summary (one line)
 

@@ -4,9 +4,9 @@ Milestone: M2 biome and world · Release: v1 · Status: done · Depends on: F27
 
 ## Why
 
-The test instance's command history is mostly `/time set day` and `/weather clear`, typed again in every new
-test world. A preset that carries these settings saves that every time. They are Flatgen's own world options (F27),
-in the format other mods use, so this feature is also the format's first real test.
+The test instance's command history is mostly `/time set day` and `/weather clear`, typed again in every new test world.
+A preset that carries these settings saves that every time. They are Flatgen's own world options (F27), in the format
+other mods use, so this feature is also the format's first real test.
 
 ## What the player gets
 

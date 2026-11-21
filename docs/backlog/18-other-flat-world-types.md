@@ -4,8 +4,8 @@ Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on
 
 ## Why
 
-Mods add world types that are superflat underneath: Create Aeronautics' "Airship Ready" in the test pack, which
-has no Customize button. Flatgen can edit those too.
+Mods add world types that are superflat underneath: Create Aeronautics' "Airship Ready" in the test pack, which has no
+Customize button. Flatgen can edit those too.
 
 ## What the player gets
 
@@ -39,8 +39,8 @@ Customize is active on any world type whose overworld is superflat, and opens Fl
   as ones Flatgen can edit whole; Default, Large Biomes and a fixture type that also changes the End are not
   (`WorldTypeGameTests`).
 - Dev client: the fixture's "Airship Ready" (in the dev runs' world types) → Customize opens Flatgen, and the created
-  world keeps the type with Flatgen's layers; its "End Sea" keeps Customize greyed. With Create Aeronautics, in the
-  test instance (F20).
+  world keeps the type with Flatgen's layers; its "End Sea" keeps Customize greyed. With Create Aeronautics, in the test
+  instance (F20).
 
 ## Tried
 
@@ -48,5 +48,4 @@ Both loaders, in dev clients with Blockpilot: cycling World Type reaches the fix
 opens Flatgen's editor on its own layers (bedrock, three stone, grass). On Fabric, a superflat code pasted there and
 Done return to Create World with Airship Ready still chosen, and the world made has the code's layers (bedrock, four
 glass) and the normal End. Not tried in game: the fixture's "End Sea" with Customize greyed (the GameTest tells it
-apart), and Create Aeronautics' own Airship Ready with its game rules, which F20's play in the test instance
-covers.
+apart), and Create Aeronautics' own Airship Ready with its game rules, which F20's play in the test instance covers.

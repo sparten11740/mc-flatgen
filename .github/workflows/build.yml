@@ -1,6 +1,6 @@
 name: build
 
-# Run by hand only, when the owner asks (Actions minutes cost money; /diff-check and ./gradlew build gate every commit
+# Run by hand only, when asked (Actions minutes cost money; /diff-check and ./gradlew build gate every commit
 # locally), and for every release tag through release.yml: the pictures are what tools/sprites.py writes, every node
 # builds and passes its unit tests and GameTests, and every jar boots a real dedicated server of its loader, on the
 # loader version it is built with and on the oldest it accepts (docs/backlog/20-release-v1.md).

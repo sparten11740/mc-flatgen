@@ -25,9 +25,10 @@ Nothing yet: a prototype on its own branch, presented to the owner with screensh
   fewer numbers.
 - [x] A prototype of that design on the branch `prototype/simple-editor`, built on the same toolkit and edits, so the
   existing logic is reused rather than copied.
-- [x] Presented to the owner: screenshots of each screen and a short walk through the flows, with what was left out and why.
-- [x] Nothing of it reaches `main` until the owner has decided; what is accepted flows into F16 (works without reading) and
-  the later screens.
+- [x] Presented to the owner: screenshots of each screen and a short walk through the flows, with what was left out and
+  why.
+- [x] Nothing of it reaches `main` until the owner has decided; what is accepted flows into F16 (works without reading)
+  and the later screens.
 
 ## Design
 
@@ -38,7 +39,8 @@ Nothing yet: a prototype on its own branch, presented to the owner with screensh
 
 ## Prototype build (on `prototype/simple-editor`)
 
-The owner chose direction C in the modern look (`docs/design/simple-editor.md`) and asked for it built overnight. The build:
+The owner chose direction C in the modern look (`docs/design/simple-editor.md`) and asked for it built overnight. The
+build:
 
 - [x] **Look and scale** for every Flatgen screen: Flatgen GUI pixels of its own (`LayoutScale`, whole window pixels,
   at least 640 by 360, the canvas at a third of 1920 by 1080), Inter text in three styles (`TextStyle`), rounded
@@ -56,6 +58,6 @@ The owner chose direction C in the modern look (`docs/design/simple-editor.md`) 
 
 ## Decision
 
-On 2026-11-20 the owner accepted the prototype: Flatgen goes on in the modern look. Their first finding, that the time and
-weather card's pictures did not say what they mean, was fixed the same day with pictures of Flatgen's own (F16's
+On 2026-11-20 the owner accepted the prototype: Flatgen goes on in the modern look. Their first finding, that the time
+and weather card's pictures did not say what they mean, was fixed the same day with pictures of Flatgen's own (F16's
 table). The prototype reaches `main` when the owner merges its branch.
