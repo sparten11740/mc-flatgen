@@ -46,7 +46,7 @@ public final class NumberField implements Control {
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         String text = keyboard ? typed.text() + "_" : shown();
-        FieldLook.draw(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
+        FieldLook.drawCentred(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
     }
 
     @Override

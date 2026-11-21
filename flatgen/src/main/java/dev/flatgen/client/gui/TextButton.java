@@ -105,7 +105,7 @@ public final class TextButton implements Control {
             canvas.centeredText(words, bounds, labelColor);
         } else if (bounds.width() < width(icon.get(), canvas.textWidth(words))) {
             drawPicture(canvas, bounds.x() + (bounds.width() - icon.get().width()) / 2,
-                    TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), usable);
+                    bounds.y() + (bounds.height() - Icon.SIZE) / 2, usable);
         } else {
             int pictureWidth = icon.get().width();
             int left = bounds.x() + (bounds.width() - pictureWidth - PICTURE_GAP - canvas.textWidth(words)) / 2;

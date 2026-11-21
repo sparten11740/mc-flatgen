@@ -67,3 +67,9 @@ quieted, and it was taken out again.
 
 Copy, in Advanced, keeps its picture, and while the mouse is on it the copy is drawn faint in the place above the card,
 where it will go, which the owner found clearer than a tooltip describing it. Tried on 1.21.1 NeoForge.
+
+A card's thinner, thickness and thicker share one box, as the design draws them: minus, the number in the middle of its
+field (in Advanced), and plus, without gaps, a line parting minus and plus where no field is between them. The cards'
+sizes are even, so that every picture sits exactly in the middle of its button, and picture buttons centre their
+pictures in their box rather than on the line text would take; numbers stand in the middle of their fields. Tried on
+1.21.1 NeoForge, with Advanced on and off.

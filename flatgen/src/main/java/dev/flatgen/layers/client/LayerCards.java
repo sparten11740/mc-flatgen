@@ -39,20 +39,25 @@ import net.minecraft.network.chat.Component;
  */
 final class LayerCards {
     /** A card's height and the space between cards, in GUI pixels. */
-    private static final int CARD_HEIGHT = 35;
+    private static final int CARD_HEIGHT = 36;
     private static final int CARD_GAP = 4;
     /** Space inside a card at its sides, in GUI pixels. */
     private static final int PADDING = 6;
     /** The width of the grip at a card's left, which shows where a card is taken to drag it, in GUI pixels. */
     private static final int GRIP_WIDTH = 18;
     /** The block's tile, and the picture of the block on it, in GUI pixels. */
-    private static final int TILE = 27;
+    private static final int TILE = 28;
     private static final int PICTURE = 22;
-    /** A card's buttons, and the field to type a thickness, in GUI pixels. */
-    private static final int BUTTON = 17;
-    private static final int FIELD = 26;
+    /**
+     * A card's buttons, and the field to type a thickness, in GUI pixels: even, as the cards are, so that every picture
+     * sits exactly in the middle.
+     */
+    private static final int BUTTON = 18;
+    private static final int FIELD = 30;
     /** Space between a card's controls, in GUI pixels. */
     private static final int SPACING = 4;
+    /** How far the lines parting a thickness's minus and plus stay from its box's top and bottom, in GUI pixels. */
+    private static final int STEPPER_LINE_INSET = 4;
     /** The count's pill on the block's tile: its height and the space at each side of the number, in GUI pixels. */
     private static final int COUNT_HEIGHT = 10;
     private static final int COUNT_PADDING = 3;
@@ -104,11 +109,18 @@ final class LayerCards {
         return new Rect(card.x() + GRIP_WIDTH, card.y() + (card.height() - TILE) / 2, TILE, TILE);
     }
 
-    /** Where a block's picture is drawn on its tile, as the tile's picture button draws it. */
+    /** Where a block's picture is drawn on its tile: in its middle, as the tile's picture button draws it. */
     private static Rect picture(Rect tile) {
-        int inset = (Icon.SIZE - PICTURE) / 2;
-        return new Rect(tile.x() + (TILE - Icon.SIZE) / 2 + inset, TextStyle.BODY.pictureTop(tile.y(), TILE) + inset,
-                PICTURE, PICTURE);
+        return new Rect(tile.x() + (TILE - PICTURE) / 2, tile.y() + (TILE - PICTURE) / 2, PICTURE, PICTURE);
+    }
+
+    /** The box a thickness's minus, number and plus share, a line parting minus and plus from what is between. */
+    private static void drawStepper(Canvas canvas, Rect stepper, Rect thinner, Rect thicker) {
+        canvas.sprite(Look.BUTTON, stepper);
+        canvas.fill(new Rect(thinner.right(), stepper.y() + STEPPER_LINE_INSET, 1,
+                stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
+        canvas.fill(new Rect(thicker.x() - 1, stepper.y() + STEPPER_LINE_INSET, 1,
+                stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
     }
 
     /**
@@ -162,21 +174,22 @@ final class LayerCards {
             copies.accept(new CopyPreview.Copyable(index, copy, card));
             right = copy.x() - SPACING;
         }
+        int fieldWidth = editor.advanced() ? FIELD : 0;
+        Rect thinner = new Rect(right - 2 * BUTTON - fieldWidth, middle, BUTTON, BUTTON);
         Rect thicker = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-        widgets.add(button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
-                new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
-                () -> LayerText.whyFull(editor.shown(), editor.world())));
-        right = thicker.x();
+        Rect stepper = new Rect(thinner.x(), middle, thicker.right() - thinner.x(), BUTTON);
+        widgets.add((canvas, mouseX, mouseY) -> drawStepper(canvas, stepper, thinner, thicker));
+        widgets.add(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
+                new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of).flat());
         if (editor.advanced()) {
-            Rect field = new Rect(right - SPACING - FIELD, middle, FIELD, BUTTON);
+            Rect field = new Rect(thinner.right(), middle, FIELD, BUTTON);
             widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
                     .append(" · ").append(Names.block(block(editor, index))), field, () -> height(editor, index),
                     height -> act(editor, index, new LayerEdits.SetHeight(height))));
-            right = field.x();
         }
-        Rect thinner = new Rect(right - SPACING - BUTTON, middle, BUTTON, BUTTON);
-        widgets.add(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
-                new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of));
+        widgets.add(button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
+                new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
+                () -> LayerText.whyFull(editor.shown(), editor.world())).flat());
         int nameX = tile.right() + 2 * SPACING;
         widgets.addAll(words(editor, index, new Rect(nameX, card.y(), thinner.x() - SPACING - nameX, card.height())));
         List<Rect> controls = widgets.stream().flatMap(widget -> widget.focusArea().stream()).toList();

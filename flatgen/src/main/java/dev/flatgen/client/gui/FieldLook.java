@@ -16,4 +16,10 @@ final class FieldLook {
         canvas.field(bounds, lit);
         canvas.text(text, bounds.x() + PADDING, TextStyle.BODY.top(bounds.y(), bounds.height()), color);
     }
+
+    /** Draws a field's box and its text in the middle of it, as a number's. */
+    static void drawCentred(Canvas canvas, Rect bounds, boolean lit, Component text, int color) {
+        canvas.field(bounds, lit);
+        canvas.centeredText(text, bounds, color);
+    }
 }

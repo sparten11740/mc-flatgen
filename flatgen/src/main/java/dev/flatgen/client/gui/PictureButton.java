@@ -25,6 +25,8 @@ public final class PictureButton implements Control {
     private final Runnable action;
     private final BooleanSupplier usable;
     private final Supplier<List<Component>> tooltip;
+    /** Whether it draws only a highlight under the mouse, its face being a box it shares with others. */
+    private boolean flat;
 
     /** A button showing this picture in this rectangle, always usable, doing {@code action} when clicked. */
     public PictureButton(Icon icon, Rect bounds, Runnable action, Supplier<List<Component>> tooltip) {
@@ -41,13 +43,23 @@ public final class PictureButton implements Control {
         this.tooltip = tooltip;
     }
 
+    /** The button drawn without a face of its own, a highlight under the mouse only, as in a box shared with others. */
+    public PictureButton flat() {
+        this.flat = true;
+        return this;
+    }
+
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
         boolean hovered = bounds.contains(mouseX, mouseY);
         boolean canUse = usable.getAsBoolean();
-        canvas.button(bounds, hovered, canUse);
+        if (!flat) {
+            canvas.button(bounds, hovered, canUse);
+        } else if (hovered && canUse) {
+            canvas.sprite(Look.BUTTON_LIT, bounds);
+        }
         Rect picture = new Rect(bounds.x() + (bounds.width() - Icon.SIZE) / 2,
-                TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), Icon.SIZE, Icon.SIZE);
+                bounds.y() + (bounds.height() - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE);
         icon.draw(canvas, picture.x(), picture.y());
         if (!canUse) {
             canvas.dim(picture);
