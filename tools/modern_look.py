@@ -38,6 +38,12 @@ FACE_LIGHT = {"top": 1.0, "left": 0.8, "right": 0.62}
 # width, in GUI pixels, so the box the buttons share keeps its edge across the field.
 FIELD_BAND = ("#16181b", "#33373e", 0.4)
 
+# Each ring: its outer line's colour and width, its inner line's colour and width, and its corner radius, in GUI
+# pixels. The focus ring is white with a dark line inside, so that it shows on light ground as on dark.
+RINGS = {
+    "focus": ("#ffffff", 0.7, "#111214", 0.5, 5),
+}
+
 # Each panel: its fill, its border and the border's width, its corner radius, in Flatgen GUI pixels, a third of the
 # design canvas's at 1920 by 1080. A fill of None leaves the inside clear.
 PANELS = {
@@ -49,8 +55,8 @@ PANELS = {
     "button": ("#23262b", "#33373e", 0.4, 4),
     "button_lit": ("#2c3036", "#4a5059", 0.4, 4),
     "button_off": ("#1b1d21", "#2a2d32", 0.4, 4),
-    "button_primary": ("#3e8f33", "#3e8f33", 0.4, 4),
-    "button_primary_lit": ("#4aa23e", "#4aa23e", 0.4, 4),
+    "button_primary": ("#38822f", "#38822f", 0.4, 4),
+    "button_primary_lit": ("#3e8f33", "#3e8f33", 0.4, 4),
     "button_accent": ("#2a3a52", "#3b5a85", 0.4, 4),
     "button_accent_lit": ("#31445f", "#4f74a8", 0.4, 4),
     "button_danger": ("#b83a33", "#b83a33", 0.4, 4),
@@ -67,7 +73,6 @@ PANELS = {
     "count": ("#0f1012", "#1d2024", 0.7, 5),
     "chip": ("#111214b8", "#111214b8", 0.4, 4),
     "warning": ("#f2b33d", "#f2b33d", 0.4, 4),
-    "focus": (None, "#ffffff", 0.7, 5),
     "ring_chosen": (None, "#5aa9ff", 0.7, 5),
     "tooltip": ("#0f1012f2", "#3b4048", 0.4, 4),
 }
@@ -257,6 +262,33 @@ def placeholder_pixel(px, py, greys):
     return tuple(round(c / len(hits)) for c in channels) + (round(255 * len(hits) / len(samples)),)
 
 
+def draw_ring(outer, outer_width, inner, inner_width, radius):
+    """A ring of two lines, clear inside, as small as its corners allow: its size in GUI pixels and its pixels."""
+    logical = radius * 2 + 4
+    size = logical * DENSITY
+
+    def within(depth):
+        return lambda x, y: rounded_distance(x, y, 0, 0, logical, logical, radius) <= -depth
+    pixels = []
+    for py in range(size):
+        row = []
+        for px in range(size):
+            edge, middle, inside = (coverage(px, py, 1 / DENSITY, within(depth))
+                                    for depth in (0, outer_width, outer_width + inner_width))
+            row.append(ring_pixel(rgba(outer), rgba(inner), edge - middle, middle - inside))
+        pixels.append(row)
+    return logical, size, pixels
+
+
+def ring_pixel(outer, inner, outer_share, inner_share):
+    """A pixel covered this much by a ring's outer line and this much by its inner one."""
+    alpha = outer_share + inner_share
+    if alpha <= 0:
+        return (0, 0, 0, 0)
+    return tuple(round((outer[i] * outer_share + inner[i] * inner_share) / alpha) for i in range(3)) + (
+        round(255 * min(1.0, alpha)),)
+
+
 def draw_band(fill, border, border_width):
     """A square band, its border along its top and bottom only: its size in GUI pixels and its pixels."""
     logical = 4
@@ -316,6 +348,11 @@ def main():
         write(name, size, pixels,
               '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
+    for name, ring in sorted(RINGS.items()):
+        logical, size, pixels = draw_ring(*ring)
+        write(name, size, pixels,
+              '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
+              % (logical, logical, ring[4]))
     logical, size, pixels = draw_band(*FIELD_BAND)
     write("field_band", size, pixels,
           '{"type": "nine_slice", "width": %d, "height": %d, "border": 1, "stretch_inner": true}' % (logical, logical))

@@ -26,8 +26,11 @@ public final class Look {
     public static final int ON_VIVID = 0xFFFFFFFF;
     /** A button's edge, and the line parting the parts of a box several buttons share. */
     public static final int EDGE = 0xFF33373E;
-    /** The dashed edge of what is not there yet, such as the row a new layer would take. */
-    public static final int GHOST_EDGE = 0xFF4A5059;
+    /**
+     * The dashed edge of what is not there yet, such as the row a new layer would take, light enough on the screen's
+     * background (3.8 to 1) to be seen as a control.
+     */
+    public static final int GHOST_EDGE = 0xFF6B717A;
 
     /** A raised surface holding a group of controls. */
     public static final String PANEL = sprite("panel");
