@@ -30,11 +30,25 @@ class LayerEditsTest {
     }
 
     @Test
-    void addsALayerOfThePickedBlockOnTopAndSelectsIt() {
-        EditorState added = new LayerEdits.AddOnTop("minecraft:glass").apply(STONE, OVERWORLD);
-        assertEquals(new Layer("minecraft:glass", 1), added.preset().layers().get(added.preset().layers().size() - 1));
-        assertEquals(added.preset().layers().size() - 1, added.selected());
-        assertSame(STONE, new LayerEdits.AddOnTop("minecraft:glass").apply(STONE, new World(-64, 104)));
+    void insertsALayerOfThePickedBlockAtItsPlaceAndSelectsIt() {
+        int top = STONE.layers().size();
+        EditorState onTop = new LayerEdits.Insert("minecraft:glass", top).apply(STONE, OVERWORLD);
+        assertEquals(new Layer("minecraft:glass", 1), onTop.preset().layers().get(top));
+        assertEquals(top, onTop.selected());
+        EditorState between = new LayerEdits.Insert("minecraft:sand", 2).apply(STONE, OVERWORLD);
+        assertEquals(new Layer("minecraft:sand", 1), between.preset().layers().get(2));
+        assertEquals(STONE.layers().get(2), between.preset().layers().get(3));
+        assertEquals(2, between.selected());
+        EditorState atBottom = new LayerEdits.Insert("minecraft:glass", 0).apply(STONE, OVERWORLD);
+        assertEquals(new Layer("minecraft:glass", 1), atBottom.preset().layers().get(0));
+    }
+
+    @Test
+    void insertsWithinTheStackAndNotIntoAFullWorld() {
+        int top = STONE.layers().size();
+        assertEquals(top, new LayerEdits.Insert("minecraft:glass", top + 3).apply(STONE, OVERWORLD).selected());
+        assertEquals(0, new LayerEdits.Insert("minecraft:glass", -1).apply(STONE, OVERWORLD).selected());
+        assertSame(STONE, new LayerEdits.Insert("minecraft:glass", 1).apply(STONE, new World(-64, 104)));
     }
 
     @Test

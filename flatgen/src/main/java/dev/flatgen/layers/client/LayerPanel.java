@@ -78,6 +78,7 @@ public final class LayerPanel implements EditorPanel {
 
     /** Opens the block picker, then adds a layer of the block picked on top, as one step to undo. */
     private static void addOnTop(EditorContext editor) {
-        BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.AddOnTop(block)));
+        int top = editor.shown().layers().size();
+        BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.Insert(block, top)));
     }
 }

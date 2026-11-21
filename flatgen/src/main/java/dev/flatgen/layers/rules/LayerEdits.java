@@ -36,17 +36,18 @@ public final class LayerEdits {
     }
 
     /**
-     * Adds a layer one block deep of a block on top of the stack, and selects it.
+     * Adds a layer one block deep of a block at a place in the stack, and selects it.
      *
      * @param block the block it is of, as the block picker picked it
+     * @param at    where it goes, counted from the bottom: 0 below every layer, the number of layers on top
      */
-    public record AddOnTop(String block) implements Edit {
+    public record Insert(String block, int at) implements Edit {
         @Override
         public EditorState apply(EditorState state, World world) {
             if (state.height() >= world.height()) {
                 return state;
             }
-            return inserted(state, state.layers().size(), new Layer(block, 1));
+            return inserted(state, Math.max(0, Math.min(at, state.layers().size())), new Layer(block, 1));
         }
     }
 
