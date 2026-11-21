@@ -90,12 +90,11 @@ final class LayerCards {
         BlockChoice.choose(editor, block -> editor.apply(new LayerEdits.Insert(block, at)));
     }
 
-    /** The row above the cards that adds a layer on top, or the first layer of an empty stack. */
+    /** The row above the cards that adds a layer on top. */
     private static GhostRow newRow(EditorContext editor, Rect row) {
         Rect tile = tile(row);
-        Component words = Component.translatable(editor.shown().layers().isEmpty() ? "flatgen.editor.new_layer"
-                : "flatgen.editor.new_layer_on_top");
-        return new GhostRow(row, tile, picture(tile), tile.right() + 2 * SPACING, words,
+        return new GhostRow(row, tile, picture(tile), tile.right() + 2 * SPACING,
+                Component.translatable("flatgen.editor.new_layer"),
                 () -> insert(editor, editor.shown().layers().size()), () -> roomLeft(editor) > 0,
                 () -> LayerText.whyFull(editor.shown(), editor.world()));
     }

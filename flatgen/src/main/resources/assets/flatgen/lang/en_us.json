@@ -53,7 +53,6 @@
   "flatgen.editor.layers": "Layers",
   "flatgen.editor.pick_biome": "Pick the world's biome",
   "flatgen.editor.new_layer": "New layer",
-  "flatgen.editor.new_layer_on_top": "New layer on top",
   "flatgen.editor.pick_block": "Pick the layer's block",
   "flatgen.editor.redo": "Redo",
   "flatgen.editor.remove": "Remove",

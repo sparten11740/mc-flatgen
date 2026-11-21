@@ -58,10 +58,9 @@ keys for everything, undo for every change.
 2026-11-21: adding a layer as round 4 of the design canvas drew it, direction A, which the owner chose after a young
 player missed, several times, that the blue Add layer on top button in the bar added layers. Above the cards stands a
 row not there yet, as large as a card: a dashed edge, a chequered placeholder block as large as a block's picture with a
-plus, and New layer on top (New layer on an empty stack), with no tooltip as its words say it. It and Insert open the
-block picker first; cancelling adds nothing, and a full world greys it and says why. Tried on 1.21.1 NeoForge: the row
-lit under the mouse, a layer added from it, Insert opening the picker, cancelling adding nothing, and an empty stack
-showing New layer alone.
+plus, and New layer, with no tooltip as its words say it. It and Insert open the block picker first; cancelling adds
+nothing, and a full world greys it and says why. Tried on 1.21.1 NeoForge: the row lit under the mouse, a layer added
+from it, Insert opening the picker, cancelling adding nothing, and an empty stack showing the row alone.
 
 The design also had a seam under every card adding a layer there; built and tried, the owner found it bulky even
 quieted, and it was taken out again.
