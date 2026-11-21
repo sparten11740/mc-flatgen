@@ -10,6 +10,7 @@ import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.ScrollGroup;
+import dev.flatgen.client.gui.Stepper;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.ListSlots;
@@ -56,8 +57,6 @@ final class LayerCards {
     private static final int FIELD = 30;
     /** Space between a card's controls, in GUI pixels. */
     private static final int SPACING = 4;
-    /** How far the line parting a thickness's minus and plus stays from its box's top and bottom, in GUI pixels. */
-    private static final int STEPPER_LINE_INSET = 4;
     /** The count's pill on the block's tile: its height and the space at each side of the number, in GUI pixels. */
     private static final int COUNT_HEIGHT = 10;
     private static final int COUNT_PADDING = 3;
@@ -114,15 +113,6 @@ final class LayerCards {
         return new Rect(tile.x() + (TILE - PICTURE) / 2, tile.y() + (TILE - PICTURE) / 2, PICTURE, PICTURE);
     }
 
-    /** The box a thickness's minus, number and plus share, a line parting minus and plus when no field is between. */
-    private static void drawStepper(Canvas canvas, Rect stepper, Rect thinner, Rect thicker) {
-        canvas.sprite(Look.BUTTON, stepper);
-        if (thinner.right() == thicker.x()) {
-            canvas.fill(new Rect(thicker.x(), stepper.y() + STEPPER_LINE_INSET, 1,
-                    stepper.height() - 2 * STEPPER_LINE_INSET), Look.EDGE);
-        }
-    }
-
     /**
      * Every layer's card, top first, in this area with the first card's top here, as the list scrolls, and the card
      * lifted while one is dragged.
@@ -151,50 +141,61 @@ final class LayerCards {
         return selected < 0 ? Optional.empty() : Optional.of(slots.at(slots.count() - 1 - selected));
     }
 
-    /** One layer's card: its background, which selects it and drags it where no control is, and its controls. */
+    /**
+     * One layer's card: its background, which selects it and drags it where no control is, and its controls, in the
+     * order they stand from the left, which the keyboard follows: the block, the thickness, Copy in Advanced, Remove.
+     */
     private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag,
             Consumer<CopyPreview.Copyable> copies) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
-        List<Widget> widgets = new ArrayList<>();
+        Rect remove = new Rect(card.right() - PADDING - BUTTON, middle, BUTTON, BUTTON);
+        Optional<Rect> copy = editor.advanced()
+                ? Optional.of(new Rect(remove.x() - SPACING - BUTTON, middle, BUTTON, BUTTON)) : Optional.empty();
+        int stepperRight = copy.orElse(remove).x() - SPACING;
+        int stepperLeft = stepperRight - 2 * BUTTON - (editor.advanced() ? FIELD : 0);
         Rect tile = tile(card);
+        List<Widget> widgets = new ArrayList<>();
         widgets.add(new PictureButton(blockPicture(editor, index), tile, () -> pick(editor, index),
                 () -> Stream.of(Names.block(block(editor, index)), BlockChoice.hints(editor, index),
                         Component.translatable("flatgen.editor.pick_block"))
-                        .filter(line -> !line.getString().isEmpty()).toList()));
-        int right = card.right() - PADDING;
-        Rect remove = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
+                        .filter(line -> !line.getString().isEmpty()).toList()).onFocus(() -> editor.select(index)));
+        widgets.addAll(thickness(editor, index, stepperLeft, middle));
+        copy.ifPresent(place -> widgets.add(copyButton(editor, index, place, card, copies)));
         widgets.add(button(editor, index, Icon.line("trash"), "flatgen.editor.remove", remove, new LayerEdits.Remove(),
                 () -> true, List::of));
-        right = remove.x() - SPACING;
-        if (editor.advanced()) {
-            Rect copy = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-            widgets.add(button(editor, index, Icon.line("copy"), "flatgen.editor.duplicate", copy,
-                    new LayerEdits.Duplicate(), () -> roomLeft(editor) > 0,
-                    () -> LayerText.whyFull(editor.shown(), editor.world())));
-            copies.accept(new CopyPreview.Copyable(index, copy, card));
-            right = copy.x() - SPACING;
-        }
-        int fieldWidth = editor.advanced() ? FIELD : 0;
-        Rect thinner = new Rect(right - 2 * BUTTON - fieldWidth, middle, BUTTON, BUTTON);
-        Rect thicker = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-        Rect stepper = new Rect(thinner.x(), middle, thicker.right() - thinner.x(), BUTTON);
-        widgets.add((canvas, mouseX, mouseY) -> drawStepper(canvas, stepper, thinner, thicker));
-        widgets.add(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
-                new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of).flat());
-        if (editor.advanced()) {
-            Rect field = new Rect(thinner.right(), middle, FIELD, BUTTON);
-            widgets.add(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
-                    .append(" · ").append(Names.block(block(editor, index))), field, () -> height(editor, index),
-                    height -> act(editor, index, new LayerEdits.SetHeight(height))).flat());
-        }
-        widgets.add(button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
-                new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
-                () -> LayerText.whyFull(editor.shown(), editor.world())).flat());
         int nameX = tile.right() + 2 * SPACING;
-        widgets.addAll(words(editor, index, new Rect(nameX, card.y(), thinner.x() - SPACING - nameX, card.height())));
+        widgets.addAll(words(editor, index, new Rect(nameX, card.y(), stepperLeft - SPACING - nameX, card.height())));
         List<Rect> controls = widgets.stream().flatMap(widget -> widget.focusArea().stream()).toList();
         widgets.add(0, new Background(editor, index, card, controls, slots, drag));
         return widgets;
+    }
+
+    /** A layer's thinner and thicker, with its thickness to type between them in Advanced, from this left edge. */
+    private static List<Widget> thickness(EditorContext editor, int index, int left, int middle) {
+        Rect thinner = new Rect(left, middle, BUTTON, BUTTON);
+        Optional<NumberField> field = editor.advanced()
+                ? Optional.of(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
+                        .append(" · ").append(Names.block(block(editor, index))),
+                        new Rect(thinner.right(), middle, FIELD, BUTTON), () -> height(editor, index),
+                        height -> act(editor, index, new LayerEdits.SetHeight(height)))
+                        .onFocus(() -> editor.select(index)))
+                : Optional.empty();
+        Rect thicker = new Rect(thinner.right() + field.map(number -> FIELD).orElse(0), middle, BUTTON, BUTTON);
+        return Stepper.of(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
+                new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of), field,
+                button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
+                        new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
+                        () -> LayerText.whyFull(editor.shown(), editor.world())));
+    }
+
+    /** Copy, in Advanced, whose copy is previewed above the card while the mouse or the keyboard's focus is on it. */
+    private static PictureButton copyButton(EditorContext editor, int index, Rect place, Rect card,
+            Consumer<CopyPreview.Copyable> copies) {
+        PictureButton copy = button(editor, index, Icon.line("copy"), "flatgen.editor.duplicate", place,
+                new LayerEdits.Duplicate(), () -> roomLeft(editor) > 0,
+                () -> LayerText.whyFull(editor.shown(), editor.world()));
+        copies.accept(new CopyPreview.Copyable(index, copy, card));
+        return copy;
     }
 
     /** The layer's block's name, and below it squares picturing its thickness; in Advanced, its Ys and its id. */
@@ -228,7 +229,7 @@ final class LayerCards {
             Edit edit, BooleanSupplier usable, Supplier<List<Component>> why) {
         return new PictureButton(icon, place, () -> act(editor, index, edit), usable,
                 () -> Stream.concat(Stream.of(Component.translatable(name), Names.block(block(editor, index))),
-                        why.get().stream()).toList());
+                        why.get().stream()).toList()).onFocus(() -> editor.select(index));
     }
 
     /** The layer's block, filling the tile, with how many blocks thick the layer is on a pill at its corner. */
@@ -367,9 +368,9 @@ final class LayerCards {
     }
 
     /**
-     * While the mouse is on a card's Copy button, the copy it would make drawn faint in the place above the card, so
-     * the player sees where it goes; nothing otherwise. It is drawn over the list rather than in it, so the top card's
-     * copy shows over the row above the cards rather than cut off.
+     * While the mouse or the keyboard's focus is on a card's Copy button, the copy it would make drawn faint in the
+     * place above the card, so the player sees where it goes; nothing otherwise. It is drawn over the list rather than
+     * in it, so the top card's copy shows over the row above the cards rather than cut off.
      */
     private static final class CopyPreview implements Widget {
         private final EditorContext editor;
@@ -381,10 +382,10 @@ final class LayerCards {
          * A card's Copy button.
          *
          * @param index  the card's layer
-         * @param button where the button is
+         * @param button the button
          * @param card   where the card is
          */
-        private record Copyable(int index, Rect button, Rect card) {
+        private record Copyable(int index, PictureButton button, Rect card) {
         }
 
         CopyPreview(EditorContext editor, Drag drag) {
@@ -406,7 +407,8 @@ final class LayerCards {
             if (drag.active || roomLeft(editor) < 1) {
                 return;
             }
-            laidOut.stream().filter(copyable -> copyable.button().contains(mouseX, mouseY)).findFirst()
+            laidOut.stream().filter(copyable -> copyable.button().bounds().contains(mouseX, mouseY)
+                    || copyable.button().focused()).findFirst()
                     .ifPresent(copyable -> canvas.raised(() -> drawCopy(canvas, copyable)));
         }
 

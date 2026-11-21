@@ -73,3 +73,9 @@ field (in Advanced), and plus, without gaps, a line parting minus and plus where
 sizes are even, so that every picture sits exactly in the middle of its button, and picture buttons centre their
 pictures in their box rather than on the line text would take; numbers stand in the middle of their fields. Tried on
 1.21.1 NeoForge, with Advanced on and off.
+
+After the review of 2026-11-21: a card's controls are reached by the keyboard in the order they stand, the block,
+thinner, the thickness, thicker, Copy and Remove; the focus coming to a card's control selects its layer, so Delete,
+Insert and Control+D act on the card the focus is on; Alt with an arrow moves that layer rather than the focus; and
+Copy's preview shows while the focus is on it as well as under the mouse. The thickness's box is the toolkit's stepper,
+which the templates' settings use too. Tried on 1.21.1 NeoForge with Blockpilot's narration query.

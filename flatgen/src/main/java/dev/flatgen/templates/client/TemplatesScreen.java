@@ -13,6 +13,7 @@ import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.Slider;
+import dev.flatgen.client.gui.Stepper;
 import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextLines;
@@ -309,24 +310,24 @@ public final class TemplatesScreen extends FlatgenScreen {
             this.place = place;
         }
 
-        /** Its picture, a slider showing its name and value, and a step down and up. */
+        /** Its picture, a slider showing its name and value, and a step down and up in one box. */
         @Override
         public Widget number(Parameter.Number number) {
             int buttonTop = place.y() + (place.height() - PictureButton.SIZE) / 2;
             Rect raise = new Rect(place.right() - PictureButton.SIZE, buttonTop, PictureButton.SIZE,
                     PictureButton.SIZE);
-            Rect lower = new Rect(raise.x() - GAP / 2 - PictureButton.SIZE, buttonTop, PictureButton.SIZE,
-                    PictureButton.SIZE);
+            Rect lower = new Rect(raise.x() - PictureButton.SIZE, buttonTop, PictureButton.SIZE, PictureButton.SIZE);
             int sliderX = place.x() + Icon.SIZE + GAP;
-            return new WidgetGroup(List.of(
+            List<Widget> row = new ArrayList<>(List.of(
                     new Label(Icon.itemOrTexture(number.icon()), Component.empty(), new Rect(place.x(), place.y(),
                             Icon.SIZE, place.height())),
                     new Slider(number.id(), new Rect(sliderX, place.y(), lower.x() - GAP - sliderX, place.height()),
                             number.min(), number.max(), () -> values.number(number),
                             value -> values = values.with(number, value),
-                            () -> Component.translatable(number.name(), values.number(number))),
-                    step(number, Icon.line("minus"), "flatgen.templates.lower", -1, lower),
-                    step(number, Icon.line("plus"), "flatgen.templates.raise", 1, raise)));
+                            () -> Component.translatable(number.name(), values.number(number)))));
+            row.addAll(Stepper.of(step(number, Icon.line("minus"), "flatgen.templates.lower", -1, lower),
+                    Optional.empty(), step(number, Icon.line("plus"), "flatgen.templates.raise", 1, raise)));
+            return new WidgetGroup(row);
         }
 
         /** A button stepping a number by this much, greyed where its range ends. */

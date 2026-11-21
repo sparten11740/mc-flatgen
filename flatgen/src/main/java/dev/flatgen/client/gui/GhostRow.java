@@ -14,8 +14,8 @@ import net.minecraft.network.chat.Component;
 /**
  * A row of a list that is not there yet, drawn where it would go and as large as the rows: a dashed edge round a faint
  * face, the placeholder block with a plus where a row's picture is, and words where a row's name is. The mouse over it
- * or the keyboard's focus lights it in the accent colour; a click, Enter or Space adds the row. Its words say what it
- * does, so it has a tooltip only for why it cannot be used.
+ * lights it in the accent colour, and the keyboard's focus rings it as every control; a click, Enter or Space adds the
+ * row. Its words say what it does, so it has a tooltip only for why it cannot be used.
  *
  * @param bounds  where it is
  * @param tile    the square holding its picture, where a row's picture button is

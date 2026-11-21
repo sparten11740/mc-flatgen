@@ -230,7 +230,10 @@ public abstract class FlatgenScreen extends GameScreen {
         return keyboard && widgets.type(character);
     }
 
-    /** A key for the control that has the focus; an arrow it does not take moves the focus within its area. */
+    /**
+     * A key for the control that has the focus; an arrow it does not take moves the focus within its area, unless Alt
+     * is held, which leaves the arrow to the screen's shortcuts, such as moving a layer.
+     */
     private boolean focusKey(int keyCode) {
         Optional<Widget> focused = focused();
         if (focused.isEmpty()) {
@@ -239,7 +242,7 @@ public abstract class FlatgenScreen extends GameScreen {
         if (focused.get().key(keyCode, modifiers())) {
             return true;
         }
-        Optional<FocusOrder.Place> next = Keys.isArrow(keyCode)
+        Optional<FocusOrder.Place> next = Keys.isArrow(keyCode) && !modifiers().alt()
                 ? focus.flatMap(place -> FocusOrder.step(counts(), place, Keys.forward(keyCode))) : Optional.empty();
         next.ifPresent(place -> moveFocus(next));
         return next.isPresent();

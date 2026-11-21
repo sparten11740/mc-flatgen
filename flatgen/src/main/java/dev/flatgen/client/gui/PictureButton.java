@@ -27,6 +27,10 @@ public final class PictureButton implements Control {
     private final Supplier<List<Component>> tooltip;
     /** Whether it draws only a highlight under the mouse, its face being a box it shares with others. */
     private boolean flat;
+    /** What it does when the keyboard's focus comes to it, such as selecting the layer its card shows. */
+    private Runnable onFocus = () -> { };
+    /** Whether it has the keyboard's focus. */
+    private boolean focused;
 
     /** A button showing this picture in this rectangle, always usable, doing {@code action} when clicked. */
     public PictureButton(Icon icon, Rect bounds, Runnable action, Supplier<List<Component>> tooltip) {
@@ -47,6 +51,25 @@ public final class PictureButton implements Control {
     public PictureButton flat() {
         this.flat = true;
         return this;
+    }
+
+    /** The button doing this as well when the keyboard's focus comes to it. */
+    public PictureButton onFocus(Runnable action) {
+        this.onFocus = action;
+        return this;
+    }
+
+    /** Whether the keyboard's focus is on it. */
+    public boolean focused() {
+        return focused;
+    }
+
+    @Override
+    public void keyboard(boolean held) {
+        focused = held;
+        if (held) {
+            onFocus.run();
+        }
     }
 
     @Override

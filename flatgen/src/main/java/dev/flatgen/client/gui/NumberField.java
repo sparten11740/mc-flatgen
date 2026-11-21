@@ -30,6 +30,8 @@ public final class NumberField implements Control {
     private boolean keyboard;
     /** Whether it is drawn square and flat, filling its place in a box it shares, as between a stepper's buttons. */
     private boolean flat;
+    /** What it does when the keyboard's focus comes to it, such as selecting the layer its card shows. */
+    private Runnable onFocus = () -> { };
 
     /**
      * A box showing a number from {@code value}, handing a typed one to {@code onEnter}.
@@ -48,6 +50,12 @@ public final class NumberField implements Control {
     /** The field drawn square and flat, filling its place in a box it shares, as between a stepper's buttons. */
     public NumberField flat() {
         this.flat = true;
+        return this;
+    }
+
+    /** The field doing this as well when the keyboard's focus comes to it. */
+    public NumberField onFocus(Runnable action) {
+        this.onFocus = action;
         return this;
     }
 
@@ -76,6 +84,9 @@ public final class NumberField implements Control {
         if (held != keyboard) {
             keyboard = held;
             typed.clear();
+        }
+        if (held) {
+            onFocus.run();
         }
     }
 
