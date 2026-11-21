@@ -65,7 +65,7 @@ public final class NumberField implements Control {
         if (flat) {
             FieldLook.drawFlat(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
         } else {
-            FieldLook.drawCentred(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
+            FieldLook.drawCentered(canvas, bounds, keyboard, Component.literal(text), Look.TEXT);
         }
     }
 

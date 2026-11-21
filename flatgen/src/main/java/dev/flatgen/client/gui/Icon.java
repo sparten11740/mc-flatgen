@@ -102,7 +102,7 @@ public interface Icon {
 
     /** A line drawing small on a dark pill at an icon's bottom right corner, over what is drawn there. */
     private static void drawMark(Canvas canvas, String line, int x, int y) {
-        Rect mark = new Rect(x + SIZE - NO_MARK, y + SIZE - NO_MARK, NO_MARK, NO_MARK);
+        Rect mark = new Rect(x + SIZE - MARK, y + SIZE - MARK, MARK, MARK);
         canvas.markOver(Look.COUNT, mark);
         canvas.markOver(Look.icon(line), mark);
     }
@@ -112,8 +112,8 @@ public interface Icon {
         return (canvas, x, y) -> canvas.sprite(id, x, y);
     }
 
-    /** The size of a mark at a picture's corner, such as the "no" sign of a struck one, in GUI pixels. */
-    int NO_MARK = 9;
+    /** The size of a mark at a picture's corner, such as the "no" sign or an arrow, in GUI pixels. */
+    int MARK = 9;
 
     /** How far a line drawing sits inside an icon's square, in GUI pixels, so it matches the size of text beside it. */
     int LINE_INSET = 3;

@@ -1,7 +1,6 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
-import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
@@ -79,13 +78,13 @@ public final class ChoiceCard implements Control {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(() -> true, choose);
+        return Control.clicked(bounds, x, y, button, () -> true, choose);
     }
 
     /** Enter or Space chooses it while it has the focus, as a click does. */
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
-        return Keys.uses(keyCode) && Control.use(() -> true, choose);
+        return Control.keyed(keyCode, () -> true, choose);
     }
 
     /** Its name, "Selected: …" while chosen, as the game says a chosen entry, then what it is, its lines as one. */

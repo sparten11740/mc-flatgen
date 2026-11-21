@@ -21,9 +21,10 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Flatgen's language files and its code agree (F19): every key the code or Flatgen's data files name is in each
- * language file, each file has only keys something names, and each translation keeps the English text's placeholders. The code names its keys whole, never joining one from
- * parts, so every one is checked; Flatgen's options are named by their files, as {@code option.flatgen.always_day},
- * the one key the code joins being the options' and their groups', which mods' files name.
+ * language file, each file has only keys something names, and each translation keeps the English text's placeholders.
+ * The code names its keys whole, never joining one from parts, so every one is checked; Flatgen's options are named by
+ * their files, as {@code option.flatgen.always_day}, the one key the code joins being the options' and their groups',
+ * which mods' files name.
  */
 class LanguageFilesTest {
     private static final Path SRC = Path.of(System.getProperty("flatgen.project"), "src", "main");

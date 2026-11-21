@@ -16,10 +16,10 @@ import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.resources.Resource;
 
 /**
- * Flatgen's GUI sprites as 1.21.1 draws them: each is its own texture under {@code textures/gui/sprites}, stretched over
- * the area, or cut in nine by the border its {@code .mcmeta} gives, its corners at their size and its edges and middle
- * stretched. The game's own nine-slice drawing tiles the edges and the middle, one draw for each tile, which for a
- * sheet as large as the pickers' is thousands each frame, until 1.21.11 batches them and stretches the middle.
+ * Flatgen's GUI sprites as 1.21.1 draws them: each is its own texture under {@code textures/gui/sprites}, stretched
+ * over the area, or cut in nine by the border its {@code .mcmeta} gives, its corners at their size and its edges and
+ * middle stretched. The game's own nine-slice drawing tiles the edges and the middle, one draw for each tile, which for
+ * a sheet as large as the pickers' is thousands each frame, until 1.21.11 batches them and stretches the middle.
  */
 final class GuiSprites {
     /** The columns and the rows a nine-slice sprite is cut into. */

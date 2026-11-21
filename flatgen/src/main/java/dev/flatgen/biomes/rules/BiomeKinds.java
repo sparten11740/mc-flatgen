@@ -37,6 +37,13 @@ public final class BiomeKinds {
     static final Predicate<BiomeInfo> WATER = tagged("minecraft:is_ocean", "minecraft:is_deep_ocean",
             "minecraft:is_river", "minecraft:is_beach");
     static final Predicate<BiomeInfo> MOUNTAIN = tagged("minecraft:is_mountain", "minecraft:is_hill");
+    static final Predicate<BiomeInfo> NETHER = tagged("minecraft:is_nether");
+    static final Predicate<BiomeInfo> END = tagged("minecraft:is_end");
+    static final Predicate<BiomeInfo> FOREST = tagged("minecraft:is_forest");
+    static final Predicate<BiomeInfo> TAIGA = tagged("minecraft:is_taiga");
+    static final Predicate<BiomeInfo> SAVANNA = tagged("minecraft:is_savanna");
+    static final Predicate<BiomeInfo> JUNGLE = tagged("minecraft:is_jungle");
+    static final Predicate<BiomeInfo> BEACH = tagged("minecraft:is_beach");
 
     /**
      * A kind of biome.
@@ -53,7 +60,7 @@ public final class BiomeKinds {
             new Kind("flatgen.biomes.kind.usual", biome -> USUAL.contains(biome.id()),
                     Optional.of("minecraft:plains")),
             new Kind("flatgen.biomes.kind.forests",
-                    tagged("minecraft:is_forest", "minecraft:is_taiga", "minecraft:is_jungle"),
+                    FOREST.or(TAIGA).or(JUNGLE),
                     Optional.of("minecraft:forest")),
             new Kind("flatgen.biomes.kind.snowy", SNOWY, Optional.of("minecraft:snowy_plains")),
             new Kind("flatgen.biomes.kind.dry", DRY, Optional.of("minecraft:desert")),
@@ -61,9 +68,9 @@ public final class BiomeKinds {
             new Kind("flatgen.biomes.kind.water", WATER, Optional.of("minecraft:ocean")),
             new Kind("flatgen.biomes.kind.mountains", MOUNTAIN, Optional.of("minecraft:jagged_peaks")),
             new Kind("flatgen.biomes.kind.caves", CAVE, Optional.of("minecraft:lush_caves")),
-            new Kind("flatgen.biomes.kind.nether", tagged("minecraft:is_nether"),
+            new Kind("flatgen.biomes.kind.nether", NETHER,
                     Optional.of("minecraft:nether_wastes")),
-            new Kind("flatgen.biomes.kind.end", tagged("minecraft:is_end"), Optional.of("minecraft:the_end")));
+            new Kind("flatgen.biomes.kind.end", END, Optional.of("minecraft:the_end")));
 
     private BiomeKinds() {
     }

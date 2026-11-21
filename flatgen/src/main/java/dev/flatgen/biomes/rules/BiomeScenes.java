@@ -123,30 +123,30 @@ public final class BiomeScenes {
     private static final List<Rule<Integer>> SKIES = List.of(
             new Rule<>(named("void"), VOID_SKY),
             new Rule<>(BiomeKinds.CAVE, CAVE_DARK),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), DimensionColours.NETHER_SKY),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), DimensionColours.END_SKY));
+            new Rule<>(BiomeKinds.NETHER, DimensionColours.NETHER_SKY),
+            new Rule<>(BiomeKinds.END, DimensionColours.END_SKY));
     /** The ground, the first that holds; grass topped dirt for the rest. */
     private static final List<Rule<Ground>> GROUNDS = List.of(
             new Rule<>(named("void"), NOTHING),
             new Rule<>(BiomeKinds.tagged("minecraft:is_badlands"), BADLANDS),
             new Rule<>(named("mushroom"), MYCELIUM_TOP),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), NETHER),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), END),
+            new Rule<>(BiomeKinds.NETHER, NETHER),
+            new Rule<>(BiomeKinds.END, END),
             new Rule<>(BiomeKinds.CAVE, STONE_ONLY),
             new Rule<>(BiomeKinds.SNOWY, SNOW_ONLY),
             new Rule<>(BiomeKinds.WATER, SAND_ONLY),
             new Rule<>(named("meadow"), GRASS),
             new Rule<>(BiomeKinds.MOUNTAIN, STONE_GRASS),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_savanna"), GRASS),
+            new Rule<>(BiomeKinds.SAVANNA, GRASS),
             new Rule<>(BiomeKinds.DRY, SAND_ONLY));
     /** The tree standing on the ground, the first that holds; none for the rest. */
     private static final List<Rule<List<Patch>>> TREES = List.of(
             new Rule<>(named("cherry"), CHERRY),
             new Rule<>(named("birch"), BIRCH),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_taiga"), SPRUCE),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_savanna"), ACACIA),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_jungle"), JUNGLE),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_forest").or(BiomeKinds.SWAMP), OAK));
+            new Rule<>(BiomeKinds.TAIGA, SPRUCE),
+            new Rule<>(BiomeKinds.SAVANNA, ACACIA),
+            new Rule<>(BiomeKinds.JUNGLE, JUNGLE),
+            new Rule<>(BiomeKinds.FOREST.or(BiomeKinds.SWAMP), OAK));
     /** More a biome has, each that holds: a peak behind, a mushroom, flowers. */
     private static final List<Rule<List<Patch>>> EXTRAS = List.of(
             new Rule<>(BiomeKinds.MOUNTAIN.and(named("meadow").negate()), PEAK),
@@ -154,7 +154,7 @@ public final class BiomeScenes {
             new Rule<>(named("meadow").or(named("flower")), FLOWERS));
     /** How much of the ground is water, the first that holds; none for the rest. */
     private static final List<Rule<Integer>> WATERS = List.of(
-            new Rule<>(BiomeKinds.tagged("minecraft:is_beach"), BEACH_WATER),
+            new Rule<>(BiomeKinds.BEACH, BEACH_WATER),
             new Rule<>(BiomeKinds.WATER, ALL_WATER),
             new Rule<>(BiomeKinds.SWAMP, SWAMP_WATER));
 

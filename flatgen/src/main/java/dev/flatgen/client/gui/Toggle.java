@@ -1,7 +1,6 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Modifiers;
-import dev.flatgen.client.gui.rules.MouseButtons;
 import dev.flatgen.client.gui.rules.Rect;
 import dev.flatgen.client.gui.rules.WidgetDescription;
 import java.util.List;
@@ -74,13 +73,13 @@ public final class Toggle implements Control {
 
     @Override
     public boolean click(double x, double y, int button, Modifiers modifiers) {
-        return button == MouseButtons.LEFT && bounds.contains(x, y) && Control.use(usable, turnOver);
+        return Control.clicked(bounds, x, y, button, usable, turnOver);
     }
 
     /** Enter or Space uses it while it has the focus, as a click does. */
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
-        return Keys.uses(keyCode) && Control.use(usable, turnOver);
+        return Control.keyed(keyCode, usable, turnOver);
     }
 
     @Override
