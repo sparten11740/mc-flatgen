@@ -90,3 +90,9 @@ Left for the owner, as they would change screens the owner designed or words in 
   names are cut at one line in the picker.
 - One quantity has three names for players (height, depth, deeper and shallower) where the code says thickness, and the
   library's code says favourite where the screens say starred; changing the words means all ten languages.
+
+After the fixes, `node tools/boot.mjs` booted all twelve nodes' jars, 21 boots: each node on the loader it is built
+with and on the oldest its metadata accepts, and the 1.20.1 Forge jar also on NeoForge 47.1.106; each listed, without
+errors naming Flatgen, up and stopped cleanly. The README's screenshots were taken again with the New layer row and the
+pickers as they are now, the block picker and a flat Nether added. The CurseForge page's text, icon and screenshots
+and a promo video (recorded with Blockpilot's `record`) are ready outside the repository, nothing published.
