@@ -9,11 +9,11 @@ of blocks, so finding one has to be quick, and the picture has to be enough for 
 
 ## What the player gets
 
-A block picker opened from the button showing the selected layer's block, and from the row above the layers and the
-seams between them, which add a layer of the block picked there: all the blocks, the game's own first, with a row of the
-blocks picked lately and a row of the starred ones above them; the creative inventory's tabs down its side to narrow
-them to one; a search by typing and a filter by mod. Clicking one picks it and goes back. It is a screen of its own
-rather than a grid beside the column, which has no room for one at the largest GUI scale.
+A block picker opened from the button showing the selected layer's block, and from the New layer row above them, which
+adds a layer of the block picked: all the blocks, the game's own first, with a row of the blocks picked lately and a row
+of the starred ones above them; the creative inventory's tabs down its side to narrow them to one; a search by typing
+and a filter by mod. Clicking one picks it and goes back. It is a screen of its own rather than a grid beside the
+column, which has no room for one at the largest GUI scale.
 
 ## Acceptance criteria
 
@@ -83,7 +83,6 @@ and the tabs to switch to down the side; the cards' words kept clear of the focu
 picker first. Tried on 1.21.1 NeoForge: the picker opens on All blocks with Recent and Starred rows, picking glass from
 Add layer on top adds a glass layer on top, cancelling adds nothing, and Undo takes the glass back.
 
-2026-11-21: a picker ignores clicks for the first 400 ms after it opens, as the seams between layer cards (F04) open it
-from the middle of the screen, where a quick second click would otherwise pick whatever card came to be under the mouse.
-Tried on 1.21.1 NeoForge: a seam and a card clicked a tick apart leave the picker open, the card clicked again a second
-later is added there.
+2026-11-21: a picker ignores clicks for the first 400 ms after it opens, so that the second click of a double click on
+what opened it does not pick whatever card came to be under the mouse. Tried on 1.21.1 NeoForge: a click that opens the
+picker and a card clicked a tick later leave the picker open, the card clicked again a second later is picked.

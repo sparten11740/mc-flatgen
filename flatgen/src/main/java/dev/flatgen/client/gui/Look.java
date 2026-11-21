@@ -37,9 +37,8 @@ public final class Look {
     /** The faint face of what is not there yet, and its face while the mouse is over it or it has the focus. */
     public static final String GHOST = sprite("ghost");
     public static final String GHOST_LIT = sprite("ghost_lit");
-    /** A block not there yet, chequered, as large as a block's picture, and its upper half alone. */
+    /** A block not there yet, chequered, as large as a block's picture. */
     public static final String PLACEHOLDER_BLOCK = sprite("placeholder_block");
-    public static final String PLACEHOLDER_HALF = sprite("placeholder_half");
     /** A plain button's face, and its face while the mouse is over it. */
     public static final String BUTTON = sprite("button");
     public static final String BUTTON_LIT = sprite("button_lit");

@@ -10,7 +10,6 @@ import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.NumberField;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.ScrollGroup;
-import dev.flatgen.client.gui.Seam;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.ListSlots;
@@ -36,13 +35,12 @@ import net.minecraft.network.chat.Component;
  * with its block with how many blocks thick the layer is, which opens the block picker, its name, thinner and thicker,
  * and remove; in Advanced also its Ys and id, its thickness to type and a copy. The chosen layer's card is outlined.
  * Every control works on its own card's layer, which it selects first, so the column and the cards always show the same
- * layer chosen. Above the cards, a row not there yet adds a layer on top, and the seam under each card adds one there;
- * both ask for the block first.
+ * layer chosen. Above the cards, a row not there yet adds a layer on top, asking for the block first.
  */
 final class LayerCards {
-    /** A card's height, and the seam between cards and under the last, which adds a layer there, in GUI pixels. */
+    /** A card's height and the space between cards, in GUI pixels. */
     private static final int CARD_HEIGHT = 35;
-    private static final int SEAM = 14;
+    private static final int CARD_GAP = 4;
     /** Space inside a card at its sides, in GUI pixels. */
     private static final int PADDING = 6;
     /** The width of the grip at a card's left, which shows where a card is taken to drag it, in GUI pixels. */
@@ -68,9 +66,6 @@ final class LayerCards {
     /** How far below and right of a lifted card its shadow falls, in GUI pixels, and the shadow's colour, ARGB. */
     private static final int SHADOW_OFFSET = 2;
     private static final int SHADOW = 0x80000000;
-    /** The space round Copy's block, and the size of the copy sign in the block's middle, in GUI pixels. */
-    private static final int COPY_INSET = 2;
-    private static final int COPY_SIGN = 8;
 
     private LayerCards() {
     }
@@ -81,7 +76,7 @@ final class LayerCards {
      */
     static List<Widget> list(EditorContext editor, Rect area) {
         Rect newRow = new Rect(area.x(), area.y(), area.width(), CARD_HEIGHT);
-        int cardsTop = newRow.bottom() + SEAM;
+        int cardsTop = newRow.bottom() + CARD_GAP;
         Rect cardsArea = new Rect(area.x(), cardsTop, area.width(), area.bottom() - cardsTop);
         Drag drag = new Drag();
         CopyPreview copies = new CopyPreview(editor, drag);
@@ -103,13 +98,6 @@ final class LayerCards {
         return new GhostRow(row, tile, picture(tile), tile.right() + 2 * SPACING, words,
                 () -> insert(editor, editor.shown().layers().size()), () -> roomLeft(editor) > 0,
                 () -> LayerText.whyFull(editor.shown(), editor.world()));
-    }
-
-    /** The seam under a layer's card, which adds a layer below it, hidden while a card is dragged. */
-    private static Seam seam(EditorContext editor, int index, Rect card, Drag drag) {
-        return new Seam(new Rect(card.x(), card.bottom(), card.width(), SEAM),
-                Component.translatable("flatgen.editor.add_here"), () -> insert(editor, index), () -> !drag.active,
-                () -> roomLeft(editor) > 0, () -> LayerText.whyFull(editor.shown(), editor.world()));
     }
 
     /** The square at a card's left holding its block's picture. */
@@ -134,17 +122,15 @@ final class LayerCards {
         copies.clear();
         List<Widget> widgets = new ArrayList<>();
         for (int place = 0; place < slots.count(); place++) {
-            int index = slots.count() - 1 - place;
-            widgets.addAll(card(editor, index, slots.at(place), slots, drag, copies::add));
-            widgets.add(seam(editor, index, slots.at(place), drag));
+            widgets.addAll(card(editor, slots.count() - 1 - place, slots.at(place), slots, drag, copies::add));
         }
         widgets.add(new LiftedCard(editor, slots, drag));
-        return new ScrollGroup.Laid(widgets, slots.bottom() + SEAM);
+        return new ScrollGroup.Laid(widgets, slots.bottom());
     }
 
     /** The cards' slots, the top layer's first, from this area's top. */
     private static ListSlots slots(EditorContext editor, Rect area) {
-        return new ListSlots(area, editor.shown().layers().size(), CARD_HEIGHT, SEAM);
+        return new ListSlots(area, editor.shown().layers().size(), CARD_HEIGHT, CARD_GAP);
     }
 
     /** Where the chosen layer's card is with the list at its top, if a layer is chosen. */
@@ -171,7 +157,7 @@ final class LayerCards {
         right = remove.x() - SPACING;
         if (editor.advanced()) {
             Rect copy = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-            widgets.add(button(editor, index, copyPicture(editor, index), "flatgen.editor.duplicate", copy,
+            widgets.add(button(editor, index, Icon.line("copy"), "flatgen.editor.duplicate", copy,
                     new LayerEdits.Duplicate(), () -> roomLeft(editor) > 0,
                     () -> LayerText.whyFull(editor.shown(), editor.world())));
             copies.accept(new CopyPreview.Copyable(index, copy, card));
@@ -231,23 +217,6 @@ final class LayerCards {
         return new PictureButton(icon, place, () -> act(editor, index, edit), usable,
                 () -> Stream.concat(Stream.of(Component.translatable(name), Names.block(block(editor, index))),
                         why.get().stream()).toList());
-    }
-
-    /** Copy's picture: the layer's block, its upper half not there yet, with the copy sign in its middle. */
-    private static Icon copyPicture(EditorContext editor, int index) {
-        return (canvas, x, y) -> drawCopyPicture(canvas, editor, index, x, y);
-    }
-
-    private static void drawCopyPicture(Canvas canvas, EditorContext editor, int index, int x, int y) {
-        if (index >= editor.shown().layers().size()) {
-            return;
-        }
-        int size = Icon.SIZE - 2 * COPY_INSET;
-        Rect picture = new Rect(x + COPY_INSET, y + COPY_INSET, size, size);
-        canvas.blockIcon(block(editor, index), picture);
-        canvas.markOver(Look.PLACEHOLDER_HALF, picture);
-        canvas.markOver(Look.icon("copy"), new Rect(x + (Icon.SIZE - COPY_SIGN) / 2, y + (Icon.SIZE - COPY_SIGN) / 2,
-                COPY_SIGN, COPY_SIGN));
     }
 
     /** The layer's block, filling the tile, with how many blocks thick the layer is on a pill at its corner. */
@@ -434,7 +403,7 @@ final class LayerCards {
          * over what is there, as the lifted card is.
          */
         private void drawCopy(Canvas canvas, Copyable copyable) {
-            Rect copy = new Rect(copyable.card().x(), copyable.card().y() - SEAM - CARD_HEIGHT,
+            Rect copy = new Rect(copyable.card().x(), copyable.card().y() - CARD_GAP - CARD_HEIGHT,
                     copyable.card().width(), CARD_HEIGHT);
             canvas.fill(copy, Look.BACKGROUND);
             canvas.sprite(Look.GHOST_LIT, copy);

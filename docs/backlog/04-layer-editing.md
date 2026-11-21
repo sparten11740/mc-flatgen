@@ -58,18 +58,13 @@ keys for everything, undo for every change.
 2026-11-21: adding a layer as round 4 of the design canvas drew it, direction A, which the owner chose after a young
 player missed, several times, that the blue Add layer on top button in the bar added layers. Above the cards stands a
 row not there yet, as large as a card: a dashed edge, a chequered placeholder block as large as a block's picture with a
-plus, and New layer on top (New layer on an empty stack), with no tooltip as its words say it. Under each card a seam
-adds a layer there: a faint dashed line with a plus under the blocks, which the mouse turns into a slim strip saying Add
-a layer here. Both, and Insert, open the block picker first; cancelling adds nothing, and a full world greys them and
-says why. The seams hide while a card is dragged. Under the keyboard's focus a seam shows the focus ring rather than its
-strip, as a widget is not told it keeps the focus. Tried on 1.21.1 NeoForge: a seam's strip and the row lit under the
-mouse, sand added between Grass Block and the layer below it, Insert opening the picker, cancelling adding nothing, and
-an empty stack showing New layer alone.
+plus, and New layer on top (New layer on an empty stack), with no tooltip as its words say it. It and Insert open the
+block picker first; cancelling adds nothing, and a full world greys it and says why. Tried on 1.21.1 NeoForge: the row
+lit under the mouse, a layer added from it, Insert opening the picker, cancelling adding nothing, and an empty stack
+showing New layer alone.
 
-After trying them, the owner asked for quieter seams: 14 GUI pixels tall rather than 10, the dashed line across 90% of a
-card and centred, broken only by a plus and a slab in its middle, and under the mouse the line turned blue with the hand
-rather than the strip. Tried on 1.21.1 NeoForge.
+The design also had a seam under every card adding a layer there; built and tried, the owner found it bulky even
+quieted, and it was taken out again.
 
-Copy, in Advanced, shows the layer's own block with its upper half chequered, not there yet, and the copy sign in its
-middle; while the mouse is on it the copy is drawn faint in the place above the card, where it will go, which the owner
-found clearer than a tooltip describing it. Tried on 1.21.1 NeoForge.
+Copy, in Advanced, keeps its picture, and while the mouse is on it the copy is drawn faint in the place above the card,
+where it will go, which the owner found clearer than a tooltip describing it. Tried on 1.21.1 NeoForge.

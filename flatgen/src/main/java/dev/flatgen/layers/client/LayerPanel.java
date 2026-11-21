@@ -18,7 +18,7 @@ import java.util.List;
 import net.minecraft.network.chat.Component;
 
 /**
- * The editor's layers: their cards ({@link LayerCards}) in the middle, with the row and the seams that add a layer,
+ * The editor's layers: their cards ({@link LayerCards}) in the middle, with the row that adds a layer above them,
  * and in Advanced the ground's Y to type in the bar above them; and their keys (arrows, Alt with arrows, Delete,
  * Insert, which adds a layer above the chosen one, and Control+D).
  */

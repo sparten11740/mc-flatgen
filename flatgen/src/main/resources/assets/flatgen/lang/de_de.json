@@ -42,7 +42,6 @@
   "flatgen.dimension.nether": "Nether",
   "flatgen.dimension.overworld": "Oberwelt",
   "flatgen.dimension.pack_decides": "Ein Datenpaket macht diese Dimension in dieser Welt",
-  "flatgen.editor.add_here": "Hier eine Schicht hinzufügen",
   "flatgen.editor.advanced": "Erweitert",
   "flatgen.editor.advanced_tip": "Zeigt alles: Y-Werte, Codes, Dicken zum Eintippen, Bauwerke und den Editor des Spiels",
   "flatgen.editor.air": "%s Blöcke Luft",

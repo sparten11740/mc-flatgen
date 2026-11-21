@@ -124,7 +124,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Block | the selected layer's block, and its name |
 | Editor | depth − + and its numbers, the depth field | a layer between two arrows before them; − + and numbers are symbols |
 | Editor | Surface at Y | ladder |
-| Editor | New layer on top, the seams, Copy layer, Remove layer | the chequered placeholder block with a plus; a plus on a dashed line; the layer's block, its upper half chequered, with the copy sign; a bin |
+| Editor | New layer on top, Copy layer, Remove layer | the chequered placeholder block with a plus; the block with a copy badge; a bin |
 | Editor | Undo, Redo | own: hooked arrows |
 | Editor | Copy code, Paste code | the stack's top blocks, an arrow and a clipboard, each way, with words |
 | Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |

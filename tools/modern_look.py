@@ -89,7 +89,6 @@ ICONS = {
                    "lines": [[(5, 15), (4, 15), ("arc", 4, 13, 2, 90, 180), (2, 4), ("arc", 4, 4, 2, 180, 270),
                               (13, 2), ("arc", 13, 4, 2, 270, 360), (15, 5)]]}),
     "arrow_left": (INK, {"lines": [[(19, 12), (5, 12)], [(12, 5), (5, 12), (12, 19)]]}),
-    "slab": (INK, {"rects": [(3, 8.5, 18, 7, 3.5)]}),
     "clipboard": (INK, {"rects": [(5, 4, 14, 18, 2)], "lines": [[(9, 3), (15, 3)], [(8.5, 11), (15.5, 11)],
                                                                 [(8.5, 15), (15.5, 15)]]}),
     "arrow_up": (INK, {"lines": [[(12, 19), (12, 5)], [(5, 12), (12, 5), (19, 12)]]}),
@@ -224,30 +223,27 @@ def placeholder_face(x, y):
     return None
 
 
-def draw_placeholder(upper_half):
-    """
-    The placeholder cube's pixels: its faces chequered in two greys, each face lit as the game lights a block; only its
-    upper half for the half that stands on a real block in Copy's picture.
-    """
+def draw_placeholder():
+    """The placeholder cube's pixels: its faces chequered in two greys, each face lit as the game lights a block."""
     size = PLACEHOLDER * DENSITY
     greys = [rgba(grey) for grey in CHEQUER_GREYS]
     pixels = []
     for py in range(size):
         row = []
         for px in range(size):
-            row.append(placeholder_pixel(px, py, greys, upper_half))
+            row.append(placeholder_pixel(px, py, greys))
         pixels.append(row)
     return size, pixels
 
 
-def placeholder_pixel(px, py, greys, upper_half):
-    """One pixel of the placeholder cube, the samples that fall on its faces, or on its upper half, averaged."""
+def placeholder_pixel(px, py, greys):
+    """One pixel of the placeholder cube, the samples that fall on its faces averaged."""
     samples = []
     for sy in range(SAMPLES):
         for sx in range(SAMPLES):
             samples.append(placeholder_face((px + (sx + .5) / SAMPLES) / DENSITY,
                                             (py + (sy + .5) / SAMPLES) / DENSITY))
-    hits = [face for face in samples if face and not (upper_half and face[0] != "top" and face[2] >= 0.5)]
+    hits = [face for face in samples if face]
     if not hits:
         return (0, 0, 0, 0)
     channels = [0.0, 0.0, 0.0]
@@ -304,9 +300,8 @@ def main():
         write(name, size, pixels,
               '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
-    for name, upper_half in (("placeholder_block", False), ("placeholder_half", True)):
-        size, pixels = draw_placeholder(upper_half)
-        write(name, size, pixels, '{"type": "stretch"}')
+    size, pixels = draw_placeholder()
+    write("placeholder_block", size, pixels, '{"type": "stretch"}')
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}
     icons.update({name: (ICONS[source][0], ICONS[source][1], True) for name, source in MIRRORED.items()})
     for name, (color, shapes, mirrored) in sorted(icons.items()):
