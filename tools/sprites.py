@@ -9,8 +9,7 @@ four shades are one colour is drawn flat, as a sign is. The PNG files go to the 
 textures/gui/sprites/icon/.
 """
 import os
-import struct
-import zlib
+import pngfile
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "flatgen", "src", "main", "resources", "assets", "flatgen",
                    "textures", "gui", "sprites", "icon")
@@ -40,7 +39,7 @@ MATERIALS = {
     "L": (0x55606B, 0xC4CCD4, 0xE4E9EE, 0xFFFFFF),  # a white cloud
     "M": (0x2B3138, 0x5E6873, 0x7B8692, 0x9DA8B4),  # a grey rain cloud
     "T": (0x5A9AF0, 0x5A9AF0, 0x5A9AF0, 0x5A9AF0),  # raindrops, flat as a sign is drawn
-    "X": (0xE03A3A, 0xE03A3A, 0xE03A3A, 0xE03A3A),  # the "no" sign's red ring and slash, flat as a sign is drawn
+    "X": (0xFF5A5A, 0xFF5A5A, 0xFF5A5A, 0xFF5A5A),  # the "no" sign's red, as the look's own no sign, drawn flat
     "3": (0xF4F8FF, 0xF4F8FF, 0xF4F8FF, 0xF4F8FF),  # snowflakes, flat as raindrops are drawn
     "4": (0x2E6B1E, 0x5DB33A, 0x76C850, 0x9EE07A),  # a slime's green
     "5": (0x1E4A14, 0x1E4A14, 0x1E4A14, 0x1E4A14),  # a slime's dark eyes and mouth, flat
@@ -425,44 +424,44 @@ def inside(rows):
     pixels = {}
     for y, row in enumerate(rows):
         for x, own in enumerate(row):
-            if own == "." or own.islower():
-                continue
-            outlined = any(letter(rows, x + dx, y + dy) == "." for dx, dy in ((0, -1), (-1, 0), (0, 1), (1, 0)))
-            pixels[(x, y)] = material(own)[0 if outlined else shade(rows, x, y)]
+            pixels.update(inside_pixel(rows, x, y, own))
     pixels.update(outside(["".join(own if own.islower() else "." for own in row) for row in rows]))
     return pixels
 
 
+def inside_pixel(rows, x, y, own):
+    """An upper-case shape's pixel, its darkest shade at the shape's edge; none for a clear or a lower-case one."""
+    if own == "." or own.islower():
+        return {}
+    outlined = any(letter(rows, x + dx, y + dy) == "." for dx, dy in ((0, -1), (-1, 0), (0, 1), (1, 0)))
+    return {(x, y): material(own)[0 if outlined else shade(rows, x, y)]}
+
+
 def outside(rows):
     """Pixels of shapes outlined outside: a badge, or a picture's thin shapes."""
-    pixels = {}
-    for y, row in enumerate(rows):
-        for x, own in enumerate(row):
-            if own != ".":
-                pixels[(x, y)] = material(own)[shade(rows, x, y)]
+    pixels = {(x, y): material(own)[shade(rows, x, y)]
+              for y, row in enumerate(rows) for x, own in enumerate(row) if own != "."}
     for y in range(16):
         for x in range(16):
-            near = [letter(rows, x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
-            solid = [found for found in near if found != "."]
-            if letter(rows, x, y) == "." and solid:
-                pixels[(x, y)] = material(solid[0])[0]
+            pixels.update(outline_pixel(rows, x, y))
     return pixels
+
+
+def outline_pixel(rows, x, y):
+    """A clear pixel beside a shape, in the darkest shade of the shape's material; none elsewhere."""
+    near = [letter(rows, x + dx, y + dy) for dx in (-1, 0, 1) for dy in (-1, 0, 1)]
+    solid = [found for found in near if found != "."]
+    return {(x, y): material(solid[0])[0]} if letter(rows, x, y) == "." and solid else {}
 
 
 def png(pixels):
     """A 16 by 16 RGBA PNG of these pixels, the others clear."""
-    raw = b""
-    for y in range(16):
-        raw += b"\x00"
-        for x in range(16):
-            colour = pixels.get((x, y))
-            raw += struct.pack(">I", (colour << 8) | 0xFF) if colour is not None else b"\x00\x00\x00\x00"
+    return pngfile.encode(16, 16, [[rgba(pixels.get((x, y))) for x in range(16)] for y in range(16)])
 
-    def chunk(kind, data):
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
 
-    header = struct.pack(">IIBBBBB", 16, 16, 8, 6, 0, 0, 0)
-    return b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", header) + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b"")
+def rgba(colour):
+    """A colour written 0xRRGGBB as an opaque pixel, or a clear one for none."""
+    return (0, 0, 0, 0) if colour is None else (colour >> 16 & 255, colour >> 8 & 255, colour & 255, 255)
 
 
 def main():

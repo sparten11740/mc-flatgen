@@ -8,8 +8,7 @@ lists show, and the store page uses.
 import math
 import os
 import random
-import struct
-import zlib
+import pngfile
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "flatgen", "src", "main", "resources", "assets", "flatgen",
                    "icon.png")
@@ -128,20 +127,11 @@ def pixel(found, px, py):
         round(255 * len(hits) / SAMPLES ** 2),)
 
 
-def png(pixels):
-    """An RGBA PNG of these rows of pixels."""
-    def chunk(kind, data):
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
-    raw = b"".join(b"\x00" + bytes(channel for p in row for channel in p) for row in pixels)
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", SIZE, SIZE, 8, 6, 0, 0, 0))
-            + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
-
-
 def main():
     found = textures()
     rows = [[pixel(found, px, py) for px in range(SIZE)] for py in range(SIZE)]
     with open(OUT, "wb") as file:
-        file.write(png(rows))
+        file.write(pngfile.encode(SIZE, SIZE, rows))
 
 
 if __name__ == "__main__":

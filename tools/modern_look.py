@@ -8,8 +8,7 @@ style and window pixels per GUI pixel (TextStyle). The colours the screens draw 
 """
 import math
 import os
-import struct
-import zlib
+import pngfile
 
 ASSETS = os.path.join(os.path.dirname(__file__), "..", "flatgen", "src", "main", "resources", "assets", "flatgen")
 OUT = os.path.join(ASSETS, "textures", "gui", "sprites", "modern")
@@ -37,6 +36,9 @@ FACE_LIGHT = {"top": 1.0, "left": 0.8, "right": 0.62}
 # The flat field between a stepper's buttons: its inside, and the border along its top and bottom, the button's, and its
 # width, in GUI pixels, so the box the buttons share keeps its edge across the field.
 FIELD_BAND = ("#16181b", "#33373e", 0.4)
+# The band sprite's size, and the slices its edges keep their width in, in GUI pixels.
+BAND_SIZE = 4
+BAND_SLICE = 1
 
 # Each ring: its outer line's colour and width, its inner line's colour and width, and its corner radius, in GUI
 # pixels. The focus ring is white with a dark line inside, so that it shows on light ground as on dark.
@@ -291,7 +293,7 @@ def ring_pixel(outer, inner, outer_share, inner_share):
 
 def draw_band(fill, border, border_width):
     """A square band, its border along its top and bottom only: its size in GUI pixels and its pixels."""
-    logical = 4
+    logical = BAND_SIZE
     size = logical * DENSITY
     edge = border_width * DENSITY
 
@@ -314,19 +316,10 @@ def mix(fill, border, outer, inner):
     return tuple(round(c) for c in channels) + (round(alpha),)
 
 
-def png(width, height, pixels):
-    """Pixels as an RGBA PNG file's bytes."""
-    def chunk(kind, data):
-        return struct.pack(">I", len(data)) + kind + data + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
-    raw = b"".join(b"\x00" + bytes(v for p in row for v in p) for row in pixels)
-    return (b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0))
-            + chunk(b"IDAT", zlib.compress(raw, 9)) + chunk(b"IEND", b""))
-
-
 def write(name, size, pixels, scaling):
     """A sprite and the .mcmeta saying how the game stretches it."""
     with open(os.path.join(OUT, name + ".png"), "wb") as file:
-        file.write(png(size, size, pixels))
+        file.write(pngfile.encode(size, size, pixels))
     with open(os.path.join(OUT, name + ".png.mcmeta"), "w") as file:
         file.write('{"gui": {"scaling": %s}}\n' % scaling)
 
@@ -355,7 +348,8 @@ def main():
               % (logical, logical, ring[4]))
     logical, size, pixels = draw_band(*FIELD_BAND)
     write("field_band", size, pixels,
-          '{"type": "nine_slice", "width": %d, "height": %d, "border": 1, "stretch_inner": true}' % (logical, logical))
+          '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
+          % (logical, logical, BAND_SLICE))
     size, pixels = draw_placeholder()
     write("placeholder_block", size, pixels, '{"type": "stretch"}')
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}
