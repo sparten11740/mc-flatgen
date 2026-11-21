@@ -224,27 +224,30 @@ def placeholder_face(x, y):
     return None
 
 
-def draw_placeholder():
-    """The placeholder cube's pixels: its faces chequered in two greys, each face lit as the game lights a block."""
+def draw_placeholder(upper_half):
+    """
+    The placeholder cube's pixels: its faces chequered in two greys, each face lit as the game lights a block; only its
+    upper half for the half that stands on a real block in Copy's picture.
+    """
     size = PLACEHOLDER * DENSITY
     greys = [rgba(grey) for grey in CHEQUER_GREYS]
     pixels = []
     for py in range(size):
         row = []
         for px in range(size):
-            row.append(placeholder_pixel(px, py, greys))
+            row.append(placeholder_pixel(px, py, greys, upper_half))
         pixels.append(row)
     return size, pixels
 
 
-def placeholder_pixel(px, py, greys):
-    """One pixel of the placeholder cube, the samples that fall on its faces averaged."""
+def placeholder_pixel(px, py, greys, upper_half):
+    """One pixel of the placeholder cube, the samples that fall on its faces, or on its upper half, averaged."""
     samples = []
     for sy in range(SAMPLES):
         for sx in range(SAMPLES):
             samples.append(placeholder_face((px + (sx + .5) / SAMPLES) / DENSITY,
                                             (py + (sy + .5) / SAMPLES) / DENSITY))
-    hits = [face for face in samples if face]
+    hits = [face for face in samples if face and not (upper_half and face[0] != "top" and face[2] >= 0.5)]
     if not hits:
         return (0, 0, 0, 0)
     channels = [0.0, 0.0, 0.0]
@@ -301,8 +304,9 @@ def main():
         write(name, size, pixels,
               '{"type": "nine_slice", "width": %d, "height": %d, "border": %d, "stretch_inner": true}'
               % (logical, logical, radius))
-    size, pixels = draw_placeholder()
-    write("placeholder_block", size, pixels, '{"type": "stretch"}')
+    for name, upper_half in (("placeholder_block", False), ("placeholder_half", True)):
+        size, pixels = draw_placeholder(upper_half)
+        write(name, size, pixels, '{"type": "stretch"}')
     icons = {name: (color, shapes, False) for name, (color, shapes) in ICONS.items()}
     icons.update({name: (ICONS[source][0], ICONS[source][1], True) for name, source in MIRRORED.items()})
     for name, (color, shapes, mirrored) in sorted(icons.items()):

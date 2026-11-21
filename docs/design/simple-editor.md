@@ -93,14 +93,16 @@ Left out, for the owner to decide on:
 
 ## Round 4: adding a layer
 
-A young player missed, several times, that the blue Add layer on top button in the bar added layers. Round 4 drew
-three directions for adding (A, a row not there yet above the cards and a plus on every seam; B, a plain button and
-plus handles on the chosen card; C, a rail of pluses beside the cards); the owner chose A and asked for it refined
-(round 4b): the row as large as a card with a chequered placeholder block as large as a block's picture and no
-tooltip, the seam as a ghost line (one of three drawn) that turns into a slim "Add a layer here" strip under the
-mouse, Duplicate as the placeholder block on the layer's own block, and Copy code and Paste code with words and
-pictures running opposite ways (stack to clipboard, clipboard to stack). Built in the game: the row, the seams and
-Insert asking for the block first (F04).
+A young player missed, several times, that the blue Add layer on top button in the bar added layers. Round 4 drew three
+directions for adding (A, a row not there yet above the cards and a plus on every seam; B, a plain button and plus
+handles on the chosen card; C, a rail of pluses beside the cards); the owner chose A and asked for it refined (round
+4b): the row as large as a card with a chequered placeholder block as large as a block's picture and no tooltip, the
+seam as a ghost line (one of three drawn), Duplicate as the placeholder block on the layer's own block, and Copy code
+and Paste code with words and pictures running opposite ways (stack to clipboard, clipboard to stack). Built in the game
+(F04, F06): the row, the seams and Insert asking for the block first; after trying them, the seams quieter, a plus and a
+slab in the middle of a dashed line across most of a card that turns blue under the mouse; Copy as the layer's block
+with its upper half chequered and the copy sign on it, its copy drawn faint above the card while the mouse is on it; and
+the code buttons as drawn.
 
 ## How it is built in the game
 

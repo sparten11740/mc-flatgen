@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
@@ -67,6 +68,9 @@ final class LayerCards {
     /** How far below and right of a lifted card its shadow falls, in GUI pixels, and the shadow's colour, ARGB. */
     private static final int SHADOW_OFFSET = 2;
     private static final int SHADOW = 0x80000000;
+    /** The space round Copy's block, and the size of the copy sign in the block's middle, in GUI pixels. */
+    private static final int COPY_INSET = 2;
+    private static final int COPY_SIGN = 8;
 
     private LayerCards() {
     }
@@ -80,9 +84,10 @@ final class LayerCards {
         int cardsTop = newRow.bottom() + SEAM;
         Rect cardsArea = new Rect(area.x(), cardsTop, area.width(), area.bottom() - cardsTop);
         Drag drag = new Drag();
-        ScrollGroup cards = new ScrollGroup(cardsArea, top -> layOut(editor, cardsArea, top, drag));
+        CopyPreview copies = new CopyPreview(editor, drag);
+        ScrollGroup cards = new ScrollGroup(cardsArea, top -> layOut(editor, cardsArea, top, drag, copies));
         chosen(editor, cardsArea).ifPresent(cards::revealContent);
-        return List.of(newRow(editor, newRow), cards, new FollowChosen(editor, cardsArea, cards, drag));
+        return List.of(newRow(editor, newRow), cards, new FollowChosen(editor, cardsArea, cards, drag), copies);
     }
 
     /** Opens the block picker, then adds a layer of the block picked at a place, as one step to undo. */
@@ -123,12 +128,14 @@ final class LayerCards {
      * Every layer's card, top first, in this area with the first card's top here, as the list scrolls, and the card
      * lifted while one is dragged.
      */
-    private static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top, Drag drag) {
+    private static ScrollGroup.Laid layOut(EditorContext editor, Rect area, int top, Drag drag,
+            CopyPreview copies) {
         ListSlots slots = slots(editor, new Rect(area.x(), top, area.width(), 0));
+        copies.clear();
         List<Widget> widgets = new ArrayList<>();
         for (int place = 0; place < slots.count(); place++) {
             int index = slots.count() - 1 - place;
-            widgets.addAll(card(editor, index, slots.at(place), slots, drag));
+            widgets.addAll(card(editor, index, slots.at(place), slots, drag, copies::add));
             widgets.add(seam(editor, index, slots.at(place), drag));
         }
         widgets.add(new LiftedCard(editor, slots, drag));
@@ -148,7 +155,8 @@ final class LayerCards {
     }
 
     /** One layer's card: its background, which selects it and drags it where no control is, and its controls. */
-    private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag) {
+    private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag,
+            Consumer<CopyPreview.Copyable> copies) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         List<Widget> widgets = new ArrayList<>();
         Rect tile = tile(card);
@@ -158,18 +166,21 @@ final class LayerCards {
                         .filter(line -> !line.getString().isEmpty()).toList()));
         int right = card.right() - PADDING;
         Rect remove = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-        widgets.add(button(editor, index, "trash", "flatgen.editor.remove", remove, new LayerEdits.Remove(),
+        widgets.add(button(editor, index, Icon.line("trash"), "flatgen.editor.remove", remove, new LayerEdits.Remove(),
                 () -> true, List::of));
         right = remove.x() - SPACING;
         if (editor.advanced()) {
             Rect copy = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-            widgets.add(button(editor, index, "copy", "flatgen.editor.duplicate", copy, new LayerEdits.Duplicate(),
-                    () -> roomLeft(editor) > 0, () -> LayerText.whyFull(editor.shown(), editor.world())));
+            widgets.add(button(editor, index, copyPicture(editor, index), "flatgen.editor.duplicate", copy,
+                    new LayerEdits.Duplicate(), () -> roomLeft(editor) > 0,
+                    () -> LayerText.whyFull(editor.shown(), editor.world())));
+            copies.accept(new CopyPreview.Copyable(index, copy, card));
             right = copy.x() - SPACING;
         }
         Rect thicker = new Rect(right - BUTTON, middle, BUTTON, BUTTON);
-        widgets.add(button(editor, index, "plus", "flatgen.layer.deeper", thicker, new LayerEdits.ChangeHeight(1),
-                () -> roomLeft(editor) > 0, () -> LayerText.whyFull(editor.shown(), editor.world())));
+        widgets.add(button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
+                new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
+                () -> LayerText.whyFull(editor.shown(), editor.world())));
         right = thicker.x();
         if (editor.advanced()) {
             Rect field = new Rect(right - SPACING - FIELD, middle, FIELD, BUTTON);
@@ -179,7 +190,7 @@ final class LayerCards {
             right = field.x();
         }
         Rect thinner = new Rect(right - SPACING - BUTTON, middle, BUTTON, BUTTON);
-        widgets.add(button(editor, index, "minus", "flatgen.layer.shallower", thinner,
+        widgets.add(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
                 new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of));
         int nameX = tile.right() + 2 * SPACING;
         widgets.addAll(words(editor, index, new Rect(nameX, card.y(), thinner.x() - SPACING - nameX, card.height())));
@@ -215,11 +226,28 @@ final class LayerCards {
      * One of a card's picture buttons: its picture, the edit it makes on the card's layer, and its tooltip: its name,
      * the layer's block, so the narrator tells the cards apart, then why it cannot be used.
      */
-    private static PictureButton button(EditorContext editor, int index, String icon, String name, Rect place,
+    private static PictureButton button(EditorContext editor, int index, Icon icon, String name, Rect place,
             Edit edit, BooleanSupplier usable, Supplier<List<Component>> why) {
-        return new PictureButton(Icon.line(icon), place, () -> act(editor, index, edit), usable,
+        return new PictureButton(icon, place, () -> act(editor, index, edit), usable,
                 () -> Stream.concat(Stream.of(Component.translatable(name), Names.block(block(editor, index))),
                         why.get().stream()).toList());
+    }
+
+    /** Copy's picture: the layer's block, its upper half not there yet, with the copy sign in its middle. */
+    private static Icon copyPicture(EditorContext editor, int index) {
+        return (canvas, x, y) -> drawCopyPicture(canvas, editor, index, x, y);
+    }
+
+    private static void drawCopyPicture(Canvas canvas, EditorContext editor, int index, int x, int y) {
+        if (index >= editor.shown().layers().size()) {
+            return;
+        }
+        int size = Icon.SIZE - 2 * COPY_INSET;
+        Rect picture = new Rect(x + COPY_INSET, y + COPY_INSET, size, size);
+        canvas.blockIcon(block(editor, index), picture);
+        canvas.markOver(Look.PLACEHOLDER_HALF, picture);
+        canvas.markOver(Look.icon("copy"), new Rect(x + (Icon.SIZE - COPY_SIGN) / 2, y + (Icon.SIZE - COPY_SIGN) / 2,
+                COPY_SIGN, COPY_SIGN));
     }
 
     /** The layer's block, filling the tile, with how many blocks thick the layer is on a pill at its corner. */
@@ -358,6 +386,68 @@ final class LayerCards {
     }
 
     /**
+     * While the mouse is on a card's Copy button, the copy it would make drawn faint in the place above the card, so
+     * the player sees where it goes; nothing otherwise. It is drawn over the list rather than in it, so the top card's
+     * copy shows over the row above the cards rather than cut off.
+     */
+    private static final class CopyPreview implements Widget {
+        private final EditorContext editor;
+        private final Drag drag;
+        /** Each card's Copy button as last laid out. */
+        private final List<Copyable> laidOut = new ArrayList<>();
+
+        /**
+         * A card's Copy button.
+         *
+         * @param index  the card's layer
+         * @param button where the button is
+         * @param card   where the card is
+         */
+        private record Copyable(int index, Rect button, Rect card) {
+        }
+
+        CopyPreview(EditorContext editor, Drag drag) {
+            this.editor = editor;
+            this.drag = drag;
+        }
+
+        /** Forgets the buttons, as the cards are laid out again. */
+        void clear() {
+            laidOut.clear();
+        }
+
+        void add(Copyable copyable) {
+            laidOut.add(copyable);
+        }
+
+        @Override
+        public void draw(Canvas canvas, int mouseX, int mouseY) {
+            if (drag.active || roomLeft(editor) < 1) {
+                return;
+            }
+            laidOut.stream().filter(copyable -> copyable.button().contains(mouseX, mouseY)).findFirst()
+                    .ifPresent(copyable -> canvas.raised(() -> drawCopy(canvas, copyable)));
+        }
+
+        /**
+         * The copy as a faint card in the place above the card it copies, with the accent colour's dashed edge, raised
+         * over what is there, as the lifted card is.
+         */
+        private void drawCopy(Canvas canvas, Copyable copyable) {
+            Rect copy = new Rect(copyable.card().x(), copyable.card().y() - SEAM - CARD_HEIGHT,
+                    copyable.card().width(), CARD_HEIGHT);
+            canvas.fill(copy, Look.BACKGROUND);
+            canvas.sprite(Look.GHOST_LIT, copy);
+            canvas.dashedFrame(copy, Look.ACCENT);
+            Rect tile = tile(copy);
+            Rect picture = picture(tile);
+            drawBlock(canvas, editor, copyable.index(), picture.x(), picture.y());
+            canvas.text(Names.block(block(editor, copyable.index())), tile.right() + 2 * SPACING,
+                    TextStyle.STRONG.top(copy.y(), copy.height()), Look.MUTED, TextStyle.STRONG);
+        }
+    }
+
+    /**
      * While a card is dragged, that card lifted under the mouse over the others, with a shadow, and the place it would
      * land left empty and ringed; nothing otherwise. The lifted card is drawn by the card's own widgets.
      */
@@ -390,7 +480,8 @@ final class LayerCards {
             canvas.sprite(Look.CHOSEN_RING, landing);
             canvas.fill(new Rect(lifted.x() + SHADOW_OFFSET, lifted.y() + SHADOW_OFFSET, lifted.width(),
                     lifted.height()), SHADOW);
-            card(editor, index, lifted, slots, new Drag()).forEach(widget -> widget.draw(canvas, -1, -1));
+            card(editor, index, lifted, slots, new Drag(), copyable -> { })
+                    .forEach(widget -> widget.draw(canvas, -1, -1));
         }
     }
 

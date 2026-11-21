@@ -69,3 +69,7 @@ an empty stack showing New layer alone.
 After trying them, the owner asked for quieter seams: 14 GUI pixels tall rather than 10, the dashed line across 90% of a
 card and centred, broken only by a plus and a slab in its middle, and under the mouse the line turned blue with the hand
 rather than the strip. Tried on 1.21.1 NeoForge.
+
+Copy, in Advanced, shows the layer's own block with its upper half chequered, not there yet, and the copy sign in its
+middle; while the mouse is on it the copy is drawn faint in the place above the card, where it will go, which the owner
+found clearer than a tooltip describing it. Tried on 1.21.1 NeoForge.
