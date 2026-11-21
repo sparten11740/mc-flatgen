@@ -16,7 +16,8 @@ page that says what Flatgen does.
 - [ ] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender present:
   Customize, editing, presets, a world created and loaded. Copying the jar into the instance is asked for first.
 - [x] GitHub Actions: build and release workflows as in Glowline, run on request.
-- [ ] README with screenshots; Modrinth and CurseForge pages; changelog from the `feat` and `fix` commit subjects.
+- [ ] README with screenshots; the CurseForge page (Modrinth not for now); changelog from the `feat` and `fix` commit
+  subjects.
 - [ ] Version `1.0.0`, tag `v1.0.0`.
 
 ## Design
@@ -29,7 +30,7 @@ page that says what Flatgen does.
 - `.github/workflows/build.yml` runs on request and for release tags: the pictures as `tools/sprites.py` writes them,
   `./gradlew build` with its tests and GameTests, then the boot of each jar. `release.yml` runs on a tag `v<version>`
   matching `mod_version`, writes the notes from the `feat` and `fix` subjects since the last tag, and makes a GitHub
-  release with the jars; Modrinth and CurseForge uploads join once the projects are made.
+  release with the jars; CurseForge uploads join once the project is made, Modrinth not for now.
 
 ## Tests
 

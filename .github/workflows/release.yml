@@ -4,7 +4,7 @@ name: release
 # commit passes everything the build workflow checks (build.yml: the pictures, every node built with its tests and
 # GameTests, every jar booted), and its jars are the ones released; then a GitHub release takes the jars, a
 # prerelease for an alpha or beta. Its notes are the feat and fix subjects since the last tag (the last release's, for
-# a release). Modrinth and CurseForge uploads join once the projects are made.
+# a release). CurseForge uploads join once the project is made; Modrinth is not supported for now.
 on:
   push:
     tags: ['v*']
