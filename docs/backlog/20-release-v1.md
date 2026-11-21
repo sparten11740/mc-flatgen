@@ -57,3 +57,36 @@ instance's mods folder with the owner's yes (sha256 `055b140f…89ad5`), waiting
 picker's tabs, emptied by Astral Sorcery's tab code (alpha.10), its layout with all blocks and rows of recent and
 starred (alpha.11), and lag on every Flatgen screen, which 1.21.1's tiled drawing of nine-sliced sprites caused
 (alpha.12); with alpha.12 the screens were found smooth.
+
+## Review of 2026-11-21
+
+A full review before the release, by two agents with fresh contexts given the code and the standards: one of the code
+(open/closed, modularity, dependency direction, duplication, consistency, dead code), one of every screen from
+screenshots and the code (accessibility, user experience, pictures). No blocker; the boundaries of plan.md 3.1 hold
+everywhere. Fixed the same night, each in its own commit: the focus ring, the New layer row's edge and the green
+buttons' contrast; struck pictures no longer dimmed; missing parts shown as the game's missing texture; a card's
+controls reached in the order they stand, the focus selecting the card's layer, Alt with an arrow moving it, and Copy's
+preview under the focus; one stepper for cards and templates; one picture for each meaning (the clipboard, a copy, the
+datapack, the grass block for the Overworld alone, Flatgen's own icon); the star hint naming Shift+Enter; one palette
+for the dimensions' colours; heights summed once; one way to name a picture; PresetAtDone and the structures' own memory
+of Generate Structures; the game's editor as a panel; shared click and key handling, badge looks, Every shelves and
+export names; dead code gone (CycleButton, text-only buttons, methods only tests used, unused pictures); the drawing
+tools' shared PNG writer; and the templates' preview showing a thin top.
+
+Left for the owner, as they would change screens the owner designed or words in all ten languages:
+
+- No slimes stands among the facts at a fact's size and reads as one; it could be a button with words on a row of its
+  own, its picture the slime face with the up arrow.
+- A chosen tab (the dimensions, the structures' ways, the pickers' shelves) looks much like a hovered one; the chosen
+  one could take the blue ring the cards use.
+- Make flat and Let the game make it are hard to read at 16 pixels, alike but for which way up; each dimension's own
+  block and a 32 pixel picture in the empty state and the question would help.
+- Biomes at 16 pixels are mostly sky: the ground and tree alone at that size, and bamboo for the bamboo jungle, would
+  tell them apart.
+- The two pickers differ: a block is picked with one click, a biome with two; the biome picker rings the biome now and
+  has pictured Recent and Starred shelves, the block picker marks neither and heads its rows with words.
+- Presets and Templates leave the header on the Nether and End tabs; the templates have both Back and Cancel; the mod
+  filter steps one mod a click without a tooltip; giving the Nether back asks first though Undo brings it back; block
+  names are cut at one line in the picker.
+- One quantity has three names for players (height, depth, deeper and shallower) where the code says thickness, and the
+  library's code says favourite where the screens say starred; changing the words means all ten languages.

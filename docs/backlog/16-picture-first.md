@@ -29,33 +29,34 @@ revisit any of it.
 
 ### Pictures
 
-One picture keeps one meaning everywhere, and none takes a meaning the code already gives an item: the barrier means
-missing, the book a built-in preset, the chest chosen structures, the lava bucket lakes, the grass block Superflat.
-A vanilla item is used where it says the thing; Flatgen's own pixel art where no item does. Terrain blocks are never
-action pictures, as beside the column they would read as layers.
+One picture keeps one meaning everywhere, and none takes a meaning the code already gives an item: the game's missing
+texture means missing, the book a built-in preset, the chest chosen structures, the lava bucket lakes, the grass block
+the Overworld, Flatgen's own icon Flatgen and its Superflat. A vanilla item is used where it says the thing; Flatgen's
+own pixel art where no item does. Terrain blocks are never action pictures, as beside the column they would read as
+layers.
 
 | Control | Picture |
 |---|---|
 | Done, Use (library, templates), Yes | own: green tick |
-| Cancel (editor, pickers), No | own: red cross |
+| Cancel (editor, pickers), No | a white cross, as the look's line drawing |
 | Back (library, templates) | own: left arrow, as the recipe book's page arrow |
 | Biome | the biome's own colours drawn as a little landscape (sky, grass, foliage, water), and its name |
 | Block, a template's block setting | the block itself, and its name |
 | Structures | own: a village house |
 | No slimes | the ladder of the ground's height with an up arrow: it raises the ground |
 | Undo, Redo | own: a hooked arrow curling left, right |
-| Share | paper with a big green arrow going up and out |
-| Paste | paper with a big blue arrow coming down and in |
+| Share | the preset, an arrow and a clipboard, as copying a code |
+| Paste | a clipboard, an arrow and the bookshelf of presets |
 | Add above, Add below | own: a layer bar with a plus above it, below it |
 | Remove layer | own: a layer bar with a minus |
 | Copy layer, Copy preset | the thing's own picture with a "copy" badge of two small sheets |
 | Delete preset | own: a trash can |
 | Presets | bookshelf |
 | Templates | crafting table |
-| Vanilla editor | command block |
+| Vanilla editor | an arrow leaving a box, the look's line drawing for another screen (Advanced only) |
 | Surface Y | ladder |
 | Thickness | own: a layer between a two-headed arrow |
-| Search | compass, as the creative inventory's search tab |
+| Search | spyglass |
 | Mod filter | the state itself: all mods own 2x2 of small cubes, Minecraft the grass block, a mod its first block |
 | Name field, Rename | name tag, anvil |
 | Save new, Save over | writable book with a plus badge, with a circular-arrow badge |
@@ -117,20 +118,20 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | No slimes | ladder with an up arrow |
 | Editor | favourites row | each favourite's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
-| Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, Eye of Ender; the chosen one raised; own flat badge |
+| Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, end stone; the chosen one raised; own flat badge |
 | Editor | Make flat, Give back (F22) | own: bumpy ground, an arrow, flat stripes; the same turned round |
 | Editor | Biome | the biome's landscape in its colours, and its name |
 | Editor | Structures | village house, and how they are chosen |
 | Editor | Block | the selected layer's block, and its name |
 | Editor | depth − + and its numbers, the depth field | a layer between two arrows before them; − + and numbers are symbols |
 | Editor | Surface at Y | ladder |
-| Editor | New layer, Copy layer, Remove layer | the chequered placeholder block with a plus; the block with a copy badge; a bin |
+| Editor | New layer, Copy layer, Remove layer | the chequered placeholder block with a plus; the copy sign; a bin |
 | Editor | Undo, Redo | own: hooked arrows |
 | Editor | Copy code, Paste code | the stack's top blocks, an arrow and a clipboard, each way, with words |
-| Editor | world options | each option's own picture, a switch; a missing one the barrier; a group's heading the picture the group gives, else its first option's |
+| Editor | world options | each option's own picture, a switch; a missing one the missing texture; a group's heading the picture the group gives, else its first option's |
 | Editor | Time and weather, Always clear, Always day | own: a sun behind a cloud; a rain cloud under the "no" sign; the sun up in a blue sky over the ground |
 | Editor | Mobs spawn | zombie spawn egg, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
-| Editor | Done, Vanilla editor, Cancel | tick, command block, cross, with their words |
+| Editor | Done, Vanilla editor, Cancel | tick, an arrow leaving a box, cross, with their words |
 | Pickers | search | spyglass |
 | Pickers | mod filter | four small cubes for all, else the mod's first block or biome |
 | Pickers | cards | the block, or the biome as a little landscape with its own ground and tree (terracotta bands, an acacia, a spruce, a birch, a mushroom, flowers, the void's dark); starred ones a gold star |
@@ -139,22 +140,22 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Block picker | rows over the grid | the recent blocks and the starred ones, each block its picture, the starred with their gold star |
 | Biome picker | side | own: a gold star (Starred); a clock (Recent); each kind the landscape of a biome of it, as Plains for the usual ones; four little landscapes in a square (Every biome) |
 | Biome picker | the biome chosen | painted larger, its facts' pictures beside their words; Pick a tick with its words |
-| Structures | the three ways to choose | grass block, barrier, chest, each with its box |
+| Structures | the three ways to choose | the biome's own landscape, the chest under the no sign, the chest, each with its box |
 | Structures | Decorations, Lakes | poppy, lava bucket |
 | Structures | each structure set | its own picture, under the "no" sign where it cannot appear |
 | Structures | Done | tick |
 | Library | Back, search | left arrow; spyglass |
 | Library | Save current as new, More | writable book with a plus badge; three dots |
-| Library | the menu | paper in (paste), folder, own server rack (server lines, F21), bundle (datapack), grass block with its box (Start on Superflat), book or a grass block or book under the "no" sign (the built-ins shown) |
-| Library | the footer | the picked preset's layers; name tag (Rename), the preset with a copy badge (Copy), paper out (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
-| Library | cards | the preset's layers in the sky with its own item beside them; marks for default (red bed), missing parts (barrier), starred (gold star); a built-in's mod or pack on a chip |
+| Library | the menu | a clipboard, an arrow and the bookshelf (paste), folder, own server rack (server lines, F21), bundle (datapack), Flatgen's icon with its box (Start on Superflat), book or a grass block or book under the "no" sign (the built-ins shown) |
+| Library | the footer | the picked preset's layers; name tag (Rename), the copy sign (Copy), the preset, an arrow and a clipboard (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
+| Library | cards | the preset's layers in the sky with its own item beside them; marks for default (red bed), missing parts (the missing texture), starred (gold star); a built-in's mod or pack on a chip |
 | Templates | the templates | a card each: a picture of what it makes with the template's item over it (grass block, elytra, water bucket, stone, redstone), its name and a line on what it is |
 | Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider; minus and plus for its steps |
 | Templates | block settings | the block |
 | Templates | switches | the switch's item, with its box |
 | Templates | what it makes | its ground in its sky, the air above it on a chip with an arrow up, the fact badges as the editor's, each layer's block |
 | Templates | Back, Cancel, Use | left arrow, cross, tick, the last two with their words |
-| Question | what Yes does | its picture above the words: trash can, writable book with a circular arrow, barrier |
+| Question | what Yes does | its picture above the words: trash can, writable book with a circular arrow, the missing texture |
 | Question | Yes, No | tick, cross, with their words |
 
 ## Tests
