@@ -29,7 +29,8 @@ Customize opens Flatgen in place of the game's screen:
   few settings, with what each makes drawn beside them as you change them.
 - **Works without reading:** every control has a picture, colour is never the only sign, the screens work with the
   keyboard alone, and the game's narrator reads them.
-- **English and German.**
+- **Ten languages:** English, German, Simplified Chinese, Japanese, Korean, Russian, Brazilian Portuguese, Spanish,
+  French and Polish.
 - **Mods' flat world types,** such as an airship-ready type, open Flatgen too.
 - **For modpacks:** ship presets and a default ([docs/pack-authors.md](docs/pack-authors.md)).
 - **A flat Nether and End:** tabs above the column give the Nether and the End layers and a biome of their own;

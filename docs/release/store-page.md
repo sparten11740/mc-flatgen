@@ -24,7 +24,8 @@ included.
   text.
 - **Templates:** a tall flat world, a water world or an airship field from a few sliders, drawn as you slide.
 - **Works without reading:** every button has a picture; keyboard and narrator work too.
-- **English and German.**
+- **Ten languages:** English, German, Simplified Chinese, Japanese, Korean, Russian, Brazilian Portuguese, Spanish,
+  French and Polish.
 
 Worlds made with Flatgen are plain superflat worlds: they open without the mod. It is a client mod; servers do not
 need it.
