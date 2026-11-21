@@ -65,3 +65,7 @@ says why. The seams hide while a card is dragged. Under the keyboard's focus a s
 strip, as a widget is not told it keeps the focus. Tried on 1.21.1 NeoForge: a seam's strip and the row lit under the
 mouse, sand added between Grass Block and the layer below it, Insert opening the picker, cancelling adding nothing, and
 an empty stack showing New layer alone.
+
+After trying them, the owner asked for quieter seams: 14 GUI pixels tall rather than 10, the dashed line across 90% of a
+card and centred, broken only by a plus and a slab in its middle, and under the mouse the line turned blue with the hand
+rather than the strip. Tried on 1.21.1 NeoForge.

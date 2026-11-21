@@ -12,24 +12,24 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * The seam between two rows of a list, or under the last, which adds a row there: a faint dashed line across it with a
- * plus under the rows' pictures. The mouse over it or the keyboard's focus turns it into a slim strip in the accent
- * colour saying what it adds; a click, Enter or Space adds the row. It is drawn and used only while shown, so not
- * while a row is dragged across it.
+ * The seam between two rows of a list, or under the last, which adds a row there: a faint dashed line across most of
+ * it with a plus and a slab in its middle. The mouse over it turns the line the accent colour and shows the hand; a
+ * click, Enter or Space adds the row, and the narrator says what it adds. It is drawn and used only while shown, so not while a row is dragged across it.
  *
  * @param bounds the seam, across the rows and as tall as the gap between them
- * @param plusX  where its plus is centred, under the rows' pictures
- * @param words  what it adds, such as a layer here, said on its strip
+ * @param words  what it adds, such as a layer here, for the narrator
  * @param action what adding does
  * @param shown  whether it is there at all
  * @param usable whether it can be used now
  * @param whyNot why it cannot, shown while it cannot
  */
-public record Seam(Rect bounds, int plusX, Component words, Runnable action, BooleanSupplier shown,
-        BooleanSupplier usable, Supplier<List<Component>> whyNot) implements Control {
-    /** How large the plus is drawn, and the space between it and what is beside it, in GUI pixels. */
-    private static final int PLUS = 8;
-    private static final int GAP = 3;
+public record Seam(Rect bounds, Component words, Runnable action, BooleanSupplier shown, BooleanSupplier usable,
+        Supplier<List<Component>> whyNot) implements Control {
+    /** How large the plus and the slab are drawn, and the space around them, in GUI pixels. */
+    private static final int PICTURE = 8;
+    private static final int GAP = 1;
+    /** How much of the seam's width its dashed line spans, centred, in hundredths. */
+    private static final int LINE_SHARE = 90;
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
@@ -38,29 +38,28 @@ public record Seam(Rect bounds, int plusX, Component words, Runnable action, Boo
         }
         boolean canUse = usable.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
-        Rect plus = new Rect(plusX - PLUS / 2, bounds.y() + (bounds.height() - PLUS) / 2, PLUS, PLUS);
-        if (canUse && hovered) {
-            drawStrip(canvas, plus);
+        int lineColor = canUse && hovered ? Look.ACCENT : Look.GHOST_EDGE;
+        int lineWidth = bounds.width() * LINE_SHARE / 100;
+        int left = bounds.x() + (bounds.width() - lineWidth) / 2;
+        int lineY = bounds.y() + bounds.height() / 2;
+        int pictures = 2 * PICTURE + GAP;
+        Rect plus = new Rect(bounds.x() + (bounds.width() - pictures) / 2, lineY - PICTURE / 2, PICTURE, PICTURE);
+        Rect slab = new Rect(plus.right() + GAP, plus.y(), PICTURE, PICTURE);
+        canvas.dashedLine(left, lineY, plus.x() - GAP - left, lineColor);
+        canvas.dashedLine(slab.right() + GAP, lineY, left + lineWidth - slab.right() - GAP, lineColor);
+        canvas.sprite(Look.icon("plus"), plus);
+        canvas.sprite(Look.icon("slab"), slab);
+        if (!canUse) {
+            canvas.dim(new Rect(plus.x(), plus.y(), pictures, PICTURE));
+        }
+        if (!hovered) {
             return;
         }
-        int lineY = bounds.y() + bounds.height() / 2;
-        canvas.dashedLine(bounds.x(), lineY, plus.x() - GAP - bounds.x(), Look.GHOST_EDGE);
-        canvas.dashedLine(plus.right() + GAP, lineY, bounds.right() - plus.right() - GAP, Look.GHOST_EDGE);
-        canvas.sprite(Look.icon("plus"), plus);
-        if (!canUse) {
-            canvas.dim(plus);
-        }
-        if (hovered) {
+        if (canUse) {
+            canvas.showHand();
+        } else {
             canvas.tooltipBelow(whyNot.get(), bounds);
         }
-    }
-
-    /** The strip it turns into: a lit face with a dashed edge, the plus, and what it adds. */
-    private void drawStrip(Canvas canvas, Rect plus) {
-        canvas.sprite(Look.GHOST_LIT, bounds);
-        canvas.dashedFrame(bounds, Look.ACCENT);
-        canvas.sprite(Look.icon("plus"), plus);
-        canvas.text(words, plus.right() + GAP, TextStyle.BODY.top(bounds.y(), bounds.height()), Look.ACCENT);
     }
 
     @Override

@@ -41,7 +41,7 @@ import net.minecraft.network.chat.Component;
 final class LayerCards {
     /** A card's height, and the seam between cards and under the last, which adds a layer there, in GUI pixels. */
     private static final int CARD_HEIGHT = 35;
-    private static final int SEAM = 10;
+    private static final int SEAM = 14;
     /** Space inside a card at its sides, in GUI pixels. */
     private static final int PADDING = 6;
     /** The width of the grip at a card's left, which shows where a card is taken to drag it, in GUI pixels. */
@@ -102,7 +102,7 @@ final class LayerCards {
 
     /** The seam under a layer's card, which adds a layer below it, hidden while a card is dragged. */
     private static Seam seam(EditorContext editor, int index, Rect card, Drag drag) {
-        return new Seam(new Rect(card.x(), card.bottom(), card.width(), SEAM), tile(card).x() + TILE / 2,
+        return new Seam(new Rect(card.x(), card.bottom(), card.width(), SEAM),
                 Component.translatable("flatgen.editor.add_here"), () -> insert(editor, index), () -> !drag.active,
                 () -> roomLeft(editor) > 0, () -> LayerText.whyFull(editor.shown(), editor.world()));
     }
