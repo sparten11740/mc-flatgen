@@ -19,11 +19,15 @@ public final class ColumnPicture {
      * clear, showing what is behind, such as a card's sky.
      */
     public static void draw(Canvas canvas, List<Layer> layers, int fluidColor, Rect area) {
+        draw(canvas, layers, fluidColor, area, THINNEST_LAYER);
+    }
+
+    /** Draws the layers so, none thinner than this many GUI pixels, so that a thin top still shows. */
+    public static void draw(Canvas canvas, List<Layer> layers, int fluidColor, Rect area, int thinnest) {
         if (layers.isEmpty()) {
             return;
         }
-        ColumnLayout layout = ColumnLayout.of(layers.stream().map(Layer::height).toList(), area.height(),
-                THINNEST_LAYER);
+        ColumnLayout layout = ColumnLayout.of(layers.stream().map(Layer::height).toList(), area.height(), thinnest);
         canvas.clip(area);
         for (int index = 0; index < layers.size(); index++) {
             ColumnLayout.Span span = layout.spans().get(index);

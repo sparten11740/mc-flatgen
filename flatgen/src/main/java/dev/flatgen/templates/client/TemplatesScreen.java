@@ -69,6 +69,8 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** The sky's share of the preview, in hundredths of its height, and the thinnest the ground is drawn, in pixels. */
     private static final int SKY_SHARE = 55;
     private static final int THINNEST_GROUND = 4;
+    /** The thinnest a layer of the picture is drawn while the layers fit, as the editor's column, in GUI pixels. */
+    private static final int THINNEST_LAYER = 8;
     /** Space inside the preview, and a layer's row in its list, in GUI pixels. */
     private static final int PREVIEW_PADDING = 6;
     private static final int LAYER_ROW = 18;
@@ -259,9 +261,12 @@ public final class TemplatesScreen extends FlatgenScreen {
     private void drawGround(Canvas canvas, Preset preset, Rect sky) {
         canvas.fill(sky, Biomes.info(preset.biome(), editor.registries()).map(BiomeInfo::colours)
                 .map(BiomeInfo.Colours::skyArgb).orElse(DimensionColours.OVERWORLD_SKY));
-        int ground = Math.max(THINNEST_GROUND, sky.height() * preset.height() / Math.max(1, editor.world().height()));
-        ColumnPicture.draw(canvas, preset.layers(), Biomes.waterColor(preset.biome(), editor.registries()),
-                new Rect(sky.x(), sky.bottom() - ground, sky.width(), ground));
+        List<Layer> layers = preset.layers();
+        int thinnest = Math.max(1, Math.min(THINNEST_LAYER, sky.height() / Math.max(1, layers.size())));
+        int share = sky.height() * preset.height() / Math.max(1, editor.world().height());
+        int ground = Math.min(sky.height(), Math.max(Math.max(THINNEST_GROUND, layers.size() * thinnest), share));
+        ColumnPicture.draw(canvas, layers, Biomes.waterColor(preset.biome(), editor.registries()),
+                new Rect(sky.x(), sky.bottom() - ground, sky.width(), ground), thinnest);
     }
 
     /** The layers the template makes, top first, each its block's picture, its name and how thick it is. */
