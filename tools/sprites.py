@@ -38,6 +38,8 @@ MATERIALS = {
     "Y": (0x1E3A10, 0x3E6E22, 0x5A9432, 0x7CBA4E),  # grass: a flat stack's top stripe
     "D": (0x2E1A0C, 0x5A3820, 0x76492A, 0x936038),  # dirt: a flat stack's middle stripe
     "H": (0x2A100C, 0x7A2E22, 0x9A4030, 0xBC5A44),  # rough rock: the hills a dimension has as the game makes it
+    "6": (0xF800F8, 0xF800F8, 0xF800F8, 0xF800F8),  # the game's missing texture: its purple, drawn flat
+    "7": (0x000000, 0x000000, 0x000000, 0x000000),  # and its black
     "Z": (0x1F4F8F, 0x4C8BD6, 0x6BA6EC, 0x9CC8FF),  # a day's sky
     "L": (0x55606B, 0xC4CCD4, 0xE4E9EE, 0xFFFFFF),  # a white cloud
     "M": (0x2B3138, 0x5E6873, 0x7B8692, 0x9DA8B4),  # a grey rain cloud
@@ -49,6 +51,24 @@ MATERIALS = {
 }
 
 PICTURES = {
+    "missing": ("inside", """
+6666666677777777
+6666666677777777
+6666666677777777
+6666666677777777
+6666666677777777
+6666666677777777
+6666666677777777
+6666666677777777
+7777777766666666
+7777777766666666
+7777777766666666
+7777777766666666
+7777777766666666
+7777777766666666
+7777777766666666
+7777777766666666
+"""),
     "trash": ("inside", """
 ................
 ......IIII......

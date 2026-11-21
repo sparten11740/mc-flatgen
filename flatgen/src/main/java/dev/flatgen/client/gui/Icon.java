@@ -12,8 +12,8 @@ import java.util.function.BiConsumer;
 public interface Icon {
     /** The size of an icon, in GUI pixels. */
     int SIZE = 16;
-    /** Something the game lacks or cannot read: the barrier. */
-    Icon MISSING = item("minecraft:barrier");
+    /** Something the game lacks or cannot read: the game's own missing texture, purple and black. */
+    Icon MISSING = own("missing");
     /** Back to where the player came from, keeping what was done: a left arrow. */
     Icon BACK = line("arrow_left");
     /** Text leaving the game for the clipboard: paper with an arrow out. */
@@ -67,8 +67,8 @@ public interface Icon {
     }
 
     /**
-     * This picture dimmed, with a small "no" sign, a red ring and slash, at its bottom right corner where an item's
-     * count goes: what it shows does not happen, while the picture can still be told apart from the others.
+     * This picture with a small "no" sign, a red ring and slash, at its bottom right corner where an item's count goes:
+     * what it shows does not happen, while the picture stays as clear as the others.
      */
     static Icon struck(Icon icon) {
         return (canvas, x, y) -> drawStruck(icon, canvas, x, y);
@@ -76,7 +76,6 @@ public interface Icon {
 
     private static void drawStruck(Icon icon, Canvas canvas, int x, int y) {
         icon.draw(canvas, x, y);
-        canvas.dim(new Rect(x, y, SIZE, SIZE));
         drawMark(canvas, "no", x, y);
     }
 
