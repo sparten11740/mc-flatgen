@@ -34,7 +34,6 @@ public final class DimensionPanel implements EditorPanel {
     /** The picture of giving a dimension back to the game: flat stripes, an arrow, bumpy ground. */
     private static final Icon GIVE_BACK = Icon.own("give_back");
     /** The picture of a data pack, as the library's Datapack button has it. */
-    private static final Icon PACK = Icon.item("minecraft:bundle");
     /** Space between the parts of the empty state, in GUI pixels. */
     private static final int SPACING = 6;
     /** How tall the button that makes a dimension flat is, in GUI pixels. */
@@ -98,7 +97,7 @@ public final class DimensionPanel implements EditorPanel {
     /** In the middle of the layers' place: a data pack's picture, and that the pack makes this dimension. */
     private static List<Widget> packState(Rect area) {
         int top = area.y() + (area.height() - Icon.SIZE - SPACING - TextStyle.TITLE.lineHeight()) / 2;
-        return List.of(new Surface(Look.PANEL, area), picture(PACK, area, top),
+        return List.of(new Surface(Look.PANEL, area), picture(Icon.DATAPACK, area, top),
                 new Caption(() -> Component.translatable("flatgen.dimension.pack_decides"), new Rect(area.x(),
                         top + Icon.SIZE + SPACING, area.width(), TextStyle.TITLE.lineHeight()), TextStyle.TITLE,
                         Look.TEXT, true));

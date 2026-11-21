@@ -39,18 +39,12 @@ public final class BiomePanel implements EditorPanel {
     private List<Widget> content(EditorContext editor, FlowLayout flow) {
         Map<String, Icon> pictures = new HashMap<>();
         Icon picture = (canvas, x, y) -> pictures.computeIfAbsent(editor.shown().biome(),
-                biome -> picture(biome, editor)).draw(canvas, x, y);
+                biome -> BiomePicker.picture(biome, editor.registries())).draw(canvas, x, y);
         return List.of(new Caption(() -> Component.translatable("flatgen.editor.biome"),
                         flow.line(TextStyle.BODY.lineHeight()), TextStyle.BODY, Look.MUTED),
                 new TextButton(picture, () -> Names.biome(editor.shown().biome()),
                         flow.line(EditorRegion.ASIDE.rowHeight()), () -> pick(editor), () -> true,
                         () -> List.of(Component.translatable("flatgen.editor.pick_biome"))));
-    }
-
-    /** A biome's landscape in its colours, worked out once per biome while the editor is open. */
-    private static Icon picture(String biome, EditorContext editor) {
-        return Biomes.info(biome, editor.registries()).<Icon>map(BiomeIcon::new)
-                .orElse(Icon.MISSING);
     }
 
     private static void pick(EditorContext editor) {

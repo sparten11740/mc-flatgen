@@ -1,5 +1,6 @@
 package dev.flatgen.structures.client;
 
+import dev.flatgen.biomes.client.BiomePicker;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
@@ -44,12 +45,10 @@ import net.minecraft.network.chat.Component;
 public final class StructuresScreen extends FlatgenScreen {
     /** How many of the biomes a set needs its tooltip names. */
     private static final int BIOMES_NAMED = 3;
-    private static final Map<StructureChoice.Mode, Icon> MODE_ICONS = Map.of(
-            StructureChoice.Mode.BIOME, Icon.item("minecraft:grass_block"),
-            StructureChoice.Mode.NONE, Icon.struck(Icon.item("minecraft:chest")),
-            StructureChoice.Mode.CHOSEN, Icon.item("minecraft:chest"));
 
     private final EditorContext editor;
+    /** Each mode's picture: the biome's own landscape for what the biome allows, a chest for chosen sets. */
+    private final Map<StructureChoice.Mode, Icon> modeIcons;
     private final List<StructureSetInfo> sets;
     private final List<String> every;
     private final Set<String> fromOptions;
@@ -62,6 +61,10 @@ public final class StructuresScreen extends FlatgenScreen {
     public StructuresScreen(EditorContext editor, List<StructureSetInfo> sets, Set<String> fromOptions) {
         super(Component.translatable("flatgen.structures.title"));
         this.editor = editor;
+        this.modeIcons = Map.of(
+                StructureChoice.Mode.BIOME, BiomePicker.picture(editor.shown().biome(), editor.registries()),
+                StructureChoice.Mode.NONE, Icon.struck(Icon.item("minecraft:chest")),
+                StructureChoice.Mode.CHOSEN, Icon.item("minecraft:chest"));
         this.sets = List.copyOf(sets);
         this.every = sets.stream().map(StructureSetInfo::id).toList();
         this.fromOptions = Set.copyOf(fromOptions);
@@ -132,7 +135,7 @@ public final class StructuresScreen extends FlatgenScreen {
 
     private SegmentedChoice.Option modeOption(StructureChoice.Mode mode) {
         Component name = Component.translatable(modeName(mode));
-        return new SegmentedChoice.Option(MODE_ICONS.get(mode), () -> name, textWidth(name, TextStyle.STRONG),
+        return new SegmentedChoice.Option(modeIcons.get(mode), () -> name, textWidth(name, TextStyle.STRONG),
                 () -> StructureChoice.mode(preset().structureSets()) == mode,
                 () -> editor.apply(new SetStructures(StructureChoice.withMode(preset().structureSets(), mode, every))),
                 tip(modeTip(mode)));

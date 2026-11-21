@@ -1,6 +1,7 @@
 package dev.flatgen.biomes.client;
 
 import dev.flatgen.biomes.rules.BiomeInfo;
+import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.PickerScreen;
 import dev.flatgen.facts.rules.Situation;
 import dev.flatgen.mc.Biomes;
@@ -49,5 +50,10 @@ public final class BiomePicker {
                 Component.translatable("flatgen.biomes.search"), entries,
                 id -> new BiomeIcon(biomes.get(id)), ClientPlatform.get()::modName, PICKS::read, PICKS::save);
         return new BiomePickerScreen(parent, picker, biomes, situation, now, current, onPick);
+    }
+
+    /** A biome's picture, its landscape in its colours, as the biome picker and the editor show it. */
+    public static Icon picture(String biome, HolderLookup.Provider registries) {
+        return Biomes.info(biome, registries).<Icon>map(BiomeIcon::new).orElse(Icon.MISSING);
     }
 }

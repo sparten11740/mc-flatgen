@@ -38,13 +38,11 @@ final class CodePanel implements EditorPanel {
         Icon stack = (canvas, x, y) -> ColumnPicture.draw(canvas, topLayers(editor),
                 Biomes.waterColor(editor.shown().biome(), editor.registries()),
                 new Rect(x + STACK_INSET, y + 1, Icon.SIZE - 2 * STACK_INSET, Icon.SIZE - 2));
-        Icon clipboard = Icon.line("clipboard");
-        Icon arrow = Icon.line("arrow_right");
         layout.add(EditorRegion.LAYERS_BAR, List.of(
-                codeButton(editor, bar, Icon.inRow(List.of(stack, arrow, clipboard)), "flatgen.code.copy",
-                        "flatgen.code.copy_tip", () -> copy(editor)),
-                codeButton(editor, bar, Icon.inRow(List.of(clipboard, arrow, stack)), "flatgen.code.paste",
-                        "flatgen.code.paste_tip", () -> paste(editor))));
+                codeButton(editor, bar, Icon.toClipboard(stack), "flatgen.code.copy", "flatgen.code.copy_tip",
+                        () -> copy(editor)),
+                codeButton(editor, bar, Icon.fromClipboard(stack), "flatgen.code.paste", "flatgen.code.paste_tip",
+                        () -> paste(editor))));
     }
 
     /** A button of the bar with these pictures and words, its tip saying what it does. */

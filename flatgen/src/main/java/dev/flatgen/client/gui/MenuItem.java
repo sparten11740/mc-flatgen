@@ -50,7 +50,8 @@ public final class MenuItem implements Control {
             canvas.sprite(Look.BUTTON_LIT, bounds);
         }
         int iconX = bounds.x() + INSET;
-        Rect picture = new Rect(iconX, TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), Icon.SIZE, Icon.SIZE);
+        Rect picture = new Rect(iconX, TextStyle.BODY.pictureTop(bounds.y(), bounds.height()), icon.width(),
+                Icon.SIZE);
         icon.draw(canvas, picture.x(), picture.y());
         if (!canUse) {
             canvas.dim(picture);

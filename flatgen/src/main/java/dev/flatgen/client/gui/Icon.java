@@ -16,10 +16,10 @@ public interface Icon {
     Icon MISSING = own("missing");
     /** Back to where the player came from, keeping what was done: a left arrow. */
     Icon BACK = line("arrow_left");
-    /** Text leaving the game for the clipboard: paper with an arrow out. */
-    Icon TO_CLIPBOARD = badged(item("minecraft:paper"), "badge_out");
-    /** Text coming in from the clipboard: paper with an arrow in. */
-    Icon FROM_CLIPBOARD = badged(item("minecraft:paper"), "badge_in");
+    /** A datapack: the game's bundle. */
+    Icon DATAPACK = item("minecraft:bundle");
+    /** Flatgen itself: its icon, a slab of flat world. */
+    Icon FLATGEN = texture("flatgen:icon.png");
 
     /** How far the next picture of a row starts after one, in GUI pixels, the line drawings' insets overlapping. */
     int ROW_STEP = 12;
@@ -30,6 +30,16 @@ public interface Icon {
     /** How wide the picture is, in GUI pixels: an icon's size, more for a row. */
     default int width() {
         return SIZE;
+    }
+
+    /** A thing going onto the clipboard as text: its picture, an arrow and the clipboard, as copying a code. */
+    static Icon toClipboard(Icon thing) {
+        return inRow(List.of(thing, line("arrow_right"), line("clipboard")));
+    }
+
+    /** A thing made from text on the clipboard: the clipboard, an arrow and its picture, as pasting a code. */
+    static Icon fromClipboard(Icon thing) {
+        return inRow(List.of(line("clipboard"), line("arrow_right"), thing));
     }
 
     /** These pictures side by side, left to right, as one picture, such as a stack, an arrow and the clipboard. */

@@ -154,7 +154,7 @@ public final class EditorScreen extends FlatgenScreen {
         Component advancedLabel = Component.translatable("flatgen.editor.advanced");
         List<Widget> widgets = new ArrayList<>();
         int titleX = PageFrame.MARGIN + Icon.SIZE + TITLE_GAP;
-        widgets.add(new Label(Icon.item(ICON), Component.empty(), new Rect(PageFrame.MARGIN,
+        widgets.add(new Label(Icon.FLATGEN, Component.empty(), new Rect(PageFrame.MARGIN,
                 (PageFrame.HEADER - Icon.SIZE) / 2, Icon.SIZE, Icon.SIZE)));
         widgets.add(new Caption(() -> title, new Rect(titleX, 0, frame.tabs.x() - titleX, PageFrame.HEADER),
                 TextStyle.TITLE, Look.TEXT));

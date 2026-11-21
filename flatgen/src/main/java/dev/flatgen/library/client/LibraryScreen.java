@@ -210,10 +210,10 @@ public final class LibraryScreen extends FlatgenScreen {
                 new Action(Icon.item("minecraft:name_tag"), "flatgen.library.rename", "flatgen.library.rename_tip",
                         this::rename,
                         () -> pickedIsPlayers() && pickedPreset().isPresent() && !name.isBlank()),
-                new Action(Icon.badged(this::drawPickedIcon, "badge_copy"), "flatgen.library.duplicate",
+                new Action(Icon.line("copy"), "flatgen.library.duplicate",
                         "flatgen.library.duplicate_tip", this::duplicate, () -> pickedPreset().isPresent()),
-                new Action(Icon.TO_CLIPBOARD, "flatgen.library.share", "flatgen.library.share_tip", this::share,
-                        () -> pickedPreset().isPresent()),
+                new Action(Icon.toClipboard(this::drawPickedIcon), "flatgen.library.share", "flatgen.library.share_tip",
+                        this::share, () -> pickedPreset().isPresent()),
                 new Action(SAVE_OVER, "flatgen.library.overwrite", "flatgen.library.overwrite_tip", this::overwrite,
                         this::pickedIsPlayers),
                 new Action(DELETE, "flatgen.library.delete", "flatgen.library.delete_tip", this::delete,
@@ -222,7 +222,8 @@ public final class LibraryScreen extends FlatgenScreen {
         Component useLabel = Component.translatable("flatgen.library.apply");
         int toggleWidth = Toggle.width(textWidth(defaultLabel));
         int useWidth = actionWidth(useLabel);
-        int[] widths = actions.stream().mapToInt(action -> TextButton.width(textWidth(action.label()))).toArray();
+        int[] widths = actions.stream().mapToInt(action -> TextButton.width(action.icon(), textWidth(action.label())))
+                .toArray();
         if (IntStream.of(widths).sum() + toggleWidth + useWidth + (actions.size() + 1) * GAP > room) {
             Arrays.fill(widths, PictureButton.SIZE);
         }
@@ -265,8 +266,8 @@ public final class LibraryScreen extends FlatgenScreen {
 
     /** The menu's rows for adding presets: pasting one, and the folder to drop files in. */
     private List<MenuScreen.Row> fileRows() {
-        return List.of(menuAction(Icon.FROM_CLIPBOARD, "flatgen.library.paste", "flatgen.library.paste_tip",
-                        this::paste, () -> true),
+        return List.of(menuAction(Icon.fromClipboard(Icon.item("minecraft:bookshelf")), "flatgen.library.paste",
+                        "flatgen.library.paste_tip", this::paste, () -> true),
                 menuAction(Icon.own("folder"), "flatgen.library.folder", "flatgen.library.folder_tip",
                         () -> SystemFiles.openFolder(store.folder()), () -> true));
     }
@@ -275,7 +276,7 @@ public final class LibraryScreen extends FlatgenScreen {
     private List<MenuScreen.Row> exportRows() {
         return List.of(menuAction(Icon.own("server"), "flatgen.library.server", "flatgen.library.server_tip",
                         this::server, () -> pickedPreset().isPresent()),
-                menuAction(Icon.item("minecraft:bundle"), "flatgen.library.datapack", "flatgen.library.datapack_tip",
+                menuAction(Icon.DATAPACK, "flatgen.library.datapack", "flatgen.library.datapack_tip",
                         this::datapack, () -> pickedPreset().isPresent()));
     }
 
@@ -285,7 +286,7 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     private Toggle startSwitch(Rect place) {
-        return new Toggle(Icon.item("minecraft:grass_block"), Component.translatable("flatgen.library.start"), place,
+        return new Toggle(Icon.FLATGEN, Component.translatable("flatgen.library.start"), place,
                 () -> choices.startOnSuperflat(), () -> choose(choices.toggleStartOnSuperflat()), () -> true,
                 () -> List.of(Component.translatable("flatgen.library.start_tip")));
     }
