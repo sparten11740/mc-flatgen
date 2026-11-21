@@ -143,6 +143,16 @@ public final class WorldCreation {
         return entry.isPresent();
     }
 
+    /** Whether the world on the Create World screen generates structures, as its World tab's switch says. */
+    public static boolean generatesStructures(CreateWorldScreen screen) {
+        return screen.getUiState().isGenerateStructures();
+    }
+
+    /** Sets the World tab's Generate Structures switch of the world on the Create World screen. */
+    public static void generateStructures(CreateWorldScreen screen, boolean generate) {
+        screen.getUiState().setGenerateStructures(generate);
+    }
+
     /** The world on the Create World screen as it is now. */
     public static WorldCreationContext context(CreateWorldScreen screen) {
         return screen.getUiState().getSettings();

@@ -188,7 +188,7 @@
   "flatgen.structures.mode.chosen": "Chosen",
   "flatgen.structures.mode.chosen_tip": "Only the structures switched on below",
   "flatgen.structures.mode.none": "None",
-  "flatgen.structures.mode.none_tip": "No structures at all",
+  "flatgen.structures.mode.none_tip": "No structures anywhere: turns off the game's Generate Structures, so the Nether and the End have none either",
   "flatgen.structures.not_in_biome": "Cannot appear in %s: it needs %s",
   "flatgen.structures.open": "Choose the world's structures, decorations and lakes",
   "flatgen.structures.title": "Structures and decorations",

@@ -10,6 +10,7 @@ import dev.flatgen.options.rules.Effect;
 import dev.flatgen.options.rules.OptionChoices;
 import dev.flatgen.options.rules.WorldOption;
 import dev.flatgen.preset.rules.Preset;
+import dev.flatgen.structures.rules.GenerateStructures;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +23,9 @@ import net.minecraft.world.level.levelgen.flat.FlatLevelGeneratorSettings;
 
 /**
  * Applies a preset to the Create World screen when the editor's Done is pressed: its superflat settings, what its world
- * options do there, and the first-start effects expected for the world (F27). An option turned off since the last Done
- * puts its game rules back to the game's defaults.
+ * options do there, the first-start effects expected for the world (F27), and the game's Generate Structures switch
+ * for a world with no structures. An option turned off since the last Done puts its game rules back to the game's
+ * defaults.
  */
 public final class OptionsAtDone {
     private OptionsAtDone() {
@@ -58,15 +60,19 @@ public final class OptionsAtDone {
             WorldCreation.listen(screen, OptionsAtDone::follow);
         }
         setGameRules(screen, applied, turnedOff);
+        GenerateStructures structures = generateStructures(screen)
+                .after(AddStructures.addedTo(preset, applied.structureSets(), knownSets).structureSets());
+        WorldCreation.generateStructures(screen, structures.on());
         warnIfAny("Flatgen keeps these world options in the preset, which are not installed: {}",
                 OptionChoices.missing(preset.options(), installed));
         OptionSessions.remember(screen, preset.options(),
-                AddStructures.newlyAdded(preset, applied.structureSets(), knownSets));
+                AddStructures.newlyAdded(preset, applied.structureSets(), knownSets), structures.byFlatgen());
     }
 
     /**
      * The screen left a world type Flatgen edits for one it does not: the game rules Flatgen's options set go back to
-     * the game's defaults, and no world waits for first-start effects, so a world of another type gets nothing of them.
+     * the game's defaults, Generate Structures goes on again if Flatgen turned it off, and no world waits for
+     * first-start effects, so a world of another type gets nothing of them.
      */
     public static void withdraw(CreateWorldScreen screen, List<WorldOption> installed) {
         if (!OptionSessions.has(screen)) {
@@ -76,6 +82,7 @@ public final class OptionsAtDone {
                 installed));
         warnIfAny("Flatgen could not put these game rules back: {}",
                 GameRuleAccess.set(screen, GameRuleAccess.defaults(applied.gameRules().keySet())));
+        WorldCreation.generateStructures(screen, generateStructures(screen).withdrawn().on());
         FirstStarts.forget();
         OptionSessions.forget(screen);
     }
@@ -87,6 +94,12 @@ public final class OptionsAtDone {
         rules.putAll(applied.gameRules());
         warnIfAny("Flatgen left these game rules as they were, which this game lacks or which cannot take the value"
                 + " world options give them: {}", GameRuleAccess.set(screen, rules));
+    }
+
+    /** The game's Generate Structures switch on the screen as it is now, and whether Flatgen turned it off. */
+    private static GenerateStructures generateStructures(CreateWorldScreen screen) {
+        return new GenerateStructures(WorldCreation.generatesStructures(screen),
+                OptionSessions.turnedStructuresOff(screen));
     }
 
     private static void warnIfAny(String message, List<String> names) {

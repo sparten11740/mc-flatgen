@@ -48,3 +48,12 @@ Both loaders, in dev clients with Blockpilot: the Structures button opens the sc
 and Villages on, Desert Pyramids is struck through on plains with "it needs Desert", decorations and lakes turn on and
 Villages off, and the created world's settings have decorations, lakes and only strongholds. Not tried in game: a
 modded structure set and one a world option adds (unit-tested).
+
+2026-11-21: None also turns off the game's Generate Structures at Done, as the owner asked, so a world without
+structures has none in any dimension: the Nether's fortresses and bastions and the End's cities go too, which a flat
+Nether otherwise keeps (F22), and None's tooltip says so. Without structures the Overworld has no stronghold, so the End
+was out of reach in survival already; what goes is the fortresses' blaze rods and the Nether's and End's loot. Flatgen
+turns the switch on again when a later Done has structures or the world leaves Superflat, and leaves a switch the player
+turned off as it is (`structures/rules/GenerateStructures`); a player who wants the Nether's turns it on in the World
+tab after Done. Tried on 1.21.1 NeoForge: None and Done show Generate Structures OFF in the World tab, the biome's and
+Done ON again, and a switch turned off in the World tab stays off through Done.

@@ -188,7 +188,7 @@
   "flatgen.structures.mode.chosen": "Gewählte",
   "flatgen.structures.mode.chosen_tip": "Nur die unten eingeschalteten Bauwerke",
   "flatgen.structures.mode.none": "Keine",
-  "flatgen.structures.mode.none_tip": "Überhaupt keine Bauwerke",
+  "flatgen.structures.mode.none_tip": "Nirgends Bauwerke: schaltet „Bauwerke generieren“ des Spiels aus, also auch keine im Nether und im End",
   "flatgen.structures.not_in_biome": "Erscheint nicht im Biom %s, nur in: %s",
   "flatgen.structures.open": "Die Bauwerke, Verzierungen und Seen der Welt wählen",
   "flatgen.structures.title": "Bauwerke und Verzierungen",
