@@ -116,8 +116,8 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         Icon four = Icon.quartered(EVERY.stream().filter(biomes::containsKey).map(biomes::get)
                 .<BiConsumer<Canvas, Rect>>map(biome -> (canvas, area) -> BiomeLandscape.draw(canvas, biome, area))
                 .toList());
-        return new Shelf(Component.translatable("flatgen.biomes.every"), (canvas, x, y) -> drawFramed(canvas, four, x,
-                y), all -> all);
+        return everyShelf(Component.translatable("flatgen.biomes.every"),
+                (canvas, x, y) -> drawFramed(canvas, four, x, y));
     }
 
     /** A picture, framed as a biome's picture is. */

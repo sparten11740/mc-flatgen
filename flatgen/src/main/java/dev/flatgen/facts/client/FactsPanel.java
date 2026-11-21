@@ -9,7 +9,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.rules.EditorState;
-import dev.flatgen.facts.rules.Fact;
 import dev.flatgen.facts.rules.Facts;
 import dev.flatgen.facts.rules.NoSlimes;
 import dev.flatgen.facts.rules.WorldFacts;
@@ -41,16 +40,11 @@ public final class FactsPanel implements EditorPanel {
         FactsNow now = new FactsNow(editor);
         List<Widget> widgets = new ArrayList<>();
         Facts.ALL.forEach(fact -> widgets.add(new Badge(flow.next(Badge.SIZE),
-                () -> now.get().map(situation -> look(fact.show(situation))))));
+                () -> now.get().map(situation -> FactPictures.look(fact.show(situation))))));
         widgets.add(new PictureButton(NO_SLIMES, flow.next(PictureButton.SIZE), () -> editor.apply(new NoSlimes()),
                 () -> now.get().map(situation -> situation.facts().slimeChunks()).orElse(false),
                 () -> List.of(Component.translatable("flatgen.facts.no_slimes"),
                         Component.translatable("flatgen.facts.no_slimes_tip", WorldFacts.SLIME_CHUNK_MAX_Y))));
         return widgets;
-    }
-
-    /** What a fact shows, as a badge draws it. */
-    private static Badge.Look look(Fact.Shown shown) {
-        return new Badge.Look(FactPictures.icon(shown), FactPictures.words(shown));
     }
 }

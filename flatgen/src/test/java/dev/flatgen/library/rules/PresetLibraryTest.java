@@ -76,6 +76,13 @@ class PresetLibraryTest {
         assertEquals("uberwelt.json", PresetLibrary.fileName("Überwelt", Set.of()));
     }
 
+    @Test
+    void namesAnExportAfterThePlayersFileOrTheBuiltInsName() {
+        assertEquals("glass_2", PresetLibrary.exportName(entry("glass_2.json", "Glass")));
+        assertEquals("classic_flat", PresetLibrary.exportName(CLASSIC));
+        assertEquals("a_tall_flat", PresetLibrary.exportName(STARTER));
+    }
+
     private static PresetLibrary.Entry entry(String file, String name) {
         Preset preset = TestPresets.TALL_FLAT.withName(name);
         return new PresetLibrary.Entry(file, PresetLibrary.Kind.PLAYERS, Optional.of(preset), List.of());

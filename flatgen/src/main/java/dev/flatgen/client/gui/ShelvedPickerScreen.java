@@ -60,6 +60,11 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
         return List.of(new CardGrid.Section(chosen.name(), chosen.of().apply(shown)));
     }
 
+    /** The shelf of every entry, as the mod chosen narrows them, under its name and picture. */
+    protected static Shelf everyShelf(Component name, Icon picture) {
+        return new Shelf(name, picture, shown -> shown);
+    }
+
     /** The shelf of the starred entries, whatever the mod chosen, as a star shows wherever it is. */
     protected final Shelf starredShelf() {
         return new Shelf(Component.translatable("flatgen.picks.starred"), STARRED, shown -> starred());

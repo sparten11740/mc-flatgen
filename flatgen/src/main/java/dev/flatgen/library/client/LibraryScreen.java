@@ -466,7 +466,7 @@ public final class LibraryScreen extends FlatgenScreen {
      * names parts this game lacks.
      */
     private void datapack() {
-        Optional<String> name = picked.flatMap(this::entry).map(LibraryScreen::exportName);
+        Optional<String> name = picked.flatMap(this::entry).map(PresetLibrary::exportName);
         pickedPreset().ifPresent(preset -> PresetUse.madeHere(editor, this, preset,
                 made -> saveDatapack(made, name.orElseThrow())));
     }
@@ -477,18 +477,6 @@ public final class LibraryScreen extends FlatgenScreen {
         message = written.<Component>map(file -> Component.translatable("flatgen.library.datapack_saved",
                 file.getFileName().toString())).orElse(Component.translatable("flatgen.library.datapack_not_saved"));
         written.ifPresent(file -> SystemFiles.openFolder(PresetExports.folder()));
-    }
-
-    /**
-     * A datapack's name for a library entry: a player's preset's file name without the ending, as {@code glass_2},
-     * or a built-in's name made into one, letters, digits and underscores only.
-     */
-    private static String exportName(PresetLibrary.Entry entry) {
-        String base = entry.isPlayers() && entry.key().endsWith(PresetLibrary.FILE_ENDING)
-                ? entry.key().substring(0, entry.key().length() - PresetLibrary.FILE_ENDING.length())
-                : entry.name();
-        String file = PresetLibrary.fileName(base, List.of());
-        return file.substring(0, file.length() - PresetLibrary.FILE_ENDING.length());
     }
 
     /** Adds the preset or superflat code on the clipboard to the player's presets. */

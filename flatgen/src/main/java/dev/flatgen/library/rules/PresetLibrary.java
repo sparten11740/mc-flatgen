@@ -137,4 +137,16 @@ public final class PresetLibrary {
         }
         return file;
     }
+
+    /**
+     * An export's name for a library entry, as a datapack's: a player's preset's file name without its ending, as
+     * {@code glass_2}, or a built-in's name made into one, plain lower case letters, digits and underscores.
+     */
+    public static String exportName(Entry entry) {
+        String base = entry.isPlayers() && entry.key().endsWith(FILE_ENDING)
+                ? entry.key().substring(0, entry.key().length() - FILE_ENDING.length())
+                : entry.name();
+        String file = fileName(base, List.of());
+        return file.substring(0, file.length() - FILE_ENDING.length());
+    }
 }

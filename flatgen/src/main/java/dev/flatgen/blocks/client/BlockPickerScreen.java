@@ -92,9 +92,8 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
 
     /** All the blocks, its picture four blocks in a square. */
     private Shelf every() {
-        return new Shelf(Component.translatable("flatgen.blocks.every"), Icon.quartered(EVERY.stream()
-                .<BiConsumer<Canvas, Rect>>map(block -> (canvas, area) -> canvas.blockIcon(block, area)).toList()),
-                all -> all);
+        return everyShelf(Component.translatable("flatgen.blocks.every"), Icon.quartered(EVERY.stream()
+                .<BiConsumer<Canvas, Rect>>map(block -> (canvas, area) -> canvas.blockIcon(block, area)).toList()));
     }
 
     /** The grid of blocks. */

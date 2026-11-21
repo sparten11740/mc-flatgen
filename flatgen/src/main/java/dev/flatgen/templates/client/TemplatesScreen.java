@@ -198,7 +198,7 @@ public final class TemplatesScreen extends FlatgenScreen {
     /** How a fact of the world the template makes looks on its badge, by its place among the facts. */
     private Supplier<Optional<Badge.Look>> factLook(int index) {
         return () -> facts.get().map(world -> Facts.ALL.get(index).show(world))
-                .map(shown -> new Badge.Look(FactPictures.icon(shown), FactPictures.words(shown)));
+                .map(FactPictures::look);
     }
 
     /** The note on what Use does at the left; Cancel and Use at the right. */
