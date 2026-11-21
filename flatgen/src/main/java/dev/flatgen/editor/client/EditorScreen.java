@@ -244,17 +244,12 @@ public final class EditorScreen extends FlatgenScreen {
                     footerRow.height()));
         }
 
-        /** Every panel that shows laid out with the aside's top here, the game's own editor last in Advanced. */
+        /** Every panel that shows laid out with the aside's top here. */
         EditorLayout layOut(int asideTop) {
             Map<EditorRegion, Rect> placed = new EnumMap<>(areas);
             placed.put(EditorRegion.ASIDE, new Rect(aside.x(), asideTop, aside.width(), 0));
             EditorLayout layout = new EditorLayout(placed, EditorScreen.this::textWidth);
             shownPanels().forEach(panel -> panel.layOut(editor, layout));
-            if (EditorScreen.this.advanced) {
-                Rect place = layout.flow(EditorRegion.ASIDE).line(EditorRegion.ASIDE.rowHeight());
-                layout.add(EditorRegion.ASIDE, new TextButton(Icon.line("external"),
-                        Component.translatable("flatgen.editor.vanilla"), place, EditorScreen.this::openVanilla));
-            }
             return layout;
         }
 
@@ -468,6 +463,11 @@ public final class EditorScreen extends FlatgenScreen {
         @Override
         public void open(Screen screen) {
             Screens.show(screen);
+        }
+
+        @Override
+        public void openGameEditor() {
+            openVanilla();
         }
 
         @Override

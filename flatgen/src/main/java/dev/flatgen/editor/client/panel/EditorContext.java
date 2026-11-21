@@ -97,6 +97,9 @@ public interface EditorContext {
     /** Opens another screen in place of the editor. */
     void open(Screen screen);
 
+    /** Opens the game's own Superflat editor on the layers as they are now; its Cancel leaves the world as it was. */
+    void openGameEditor();
+
     /** How wide text in a style is drawn on the editor's screen. */
     int textWidth(Component text, TextStyle style);
 

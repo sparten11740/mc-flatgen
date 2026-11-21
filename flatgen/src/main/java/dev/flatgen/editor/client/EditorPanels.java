@@ -31,7 +31,8 @@ final class EditorPanels {
             new CodePanel(),
             new LayerPanel(),
             new HistoryPanel(),
-            new MessagePanel());
+            new MessagePanel(),
+            new GameEditorPanel());
 
     private EditorPanels() {
     }
