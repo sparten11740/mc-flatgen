@@ -1,26 +1,23 @@
 # Flatgen
 
-A better superflat screen for Minecraft.
+A superflat world editor for Minecraft.
 
-I built it for my son, who can't read yet but has firm opinions about how many layers of dirt a world needs. Every new
-world used to mean a visit to my desk while I was working. Now every button is a picture, he makes his own worlds, and
-I get to finish my sentences.
+For my son, who can't read yet but has firm opinions about how many layers of dirt a world needs.
 
 Create World → World Type: Superflat → Customize opens Flatgen instead of the vanilla screen:
 
-- **Layers as cards beside the world they make:** drag one to reorder, + and − for its thickness, undo anything.
-- **Every block and biome**, modded ones included, as pictures you can search.
-- **Know your world before you make it:** rain, snow or sun at your surface, whether slimes and monsters spawn.
-- **Presets:** save your own, star favourites, pick a default that is ready the moment you choose Superflat.
-- **Templates:** a tall flat world, a water world or an airship field from a few sliders.
-- **Always day, always clear:** saved with the preset, no more `/time set day` in every new world.
-- **A flat Nether and End too,** with their own layers and biome; portals, fortresses and the dragon work as always.
-- **Works without reading:** every button is a picture; the keyboard and the game's narrator work too. In English and
-  German.
+- **Layers:** Drag & drop layers to reorder, increase a layer's size with ease, undo anything
+- **Every block and biome:** Searchable & visualized as icons (including blocks added by mods)
+- **Know your world before you make it:** A preview that renders your configuration
+- **Presets:** Save your own presets, mark favorites, pick a default to start from
+- **Templates:** Ready-made worlds you adjust with a few sliders
+- **Always day, always clear:** Saved with the preset, no more `/time set day` in every new world
+- **Flat Nether and End:** Their own layers and biome, portals and the dragon work as usual
+- **Works without reading:** Every button has an icon, keyboard and narrator supported
 
 ![The editor: the world drawn at the left, the layers as cards, the biome, its facts and the switches at the right](docs/screenshots/editor.png)
 
-| Biomes by kind, each a little landscape | Presets: your own and the built-in ones | Templates |
+| Biomes by kind, each a little landscape | Presets: Your own and the built-in ones | Templates |
 |---|---|---|
 | ![The biome picker](docs/screenshots/biomes.png) | ![The preset library](docs/screenshots/library.png) | ![The templates](docs/screenshots/templates.png) |
 
