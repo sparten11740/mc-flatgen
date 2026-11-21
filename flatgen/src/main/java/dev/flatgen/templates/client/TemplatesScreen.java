@@ -243,7 +243,7 @@ public final class TemplatesScreen extends FlatgenScreen {
                         editor.world()));
     }
 
-    /** The blocks of air above the ground the template makes, and the Y of the world's top. */
+    /** The blocks of air above the ground the template makes. */
     private Component air() {
         return LayerText.air(editor.world(), height(made()));
     }

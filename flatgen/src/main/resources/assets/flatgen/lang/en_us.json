@@ -45,7 +45,7 @@
   "flatgen.editor.add_on_top": "Add layer on top",
   "flatgen.editor.advanced": "Advanced",
   "flatgen.editor.advanced_tip": "Shows everything: Y levels, codes, typed thicknesses, structures and the game's own editor",
-  "flatgen.editor.air": "%s blocks of air, up to Y %s",
+  "flatgen.editor.air": "%s blocks of air",
   "flatgen.editor.biome": "Biome",
   "flatgen.editor.duplicate": "Copy",
   "flatgen.editor.empty": "No layers: an empty world",

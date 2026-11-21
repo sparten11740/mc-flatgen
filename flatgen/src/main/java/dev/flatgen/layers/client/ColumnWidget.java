@@ -305,13 +305,13 @@ public final class ColumnWidget implements Widget {
     }
 
     /**
-     * The Y of the lines between layers beside the column: the surface and the world's floor always, the others where
-     * they do not crowd a number already there.
+     * The Y of the lines between layers beside the column, none reaching above it: the surface and the world's floor
+     * always, the others and the world's top where they do not crowd a number already there.
      */
     private void drawLabels(Canvas canvas, List<Rect> bounds) {
         List<Integer> drawnTops = new ArrayList<>();
-        for (Line line : surfaceAndFloorFirst(lines(bounds))) {
-            int textY = line.pixel() - canvas.lineHeight() / 2;
+        for (Line line : labelled(bounds)) {
+            int textY = Math.max(column.y(), line.pixel() - canvas.lineHeight() / 2);
             boolean visible = line.pixel() >= column.y() && line.pixel() <= column.bottom();
             boolean crowded = drawnTops.stream().anyMatch(top -> Math.abs(top - textY) < canvas.lineHeight());
             if (visible && !crowded) {
@@ -319,6 +319,15 @@ public final class ColumnWidget implements Widget {
                 drawnTops.add(textY);
             }
         }
+    }
+
+    /** The lines in the order they are labelled, with the world's top, the column's, last while air shows above. */
+    private List<Line> labelled(List<Rect> bounds) {
+        List<Line> labelled = new ArrayList<>(surfaceAndFloorFirst(lines(bounds)));
+        if (stackTop() > column.y()) {
+            labelled.add(new Line(column.y(), editor.world().top()));
+        }
+        return labelled;
     }
 
     /** The lines with the surface's and the floor's first, as they are labelled first. */

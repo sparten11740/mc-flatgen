@@ -9,7 +9,7 @@ import dev.flatgen.editor.client.panel.EditorRegion;
 import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.client.LayerText;
 
-/** How much air is above the stack, up to the world's top, on a chip over the world's picture. */
+/** How much air is above the stack, on a chip over the world's picture, whose column marks the world's top. */
 final class SummaryPanel implements EditorPanel {
 
     /** Shown for every dimension the preset gives a stack of its own (F22). */
@@ -18,7 +18,7 @@ final class SummaryPanel implements EditorPanel {
         return state.stack().isPresent();
     }
 
-    /** How much air is above the ground, up to the world's top, on a chip at the top of the world. */
+    /** How much air is above the ground, on a chip at the top of the world. */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
         layout.add(EditorRegion.WORLD, Chip.inCorner(Icon.line("arrow_up"),

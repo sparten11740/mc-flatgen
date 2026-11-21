@@ -30,10 +30,9 @@ public final class LayerText {
                 : List.of(Component.translatable("flatgen.editor.full", world.height()));
     }
 
-    /** The blocks of air above ground this many blocks tall, and the Y of the world's top. */
+    /** The blocks of air above ground this many blocks tall. */
     public static Component air(World world, int groundHeight) {
-        int top = world.floor() + world.height() - 1;
-        return Component.translatable("flatgen.editor.air", world.height() - groundHeight, top);
+        return Component.translatable("flatgen.editor.air", world.height() - groundHeight);
     }
 
     /** The Ys a layer covers, bottom to top. */
