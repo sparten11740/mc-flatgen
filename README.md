@@ -1,7 +1,12 @@
 # Flatgen
 
-A better superflat screen for Minecraft. Create World → World Type: Superflat → Customize will open Flatgen instead
-of the vanilla screen:
+A better superflat screen for Minecraft.
+
+I built it for my son, who can't read yet but has firm opinions about how many layers of dirt a world needs. Every new
+world used to mean a visit to my desk while I was working. Now every button is a picture, he makes his own worlds, and
+I get to finish my sentences.
+
+Create World → World Type: Superflat → Customize opens Flatgen instead of the vanilla screen:
 
 - **Layers as cards beside the world they make:** drag one to reorder, + and − for its thickness, undo anything.
 - **Every block and biome**, modded ones included, as pictures you can search.
