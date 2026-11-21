@@ -1,6 +1,7 @@
 package dev.flatgen.templates.rules;
 
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.pictures.rules.Picture;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Map;
 /** A chosen number of thin layers of two blocks in turn, for testing machines and contraptions. */
 final class TestLayers implements Template {
     private static final Parameter.Number COUNT = new Parameter.Number("count", "flatgen.template.count",
-            "minecraft:white_carpet", 2, 64, 8);
+            Picture.item("minecraft:white_carpet"), 2, 64, 8);
     private static final Parameter.Block FIRST = new Parameter.Block("first", "flatgen.template.first",
             "minecraft:white_concrete");
     private static final Parameter.Block SECOND = new Parameter.Block("second", "flatgen.template.second",

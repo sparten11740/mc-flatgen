@@ -47,7 +47,7 @@ public final class OptionsPanel implements EditorPanel {
         List<Widget> widgets = new ArrayList<>();
         if (group.size() > 1) {
             Icon heading = group.stream().flatMap(option -> option.groupIcon().stream()).findFirst()
-                    .map(OptionsPanel::icon).orElse(icon(group.get(0).icon()));
+                    .map(Icon::of).orElse(Icon.of(group.get(0).icon()));
             widgets.add(new Label(heading, groupTitle(group.get(0).group()), flow.line(Label.height())));
         }
         group.forEach(option -> widgets.add(toggle(editor, option, installed, flow)));
@@ -65,7 +65,7 @@ public final class OptionsPanel implements EditorPanel {
 
     private static Toggle toggle(EditorContext editor, WorldOption option, List<WorldOption> installed,
             FlowLayout flow) {
-        return new Toggle(icon(option.icon()), Component.translatable(option.name()),
+        return new Toggle(Icon.of(option.icon()), Component.translatable(option.name()),
                 flow.line(EditorRegion.ASIDE.rowHeight()),
                 () -> OptionChoices.isOn(option, editor.shown().preset().options()) != option.inverted(),
                 () -> turnOver(editor, option, installed), () -> true,
@@ -84,10 +84,6 @@ public final class OptionsPanel implements EditorPanel {
         return new Toggle(Icon.MISSING, Component.literal(id), flow.line(EditorRegion.ASIDE.rowHeight()),
                 () -> editor.shown().preset().options().getOrDefault(id, false), () -> { }, () -> false,
                 () -> List.of(Component.translatable("flatgen.options.not_installed", id)));
-    }
-
-    private static Icon icon(WorldOption.Icon icon) {
-        return icon.texture() ? Icon.texture(icon.id()) : Icon.item(icon.id());
     }
 
     /** A group's heading: a mod's name for a mod's id, or the translation of {@code option_group.<ns>.<path>}. */

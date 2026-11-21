@@ -1,5 +1,6 @@
 package dev.flatgen.templates.rules;
 
+import dev.flatgen.pictures.rules.Picture;
 /**
  * One of a template's settings, which its screen shows as a slider, a block button or a switch. The kinds are few and
  * fixed; a screen tells them apart through {@link Visitor} rather than by testing classes.
@@ -33,7 +34,7 @@ public interface Parameter {
      * @param max          the most it may be
      * @param defaultValue what it starts at
      */
-    record Number(String id, String name, String icon, int min, int max, int defaultValue) implements Parameter {
+    record Number(String id, String name, Picture icon, int min, int max, int defaultValue) implements Parameter {
         /** A value kept within the range. */
         public int within(int value) {
             return Math.max(min, Math.min(max, value));
@@ -67,7 +68,7 @@ public interface Parameter {
      * @param icon         what its switch shows: an item's id, or a texture's location ending in {@code .png}
      * @param defaultValue whether it starts on
      */
-    record Toggle(String id, String name, String icon, boolean defaultValue) implements Parameter {
+    record Toggle(String id, String name, Picture icon, boolean defaultValue) implements Parameter {
         @Override
         public <R> R accept(Visitor<R> visitor) {
             return visitor.toggle(this);

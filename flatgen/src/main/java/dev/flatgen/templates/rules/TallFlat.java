@@ -1,6 +1,7 @@
 package dev.flatgen.templates.rules;
 
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.pictures.rules.Picture;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.Optional;
 /** Ground at a chosen Y (F14): bedrock, a filler block up to just below the surface, and a top block. */
 final class TallFlat implements Template {
     private static final Parameter.Number SURFACE = new Parameter.Number("surface_y", "flatgen.template.surface_y",
-            "minecraft:ladder", Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
+            Picture.item("minecraft:ladder"), Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
     private static final Parameter.Block TOP = new Parameter.Block("top", "flatgen.template.top", Templates.GRASS);
     private static final Parameter.Block FILLER = new Parameter.Block("filler", "flatgen.template.filler",
             Templates.STONE);

@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.util.List;
-import java.util.Optional;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
@@ -71,7 +72,7 @@ class OptionChoicesTest {
     }
 
     private static WorldOption option(String id, boolean defaultOn, Effect... effects) {
-        return new WorldOption(id, id, id, new WorldOption.Icon("minecraft:clock", false), "flatgen", Optional.empty(),
+        return new WorldOption(id, id, id, Picture.item("minecraft:clock"), "flatgen", Optional.empty(),
                 defaultOn, false, List.of(), List.of(effects));
     }
 }

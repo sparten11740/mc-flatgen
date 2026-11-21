@@ -3,6 +3,7 @@ package dev.flatgen.options.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -38,7 +39,7 @@ class OptionReaderTest {
         WorldOption option = read("flatgen:always_day", ALWAYS_DAY);
         assertEquals("option.flatgen.always_day", option.name());
         assertEquals("option.flatgen.always_day.description", option.description());
-        assertEquals(new WorldOption.Icon("minecraft:clock", false), option.icon());
+        assertEquals(Picture.item("minecraft:clock"), option.icon());
         assertEquals("flatgen:time_and_weather", option.group());
         assertEquals(Optional.empty(), option.groupIcon());
         assertEquals(false, option.defaultOn());
@@ -52,7 +53,7 @@ class OptionReaderTest {
         WorldOption option = read("skyliners:airport", AIRPORT);
         assertEquals("Airport", option.name());
         assertEquals("skyliners", option.group());
-        assertEquals(new WorldOption.Icon("skyliners:textures/gui/flatgen/airport.png", true), option.icon());
+        assertEquals(Picture.texture("skyliners:textures/gui/flatgen/airport.png"), option.icon());
         assertEquals(List.of("skyliners"), option.requires());
         assertEquals(List.of(
                 new PlaceAtSpawn("skyliners:airport", true, new Position(0, -1, 0), Rotation.CLOCKWISE_90, 64,
@@ -65,7 +66,7 @@ class OptionReaderTest {
     void readsThePictureAnOptionGivesItsGroup() {
         WorldOption option = read("test:option", "{\"icon\": \"minecraft:clock\", \"group_icon\": {\"texture\":"
                 + " \"test:textures/group.png\"}, \"effects\": [{\"type\": \"first_start_time\", \"time\": 1}]}");
-        assertEquals(Optional.of(new WorldOption.Icon("test:textures/group.png", true)), option.groupIcon());
+        assertEquals(Optional.of(Picture.texture("test:textures/group.png")), option.groupIcon());
     }
 
     @Test

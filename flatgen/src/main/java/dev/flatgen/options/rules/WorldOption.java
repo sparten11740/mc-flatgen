@@ -1,5 +1,6 @@
 package dev.flatgen.options.rules;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,20 +22,11 @@ import java.util.Optional;
  * @param requires    the mods it needs, by id; it is hidden while one is missing
  * @param effects     what it does, in order
  */
-public record WorldOption(String id, String name, String description, Icon icon, String group,
-        Optional<Icon> groupIcon, boolean defaultOn, boolean inverted, List<String> requires, List<Effect> effects) {
+public record WorldOption(String id, String name, String description, Picture icon, String group,
+        Optional<Picture> groupIcon, boolean defaultOn, boolean inverted, List<String> requires, List<Effect> effects) {
     public WorldOption {
         requires = List.copyOf(requires);
         effects = List.copyOf(effects);
-    }
-
-    /**
-     * An option's picture.
-     *
-     * @param id      an item's id, or a 16 by 16 texture's location
-     * @param texture whether it is a texture rather than an item
-     */
-    public record Icon(String id, boolean texture) {
     }
 
     /** Whether it fixes a setting that another option fixes otherwise, so the two cannot be on together. */

@@ -1,6 +1,7 @@
 package dev.flatgen.client.gui;
 
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.pictures.rules.Picture;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -160,8 +161,8 @@ public interface Icon {
         return (canvas, x, y) -> canvas.texture(location, x, y);
     }
 
-    /** An item's picture, by its id, or a 16 by 16 texture's, by its location ending in {@code .png}. */
-    static Icon itemOrTexture(String id) {
-        return id.endsWith(".png") ? texture(id) : item(id);
+    /** A picture a rule or a file names: an item's or a 16 by 16 texture's. */
+    static Icon of(Picture picture) {
+        return picture.texture() ? texture(picture.id()) : item(picture.id());
     }
 }

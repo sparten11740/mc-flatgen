@@ -1,5 +1,6 @@
 package dev.flatgen.facts.rules;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -9,17 +10,19 @@ import java.util.stream.Stream;
 
 /** Every world fact, in the order shown; a new fact is a class here. */
 public final class Facts {
+    /**
+     * The lines' colours and pictures: where slimes stop spawning, and where rain turns to snow; set before the facts
+     * below, which read them as they are made.
+     */
+    private static final int SLIME_GREEN = 0xFF7FD34F;
+    private static final int SNOW_BLUE = 0xFF8FD8FF;
+    private static final Picture SLIME = Picture.texture("flatgen:textures/gui/sprites/icon/slime.png");
+    private static final Picture SNOW = Picture.texture("flatgen:textures/gui/sprites/icon/snow.png");
+    private static final Picture RAIN = Picture.texture("flatgen:textures/gui/sprites/icon/rain.png");
     /** The facts that differ from biome to biome, which the biome picker's cards show too. */
     public static final List<Fact> ABOUT_THE_BIOME = List.of(new Weather(), new Slimes(), new Monsters());
     /** Every fact, the surface's height first. */
     public static final List<Fact> ALL = Stream.concat(Stream.of(new Surface()), ABOUT_THE_BIOME.stream()).toList();
-
-    /** The lines' colours and pictures: where slimes stop spawning, and where rain turns to snow. */
-    private static final int SLIME_GREEN = 0xFF7FD34F;
-    private static final int SNOW_BLUE = 0xFF8FD8FF;
-    private static final String SLIME = "flatgen:textures/gui/sprites/icon/slime.png";
-    private static final String SNOW = "flatgen:textures/gui/sprites/icon/snow.png";
-    private static final String RAIN = "flatgen:textures/gui/sprites/icon/rain.png";
 
     private Facts() {
     }
@@ -28,15 +31,15 @@ public final class Facts {
     static final class Surface implements Fact {
         @Override
         public Shown show(Situation situation) {
-            return new Shown("minecraft:ladder", false,
+            return new Shown(Picture.item("minecraft:ladder"), false,
                     List.of(new Words("flatgen.facts.surface", List.of(situation.facts().surfaceY()))));
         }
     }
 
     /** What falls at the surface: the sun for nothing, a rain cloud for rain, a snow cloud for snow. */
     static final class Weather implements Fact {
-        private static final Map<WorldFacts.Weather, String> ICONS = Map.of(
-                WorldFacts.Weather.NONE, "minecraft:sunflower",
+        private static final Map<WorldFacts.Weather, Picture> ICONS = Map.of(
+                WorldFacts.Weather.NONE, Picture.item("minecraft:sunflower"),
                 WorldFacts.Weather.RAIN, RAIN,
                 WorldFacts.Weather.SNOW, SNOW);
 
@@ -99,7 +102,7 @@ public final class Facts {
         @Override
         public Shown show(Situation situation) {
             boolean monsters = situation.facts().hostileMobs();
-            return new Shown("minecraft:creeper_head", !monsters,
+            return new Shown(Picture.item("minecraft:creeper_head"), !monsters,
                     List.of(Words.of(monsters ? "flatgen.facts.monsters" : "flatgen.facts.no_monsters")));
         }
     }

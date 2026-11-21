@@ -1,6 +1,7 @@
 package dev.flatgen.templates.rules;
 
 import dev.flatgen.editor.rules.World;
+import dev.flatgen.pictures.rules.Picture;
 import dev.flatgen.preset.rules.Layer;
 import dev.flatgen.preset.rules.Preset;
 import java.util.List;
@@ -9,9 +10,10 @@ import java.util.Map;
 /** An open field for airships at a chosen height: deep ground, grass on top, no structures, always clear. */
 final class AirshipField implements Template {
     private static final Parameter.Number SURFACE = new Parameter.Number("surface_y", "flatgen.template.surface_y",
-            "minecraft:ladder", Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
+            Picture.item("minecraft:ladder"), Templates.LOWEST_SURFACE, Templates.HIGHEST_SURFACE, Templates.NO_SLIMES_Y);
     private static final Parameter.Toggle CLEAR = new Parameter.Toggle("always_clear",
-            "flatgen.template.always_clear", "flatgen:textures/gui/sprites/icon/always_clear.png", true);
+            "flatgen.template.always_clear",
+            Picture.texture("flatgen:textures/gui/sprites/icon/always_clear.png"), true);
     /** The world option that keeps the weather clear (F10). */
     private static final String ALWAYS_CLEAR = "flatgen:always_clear";
     private static final int DIRT_DEPTH = 3;

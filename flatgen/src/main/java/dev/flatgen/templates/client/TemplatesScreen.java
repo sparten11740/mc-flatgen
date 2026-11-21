@@ -315,7 +315,7 @@ public final class TemplatesScreen extends FlatgenScreen {
             Rect lower = new Rect(raise.x() - PictureButton.SIZE, buttonTop, PictureButton.SIZE, PictureButton.SIZE);
             int sliderX = place.x() + Icon.SIZE + GAP;
             List<Widget> row = new ArrayList<>(List.of(
-                    new Label(Icon.itemOrTexture(number.icon()), Component.empty(), new Rect(place.x(), place.y(),
+                    new Label(Icon.of(number.icon()), Component.empty(), new Rect(place.x(), place.y(),
                             Icon.SIZE, place.height())),
                     new Slider(number.id(), new Rect(sliderX, place.y(), lower.x() - GAP - sliderX, place.height()),
                             number.min(), number.max(), () -> values.number(number),
@@ -344,7 +344,7 @@ public final class TemplatesScreen extends FlatgenScreen {
 
         @Override
         public Widget toggle(Parameter.Toggle toggle) {
-            return new Toggle(Icon.itemOrTexture(toggle.icon()), Component.translatable(toggle.name()), place,
+            return new Toggle(Icon.of(toggle.icon()), Component.translatable(toggle.name()), place,
                     () -> values.toggle(toggle), () -> values = values.with(toggle, !values.toggle(toggle)),
                     () -> true, List::of);
         }

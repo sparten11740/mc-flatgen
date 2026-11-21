@@ -33,6 +33,6 @@ public final class FactMarkers implements Supplier<List<ColumnWidget.Marker>> {
     /** A fact's line for this world, if it draws one, ending in its picture. */
     private static Optional<ColumnWidget.Marker> marker(Fact fact, Situation situation) {
         return fact.marker(situation).map(line -> new ColumnWidget.Marker(line.y(), line.color(),
-                Icon.itemOrTexture(line.icon())));
+                Icon.of(line.icon())));
     }
 }

@@ -1,5 +1,6 @@
 package dev.flatgen.facts.rules;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,7 @@ public interface Fact {
      * @param no    whether the picture is struck through, saying "no"
      * @param words what it says, a line each
      */
-    record Shown(String icon, boolean no, List<Words> words) {
+    record Shown(Picture icon, boolean no, List<Words> words) {
         public Shown {
             words = List.copyOf(words);
         }
@@ -53,6 +54,6 @@ public interface Fact {
      * @param color its colour, ARGB
      * @param icon  the picture of what it marks, drawn at its end: an item's id or a texture's location
      */
-    record Marker(int y, int color, String icon) {
+    record Marker(int y, int color, Picture icon) {
     }
 }

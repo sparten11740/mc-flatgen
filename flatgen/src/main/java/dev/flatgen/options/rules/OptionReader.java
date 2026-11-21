@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import dev.flatgen.json.rules.JsonFields;
+import dev.flatgen.pictures.rules.Picture;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +47,7 @@ public final class OptionReader {
         if (format > FORMAT) {
             problems.add("it is format " + format + ", made for a later Flatgen than this one, which reads " + FORMAT);
         }
-        Optional<WorldOption.Icon> icon = icon(root.get("icon"));
+        Optional<Picture> icon = icon(root.get("icon"));
         if (icon.isEmpty()) {
             problems.add("it needs an icon: an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
         }
@@ -55,7 +56,7 @@ public final class OptionReader {
         String name = JsonFields.text(root, "name", key, problems);
         String description = JsonFields.text(root, "description", key + ".description", problems);
         String group = JsonFields.text(root, "group", id.substring(0, Math.max(0, id.indexOf(':'))), problems);
-        Optional<WorldOption.Icon> groupIcon = icon(root.get("group_icon"));
+        Optional<Picture> groupIcon = icon(root.get("group_icon"));
         if (root.has("group_icon") && groupIcon.isEmpty()) {
             problems.add("its group_icon must be an item id, or {\"texture\": \"<namespace>:<path>.png\"}");
         }
@@ -69,13 +70,13 @@ public final class OptionReader {
                 inverted, requires, effects)), problems);
     }
 
-    private static Optional<WorldOption.Icon> icon(JsonElement icon) {
+    private static Optional<Picture> icon(JsonElement icon) {
         if (icon != null && JsonFields.isText(icon)) {
-            return Optional.of(new WorldOption.Icon(icon.getAsString(), false));
+            return Optional.of(Picture.item(icon.getAsString()));
         }
         boolean isTexture = icon != null && icon.isJsonObject() && icon.getAsJsonObject().has("texture")
                 && JsonFields.isText(icon.getAsJsonObject().get("texture"));
-        return isTexture ? Optional.of(new WorldOption.Icon(icon.getAsJsonObject().get("texture").getAsString(), true))
+        return isTexture ? Optional.of(Picture.texture(icon.getAsJsonObject().get("texture").getAsString()))
                 : Optional.empty();
     }
 

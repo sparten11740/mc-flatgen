@@ -3,6 +3,7 @@ package dev.flatgen.options.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import dev.flatgen.pictures.rules.Picture;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,7 +32,7 @@ class FlatgenOptionFilesTest {
     void timeAndWeatherShowFlatgensOwnPictures() throws IOException {
         WorldOption clear = read("always_clear");
         WorldOption day = read("always_day");
-        List<WorldOption.Icon> pictures = List.of(clear.icon(), day.icon(), clear.groupIcon().orElseThrow());
+        List<Picture> pictures = List.of(clear.icon(), day.icon(), clear.groupIcon().orElseThrow());
         pictures.forEach(picture -> assertTrue(picture.texture() && Files.exists(texture(picture.id())),
                 picture.id() + " is not a texture Flatgen ships"));
     }
@@ -58,8 +59,8 @@ class FlatgenOptionFilesTest {
     void noMobsShowsMobsSpawningTheOtherWayRound() throws IOException {
         WorldOption option = read("no_mobs");
         assertTrue(option.inverted() && !option.defaultOn());
-        assertEquals(new WorldOption.Icon("minecraft:zombie_spawn_egg", false), option.icon());
-        assertEquals(new WorldOption.Icon("minecraft:zombie_head", false), option.groupIcon().orElseThrow());
+        assertEquals(Picture.item("minecraft:zombie_spawn_egg"), option.icon());
+        assertEquals(Picture.item("minecraft:zombie_head"), option.groupIcon().orElseThrow());
     }
 
     private static WorldOption read(String name) throws IOException {

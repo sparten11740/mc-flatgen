@@ -3,15 +3,16 @@ package dev.flatgen.facts.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import dev.flatgen.biomes.rules.BiomeInfo;
+import dev.flatgen.pictures.rules.Picture;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 /** What each world fact shows, and the lines it draws across the column. */
 class FactsTest {
-    private static final String RAIN = "flatgen:textures/gui/sprites/icon/rain.png";
-    private static final String SNOW = "flatgen:textures/gui/sprites/icon/snow.png";
-    private static final String SLIME = "flatgen:textures/gui/sprites/icon/slime.png";
+    private static final Picture RAIN = Picture.texture("flatgen:textures/gui/sprites/icon/rain.png");
+    private static final Picture SNOW = Picture.texture("flatgen:textures/gui/sprites/icon/snow.png");
+    private static final Picture SLIME = Picture.texture("flatgen:textures/gui/sprites/icon/slime.png");
     /** Where the climates of these tests cool from: 1.21.1's Y 80, which their heights are reckoned for. */
     private static final int COOLING_START_Y = 80;
     private static final BiomeInfo.Colours COLOURS = new BiomeInfo.Colours(0, 0, 0, 0);
@@ -24,11 +25,12 @@ class FactsTest {
     void showsTheClassicFlatWorldsSurfaceRainSlimesAndMonsters() {
         Situation classic = Situation.of(PLAINS, -60, true);
         assertEquals(List.of(
-                new Fact.Shown("minecraft:ladder", false, List.of(new Fact.Words("flatgen.facts.surface",
+                new Fact.Shown(Picture.item("minecraft:ladder"), false, List.of(new Fact.Words("flatgen.facts.surface",
                         List.of(-60)))),
                 new Fact.Shown(RAIN, false, List.of(Fact.Words.of("flatgen.facts.weather.rain"))),
                 new Fact.Shown(SLIME, false, List.of(new Fact.Words("flatgen.facts.slime_chunks", List.of(40)))),
-                new Fact.Shown("minecraft:creeper_head", false, List.of(Fact.Words.of("flatgen.facts.monsters")))),
+                new Fact.Shown(Picture.item("minecraft:creeper_head"), false,
+                        List.of(Fact.Words.of("flatgen.facts.monsters")))),
                 Facts.ALL.stream().map(fact -> fact.show(classic)).toList());
     }
 
@@ -37,7 +39,7 @@ class FactsTest {
         Situation mushrooms = Situation.of(MUSHROOM_FIELDS, 60, true);
         assertEquals(List.of(true, true), Facts.ALL.subList(2, 4).stream()
                 .map(fact -> fact.show(mushrooms).no()).toList());
-        assertEquals("minecraft:sunflower", Facts.ALL.get(1).show(Situation.of(DESERT, 60, true)).icon());
+        assertEquals(Picture.item("minecraft:sunflower"), Facts.ALL.get(1).show(Situation.of(DESERT, 60, true)).icon());
     }
 
     @Test
