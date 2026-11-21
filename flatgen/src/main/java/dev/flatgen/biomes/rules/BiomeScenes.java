@@ -1,5 +1,6 @@
 package dev.flatgen.biomes.rules;
 
+import dev.flatgen.dimensions.rules.DimensionColours;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +25,6 @@ public final class BiomeScenes {
     private static final int SNOW = 0xFFF2F6F8;
     private static final int STONE = 0xFF7F7F7F;
     private static final int STONE_LIGHT = 0xFF9A9A9A;
-    private static final int NETHERRACK = 0xFF6E2A2A;
-    private static final int END_STONE = 0xFFDBD8A0;
     private static final int MYCELIUM = 0xFF8E7496;
     private static final int TRUNK = 0xFF6B4A2C;
     private static final int BIRCH_TRUNK = 0xFFE4E0D2;
@@ -41,8 +40,6 @@ public final class BiomeScenes {
             0xFFB86A3A);
     private static final int VOID_SKY = 0xFF14161C;
     private static final int CAVE_DARK = 0xFF2B2B30;
-    private static final int NETHER_SKY = 0xFF3A1414;
-    private static final int END_SKY = 0xFF140E1F;
     /** How much of a sea's scene is water, a beach's and a swamp's, in hundredths of its width. */
     private static final int ALL_WATER = 100;
     private static final int BEACH_WATER = 40;
@@ -97,8 +94,8 @@ public final class BiomeScenes {
     private static final Ground SNOW_ONLY = new Ground(SNOW, NONE, List.of());
     private static final Ground STONE_GRASS = new Ground(STONE, OWN, List.of());
     private static final Ground STONE_ONLY = new Ground(STONE, NONE, List.of());
-    private static final Ground NETHER = new Ground(NETHERRACK, NONE, List.of());
-    private static final Ground END = new Ground(END_STONE, NONE, List.of());
+    private static final Ground NETHER = new Ground(DimensionColours.NETHERRACK, NONE, List.of());
+    private static final Ground END = new Ground(DimensionColours.END_STONE, NONE, List.of());
     private static final Ground NOTHING = new Ground(NONE, NONE, List.of());
 
     /** A look a biome may have: the test it passes, and the look. */
@@ -126,8 +123,8 @@ public final class BiomeScenes {
     private static final List<Rule<Integer>> SKIES = List.of(
             new Rule<>(named("void"), VOID_SKY),
             new Rule<>(BiomeKinds.CAVE, CAVE_DARK),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), NETHER_SKY),
-            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), END_SKY));
+            new Rule<>(BiomeKinds.tagged("minecraft:is_nether"), DimensionColours.NETHER_SKY),
+            new Rule<>(BiomeKinds.tagged("minecraft:is_end"), DimensionColours.END_SKY));
     /** The ground, the first that holds; grass topped dirt for the rest. */
     private static final List<Rule<Ground>> GROUNDS = List.of(
             new Rule<>(named("void"), NOTHING),

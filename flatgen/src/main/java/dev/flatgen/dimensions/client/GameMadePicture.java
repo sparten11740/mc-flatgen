@@ -3,6 +3,7 @@ package dev.flatgen.dimensions.client;
 import dev.flatgen.client.gui.Canvas;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.dimensions.rules.DimensionColours;
 import dev.flatgen.preset.rules.Dimension;
 
 /**
@@ -30,12 +31,10 @@ public record GameMadePicture(Dimension dimension, Rect bounds) implements Widge
     private static final int ISLAND_DEPTH = 18;
     private static final int ISLAND_LEFT = 15;
     private static final int ISLAND_WIDTH = 70;
-    /** The Nether's ceiling and ground, lava and bedrock, and the End's end stone, ARGB. */
-    private static final int NETHERRACK = 0xFF6E2A2A;
+    /** The Nether's ceiling, its lava and its bedrock, ARGB. */
     private static final int CEILING_ROCK = 0xFF4A1A1A;
     private static final int LAVA = 0xFFE8742A;
     private static final int BEDROCK = 0xFF2B2B2B;
-    private static final int END_STONE = 0xFFDBD8A0;
 
     @Override
     public void draw(Canvas canvas, int mouseX, int mouseY) {
@@ -48,9 +47,9 @@ public record GameMadePicture(Dimension dimension, Rect bounds) implements Widge
         canvas.fill(area, DimensionPictures.air(Dimension.NETHER));
         drawSteps(canvas, area, CEILING, true, CEILING_ROCK);
         int lavaTop = area.y() + area.height() * LAVA_TOP / 100;
-        canvas.fill(new Rect(area.x(), lavaTop, area.width(), area.bottom() - lavaTop), NETHERRACK);
+        canvas.fill(new Rect(area.x(), lavaTop, area.width(), area.bottom() - lavaTop), DimensionColours.NETHERRACK);
         drawSteps(canvas, new Rect(area.x(), area.y(), area.width(), lavaTop - area.y()), GROUND, false,
-                NETHERRACK);
+                DimensionColours.NETHERRACK);
         canvas.fill(new Rect(area.x(), lavaTop, area.width(), area.height() * LAVA_DEPTH / 100), LAVA);
         canvas.fill(new Rect(area.x(), area.bottom() - STEP, area.width(), STEP), BEDROCK);
     }
@@ -61,9 +60,9 @@ public record GameMadePicture(Dimension dimension, Rect bounds) implements Widge
         Rect island = new Rect(area.x() + area.width() * ISLAND_LEFT / 100, area.y() + area.height() * ISLAND_TOP / 100,
                 area.width() * ISLAND_WIDTH / 100, area.height() * ISLAND_DEPTH / 100);
         canvas.fill(new Rect(island.x(), island.y() + island.height() / 2, island.width(), island.height() / 2),
-                END_STONE);
+                DimensionColours.END_STONE);
         drawSteps(canvas, new Rect(island.x(), island.y(), island.width(), island.height() / 2), GROUND, false,
-                END_STONE);
+                DimensionColours.END_STONE);
     }
 
     /**

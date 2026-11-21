@@ -1,8 +1,8 @@
 package dev.flatgen.library.client;
 
 import dev.flatgen.client.gui.Canvas;
-import dev.flatgen.client.gui.CardGrid;
 import dev.flatgen.client.gui.Caption;
+import dev.flatgen.client.gui.CardGrid;
 import dev.flatgen.client.gui.FlatgenScreen;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Look;
@@ -17,6 +17,7 @@ import dev.flatgen.client.gui.Toggle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.PageFrame;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.dimensions.rules.DimensionColours;
 import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.exports.PresetExports;
 import dev.flatgen.layers.client.ColumnPicture;
@@ -81,7 +82,6 @@ public final class LibraryScreen extends FlatgenScreen {
     /** How much taller a source's chip is than its words, in GUI pixels: its border above and below. */
     private static final int CHIP_BORDER = 2;
     /** The colour of the sky on a card, ARGB: the overworld's. */
-    private static final int SKY = 0xFF9CC3F7;
     /** The picked preset's layers in the footer, in GUI pixels. */
     private static final int PICKED_WIDTH = 7;
     private static final int PICKED_HEIGHT = 16;
@@ -560,7 +560,7 @@ public final class LibraryScreen extends FlatgenScreen {
             Optional<Preset> preset = entry.flatMap(PresetLibrary.Entry::preset);
             Rect sky = new Rect(place.x() + (place.width() - SKY_WIDTH) / 2, place.y() + CARD_TOP, SKY_WIDTH,
                     SKY_HEIGHT);
-            canvas.fill(sky, SKY);
+            canvas.fill(sky, DimensionColours.OVERWORLD_SKY);
             Rect tower = new Rect(sky.x() + (SKY_WIDTH - TOWER_WIDTH) / 2, sky.bottom() - TOWER_HEIGHT, TOWER_WIDTH,
                     TOWER_HEIGHT);
             preset.ifPresent(found -> ColumnPicture.draw(canvas, found.layers(),
