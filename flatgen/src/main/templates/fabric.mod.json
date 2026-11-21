@@ -5,6 +5,7 @@
   "name": "${mod_name}",
   "description": "${mod_description}",
   "license": "${mod_license}",
+  "icon": "assets/${mod_id}/icon.png",
   "environment": "*",
   "entrypoints": {
     "client": ["dev.flatgen.platform.fabric.FabricClientEntrypoint"]
