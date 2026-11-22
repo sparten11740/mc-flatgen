@@ -11,8 +11,9 @@ pictures, four ways").
 
 ## Acceptance criteria
 
-- [x] No slimes leaves the facts row: a button row of its own under the facts, its picture the slime face with an up
-  arrow and the words "No slimes", shown while slimes spawn in slime chunks at the surface.
+- [x] No slimes leaves the facts row: a button row of its own under the facts, its picture a slime with the red "no"
+  sign Always clear has (first an up arrow, changed by the owner on trying it) and the words "No slimes", shown while
+  slimes spawn in slime chunks at the surface.
 - [ ] A chosen tab, shelf or way is drawn in a blue fill with light blue words (the canvas's C), hover staying a grey
   fill: the world's tabs, the structures' ways and both pickers' shelves.
 - [ ] Make flat and Let the game make it get two pictures unlike each other, in each dimension's own blocks: a neat

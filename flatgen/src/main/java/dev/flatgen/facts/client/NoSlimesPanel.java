@@ -14,8 +14,8 @@ import net.minecraft.network.chat.Component;
  * does something where the facts only tell, and shown only while slimes spawn in slime chunks at the surface.
  */
 public final class NoSlimesPanel implements EditorPanel {
-    /** The button's picture: the slimes fact's slime with an up arrow, for raising the ground above them. */
-    private static final Icon NO_SLIMES = Icon.marked(Icon.own("slime"), "arrow_up");
+    /** The button's picture: a slime with the red "no" sign, as Always clear has it over a rain cloud. */
+    private static final Icon NO_SLIMES = Icon.own("no_slimes");
 
     /** Shown while the shown stack's surface is low enough for slimes to spawn in slime chunks. */
     @Override
