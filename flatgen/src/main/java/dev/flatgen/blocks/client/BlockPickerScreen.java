@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -93,33 +92,29 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
         return List.of(grid(area, CARD_WIDTH, CARD_HEIGHT, new Cards(), this::pick));
     }
 
-    /**
-     * A block's card: its picture with its marks, and its name below, ringed while it is the block now; its tooltip
-     * says so, and when it falls.
-     */
-    private final class Cards implements CardGrid.Cards {
+    /** The block the picker is for now, which the grid rings. */
+    @Override
+    protected boolean inUse(String id) {
+        return current.filter(id::equals).isPresent();
+    }
+
+    /** A block's card: its picture with its marks, and its name below; its tooltip says when it falls. */
+    private static final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry entry, Rect place) {
-            boolean isNow = current.filter(entry.id()::equals).isPresent();
             Rect picture = new Rect(place.x() + (place.width() - PICTURE) / 2, place.y() + SPACING, PICTURE, PICTURE);
             canvas.blockIcon(entry.id(), picture);
             BlockMarks.draw(canvas, entry.id(), picture);
             Rect name = new Rect(place.x() + NAME_INSET, picture.bottom() + SPACING, place.width() - 2 * NAME_INSET,
                     TextStyle.BODY.lineHeight());
             canvas.centeredText(canvas.fitted(Names.block(entry.id()), name.width(), TextStyle.BODY), name,
-                    isNow ? Look.TEXT : Look.MUTED);
-            if (isNow) {
-                canvas.sprite(Look.CHOSEN_RING, place);
-            }
+                    Look.MUTED);
         }
 
         @Override
         public List<Component> describe(Search.Entry entry) {
-            Stream<Component> now = current.filter(entry.id()::equals)
-                    .<Component>map(id -> Component.translatable("flatgen.picks.now")).stream();
-            Stream<Component> falls = BlockCatalog.traits(entry.id()).falls()
-                    ? Stream.of(Component.translatable("flatgen.hint.falls")) : Stream.empty();
-            return Stream.concat(now, falls).toList();
+            return BlockCatalog.traits(entry.id()).falls() ? List.of(Component.translatable("flatgen.hint.falls"))
+                    : List.of();
         }
     }
 }

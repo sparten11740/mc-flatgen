@@ -147,8 +147,13 @@ public abstract class PickerScreen extends FlatgenScreen {
     protected final CardGrid grid(Rect area, int cardWidth, int cardHeight, CardGrid.Cards cards,
             Consumer<String> onClick) {
         grid = new CardGrid(area, cardWidth, cardHeight, this::sections, id -> picks.starred().contains(id),
-                new IdAndMod(cards), onClick, this::star);
+                new IdAndMod(cards), onClick, this::star).inUse(this::inUse);
         return grid;
+    }
+
+    /** Whether an entry is the one in use now, which the grid rings, as a layer's block; none by default. */
+    protected boolean inUse(String id) {
+        return false;
     }
 
     /** Nothing: what the picker is is on the sheet. */

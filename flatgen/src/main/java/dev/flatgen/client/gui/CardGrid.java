@@ -41,6 +41,8 @@ public final class CardGrid implements Control {
     private final Cards cards;
     private final Consumer<String> onPick;
     private final Consumer<String> onStar;
+    /** Whether an entry is the one in use now, as a layer's block, by id; none by default. */
+    private Predicate<String> inUse = id -> false;
     private int scroll;
     /**
      * The entry whose card the keyboard is on while the grid has the focus, by its id, so it stays on it as the
@@ -114,6 +116,12 @@ public final class CardGrid implements Control {
         this.cards = cards;
         this.onPick = onPick;
         this.onStar = onStar;
+    }
+
+    /** The grid ringing the entry in use now, its tooltip and narration saying so. */
+    public CardGrid inUse(Predicate<String> isInUse) {
+        this.inUse = isInUse;
+        return this;
     }
 
     /** A section's heading and its detail where the grid draws them now. */
@@ -272,6 +280,9 @@ public final class CardGrid implements Control {
     /** A card's name, whether it is starred, and what its tooltip says of it. */
     private Narration narration(Search.Entry entry) {
         List<Component> more = new ArrayList<>(cards.describe(entry));
+        if (inUse.test(entry.id())) {
+            more.add(0, Component.translatable("flatgen.picks.now"));
+        }
         if (starred.test(entry.id())) {
             more.add(0, Component.translatable("flatgen.picks.starred"));
         }
@@ -339,6 +350,9 @@ public final class CardGrid implements Control {
         if (starred.test(card.entry().id())) {
             STAR.draw(canvas, place.right() - Icon.SIZE, place.y());
         }
+        if (inUse.test(card.entry().id())) {
+            canvas.sprite(Look.CHOSEN_RING, place);
+        }
     }
 
     private Optional<Card> cardAt(double x, double y) {
@@ -350,6 +364,9 @@ public final class CardGrid implements Control {
 
     private List<Component> describe(Search.Entry entry) {
         List<Component> lines = new ArrayList<>(List.of(Component.literal(entry.name())));
+        if (inUse.test(entry.id())) {
+            lines.add(Component.translatable("flatgen.picks.now"));
+        }
         lines.addAll(cards.describe(entry));
         lines.add(Component.translatable(starred.test(entry.id()) ? "flatgen.picks.unstar" : "flatgen.picks.star"));
         return lines;

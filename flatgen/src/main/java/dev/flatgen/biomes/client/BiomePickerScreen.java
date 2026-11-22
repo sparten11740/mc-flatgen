@@ -26,7 +26,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
@@ -176,28 +175,28 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         return Facts.ABOUT_THE_BIOME.stream().map(fact -> fact.show(world)).toList();
     }
 
-    /** A biome's card: its landscape over its name, ringed while it is the biome now; its facts in its tooltip. */
+    /** The biome now, which the grid rings. */
+    @Override
+    protected boolean inUse(String id) {
+        return id.equals(current);
+    }
+
+    /** A biome's card: its landscape over its name; its facts in its tooltip. */
     private final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry entry, Rect place) {
-            boolean isNow = entry.id().equals(current);
             Rect picture = new Rect(place.x() + INSET, place.y() + INSET, place.width() - 2 * INSET, CARD_PICTURE);
             BiomeLandscape.draw(canvas, biomes.get(entry.id()), picture);
             Component name = canvas.fitted(Component.literal(entry.name()), picture.width(), TextStyle.BODY);
             canvas.text(name, picture.x(), TextStyle.BODY.top(picture.bottom(), place.bottom() - picture.bottom()),
-                    isNow ? Look.TEXT : Look.MUTED);
-            if (isNow) {
-                canvas.sprite(Look.CHOSEN_RING, place);
-            }
+                    Look.MUTED);
         }
 
-        /** Whether it is the biome now, then its facts in words. */
+        /** Its facts in words. */
         @Override
         public List<Component> describe(Search.Entry entry) {
-            Stream<Component> nowLine = entry.id().equals(current)
-                    ? Stream.of(Component.translatable("flatgen.picks.now")) : Stream.empty();
-            return Stream.concat(nowLine, facts(entry.id()).stream()
-                    .flatMap(shown -> FactPictures.words(shown).stream())).toList();
+            return facts(entry.id()).stream()
+                    .flatMap(shown -> FactPictures.words(shown).stream()).toList();
         }
     }
 
