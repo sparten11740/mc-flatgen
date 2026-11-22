@@ -49,16 +49,17 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
     /** The side's groups of shelves, in order, gaps parting them; asked once, when the sheet is first laid out. */
     protected abstract List<List<Shelf>> shelves();
 
-    /** The shelf shown first, one of these groups'. */
-    protected abstract Shelf shownFirst(List<List<Shelf>> side);
+    /**
+     * The shelf shown first: the first that has entries, as the player's own picks, starred or recent, when the side
+     * starts with them and there are any; else the last group's first.
+     */
+    private Shelf shownFirst(List<List<Shelf>> side) {
+        return side.stream().flatMap(List::stream).filter(shelf -> !shelf.of().apply(entries()).isEmpty())
+                .findFirst().orElse(side.get(side.size() - 1).get(0));
+    }
 
     /** What stands beside the side: the grid, made by {@code grid}, and anything more. */
     protected abstract List<Widget> beside(Rect area);
-
-    /** What the grid shows while nothing is searched for: the shelf chosen; a picker may put rows above it. */
-    protected List<CardGrid.Section> browsing(List<Search.Entry> shown, Shelf chosen) {
-        return List.of(new CardGrid.Section(chosen.name(), chosen.of().apply(shown)));
-    }
 
     /** The shelf of every entry, as the mod chosen narrows them, under its name and picture. */
     protected static Shelf everyShelf(Component name, Icon picture) {
@@ -100,7 +101,7 @@ public abstract class ShelvedPickerScreen extends PickerScreen {
     @Override
     protected final List<CardGrid.Section> sections(List<Search.Entry> shown, String searched) {
         groups();
-        return searched.isBlank() ? browsing(shown, shelf)
+        return searched.isBlank() ? List.of(new CardGrid.Section(shelf.name(), shelf.of().apply(shown)))
                 : List.of(new CardGrid.Section(Component.translatable("flatgen.picks.found"),
                         Search.find(shown, searched)));
     }

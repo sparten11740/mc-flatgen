@@ -78,22 +78,11 @@ public final class CardGrid implements Control {
      * @param heading what it is called
      * @param detail  more about it, quieter, beside the heading; empty for nothing
      * @param entries its entries, in order
-     * @param oneRow  whether it keeps to one row, showing as many of its first entries as fit
      */
-    public record Section(Component heading, Component detail, List<Search.Entry> entries, boolean oneRow) {
-        /** A part of the grid under a heading, with more about it beside. */
-        public Section(Component heading, Component detail, List<Search.Entry> entries) {
-            this(heading, detail, entries, false);
-        }
-
+    public record Section(Component heading, Component detail, List<Search.Entry> entries) {
         /** A part of the grid under a heading alone. */
         public Section(Component heading, List<Search.Entry> entries) {
-            this(heading, Component.empty(), entries, false);
-        }
-
-        /** A row of the grid under a heading, as many of these entries as fit across, the first first. */
-        public static Section row(Component heading, List<Search.Entry> entries) {
-            return new Section(heading, Component.empty(), entries, true);
+            this(heading, Component.empty(), entries);
         }
     }
 
@@ -180,8 +169,7 @@ public final class CardGrid implements Control {
         for (Section section : current) {
             headings.add(new Heading(section.heading(), section.detail(), y + SECTION_GAP));
             y += SECTION_GAP + HEADING_HEIGHT;
-            List<Search.Entry> entries = section.oneRow()
-                    ? section.entries().subList(0, Math.min(columns, section.entries().size())) : section.entries();
+            List<Search.Entry> entries = section.entries();
             for (int index = 0; index < entries.size(); index++) {
                 Rect place = new Rect(bounds.x() + index % columns * columnWidth, y + index / columns * cardHeight,
                         columnWidth, cardHeight);

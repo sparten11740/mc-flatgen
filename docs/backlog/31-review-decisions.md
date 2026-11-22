@@ -24,7 +24,7 @@ pictures, four ways").
   island, or bamboo for the bamboo jungle. The picker's big pictures stay whole landscapes.
 - [x] One click picks in both pickers. In the biome picker the details follow the pointer and the keyboard's focus,
   showing the biome picked otherwise; its Pick button goes.
-- [ ] The block picker has pictured Starred and Recent shelves at the top of its list, as the biome picker has, and
+- [x] The block picker has pictured Starred and Recent shelves at the top of its list, as the biome picker has, and
   rings the block the layer has now.
 - [x] On the Nether and End tabs, Presets and Templates stay in the header, greyed out, with a tooltip saying they are
   for the Overworld, so the header no longer jumps.

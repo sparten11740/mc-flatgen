@@ -16,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -23,10 +24,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
- * The block picker (F05): every block, the game's own first, with a row of the blocks picked lately and a row of the
- * starred ones above; down its side, all the blocks, chosen at first, and the creative inventory's tabs of blocks, with
- * their names and pictures as the game shows them, to narrow them to one. Each block is a card with its picture, its
- * marks ({@link BlockMarks}) and its name; a click on a card picks its block.
+ * The block picker (F05): every block, the game's own first; down its side the starred and the recent blocks, as the
+ * biome picker has them, all the blocks, and the creative inventory's tabs of blocks with their names and pictures as
+ * the game shows them, to narrow them to one. Each block is a card with its picture, its marks ({@link BlockMarks}) and
+ * its name, the block the layer has now ringed; a click on a card picks its block.
  */
 final class BlockPickerScreen extends ShelvedPickerScreen {
     /** A block's card, and the picture of the block on it, in GUI pixels. */
@@ -42,15 +43,20 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
             "minecraft:oak_planks", "minecraft:glass");
 
     private final List<BlockCatalog.Tab> tabs;
+    /** The block the picker is for now, ringed among the cards; none for a block not there yet. */
+    private final Optional<String> current;
 
     /**
      * A picker of blocks going back to {@code parent}, handing a picked block's id to {@code onPick}.
      *
-     * @param tabs the creative inventory's tabs of blocks, which the side lists as kinds
+     * @param tabs    the creative inventory's tabs of blocks, which the side lists as kinds
+     * @param current the block it is for now, as a layer's, ringed among the cards; none for a new layer
      */
-    BlockPickerScreen(Screen parent, Picker picker, List<BlockCatalog.Tab> tabs, Consumer<String> onPick) {
+    BlockPickerScreen(Screen parent, Picker picker, List<BlockCatalog.Tab> tabs, Optional<String> current,
+            Consumer<String> onPick) {
         super(parent, picker, onPick);
         this.tabs = List.copyOf(tabs);
+        this.current = current;
     }
 
     /** The picker's title. */
@@ -59,26 +65,11 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
         return List.of(new Caption(this::getTitle, area, TextStyle.TITLE, Look.TEXT));
     }
 
-    /** All the blocks, then each tab of the creative inventory with blocks a layer can be of. */
+    /** The starred and the recent blocks, all the blocks, then each inventory tab with blocks a layer can be of. */
     @Override
     protected List<List<Shelf>> shelves() {
-        return List.of(List.of(every()), tabs.stream().map(BlockPickerScreen::shelf)
-                .filter(shelf -> !shelf.of().apply(entries()).isEmpty()).toList());
-    }
-
-    /** All the blocks. */
-    @Override
-    protected Shelf shownFirst(List<List<Shelf>> side) {
-        return side.get(0).get(0);
-    }
-
-    /** A row of the blocks picked lately and a row of the starred ones, each when there are any, over the shelf's. */
-    @Override
-    protected List<CardGrid.Section> browsing(List<Search.Entry> shown, Shelf chosen) {
-        return Stream.of(CardGrid.Section.row(Component.translatable("flatgen.picks.recent"), recent()),
-                CardGrid.Section.row(Component.translatable("flatgen.picks.starred"), starred()),
-                new CardGrid.Section(chosen.name(), chosen.of().apply(shown)))
-                .filter(section -> !section.entries().isEmpty()).toList();
+        return List.of(List.of(starredShelf(), recentShelf()), List.of(every()), tabs.stream()
+                .map(BlockPickerScreen::shelf).filter(shelf -> !shelf.of().apply(entries()).isEmpty()).toList());
     }
 
     /** A tab's shelf: its blocks among those shown, in the creative inventory's order. */
@@ -102,23 +93,33 @@ final class BlockPickerScreen extends ShelvedPickerScreen {
         return List.of(grid(area, CARD_WIDTH, CARD_HEIGHT, new Cards(), this::pick));
     }
 
-    /** A block's card: its picture with its marks, and its name below; its tooltip says when it falls. */
-    private static final class Cards implements CardGrid.Cards {
+    /**
+     * A block's card: its picture with its marks, and its name below, ringed while it is the block now; its tooltip
+     * says so, and when it falls.
+     */
+    private final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry entry, Rect place) {
+            boolean isNow = current.filter(entry.id()::equals).isPresent();
             Rect picture = new Rect(place.x() + (place.width() - PICTURE) / 2, place.y() + SPACING, PICTURE, PICTURE);
             canvas.blockIcon(entry.id(), picture);
             BlockMarks.draw(canvas, entry.id(), picture);
             Rect name = new Rect(place.x() + NAME_INSET, picture.bottom() + SPACING, place.width() - 2 * NAME_INSET,
                     TextStyle.BODY.lineHeight());
             canvas.centeredText(canvas.fitted(Names.block(entry.id()), name.width(), TextStyle.BODY), name,
-                    Look.MUTED);
+                    isNow ? Look.TEXT : Look.MUTED);
+            if (isNow) {
+                canvas.sprite(Look.CHOSEN_RING, place);
+            }
         }
 
         @Override
         public List<Component> describe(Search.Entry entry) {
-            return BlockCatalog.traits(entry.id()).falls() ? List.of(Component.translatable("flatgen.hint.falls"))
-                    : List.of();
+            Stream<Component> now = current.filter(entry.id()::equals)
+                    .<Component>map(id -> Component.translatable("flatgen.picks.now")).stream();
+            Stream<Component> falls = BlockCatalog.traits(entry.id()).falls()
+                    ? Stream.of(Component.translatable("flatgen.hint.falls")) : Stream.empty();
+            return Stream.concat(now, falls).toList();
         }
     }
 }

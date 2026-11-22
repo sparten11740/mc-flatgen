@@ -3,6 +3,7 @@ package dev.flatgen.blocks.client;
 import dev.flatgen.blocks.rules.LayerHints;
 import dev.flatgen.blocks.rules.SetBlock;
 import dev.flatgen.editor.client.panel.EditorContext;
+import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.preset.rules.Layer;
 import java.util.List;
@@ -19,14 +20,24 @@ public final class BlockChoice {
     private BlockChoice() {
     }
 
-    /** Opens the block picker for the selected layer, whose pick sets its block as one step to undo. */
+    /** Opens the block picker for the selected layer, its block ringed, whose pick sets it as one step to undo. */
     public static void pick(EditorContext editor) {
-        choose(editor, block -> editor.apply(new SetBlock(block)));
+        EditorState state = editor.shown();
+        open(editor, Optional.of(state.layers().get(state.selected()).block()),
+                block -> editor.apply(new SetBlock(block)));
     }
 
-    /** Opens the block picker over the editor, handing the block picked to {@code onPick}; nothing when cancelled. */
+    /**
+     * Opens the block picker over the editor for a layer not there yet, handing the block picked to {@code onPick};
+     * nothing when cancelled.
+     */
     public static void choose(EditorContext editor, Consumer<String> onPick) {
-        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(), editor.registries(), onPick));
+        open(editor, Optional.empty(), onPick);
+    }
+
+    private static void open(EditorContext editor, Optional<String> current, Consumer<String> onPick) {
+        editor.open(BlockPicker.screen(editor.screen(), editor.enabledFeatures(), editor.registries(), current,
+                onPick));
     }
 
     /** A layer's hints (falls, not a whole block, keeps data), each a few words, on one line; empty for none. */

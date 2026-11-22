@@ -5,6 +5,7 @@ import dev.flatgen.client.gui.PickerScreen;
 import dev.flatgen.mc.BlockCatalog;
 import dev.flatgen.platform.ClientPlatform;
 import dev.flatgen.search.PicksFile;
+import java.util.Optional;
 import java.util.function.Consumer;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.HolderLookup;
@@ -26,12 +27,13 @@ public final class BlockPicker {
      * The picker over the blocks these features allow, going back to {@code parent}, handing on the block picked.
      *
      * @param registries the world's registries, which the creative inventory's tabs are filled from
+     * @param current    the block it is for now, ringed; none for a block not there yet, as a new layer's
      */
     public static PickerScreen screen(Screen parent, FeatureFlagSet enabled, HolderLookup.Provider registries,
-            Consumer<String> onPick) {
+            Optional<String> current, Consumer<String> onPick) {
         PickerScreen.Picker picker = new PickerScreen.Picker(Component.translatable("flatgen.blocks.title"),
                 Component.translatable("flatgen.blocks.search"), BlockCatalog.blocks(enabled), Icon::block,
                 ClientPlatform.get()::modName, PICKS::read, PICKS::save);
-        return new BlockPickerScreen(parent, picker, BlockCatalog.tabs(enabled, registries), onPick);
+        return new BlockPickerScreen(parent, picker, BlockCatalog.tabs(enabled, registries), current, onPick);
     }
 }

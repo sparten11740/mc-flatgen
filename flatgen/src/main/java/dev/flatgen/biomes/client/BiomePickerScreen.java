@@ -88,13 +88,6 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         return List.of(List.of(starredShelf(), recentShelf()), kinds(), List.of(every()));
     }
 
-    /** The player's own picks, starred or recent, when there are any, else the first kind, else every biome. */
-    @Override
-    protected Shelf shownFirst(List<List<Shelf>> side) {
-        return side.stream().flatMap(List::stream).filter(shelf -> !shelf.of().apply(entries()).isEmpty())
-                .findFirst().orElse(side.get(side.size() - 1).get(0));
-    }
-
     /** A shelf for each kind of biome that has any, its picture the biome the kind names, else its first. */
     private List<Shelf> kinds() {
         List<Shelf> made = new ArrayList<>();
