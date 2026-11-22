@@ -138,8 +138,8 @@ public final class LibraryScreen extends FlatgenScreen {
         int line = TextStyle.BODY.lineHeight();
         List<Widget> widgets = new ArrayList<>(header(width));
         grid = new CardGrid(new Rect(body.x(), body.y(), body.width(), body.height() - line - GAP), CARD_WIDTH,
-                CARD_HEIGHT, this::sections, id -> choices.isFavourite(id), new Cards(), this::pick,
-                file -> choose(choices.toggleFavourite(file)));
+                CARD_HEIGHT, this::sections, id -> choices.isStarred(id), new Cards(), this::pick,
+                file -> choose(choices.toggleStar(file)));
         widgets.add(grid);
         widgets.add(new Caption(() -> message, new Rect(body.x(), body.bottom() - line, body.width(), line),
                 TextStyle.BODY, Look.MUTED));

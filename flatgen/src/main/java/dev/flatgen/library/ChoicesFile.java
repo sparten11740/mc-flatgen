@@ -4,7 +4,7 @@ import dev.flatgen.config.ConfigFiles;
 import dev.flatgen.library.rules.Choices;
 
 /**
- * config/flatgen/library.json, the library's own file: the favourite presets, those used lately and the default.
+ * config/flatgen/library.json, the library's own file: the starred presets, those used lately and the default.
  * Written only when the player changes one, so a pack that ships the file later still has it read
  * (docs/pack-authors.md).
  */

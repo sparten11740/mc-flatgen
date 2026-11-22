@@ -145,7 +145,7 @@
   "flatgen.library.start_tip": "Abrir “Criar novo mundo” com Superplano escolhido e o modelo padrão pronto",
   "flatgen.library.title": "Modelos",
   "flatgen.library.unreadable": "Não deu para ler tudo; o registro do jogo diz o quê",
-  "flatgen.library.use_tip": "Usar este favorito",
+  "flatgen.library.use_tip": "Usar este modelo com estrela",
   "flatgen.narration.unavailable": "indisponível",
   "flatgen.options.missing": "Não instalado",
   "flatgen.options.not_installed": "%s não está instalado: o modelo o mantém como está",

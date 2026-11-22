@@ -32,7 +32,7 @@ public final class PresetLibrary {
      * What the presets of a source are like in the library, as each source says: a new source chooses its own, and
      * the library needs no change.
      *
-     * @param rank       where they come in the library's order after the favourites and recent ones, lowest first
+     * @param rank       where they come in the library's order after the starred and recent ones, lowest first
      * @param editable   whether the player may rename, save over and delete them, as their own
      * @param hiddenFrom the least of the built-ins settings that hides them; none when no setting does
      */
@@ -92,15 +92,15 @@ public final class PresetLibrary {
     }
 
     /**
-     * The entries in the order the library shows them: favourites first, then those used lately, the latest first,
+     * The entries in the order the library shows them: starred first, then those used lately, the latest first,
      * then the rest by their source's rank (the player's, the game's, then packs') and by name.
      *
-     * @param favourites the keys of the favourite presets (F12)
+     * @param starred    the keys of the starred presets (F12)
      * @param recent     the keys of the presets used lately, the latest first
      */
-    public static List<Entry> ordered(List<Entry> entries, Set<String> favourites, List<String> recent) {
+    public static List<Entry> ordered(List<Entry> entries, Set<String> starred, List<String> recent) {
         Comparator<Entry> byName = Comparator.comparing(entry -> entry.name().toLowerCase(Locale.ROOT));
-        List<Entry> ordered = new ArrayList<>(entries.stream().filter(entry -> favourites.contains(entry.key()))
+        List<Entry> ordered = new ArrayList<>(entries.stream().filter(entry -> starred.contains(entry.key()))
                 .sorted(byName).toList());
         recent.forEach(key -> entries.stream()
                 .filter(entry -> entry.key().equals(key) && !ordered.contains(entry)).forEach(ordered::add));

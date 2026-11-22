@@ -145,7 +145,7 @@
   "flatgen.library.start_tip": "Ouvrir \"Créer un nouveau monde\" avec \"Monde plat\" choisi et le préréglage par défaut prêt",
   "flatgen.library.title": "Préréglages",
   "flatgen.library.unreadable": "Lecture incomplète ; le journal du jeu donne les détails",
-  "flatgen.library.use_tip": "Utiliser ce favori",
+  "flatgen.library.use_tip": "Utiliser ce préréglage étoilé",
   "flatgen.narration.unavailable": "indisponible",
   "flatgen.options.missing": "Non installé",
   "flatgen.options.not_installed": "%s n'est pas installé : le préréglage le garde tel quel",

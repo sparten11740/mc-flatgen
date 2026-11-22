@@ -12,7 +12,7 @@ Create World → World Type: Superflat → Customize opens Flatgen instead of th
 - **Layers:** Drag & drop layers to reorder, increase a layer's size with ease, undo anything
 - **Every block and biome:** Searchable & visualized as icons (including blocks added by mods)
 - **Know your world before you make it:** A preview that renders your configuration
-- **Presets:** Save your own presets, mark favorites, pick a default to start from
+- **Presets:** Save your own presets, star the ones you like, pick a default to start from
 - **Templates:** Ready-made worlds you adjust with a few sliders
 - **Always day, always clear:** Saved with the preset, no more `/time set day` in every new world
 - **Flat Nether and End:** Their own layers and biome, portals and the dragon work as usual

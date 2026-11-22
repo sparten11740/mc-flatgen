@@ -145,7 +145,7 @@
   "flatgen.library.start_tip": "Open Create World with Superflat chosen and the default ready",
   "flatgen.library.title": "Presets",
   "flatgen.library.unreadable": "Could not be read in full; the game's log says what",
-  "flatgen.library.use_tip": "Use this favourite",
+  "flatgen.library.use_tip": "Use this starred preset",
   "flatgen.narration.unavailable": "unavailable",
   "flatgen.options.missing": "Not installed",
   "flatgen.options.not_installed": "%s is not installed: the preset keeps it as it is",

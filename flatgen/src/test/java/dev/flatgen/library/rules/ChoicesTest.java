@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
-/** The player's favourites, recent presets and default. */
+/** The player's starred presets, recent presets and default. */
 class ChoicesTest {
     @Test
     void keepsOneDefaultAtMost() {
@@ -21,7 +21,7 @@ class ChoicesTest {
 
     @Test
     void followsAPresetRenamedAndForgetsOneDeleted() {
-        Choices chosen = Choices.NONE.toggleFavourite("tall.json").used("tall.json").used("water.json")
+        Choices chosen = Choices.NONE.toggleStar("tall.json").used("tall.json").used("water.json")
                 .toggleDefault("tall.json");
         Choices renamed = chosen.renamed("tall.json", "towering.json");
         assertEquals(List.of("towering.json"), renamed.picks().starred());
@@ -60,7 +60,7 @@ class ChoicesTest {
 
     @Test
     void readsWhatItWritesAndAFileWithoutADefault() {
-        Choices chosen = Choices.NONE.toggleFavourite("tall.json").toggleDefault("water.json")
+        Choices chosen = Choices.NONE.toggleStar("tall.json").toggleDefault("water.json")
                 .toggleStartOnSuperflat().nextBuiltIns();
         assertEquals(PresetLibrary.BuiltIns.NO_GAME, chosen.builtIns());
         assertEquals(chosen, Choices.fromJson(chosen.toJson()));

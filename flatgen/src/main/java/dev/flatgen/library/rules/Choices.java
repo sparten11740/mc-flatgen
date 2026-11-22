@@ -12,10 +12,10 @@ import java.util.Optional;
 
 /**
  * The player's choices among their presets (F12), kept in config/flatgen/library.json by preset file name, so preset
- * files stay free of them and can be shared as they are: the favourites and the presets used lately, as the pickers
+ * files stay free of them and can be shared as they are: the starred presets and those used lately, as the pickers
  * keep theirs, the default, applied when Superflat is chosen, and whether Create World starts on Superflat.
  *
- * @param picks            the favourites (starred) and the presets used lately, by file
+ * @param picks            the starred presets and those used lately, by file
  * @param defaultFile      the default preset's file; none when there is no default
  * @param startOnSuperflat whether Create World opens with Superflat chosen, so the default is ready
  * @param builtIns         which built-in presets the library shows (F13)
@@ -30,13 +30,13 @@ public record Choices(Picks picks, Optional<String> defaultFile, boolean startOn
     private static final String START_ON_SUPERFLAT = "start_on_superflat";
     private static final String BUILT_INS = "built_ins";
 
-    /** Whether a preset is a favourite. */
-    public boolean isFavourite(String file) {
+    /** Whether a preset is starred. */
+    public boolean isStarred(String file) {
         return picks.starred().contains(file);
     }
 
-    /** The choices with a preset made a favourite, or no longer one. */
-    public Choices toggleFavourite(String file) {
+    /** The choices with a preset starred, or no longer starred. */
+    public Choices toggleStar(String file) {
         return new Choices(picks.toggleStar(file), defaultFile, startOnSuperflat, builtIns);
     }
 
@@ -68,7 +68,7 @@ public record Choices(Picks picks, Optional<String> defaultFile, boolean startOn
                 defaultFile.map(chosen -> chosen.equals(file) ? newFile : chosen), startOnSuperflat, builtIns);
     }
 
-    /** The choices once a preset's file is deleted: it is no longer a favourite, recent or the default. */
+    /** The choices once a preset's file is deleted: it is no longer starred, recent or the default. */
     public Choices deleted(String file) {
         return new Choices(new Picks(without(picks.recent(), file), without(picks.starred(), file)),
                 defaultFile.filter(chosen -> !chosen.equals(file)), startOnSuperflat, builtIns);

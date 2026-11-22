@@ -26,7 +26,7 @@ class PresetLibraryTest {
             PACK, Optional.of(TestPresets.TALL_FLAT.withName("A tall flat")), List.of());
 
     @Test
-    void ordersFavouritesThenTheLatestUsedThenByName() {
+    void ordersStarredThenTheLatestUsedThenByName() {
         assertEquals(List.of(SKY, WATER, BROKEN, TALL), PresetLibrary.ordered(List.of(WATER, TALL, SKY, BROKEN),
                 Set.of("sky.json"), List.of("water.json", "sky.json", "water.json")));
         assertEquals(List.of(BROKEN, SKY, TALL, WATER), PresetLibrary.ordered(List.of(WATER, TALL, SKY, BROKEN),

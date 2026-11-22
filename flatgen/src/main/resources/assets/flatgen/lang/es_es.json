@@ -145,7 +145,7 @@
   "flatgen.library.start_tip": "Abrir «Crear un mundo nuevo» con Extraplano elegido y la plantilla por defecto lista",
   "flatgen.library.title": "Plantillas",
   "flatgen.library.unreadable": "No se pudo leer entero; el registro del juego dice qué",
-  "flatgen.library.use_tip": "Usar esta favorita",
+  "flatgen.library.use_tip": "Usar esta plantilla con estrella",
   "flatgen.narration.unavailable": "no disponible",
   "flatgen.options.missing": "No instalado",
   "flatgen.options.not_installed": "%s no está instalado: la plantilla lo conserva tal cual",

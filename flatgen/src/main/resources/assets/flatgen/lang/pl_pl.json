@@ -145,7 +145,7 @@
   "flatgen.library.start_tip": "Otwórz „Stwórz nowy świat” z wybranym typem „Całkiem płaski” i gotowym domyślnym szablonem",
   "flatgen.library.title": "Szablony",
   "flatgen.library.unreadable": "Nie udało się odczytać w całości; szczegóły są w dzienniku gry",
-  "flatgen.library.use_tip": "Użyj tego ulubionego",
+  "flatgen.library.use_tip": "Użyj tego szablonu z gwiazdką",
   "flatgen.narration.unavailable": "niedostępne",
   "flatgen.options.missing": "Nie zainstalowano",
   "flatgen.options.not_installed": "%s nie jest zainstalowany: szablon zachowuje go bez zmian",

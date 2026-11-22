@@ -14,9 +14,9 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 /**
- * Using a saved preset in the editor, from the library or the editor's favourites, or exporting one: a preset naming
- * parts this game lacks asks first whether to go on with stand-ins. A used one is applied as a step to undo and the
- * editor shows again.
+ * Using a saved preset in the editor, from the library or the editor's starred presets, or exporting one: a preset
+ * naming parts this game lacks asks first whether to go on with stand-ins. A used one is applied as a step to undo and
+ * the editor shows again.
  */
 final class PresetUse {
     private PresetUse() {

@@ -6,8 +6,8 @@ import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.facts.client.FactsPanel;
 import dev.flatgen.facts.client.NoSlimesPanel;
 import dev.flatgen.layers.client.LayerPanel;
-import dev.flatgen.library.client.FavouritesPanel;
 import dev.flatgen.library.client.LibraryPanel;
+import dev.flatgen.library.client.StarredPanel;
 import dev.flatgen.options.client.OptionsPanel;
 import dev.flatgen.structures.client.StructuresPanel;
 import dev.flatgen.templates.client.TemplatesPanel;
@@ -26,7 +26,7 @@ final class EditorPanels {
             new FactsPanel(),
             new NoSlimesPanel(),
             new OptionsPanel(),
-            new FavouritesPanel(),
+            new StarredPanel(),
             new StructuresPanel(),
             new LibraryPanel(),
             new TemplatesPanel(),

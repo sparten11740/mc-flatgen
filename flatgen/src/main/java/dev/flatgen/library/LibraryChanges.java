@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * How often the player's presets or choices have been written since the game started, so what shows them (the
- * editor's favourites) reads them again only after a change.
+ * editor's starred presets) reads them again only after a change.
  */
 public final class LibraryChanges {
     private static final AtomicInteger COUNT = new AtomicInteger();

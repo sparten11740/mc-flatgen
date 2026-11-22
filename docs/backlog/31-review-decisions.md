@@ -34,7 +34,7 @@ pictures, four ways").
   instead of stepping to the next mod on each click.
 - [ ] A layer's size is its thickness in every language: one block thicker or thinner, the thickness of the layer,
   "Thickness: 3".
-- [ ] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
+- [x] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
   where it says favourite, and the README stars favourites.
 - [ ] Kept as it is, by the owner's choice: block names in the picker stay one line, the whole name in the tooltip.
 - [x] Copy's preview takes a row of its own below the card, the cards below moving down to make room, rather than
