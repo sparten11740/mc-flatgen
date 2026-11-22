@@ -192,16 +192,13 @@ public final class LibraryScreen extends FlatgenScreen {
     private List<Widget> footer(PageFrame frame) {
         Rect row = frame.footerRow();
         int footerTop = frame.height() - PageFrame.FOOTER;
-        int line = TextStyle.BODY.lineHeight();
-        int pickedTop = footerTop + (PageFrame.FOOTER - line - row.height()) / 2;
         Rect layers = new Rect(row.x(), footerTop + (PageFrame.FOOTER - PICKED_HEIGHT) / 2, PICKED_WIDTH,
                 PICKED_HEIGHT);
-        Rect field = new Rect(layers.right() + GAP, pickedTop + line, NAME_WIDTH, row.height());
+        Rect field = new Rect(layers.right() + GAP, row.y(), NAME_WIDTH, row.height());
         nameField = new TextField("name", field, Component.translatable("flatgen.library.name"), name,
                 text -> name = text).onDone(this::rename);
-        List<Widget> widgets = new ArrayList<>(List.of((canvas, mouseX, mouseY) -> drawPickedLayers(canvas, layers),
-                new Caption(() -> Component.translatable("flatgen.library.is_picked"), new Rect(field.x(), pickedTop,
-                        NAME_WIDTH, line), TextStyle.BODY, Look.MUTED), nameField));
+        List<Widget> widgets = new ArrayList<>(List.<Widget>of((canvas, mouseX, mouseY) -> drawPickedLayers(canvas,
+                layers), nameField));
         widgets.addAll(actions(frame, row.right() - field.right() - 2 * GAP));
         return widgets;
     }
