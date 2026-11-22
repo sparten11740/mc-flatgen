@@ -41,12 +41,15 @@ class LayerEditsTest {
     }
 
     @Test
-    void duplicatesTheSelectedLayerAboveItAsDeepAsTheWorldAllows() {
+    void duplicatesTheSelectedLayerBelowItAsDeepAsTheWorldAllowsKeepingItSelected() {
         EditorState copied = new LayerEdits.Duplicate().apply(STONE, OVERWORLD);
+        assertEquals(new Layer("minecraft:stone", 100), copied.preset().layers().get(1));
         assertEquals(new Layer("minecraft:stone", 100), copied.preset().layers().get(2));
         assertEquals(2, copied.selected());
         EditorState squeezed = new LayerEdits.Duplicate().apply(STONE, new World(-64, 150));
-        assertEquals(new Layer("minecraft:stone", 46), squeezed.preset().layers().get(2));
+        assertEquals(new Layer("minecraft:stone", 46), squeezed.preset().layers().get(1));
+        assertEquals(new Layer("minecraft:stone", 100), squeezed.preset().layers().get(2));
+        assertEquals(2, squeezed.selected());
     }
 
     @Test

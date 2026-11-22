@@ -37,6 +37,9 @@ pictures, four ways").
 - [ ] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
   where it says favourite, and the README stars favourites.
 - [ ] Kept as it is, by the owner's choice: block names in the picker stay one line, the whole name in the tooltip.
+- [x] Copy's preview takes a row of its own below the card, the cards below moving down to make room, rather than
+  being drawn over the card above; the copy goes there, below the layer, which stays chosen, so the card under the
+  mouse never moves (the owner's, on trying 1.1.0-alpha.2).
 
 ## Design
 
@@ -55,3 +58,7 @@ dev client of each loader for every screen changed, with Blockpilot where it rea
   its row shows under the facts; pressing it raises the surface to Y 40, the row goes and the slimes fact is struck
   through; Undo brings both back; a flat Nether has no row. It is a panel of its own (`facts/client/NoSlimesPanel`), so
   the editor lays the aside out again when slimes come or go.
+- Copy's row, in a 1.21.1 NeoForge dev client with Advanced on: the mouse on Dirt's Copy leaves Dirt where it is and
+  moves Bedrock down a row, the faint Dirt in the place between; a click puts the copy there, Dirt staying chosen; the
+  mouse away closes the row. Walking a card's controls with the arrows, the row opens on Copy and closes on Remove,
+  the focus staying where it is.

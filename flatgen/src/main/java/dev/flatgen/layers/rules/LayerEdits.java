@@ -31,7 +31,10 @@ public final class LayerEdits {
         }
     }
 
-    /** Adds a copy of the selected layer above it, as deep as the world allows, and selects the copy. */
+    /**
+     * Adds a copy of the selected layer below it, as deep as the world allows, the layer staying selected: the card
+     * chosen stays where it is, and the copy comes under it, where its preview was.
+     */
     public record Duplicate() implements Edit {
         @Override
         public EditorState apply(EditorState state, World world) {
@@ -40,7 +43,9 @@ public final class LayerEdits {
                 return state;
             }
             Layer layer = state.layers().get(state.selected());
-            return inserted(state, state.selected() + 1, new Layer(layer.block(), Math.min(layer.height(), room)));
+            List<Layer> layers = new ArrayList<>(state.layers());
+            layers.add(state.selected(), new Layer(layer.block(), Math.min(layer.height(), room)));
+            return state.withLayers(layers, state.selected() + 1);
         }
     }
 

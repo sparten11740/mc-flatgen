@@ -85,6 +85,11 @@ public final class WidgetGroup implements Widget {
         }
     }
 
+    /** Whether one of its widgets has the keyboard now. */
+    public boolean holdsKeyboard() {
+        return keyboard != null;
+    }
+
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
         return keyboard != null && keyboard.key(keyCode, modifiers);
