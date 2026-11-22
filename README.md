@@ -1,4 +1,7 @@
-# Flatgen
+# <img src="flatgen/src/main/resources/assets/flatgen/icon.png" alt="" width="48" height="48" align="absmiddle"> Flatgen
+
+[![release](https://github.com/sparten11740/mc-flatgen/actions/workflows/release.yml/badge.svg)](https://github.com/sparten11740/mc-flatgen/actions/workflows/release.yml)
+[![tests](https://github.com/sparten11740/mc-flatgen/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/sparten11740/mc-flatgen/actions/workflows/tests.yml?query=branch%3Amain)
 
 A superflat world editor for Minecraft.
 
