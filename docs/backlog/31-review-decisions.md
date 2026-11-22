@@ -1,6 +1,6 @@
 # F31 What the release review left open
 
-Milestone: after v1 · Release: 1.1.0 · Status: doing · Depends on: F20
+Milestone: after v1 · Release: 1.1.0 · Status: done · Depends on: F20
 
 ## Why
 
@@ -36,7 +36,7 @@ pictures, four ways").
   "Thickness: 3".
 - [x] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
   where it says favourite, and the README stars favourites.
-- [ ] Kept as it is, by the owner's choice: block names in the picker stay one line, the whole name in the tooltip.
+- [x] Kept as it is, by the owner's choice: block names in the picker stay one line, the whole name in the tooltip.
 - [x] Copy's preview takes a row of its own below the card, the cards below moving down to make room, rather than
   being drawn over the card above; the copy goes there, below the layer, which stays chosen, so the card under the
   mouse never moves (the owner's, on trying 1.1.0-alpha.2).
