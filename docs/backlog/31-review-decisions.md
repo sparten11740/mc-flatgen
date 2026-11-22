@@ -1,6 +1,6 @@
 # F31 What the release review left open
 
-Milestone: after v1 · Release: 1.1.0 · Status: todo · Depends on: F20
+Milestone: after v1 · Release: 1.1.0 · Status: doing · Depends on: F20
 
 ## Why
 
@@ -11,8 +11,8 @@ pictures, four ways").
 
 ## Acceptance criteria
 
-- [ ] No slimes leaves the facts row: a button row of its own under the facts, its picture the slime face with an up
-  arrow and the words "No slimes", shown while slimes can spawn at the surface.
+- [x] No slimes leaves the facts row: a button row of its own under the facts, its picture the slime face with an up
+  arrow and the words "No slimes", shown while slimes spawn in slime chunks at the surface.
 - [ ] A chosen tab, shelf or way is drawn in a blue fill with light blue words (the canvas's C), hover staying a grey
   fill: the world's tabs, the structures' ways and both pickers' shelves.
 - [ ] Make flat and Let the game make it get two pictures unlike each other, in each dimension's own blocks: a neat
@@ -47,3 +47,10 @@ Each change goes where its screen's code is; the chosen look is one style the ta
 
 `./gradlew build` on every node; the picker and language tests for the one-click picking, the shelves and the words; a
 dev client of each loader for every screen changed, with Blockpilot where it reaches the screen.
+
+## Tried
+
+- No slimes, in dev clients of 1.21.1 NeoForge, 1.20.1 Forge and 26.3 Fabric driven by Blockpilot: on Classic Flat
+  its row shows under the facts; pressing it raises the surface to Y 40, the row goes and the slimes fact is struck
+  through; Undo brings both back; a flat Nether has no row. It is a panel of its own (`facts/client/NoSlimesPanel`), so
+  the editor lays the aside out again when slimes come or go.

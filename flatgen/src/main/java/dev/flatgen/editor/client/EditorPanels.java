@@ -4,6 +4,7 @@ import dev.flatgen.biomes.client.BiomePanel;
 import dev.flatgen.dimensions.client.DimensionPanel;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.facts.client.FactsPanel;
+import dev.flatgen.facts.client.NoSlimesPanel;
 import dev.flatgen.layers.client.LayerPanel;
 import dev.flatgen.library.client.FavouritesPanel;
 import dev.flatgen.library.client.LibraryPanel;
@@ -23,6 +24,7 @@ final class EditorPanels {
             new SummaryPanel(),
             new BiomePanel(),
             new FactsPanel(),
+            new NoSlimesPanel(),
             new OptionsPanel(),
             new FavouritesPanel(),
             new StructuresPanel(),
