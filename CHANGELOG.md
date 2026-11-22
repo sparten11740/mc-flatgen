@@ -3,6 +3,10 @@
 What changed for players in each release, in a few lines a player reads. A release's notes on CurseForge and GitHub
 are its section here ([docs/release/releasing.md](docs/release/releasing.md)).
 
+## 1.1.1 (2026-11-22)
+
+- Removed the duplicate layer preview, which could get stuck
+
 ## 1.1.0 (2026-11-22)
 
 - "No slimes" get's an easier to understand CTA that shows only while slimes can spawn at the surface; it raises the
