@@ -11,10 +11,10 @@ import net.minecraft.network.chat.Component;
 
 /**
  * A picker that sorts its entries onto shelves down its side, as round 3 of docs/design/simple-editor.md drew the biome
- * picker: the grid beside shows the shelf chosen, or what a search found among every entry, and a picker may put rows
- * above it, as the block picker's recent and starred blocks. A player who cannot read browses by the shelves' pictures
- * instead of searching. Which shelves there are, and which is shown first, is each picker's own: the biome picker's
- * starred, recent, kinds and every biome; the block picker's every block and the creative inventory's tabs.
+ * picker: the grid beside shows the shelf chosen, or what a search found among every entry. A player who cannot read
+ * browses by the shelves' pictures instead of searching. Which shelves there are is each picker's own: the biome
+ * picker's starred, recent, kinds and every biome; the block picker's starred, recent, every block and the creative
+ * inventory's tabs. Both open on the first shelf with entries, the player's own picks when there are any.
  */
 public abstract class ShelvedPickerScreen extends PickerScreen {
     /** The side's width, a shelf's row on it, the space parting its groups and the space beside it, in GUI pixels. */

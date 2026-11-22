@@ -27,8 +27,8 @@ import net.minecraft.network.chat.Component;
  * The editor's column: the preset's layers seen from the side, the bottom layer lowest, under the air the world has
  * above them in the dimension's colour, each as tall as its share of the stack ({@link ColumnLayout}), with the Y of
  * the lines between them beside it, lines at the heights that matter and a figure standing on the top. A click
- * selects a layer; dragging a layer's top edge makes it deeper or shallower, dragging the layer moves it, and the
- * wheel over it changes its depth (Shift for 10 blocks, Control for 100). The wheel over the Y numbers scrolls a
+ * selects a layer; dragging a layer's top edge makes it thicker or thinner, dragging the layer moves it, and the
+ * wheel over it changes its thickness (Shift for 10 blocks, Control for 100). The wheel over the Y numbers scrolls a
  * column too tall for its space.
  */
 public final class ColumnWidget implements Widget {
@@ -77,8 +77,8 @@ public final class ColumnWidget implements Widget {
     }
 
     /**
-     * What a held button is doing: nothing, resizing a layer (from the Y it was pressed at, its depth then and blocks
-     * per pixel of its drawing then), or about to move or moving one (to the place it would land).
+     * What a held button is doing: nothing, resizing a layer (from the Y it was pressed at, its thickness then and
+     * blocks per pixel of its drawing then), or about to move or moving one (to the place it would land).
      */
     private record Drag(Mode mode, double startY, int startHeight, double blocksPerPixel, int target) {
         static final Drag NONE = new Drag(Mode.NONE, 0, 0, 0, -1);
@@ -148,7 +148,7 @@ public final class ColumnWidget implements Widget {
         return List.of(this);
     }
 
-    /** The selected layer: its block, its depth and the Ys it covers. */
+    /** The selected layer: its block, its thickness and the Ys it covers. */
     @Override
     public Optional<Narration> narration() {
         int selected = editor.shown().selected();
@@ -158,7 +158,7 @@ public final class ColumnWidget implements Widget {
         return Optional.of(Narration.entry(LayerText.describe(editor.shown(), editor.world(), selected)));
     }
 
-    /** The selected layer's block, depth and Ys, shown while the column has the focus. */
+    /** The selected layer's block, thickness and Ys, shown while the column has the focus. */
     @Override
     public List<Component> tooltip() {
         int selected = editor.shown().selected();

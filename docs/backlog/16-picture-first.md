@@ -116,14 +116,14 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | the column, each layer | the layer's block side; the selected one outlined, the focus ring round it |
 | Editor | fact badges | each fact's picture: the ladder for the surface's height, a sunflower for sun, own rain and snow clouds, an own slime's face, a creeper's head for monsters; under the "no" sign for no; the snow and slime lines end in theirs |
 | Editor | No slimes | own: a slime with the red "no" sign (F31) |
-| Editor | favourites row | each favourite's top block |
+| Editor | starred row | each starred preset's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
-| Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, end stone; the chosen one raised; own flat badge |
+| Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, end stone; the chosen one on a blue fill with its name in bold (F31); own flat badge |
 | Editor | Make flat, Let the game make it (F22) | own, in the dimension's blocks: a neat flat stack; its rough ground, netherrack crags with lava or an End stone island (F31) |
 | Editor | Biome | the biome's landscape in its colours, and its name |
 | Editor | Structures | village house, and how they are chosen |
 | Editor | Block | the selected layer's block, and its name |
-| Editor | depth − + and its numbers, the depth field | a layer between two arrows before them; − + and numbers are symbols |
+| Editor | thickness − + and its numbers, the thickness field | a layer between two arrows before them; − + and numbers are symbols |
 | Editor | Surface at Y | ladder |
 | Editor | New layer, Copy layer, Remove layer | the chequered placeholder block with a plus; the copy sign; a bin |
 | Editor | Undo, Redo | own: hooked arrows |
@@ -133,13 +133,12 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | Mobs spawn | zombie spawn egg, the switch on while mobs spawn (the "no mobs" option shown the other way round), alone without its group's heading (zombie head), as a group of one option is |
 | Editor | Done, Vanilla editor, Cancel | tick, an arrow leaving a box, cross, with their words |
 | Pickers | search | spyglass |
-| Pickers | mod filter | four small cubes for all, else the mod's first block or biome |
+| Pickers | mod filter | four small cubes for all, else the mod's first block or biome; its menu the same for each mod (F31) |
 | Pickers | cards | the block, or the biome as a little landscape with its own ground and tree (terracotta bands, an acacia, a spruce, a birch, a mushroom, flowers, the void's dark); starred ones a gold star |
 | Pickers | Cancel | cross |
-| Block picker | side | four blocks in a square (All blocks, chosen at first); each creative inventory tab's own picture, as the game shows it (Natural, Building, Colored, Functional and Redstone Blocks) |
-| Block picker | rows over the grid | the recent blocks and the starred ones, each block its picture, the starred with their gold star |
+| Block picker | side | own: a gold star (Starred); a clock (Recent); four blocks in a square (All blocks); each creative inventory tab's own picture, as the game shows it (Natural, Building, Colored, Functional and Redstone Blocks) (F31) |
 | Biome picker | side | own: a gold star (Starred); a clock (Recent); each kind the landscape of a biome of it, as Plains for the usual ones; four little landscapes in a square (Every biome) |
-| Biome picker | the biome chosen | painted larger, its facts' pictures beside their words; Pick a tick with its words |
+| Biome picker | the biome looked at | painted larger, its facts' pictures beside their words; a click on a card picks (F31) |
 | Structures | the three ways to choose | the biome's own landscape, the chest under the no sign, the chest, each with its box |
 | Structures | Decorations, Lakes | poppy, lava bucket |
 | Structures | each structure set | its own picture, under the "no" sign where it cannot appear |
@@ -154,7 +153,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Templates | block settings | the block |
 | Templates | switches | the switch's item, with its box |
 | Templates | what it makes | its ground in its sky, the air above it on a chip with an arrow up, the fact badges as the editor's, each layer's block |
-| Templates | Back, Cancel, Use | left arrow, cross, tick, the last two with their words |
+| Templates | Back, Use | left arrow, tick with its words (F31) |
 | Question | what Yes does | its picture above the words: trash can, writable book with a circular arrow, the missing texture |
 | Question | Yes, No | tick, cross, with their words |
 

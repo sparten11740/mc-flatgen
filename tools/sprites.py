@@ -32,7 +32,7 @@ MATERIALS = {
     "U": (0x6A1AB8, 0xA060F0, 0xC890FF, 0xE8C8FF),  # the portal's lighter swirl
     "Y": (0x1E3A10, 0x3E6E22, 0x5A9432, 0x7CBA4E),  # grass: a flat stack's top stripe
     "D": (0x2E1A0C, 0x5A3820, 0x76492A, 0x936038),  # dirt: a flat stack's middle stripe
-    "H": (0x2A100C, 0x7A2E22, 0x9A4030, 0xBC5A44),  # rough rock: the hills a dimension has as the game makes it
+    "H": (0x2A100C, 0x7A2E22, 0x9A4030, 0xBC5A44),  # netherrack: the Nether's layers and its crags
     "6": (0xF800F8, 0xF800F8, 0xF800F8, 0xF800F8),  # the game's missing texture: its purple, drawn flat
     "7": (0x000000, 0x000000, 0x000000, 0x000000),  # and its black
     "Z": (0x1F4F8F, 0x4C8BD6, 0x6BA6EC, 0x9CC8FF),  # a day's sky

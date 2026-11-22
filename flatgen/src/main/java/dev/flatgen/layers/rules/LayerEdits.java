@@ -77,9 +77,9 @@ public final class LayerEdits {
     }
 
     /**
-     * Makes the selected layer this many blocks deep, at least one and at most what the world allows.
+     * Makes the selected layer this many blocks thick, at least one and at most what the world allows.
      *
-     * @param height the depth asked for, in blocks
+     * @param height the thickness asked for, in blocks
      */
     public record SetHeight(int height) implements Edit {
         @Override
@@ -97,7 +97,7 @@ public final class LayerEdits {
     /**
      * Makes the selected layer thicker or thinner by some blocks, within what {@link SetHeight} allows.
      *
-     * @param blocks how many blocks deeper, negative for shallower
+     * @param blocks how many blocks thicker, negative for thinner
      */
     public record ChangeHeight(int blocks) implements Edit {
         @Override

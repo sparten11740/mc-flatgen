@@ -60,7 +60,7 @@ public final class LayerPanel implements EditorPanel {
         return true;
     }
 
-    /** The ground's Y to type, with its label: the top layer's depth changes so the ground is there. */
+    /** The ground's Y to type, with its label: the top layer's thickness changes so the ground is there. */
     private static List<Widget> groundRow(EditorContext editor, FlowLayout bar) {
         Component label = Component.translatable("flatgen.editor.ground_field");
         Rect place = bar.next(Label.width(editor.textWidth(label)));

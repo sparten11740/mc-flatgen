@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * One choice of a few, as segments side by side on a track, each a picture and a name, the chosen one raised
+ * One choice of a few, as segments side by side on a track, each a picture and a name, the chosen one blue
  * ({@link PictureTab}): the editor's dimensions, the structures' modes.
  */
 public final class SegmentedChoice {
