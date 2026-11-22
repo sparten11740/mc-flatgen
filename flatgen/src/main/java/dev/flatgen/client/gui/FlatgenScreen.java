@@ -141,11 +141,23 @@ public abstract class FlatgenScreen extends GameScreen {
             return true;
         }
         moveFocus(Optional.empty());
+        endTypingElsewhere(x, y);
         pressed = widgets.click(x, y, button, modifiers());
         pressedButton = button;
         keyboard = widgets.takesKeyboard();
         widgets.keyboard(keyboard);
         return pressed;
+    }
+
+    /**
+     * Ends the typing an earlier click began, unless this click is on the widget typed in, so a field is done, as a
+     * name saved, before what the click does reads it.
+     */
+    private void endTypingElsewhere(double x, double y) {
+        if (keyboard && widgets.keyboardArea().filter(area -> area.contains(x, y)).isEmpty()) {
+            keyboard = false;
+            widgets.keyboard(false);
+        }
     }
 
     @Override

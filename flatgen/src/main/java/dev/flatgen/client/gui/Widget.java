@@ -44,6 +44,14 @@ public interface Widget {
     default void keyboard(boolean held) {
     }
 
+    /**
+     * Where the widget that has the keyboard from a click is, within this one, so a click there keeps it; none by
+     * default.
+     */
+    default Optional<Rect> keyboardArea() {
+        return Optional.empty();
+    }
+
     /** Whether the widget has the keyboard, from a click or the focus, as it was last told; never, by default. */
     default boolean focused() {
         return false;

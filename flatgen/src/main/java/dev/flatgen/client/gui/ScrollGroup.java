@@ -171,6 +171,11 @@ public final class ScrollGroup implements Widget {
         }
     }
 
+    @Override
+    public Optional<Rect> keyboardArea() {
+        return widgets.keyboardArea();
+    }
+
     /** Whether one of its widgets has the keyboard from a click, as a field being typed in. */
     public boolean holdsKeyboard() {
         return widgets.holdsKeyboard();

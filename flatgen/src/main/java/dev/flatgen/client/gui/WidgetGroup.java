@@ -85,6 +85,12 @@ public final class WidgetGroup implements Widget {
         }
     }
 
+    /** Where its widget that has the keyboard is: that widget's own area, or its widget's within it. */
+    @Override
+    public Optional<Rect> keyboardArea() {
+        return keyboard == null ? Optional.empty() : keyboard.keyboardArea().or(keyboard::focusArea);
+    }
+
     /** Whether one of its widgets has the keyboard now. */
     public boolean holdsKeyboard() {
         return keyboard != null;
