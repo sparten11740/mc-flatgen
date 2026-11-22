@@ -102,5 +102,5 @@ and a promo video (recorded with Blockpilot's `record`) are ready outside the re
 Blockpilot's does: on GitHub Actions it built every node with its tests and GameTests, booted each jar on its servers,
 uploaded the twelve jars to CurseForge and made the GitHub release, the notes on both the changelog's 1.0.0 section. The
 first tag pushes found workflows turned off in the repository, and the first run stopped at the pictures check, which
-took Python's bytecode cache for a changed picture (now ignored); the tag was moved to the commit with that fix. Left for
-the owner to tick: every v1 feature and milestone review, and play in the test instance.
+took Python's bytecode cache for a changed picture (now ignored); the tag was moved to the commit with that fix. Left
+for the owner to tick: every v1 feature and milestone review, and play in the test instance.
