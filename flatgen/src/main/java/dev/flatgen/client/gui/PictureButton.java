@@ -28,8 +28,6 @@ public final class PictureButton implements Control {
     private boolean flat;
     /** What it does when the keyboard's focus comes to it, such as selecting the layer its card shows. */
     private Runnable onFocus = () -> { };
-    /** Whether it has the keyboard's focus. */
-    private boolean focused;
 
     /** A button showing this picture in this rectangle, always usable, doing {@code action} when clicked. */
     public PictureButton(Icon icon, Rect bounds, Runnable action, Supplier<List<Component>> tooltip) {
@@ -59,13 +57,7 @@ public final class PictureButton implements Control {
     }
 
     @Override
-    public boolean focused() {
-        return focused;
-    }
-
-    @Override
     public void keyboard(boolean held) {
-        focused = held;
         if (held) {
             onFocus.run();
         }

@@ -160,10 +160,10 @@ public final class ScrollGroup implements Widget {
     }
 
     /**
-     * Lays the content out again where it is scrolled to, as when it comes to take more or less room, scrolling back
-     * no further than the content now reaches.
+     * Lays the content out where its position says, scrolling back no further than the content reaches, as when the
+     * position was kept from a longer list.
      */
-    public void layOutAgain() {
+    private void layOutAgain() {
         layOut();
         if (position.scroll > hidden()) {
             position.scroll = hidden();
@@ -174,11 +174,6 @@ public final class ScrollGroup implements Widget {
     @Override
     public Optional<Rect> keyboardArea() {
         return widgets.keyboardArea();
-    }
-
-    /** Whether one of its widgets has the keyboard from a click, as a field being typed in. */
-    public boolean holdsKeyboard() {
-        return widgets.holdsKeyboard();
     }
 
     /** Lays the content out a little inside the window's top, so its first border never touches the clip. */

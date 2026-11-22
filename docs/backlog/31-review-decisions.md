@@ -37,9 +37,9 @@ pictures, four ways").
 - [x] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
   where it says favourite, and the README stars favourites.
 - [x] Kept as it is, by the owner's choice: block names in the picker stay one line, the whole name in the tooltip.
-- [x] Copy's preview takes a row of its own below the card, the cards below moving down to make room, rather than
-  being drawn over the card above; the copy goes there, below the layer, which stays chosen, so the card under the
-  mouse never moves (the owner's, on trying 1.1.0-alpha.2).
+- [x] Copy puts its copy below the layer, which stays chosen, so the card under the mouse never moves (the owner's, on
+  trying 1.1.0-alpha.2). Its preview, a row of its own below the card that the cards below made room for, shipped in
+  1.1.0 and was dropped after it, as it stuck; Copy now shows no preview.
 - [x] The library renames the picked preset as its name is edited, with no Rename button: once the player is done
   typing (Enter, Tab or a click elsewhere) or leaves the library; a built-in's name shows again as it is (the
   owner's, on trying the library).

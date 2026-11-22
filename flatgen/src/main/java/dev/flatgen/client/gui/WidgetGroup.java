@@ -91,11 +91,6 @@ public final class WidgetGroup implements Widget {
         return keyboard == null ? Optional.empty() : keyboard.keyboardArea().or(keyboard::focusArea);
     }
 
-    /** Whether one of its widgets has the keyboard now. */
-    public boolean holdsKeyboard() {
-        return keyboard != null;
-    }
-
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
         return keyboard != null && keyboard.key(keyCode, modifiers);

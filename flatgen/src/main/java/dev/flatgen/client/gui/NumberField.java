@@ -80,11 +80,6 @@ public final class NumberField implements Control {
     }
 
     @Override
-    public boolean focused() {
-        return keyboard;
-    }
-
-    @Override
     public void keyboard(boolean held) {
         if (held != keyboard) {
             keyboard = held;
