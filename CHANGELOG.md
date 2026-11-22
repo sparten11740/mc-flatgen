@@ -3,7 +3,7 @@
 What changed for players in each release, in a few lines a player reads. A release's notes on CurseForge and GitHub
 are its section here ([docs/release/releasing.md](docs/release/releasing.md)).
 
-## 1.0.0 (not released yet)
+## 1.0.0 (2026-11-22)
 
 Flatgen's first release, for Minecraft 1.20.1 on Forge and Fabric, and for 1.21.1, 1.21.11, 26.1 (26.1.2 on
 NeoForge), 26.2 and 26.3 on NeoForge and Fabric. Create World → World Type: Superflat → Customize opens Flatgen in
