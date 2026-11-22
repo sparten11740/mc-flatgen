@@ -12,8 +12,8 @@ import net.minecraft.network.chat.Component;
  * ({@link PictureTab}): the editor's dimensions, the structures' modes.
  */
 public final class SegmentedChoice {
-    /** Space around the segments inside their track, in GUI pixels. */
-    private static final int TRACK_PADDING = 2;
+    /** Space around the segments inside their track, in GUI pixels: its edge, so a segment's fill fills the rest. */
+    private static final int TRACK_PADDING = 1;
     /** The track's height, in GUI pixels. */
     public static final int HEIGHT = PictureTab.HEIGHT + 2 * TRACK_PADDING;
 

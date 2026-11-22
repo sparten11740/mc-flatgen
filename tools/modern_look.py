@@ -68,7 +68,7 @@ PANELS = {
     "field": ("#16181b", "#3b4048", 0.4, 4),
     "field_lit": ("#16181b", "#5aa9ff", 0.7, 4),
     "segments": ("#1a1c20", "#2e3238", 0.4, 5),
-    "tab_chosen": ("#2a3a52", "#2a3a52", 0.4, 3),
+    "tab_chosen": ("#2a3a52", "#2a3a52", 0.4, 4),
     "switch_on": ("#62c554", "#62c554", 0.4, 5),
     "switch_off": ("#3a3f46", "#3a3f46", 0.4, 5),
     "knob": ("#ffffff", "#ffffff", 0.4, 4),

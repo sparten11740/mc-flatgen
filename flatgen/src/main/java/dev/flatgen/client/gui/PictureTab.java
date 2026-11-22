@@ -15,8 +15,10 @@ import net.minecraft.network.chat.Component;
  * fill and its weight, not by colour alone, and never looks like the grey one under the mouse; its tooltip says more.
  */
 public final class PictureTab implements Control {
-    /** A tab's height, in GUI pixels: its picture's. */
-    public static final int HEIGHT = Icon.SIZE;
+    /** Space between the tab's picture and its top and bottom edges, in GUI pixels, so it never touches its fill. */
+    private static final int PICTURE_INSET = 1;
+    /** A tab's height, in GUI pixels: its picture's and the space above and below it. */
+    public static final int HEIGHT = Icon.SIZE + 2 * PICTURE_INSET;
     /** Space at the tab's sides and between its picture and its name, in GUI pixels. */
     private static final int PADDING = 6;
     private static final int GAP = 4;
