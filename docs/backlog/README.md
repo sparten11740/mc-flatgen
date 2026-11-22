@@ -98,6 +98,6 @@ v3 and v4 may swap; both come after v2.
 
 | ID | Feature | Status | Depends on |
 |---|---|---|---|
-| F23 | [Port to 26.1 (v2)](23-port-26-1.md) | doing | F20 |
+| F23 | [Port to 26.1 (v2)](23-port-26-1.md) | done | F20 |
 | F24 | [Port to 1.20.1 (v3)](24-port-1-20-1.md) | done | F23 |
 | F25 | [Port to 1.21.11, 26.2 and 26.3 (v4)](25-port-1-21-11-26-2-26-3.md) | done | F23 |
