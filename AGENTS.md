@@ -68,4 +68,4 @@ and 1.21.11, 26.1, 26.2 and 26.3 on NeoForge and Fabric. `docs/plan.md` is the p
   release, and it has been tried in a dev client of each node; say plainly what was not tried in game. Its status
   changes in its file and in the backlog index in the commit that finishes it.
 - **Versions.** Semantic versions; a build handed out for testing gets its own `-alpha.N` in its own
-  `chore(release)` commit.
+  `chore(release)` commit. A version is released by pushing its tag `v<version>` (`docs/release/releasing.md`).

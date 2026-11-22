@@ -1,7 +1,7 @@
 # Changelog
 
-What changed for players in each release. The GitHub release's notes list every `feat` and `fix` commit since the last
-tag; this file says the same in a few lines a player reads.
+What changed for players in each release, in a few lines a player reads. A release's notes on CurseForge and GitHub
+are its section here ([docs/release/releasing.md](docs/release/releasing.md)).
 
 ## 1.0.0 (not released yet)
 

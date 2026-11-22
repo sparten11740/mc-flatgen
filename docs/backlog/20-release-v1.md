@@ -28,9 +28,10 @@ page that says what Flatgen does.
   lists the jar, logs no error naming the mod, starts and stops cleanly. A client of each loader starting with the
   release jar is not part of it yet: the dev clients' play tests run the mod as built, not as remapped and shipped.
 - `.github/workflows/build.yml` runs on request and for release tags: the pictures as `tools/sprites.py` writes them,
-  `./gradlew build` with its tests and GameTests, then the boot of each jar. `release.yml` runs on a tag `v<version>`
-  matching `mod_version`, writes the notes from the `feat` and `fix` subjects since the last tag, and makes a GitHub
-  release with the jars; CurseForge uploads join once the project is made, Modrinth not for now.
+  `./gradlew build` with its tests and GameTests, then the boot of each jar. `release.yml` releases as Blockpilot's
+  does ([docs/release/releasing.md](../release/releasing.md)): on a tag `v<version>` matching `mod_version`, after
+  everything `build.yml` checks, it uploads each jar to CurseForge and then makes a GitHub release with them all, the
+  notes on both the changelog's section for the version; Modrinth not for now.
 
 ## Tests
 
