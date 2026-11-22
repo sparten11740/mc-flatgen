@@ -32,7 +32,6 @@ public final class DimensionPanel implements EditorPanel {
     private static final Icon MAKE_FLAT = Icon.own("make_flat");
     /** The picture of giving a dimension back to the game: flat stripes, an arrow, bumpy ground. */
     private static final Icon GIVE_BACK = Icon.own("give_back");
-    /** The picture of a data pack, as the library's Datapack button has it. */
     /** Space between the parts of the empty state, in GUI pixels. */
     private static final int SPACING = 6;
     /** How tall the button that makes a dimension flat is, in GUI pixels. */
