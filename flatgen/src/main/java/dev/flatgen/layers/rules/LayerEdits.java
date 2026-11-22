@@ -95,7 +95,7 @@ public final class LayerEdits {
     }
 
     /**
-     * Makes the selected layer deeper or shallower by some blocks, within what {@link SetHeight} allows.
+     * Makes the selected layer thicker or thinner by some blocks, within what {@link SetHeight} allows.
      *
      * @param blocks how many blocks deeper, negative for shallower
      */

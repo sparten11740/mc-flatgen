@@ -15,7 +15,7 @@ public final class LayerText {
     /** A layer's block, its depth and the Ys it covers, a line each. */
     public static List<Component> describe(EditorState state, World world, int index) {
         Layer layer = state.layers().get(index);
-        return List.of(Names.block(layer.block()), Component.translatable("flatgen.layer.height", layer.height()),
+        return List.of(Names.block(layer.block()), Component.translatable("flatgen.layer.thickness", layer.height()),
                 yRange(state, world, index));
     }
 

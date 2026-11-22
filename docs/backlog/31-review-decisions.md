@@ -32,7 +32,7 @@ pictures, four ways").
 - [x] The templates keep their Back arrow and lose Cancel, as the presets library has it.
 - [ ] The mod filter opens a menu of All mods and the mods that add blocks or biomes, each with its icon and name,
   instead of stepping to the next mod on each click.
-- [ ] A layer's size is its thickness in every language: one block thicker or thinner, the thickness of the layer,
+- [x] A layer's size is its thickness in every language: one block thicker or thinner, the thickness of the layer,
   "Thickness: 3".
 - [x] Starring is starring everywhere: the library's "Use this favourite" says starred, the library's code says starred
   where it says favourite, and the README stars favourites.

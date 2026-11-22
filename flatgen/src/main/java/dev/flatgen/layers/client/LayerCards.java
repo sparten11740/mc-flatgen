@@ -182,16 +182,16 @@ final class LayerCards {
     private static List<Widget> thickness(EditorContext editor, int index, int left, int middle) {
         Rect thinner = new Rect(left, middle, BUTTON, BUTTON);
         Optional<NumberField> field = editor.advanced()
-                ? Optional.of(new NumberField("height", Component.translatable("flatgen.layer.depth_field").copy()
+                ? Optional.of(new NumberField("height", Component.translatable("flatgen.layer.thickness_field").copy()
                         .append(" · ").append(Names.block(block(editor, index))),
                         new Rect(thinner.right(), middle, FIELD, BUTTON), () -> height(editor, index),
                         height -> act(editor, index, new LayerEdits.SetHeight(height)))
                         .onFocus(() -> editor.select(index)))
                 : Optional.empty();
         Rect thicker = new Rect(thinner.right() + field.map(number -> FIELD).orElse(0), middle, BUTTON, BUTTON);
-        return Stepper.of(button(editor, index, Icon.line("minus"), "flatgen.layer.shallower", thinner,
+        return Stepper.of(button(editor, index, Icon.line("minus"), "flatgen.layer.thinner", thinner,
                 new LayerEdits.ChangeHeight(-1), () -> height(editor, index) > 1, List::of), field,
-                button(editor, index, Icon.line("plus"), "flatgen.layer.deeper", thicker,
+                button(editor, index, Icon.line("plus"), "flatgen.layer.thicker", thicker,
                         new LayerEdits.ChangeHeight(1), () -> roomLeft(editor) > 0,
                         () -> LayerText.whyFull(editor.shown(), editor.world())));
     }
