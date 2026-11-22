@@ -43,7 +43,7 @@ layers.
 | Biome | the biome's own colours drawn as a little landscape (sky, grass, foliage, water), and its name |
 | Block, a template's block setting | the block itself, and its name |
 | Structures | own: a village house |
-| No slimes | the ladder of the ground's height with an up arrow: it raises the ground |
+| No slimes | own: a slime with the red "no" sign, as Always clear has it over a rain cloud (F31) |
 | Undo, Redo | own: a hooked arrow curling left, right |
 | Share | the preset, an arrow and a clipboard, as copying a code |
 | Paste | a clipboard, an arrow and the bookshelf of presets |
@@ -115,7 +115,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 |---|---|---|
 | Editor | the column, each layer | the layer's block side; the selected one outlined, the focus ring round it |
 | Editor | fact badges | each fact's picture: the ladder for the surface's height, a sunflower for sun, own rain and snow clouds, an own slime's face, a creeper's head for monsters; under the "no" sign for no; the snow and slime lines end in theirs |
-| Editor | No slimes | ladder with an up arrow |
+| Editor | No slimes | own: a slime with the red "no" sign (F31) |
 | Editor | favourites row | each favourite's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
 | Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, end stone; the chosen one raised; own flat badge |
