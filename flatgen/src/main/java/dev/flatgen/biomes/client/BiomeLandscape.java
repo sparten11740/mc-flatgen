@@ -21,13 +21,53 @@ final class BiomeLandscape {
     /** How much of the ground its top is, in hundredths of the ground's height. */
     private static final int TOP = 25;
     private static final int WHOLE = 100;
+    /** How much larger than its picture a close-up paints the landscape, in hundredths. */
+    private static final int CLOSE_UP_SIZE = 150;
+    /** Where a close-up's horizon is, in hundredths of the picture's height from its top: high, the ground big. */
+    private static final int CLOSE_UP_HORIZON = 60;
 
     private BiomeLandscape() {
     }
 
     /** Paints a biome over this area. */
     static void draw(Canvas canvas, BiomeInfo biome, Rect area) {
+        draw(canvas::fill, biome, BiomeScenes.of(biome), area);
+    }
+
+    /** Fills a rectangle with a colour: the canvas's own fill, or one that keeps a close-up inside its picture. */
+    private interface Fill {
+        void fill(Rect area, int colour);
+    }
+
+    /**
+     * Paints a biome near, for a picture too small for its whole landscape: the landscape larger than the area and cut
+     * to it, its horizon high and what stands on the ground in the middle as far as the landscape reaches, so a tree,
+     * a cactus or a peak is big.
+     */
+    static void drawCloseUp(Canvas canvas, BiomeInfo biome, Rect area) {
         BiomeScenes.Scene scene = BiomeScenes.of(biome);
+        int width = area.width() * CLOSE_UP_SIZE / WHOLE;
+        int height = area.height() * CLOSE_UP_SIZE / WHOLE;
+        int x = within(area.x() + area.width() / 2 - width * focus(scene) / WHOLE, area.right() - width, area.x());
+        int horizon = area.y() + area.height() * CLOSE_UP_HORIZON / WHOLE;
+        int y = within(horizon - height * (WHOLE - BiomeScenes.GROUND_SHARE) / WHOLE, area.bottom() - height,
+                area.y());
+        draw((part, colour) -> canvas.fill(part.within(area), colour), biome, scene, new Rect(x, y, width, height));
+    }
+
+    /** Where a scene's shapes stand, the middle of them all, in hundredths of the width; the middle without any. */
+    private static int focus(BiomeScenes.Scene scene) {
+        int left = scene.patches().stream().mapToInt(BiomeScenes.Patch::x).min().orElse(WHOLE / 2);
+        int right = scene.patches().stream().mapToInt(patch -> patch.x() + patch.width()).max().orElse(WHOLE / 2);
+        return (left + right) / 2;
+    }
+
+    /** A number kept between a least and a most. */
+    private static int within(int value, int least, int most) {
+        return Math.max(least, Math.min(most, value));
+    }
+
+    private static void draw(Fill canvas, BiomeInfo biome, BiomeScenes.Scene scene, Rect area) {
         BiomeInfo.Colours colours = biome.colours();
         boolean ownSky = scene.sky() == BiomeScenes.OWN;
         canvas.fill(area, ownSky ? colours.skyArgb() : scene.sky());
@@ -48,7 +88,7 @@ final class BiomeLandscape {
     }
 
     /** A ground: its colour or its bands, then its top. */
-    private static void drawGround(Canvas canvas, BiomeScenes.Ground look, BiomeInfo.Colours colours, Rect ground) {
+    private static void drawGround(Fill canvas, BiomeScenes.Ground look, BiomeInfo.Colours colours, Rect ground) {
         canvas.fill(ground, look.body());
         List<Integer> bands = look.bands();
         for (int index = 0; index < bands.size(); index++) {
@@ -63,7 +103,7 @@ final class BiomeLandscape {
     }
 
     /** A rectangle standing on the ground, in the biome's leaves where the scene asks for them. */
-    private static void drawPatch(Canvas canvas, BiomeScenes.Patch patch, BiomeInfo.Colours colours, Rect area,
+    private static void drawPatch(Fill canvas, BiomeScenes.Patch patch, BiomeInfo.Colours colours, Rect area,
             int groundTop) {
         int height = share(area.height(), patch.height());
         int bottom = groundTop - area.height() * patch.bottom() / WHOLE;

@@ -21,8 +21,18 @@ class BiomeScenesTest {
         BiomeScenes.Scene savanna = scene("minecraft:savanna", 2F, false, OVERWORLD, "minecraft:is_savanna");
         assertNotEquals(desert.ground(), badlands.ground());
         assertNotEquals(desert.ground(), savanna.ground());
-        assertEquals(List.of(), desert.patches());
-        assertNotEquals(List.of(), savanna.patches());
+        assertNotEquals(List.of(), desert.patches());
+        assertNotEquals(desert.patches(), savanna.patches());
+        assertEquals(List.of(), badlands.patches());
+    }
+
+    @Test
+    void givesTheBambooJungleBambooAndTheNetherLavaInItsGround() {
+        BiomeScenes.Scene jungle = scene("minecraft:jungle", 0.95F, true, OVERWORLD, "minecraft:is_jungle");
+        BiomeScenes.Scene bamboo = scene("minecraft:bamboo_jungle", 0.95F, true, OVERWORLD, "minecraft:is_jungle");
+        assertNotEquals(jungle.patches(), bamboo.patches());
+        BiomeScenes.Scene nether = scene("minecraft:nether_wastes", 2F, false, "minecraft:is_nether");
+        assertTrue(nether.patches().stream().anyMatch(patch -> patch.bottom() < 0));
     }
 
     @Test

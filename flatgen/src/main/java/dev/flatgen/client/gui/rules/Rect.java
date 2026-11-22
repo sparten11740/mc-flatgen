@@ -23,4 +23,12 @@ public record Rect(int x, int y, int width, int height) {
     public boolean contains(double pointX, double pointY) {
         return pointX >= x && pointX < right() && pointY >= y && pointY < bottom();
     }
+
+    /** The part of it inside another rectangle, empty (no width or no height) where they do not meet. */
+    public Rect within(Rect bounds) {
+        int left = Math.max(x, bounds.x());
+        int top = Math.max(y, bounds.y());
+        return new Rect(left, top, Math.max(0, Math.min(right(), bounds.right()) - left),
+                Math.max(0, Math.min(bottom(), bounds.bottom()) - top));
+    }
 }

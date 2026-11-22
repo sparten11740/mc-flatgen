@@ -19,7 +19,7 @@ pictures, four ways").
 - [x] Make flat and Let the game make it get two pictures unlike each other, in each dimension's own blocks: a neat
   stack of flat layers, and the dimension's own rough ground (netherrack crags with lava, an End stone island); 32
   pixels in the empty state, 16 on the button.
-- [ ] Small biome pictures (16 pixels: the shelves, the Biome button, the recent and starred rows) are close-ups (the
+- [x] Small biome pictures (16 pixels: the shelves, the Biome button, the recent and starred rows) are close-ups (the
   canvas's A): the horizon high and the biome's feature big, such as a tree, a cactus, a spruce, a peak, lava, an End
   island, or bamboo for the bamboo jungle. The picker's big pictures stay whole landscapes.
 - [ ] One click picks in both pickers. In the biome picker the details follow the pointer and the keyboard's focus,

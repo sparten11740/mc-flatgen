@@ -8,9 +8,9 @@ import java.util.function.Predicate;
 
 /**
  * How a biome is painted as a little landscape, so a player who cannot read tells one from another: its sky, its
- * ground and the shapes standing on it (a tree of its kind, a peak behind, a mushroom, flowers), each picked by the
- * biome's tags, name and climate, so a mod's biomes are painted as the game's of their kind. A new look is one more
- * rule in a list; the painting only draws what a scene holds.
+ * ground and the shapes standing on it (a tree of its kind, a cactus, bamboo, a peak behind, a mushroom, flowers, the
+ * Nether's lava), each picked by the biome's tags, name and climate, so a mod's biomes are painted as the game's of
+ * their kind. A new look is one more rule in a list; the painting only draws what a scene holds.
  */
 public final class BiomeScenes {
     /** A colour standing for the biome's own sky, grass or leaves; clear, so that no colour painted is it. */
@@ -36,6 +36,9 @@ public final class BiomeScenes {
     private static final int POPPY = 0xFFD03030;
     private static final int DANDELION = 0xFFF0D020;
     private static final int CORNFLOWER = 0xFF4A6AE0;
+    private static final int CACTUS_GREEN = 0xFF3E8E3A;
+    private static final int BAMBOO_GREEN = 0xFF6FA83A;
+    private static final int LAVA = 0xFFFF8A1F;
     private static final List<Integer> TERRACOTTA = List.of(0xFFB05A2A, 0xFFD0884A, 0xFF9A3E2A, 0xFFC8A060,
             0xFFB86A3A);
     private static final int VOID_SKY = 0xFF14161C;
@@ -62,7 +65,7 @@ public final class BiomeScenes {
 
     /**
      * A rectangle standing on the ground: from the picture's left and from the ground's top up, in hundredths of the
-     * picture's width and height, and its colour.
+     * picture's width and height, and its colour; one whose bottom is below the ground's top lies in the ground.
      *
      * @param x      its left, in hundredths of the width
      * @param bottom its bottom above the ground's top, in hundredths of the height
@@ -111,6 +114,14 @@ public final class BiomeScenes {
     private static final List<Patch> CHERRY = List.of(new Patch(22, 0, 6, 16, TRUNK),
             new Patch(10, 14, 30, 28, CHERRY_LEAVES));
     private static final List<Patch> JUNGLE = List.of(new Patch(22, 0, 6, 36, TRUNK), new Patch(10, 32, 30, 24, OWN));
+    private static final List<Patch> CACTUS = List.of(new Patch(24, 0, 8, 34, CACTUS_GREEN),
+            new Patch(16, 14, 8, 5, CACTUS_GREEN), new Patch(16, 19, 4, 9, CACTUS_GREEN),
+            new Patch(32, 18, 8, 5, CACTUS_GREEN), new Patch(36, 23, 4, 8, CACTUS_GREEN));
+    private static final List<Patch> BAMBOO = List.of(new Patch(14, 0, 4, 46, BAMBOO_GREEN),
+            new Patch(24, 0, 4, 38, BAMBOO_GREEN), new Patch(34, 0, 4, 42, BAMBOO_GREEN), new Patch(18, 30, 6, 4, OWN),
+            new Patch(28, 24, 6, 4, OWN), new Patch(38, 34, 6, 4, OWN));
+    /** A pool in the ground's top: a patch reaching below the ground's top, as far as its height. */
+    private static final List<Patch> LAVA_POOL = List.of(new Patch(28, -10, 44, 10, LAVA));
     private static final List<Patch> PEAK = List.of(new Patch(42, 0, 50, 14, STONE_LIGHT),
             new Patch(50, 14, 34, 12, STONE_LIGHT), new Patch(58, 26, 18, 10, STONE_LIGHT),
             new Patch(62, 32, 10, 5, SNOW));
@@ -145,10 +156,13 @@ public final class BiomeScenes {
             new Rule<>(named("birch"), BIRCH),
             new Rule<>(BiomeKinds.TAIGA, SPRUCE),
             new Rule<>(BiomeKinds.SAVANNA, ACACIA),
+            new Rule<>(named("bamboo"), BAMBOO),
             new Rule<>(BiomeKinds.JUNGLE, JUNGLE),
+            new Rule<>(named("desert"), CACTUS),
             new Rule<>(BiomeKinds.FOREST.or(BiomeKinds.SWAMP), OAK));
-    /** More a biome has, each that holds: a peak behind, a mushroom, flowers. */
+    /** More a biome has, each that holds: a peak behind, a mushroom, flowers, the Nether's lava. */
     private static final List<Rule<List<Patch>>> EXTRAS = List.of(
+            new Rule<>(BiomeKinds.NETHER, LAVA_POOL),
             new Rule<>(BiomeKinds.MOUNTAIN.and(named("meadow").negate()), PEAK),
             new Rule<>(named("mushroom"), MUSHROOM),
             new Rule<>(named("meadow").or(named("flower")), FLOWERS));
