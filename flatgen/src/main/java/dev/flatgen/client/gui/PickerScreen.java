@@ -11,15 +11,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 /**
  * A picker, a sheet over the screen it came from: every entry of its kind as cards, found by typing and narrowed to
- * one mod by the search, the mod filter and Close at the right of its header. Picking one hands it on and goes back, as
- * Close and Escape go back without; the picks and stars are kept in the picker's own file for next time. The header's
- * left and the sheet below it are each picker's own; {@link ShelvedPickerScreen} adds the shelves both pickers have.
+ * one mod by the search, the mod filter (a menu of the mods) and Close at the right of its header. Picking one hands it
+ * on and goes back, as Close and Escape go back without; the picks and stars are kept in the picker's own file for next
+ * time. The header's left and the sheet below it are each picker's own; {@link ShelvedPickerScreen} adds the shelves
+ * both pickers have.
  */
 public abstract class PickerScreen extends FlatgenScreen {
     /** The most room left around the sheet at the screen's sides and top and bottom, in GUI pixels. */
@@ -55,6 +57,8 @@ public abstract class PickerScreen extends FlatgenScreen {
     private String query = "";
     /** The mod the grid is narrowed to, by its place in {@link #mods}; -1 for every mod. */
     private int mod = -1;
+    /** Where the mod filter is, as last laid out, which its menu opens under. */
+    private Rect modPlace = new Rect(0, 0, 0, 0);
     private CardGrid grid;
     /** The sections for {@link #sectionsFor}, kept until the search, the mod or the picks changes. */
     private List<CardGrid.Section> sections;
@@ -110,15 +114,15 @@ public abstract class PickerScreen extends FlatgenScreen {
         int left = sheet.x() + PADDING;
         int headerTop = sheet.y() + PADDING;
         Rect close = new Rect(sheet.right() - PADDING - ROW_HEIGHT, headerTop, ROW_HEIGHT, ROW_HEIGHT);
-        Rect modPlace = new Rect(close.x() - GAP - MOD_WIDTH, headerTop, MOD_WIDTH, ROW_HEIGHT);
+        modPlace = new Rect(close.x() - GAP - MOD_WIDTH, headerTop, MOD_WIDTH, ROW_HEIGHT);
         int searchWidth = TextField.searchWidth(SEARCH_WIDTH);
         Rect search = new Rect(modPlace.x() - GAP - searchWidth, headerTop, searchWidth, ROW_HEIGHT);
         int bodyTop = headerTop + ROW_HEIGHT + PADDING;
         List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.SHEET, sheet)));
         widgets.addAll(header(new Rect(left, headerTop, search.x() - GAP - left, ROW_HEIGHT)));
         widgets.add(new WidgetGroup(List.of(TextField.search(search, picker.searchHint(), query, this::search),
-                new TextButton((canvas, x, y) -> modPicture().draw(canvas, x, y), this::modLabel, modPlace,
-                        this::nextMod, () -> true, List::of))));
+                new TextButton((canvas, x, y) -> modPicture(mod).draw(canvas, x, y), this::modLabel, modPlace,
+                        this::openMods, () -> true, List::of))));
         widgets.addAll(body(new Rect(left, bodyTop, sheet.width() - 2 * PADDING, sheet.bottom() - PADDING - bodyTop)));
         widgets.add(new PictureButton(Icon.line("cross"), close, this::onClose,
                 () -> List.of(CommonComponents.GUI_CANCEL)));
@@ -237,18 +241,36 @@ public abstract class PickerScreen extends FlatgenScreen {
         grid.toTop();
     }
 
-    /** The mod filter's picture: every mod's, or the mod's first entry's. */
-    private Icon modPicture() {
-        return mod < 0 ? ALL_MODS : picker.entries().stream().filter(entry -> entry.namespace().equals(mods.get(mod)))
-                .findFirst().map(entry -> picker.picture().apply(entry.id())).orElse(ALL_MODS);
+    /** A mod's picture, by its place in {@link #mods}: its first entry's; every mod's for -1. */
+    private Icon modPicture(int index) {
+        return index < 0 ? ALL_MODS : picker.entries().stream()
+                .filter(entry -> entry.namespace().equals(mods.get(index))).findFirst()
+                .map(entry -> picker.picture().apply(entry.id())).orElse(ALL_MODS);
     }
 
     private Component modLabel() {
         return mod < 0 ? Component.translatable("flatgen.picks.all_mods") : Component.literal(modName(mods.get(mod)));
     }
 
-    private void nextMod() {
-        mod = mod + 1 < mods.size() ? mod + 1 : -1;
+    /** Opens the menu of the mods under the mod filter: every mod, then each mod whose entries the picker has. */
+    private void openMods() {
+        List<MenuScreen.Row> each = IntStream.range(0, mods.size()).mapToObj(this::modRow).toList();
+        MenuScreen.Row every = MenuScreen.action(ALL_MODS, Component.translatable("flatgen.picks.all_mods"),
+                Component.translatable("flatgen.picks.all_mods_tip"), () -> true, () -> showMod(-1));
+        Screens.show(new MenuScreen(Component.translatable("flatgen.picks.mods"), this, () -> modPlace,
+                List.of(List.of(every), each)));
+    }
+
+    /** A mod's row in the menu, by its place in {@link #mods}: its picture and its name, narrowing the grid to it. */
+    private MenuScreen.Row modRow(int index) {
+        Component name = Component.literal(modName(mods.get(index)));
+        return MenuScreen.action(modPicture(index), name, Component.translatable("flatgen.picks.mod_tip", name),
+                () -> true, () -> showMod(index));
+    }
+
+    /** Narrows the grid to a mod's entries, by its place in {@link #mods}, or shows every mod's for -1. */
+    private void showMod(int index) {
+        mod = index;
         grid.toTop();
     }
 }

@@ -13,7 +13,7 @@ import java.util.Optional;
  */
 public final class ScrollGroup implements Widget {
     /** How far inside the window's top and bottom the content starts and ends, in GUI pixels. */
-    private static final int INSET = 2;
+    public static final int INSET = 2;
     /** The bar's width and its distance from the window, in GUI pixels. */
     private static final int BAR_WIDTH = 2;
     private static final int BAR_GAP = 2;

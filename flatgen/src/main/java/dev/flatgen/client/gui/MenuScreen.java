@@ -14,8 +14,9 @@ import net.minecraft.network.chat.Component;
 
 /**
  * A menu over the screen it came from, opened from a button there: rows on a raised panel under the button, groups of
- * them parted by lines. A row that does something closes the menu first; one that stays, such as a switch, keeps it
- * open to be turned over again. A click outside the panel and Escape close it.
+ * them parted by lines, scrolling when they are more than fit below the button. A row that does something closes the
+ * menu first; one that stays, such as a switch, keeps it open to be turned over again. A click outside the panel and
+ * Escape close it.
  */
 public final class MenuScreen extends FlatgenScreen {
     /** The panel's width, a row's height and the space inside the panel's edges, in GUI pixels. */
@@ -26,6 +27,8 @@ public final class MenuScreen extends FlatgenScreen {
     private static final int SEPARATOR = 7;
     /** The space between the button and the panel under it, in GUI pixels. */
     private static final int BELOW = 2;
+    /** The room the rows leave at their right for the bar of a menu that scrolls, in GUI pixels. */
+    private static final int SCROLL_BAR_ROOM = 4;
 
     private final Screen parent;
     /** Where the button that opened the menu is now, as the screen behind lays it out again when the window changes. */
@@ -69,35 +72,47 @@ public final class MenuScreen extends FlatgenScreen {
         return (place, close) -> widget.apply(place);
     }
 
-    /** The panel under the button, its right edge at the button's, kept on the screen. */
+    /**
+     * The panel under the button, its right edge at the button's, kept on the screen: its rows as they are when they
+     * fit below the button, else in a window that scrolls, the window's inset keeping the first row where it would be.
+     */
     @Override
     protected List<Widget> layOut(int width, int height) {
         int rows = groups.stream().mapToInt(List::size).sum();
-        int panelHeight = 2 * PADDING + rows * ROW + (groups.size() - 1) * SEPARATOR;
+        int contentHeight = rows * ROW + (groups.size() - 1) * SEPARATOR;
         Rect under = button.get();
         int x = Math.max(PageFrame.MARGIN, Math.min(under.right(), width - PageFrame.MARGIN) - WIDTH);
-        panel = new Rect(x, under.bottom() + BELOW, WIDTH, panelHeight);
+        int top = under.bottom() + BELOW;
+        boolean fits = 2 * PADDING + contentHeight <= height - PageFrame.MARGIN - top;
+        panel = new Rect(x, top, WIDTH, fits ? 2 * PADDING + contentHeight : height - PageFrame.MARGIN - top);
         List<Widget> widgets = new ArrayList<>(List.of(new Surface(Look.TOOLTIP, panel)));
-        int y = panel.y() + PADDING;
-        for (int index = 0; index < groups.size(); index++) {
-            y = addGroup(widgets, groups.get(index), y);
-            if (index < groups.size() - 1) {
-                Rect line = new Rect(panel.x() + PADDING, y + SEPARATOR / 2, WIDTH - 2 * PADDING, 1);
-                widgets.add((canvas, mouseX, mouseY) -> canvas.fill(line, Look.DIVIDER));
-                y += SEPARATOR;
-            }
+        if (fits) {
+            widgets.addAll(rows(panel.y() + PADDING, WIDTH - 2 * PADDING).widgets());
+        } else {
+            int inset = PADDING - ScrollGroup.INSET;
+            widgets.add(new ScrollGroup(new Rect(panel.x() + PADDING, panel.y() + inset,
+                    WIDTH - 2 * PADDING - SCROLL_BAR_ROOM, panel.height() - 2 * inset),
+                    rowsTop -> rows(rowsTop, WIDTH - 2 * PADDING - SCROLL_BAR_ROOM)));
         }
         return widgets;
     }
 
-    /** Adds a group's rows from this height; the height after them. */
-    private int addGroup(List<Widget> widgets, List<Row> group, int top) {
+    /** The groups' rows this wide from a height down, lines parting the groups, and the height after them. */
+    private ScrollGroup.Laid rows(int top, int rowWidth) {
+        List<Widget> widgets = new ArrayList<>();
         int y = top;
-        for (Row row : group) {
-            widgets.add(row.at(new Rect(panel.x() + PADDING, y, WIDTH - 2 * PADDING, ROW), this::onClose));
-            y += ROW;
+        for (int index = 0; index < groups.size(); index++) {
+            for (Row row : groups.get(index)) {
+                widgets.add(row.at(new Rect(panel.x() + PADDING, y, rowWidth, ROW), this::onClose));
+                y += ROW;
+            }
+            if (index < groups.size() - 1) {
+                Rect line = new Rect(panel.x() + PADDING, y + SEPARATOR / 2, rowWidth, 1);
+                widgets.add((canvas, mouseX, mouseY) -> canvas.fill(line, Look.DIVIDER));
+                y += SEPARATOR;
+            }
         }
-        return y;
+        return new ScrollGroup.Laid(widgets, y);
     }
 
     /** A click outside the panel closes the menu. */
