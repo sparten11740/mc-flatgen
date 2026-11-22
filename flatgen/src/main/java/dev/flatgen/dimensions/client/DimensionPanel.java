@@ -5,7 +5,6 @@ import dev.flatgen.client.gui.Chip;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.Look;
-import dev.flatgen.client.gui.QuestionScreen;
 import dev.flatgen.client.gui.Surface;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextStyle;
@@ -24,8 +23,9 @@ import net.minecraft.network.chat.Component;
 
 /**
  * The Nether's or the End's own controls (F22): for one the game makes, the dimension as the game makes it and a button
- * that makes it flat with a first stack; for a flat one, a button that gives it back to the game, after asking. When a
- * data pack makes the dimension, it says so in place of making it flat, as the pack's dimension would win.
+ * that makes it flat with a first stack; for a flat one, a button that gives it back to the game at once, Undo bringing
+ * the layers back. When a data pack makes the dimension, it says so in place of making it flat, as the pack's dimension
+ * would win.
  */
 public final class DimensionPanel implements EditorPanel {
     /** The picture of making a dimension flat: bumpy ground, an arrow, flat stripes. */
@@ -56,7 +56,7 @@ public final class DimensionPanel implements EditorPanel {
         Dimension dimension = editor.shown().edited();
         if (editor.shown().stack().isPresent()) {
             layout.buttonBox(GIVE_BACK, Component.translatable("flatgen.dimension.give_back"),
-                    () -> askToGiveBack(editor, dimension),
+                    () -> editor.apply(new SetStack(Optional.empty())),
                     () -> List.of(Component.translatable("flatgen.dimension.give_back_tip")));
             return;
         }
@@ -109,14 +109,6 @@ public final class DimensionPanel implements EditorPanel {
     /** Gives the dimension its first stack. */
     private static void makeFlat(EditorContext editor, Dimension dimension) {
         editor.apply(new SetStack(Optional.of(NewStacks.of(dimension))));
-    }
-
-    /** Asks before the flat dimension's layers go; undo would bring them back too. */
-    private static void askToGiveBack(EditorContext editor, Dimension dimension) {
-        Component name = DimensionPictures.name(dimension);
-        editor.open(new QuestionScreen(editor.screen(), GIVE_BACK, name,
-                List.of(Component.translatable("flatgen.dimension.give_back_question", name)),
-                () -> editor.apply(new SetStack(Optional.empty()))));
     }
 
     /** "Make the Nether flat" or "Make the End flat". */

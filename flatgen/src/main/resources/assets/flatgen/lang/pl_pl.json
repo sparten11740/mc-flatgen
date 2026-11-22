@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Tworzony przez grę",
   "flatgen.dimension.game_made_title": "Gra tworzy %s",
   "flatgen.dimension.give_back": "Niech gra to zrobi",
-  "flatgen.dimension.give_back_question": "Niech gra znów tworzy %s? Warstwy znikną; „Cofnij” je przywróci.",
   "flatgen.dimension.give_back_tip": "Usuwa te warstwy, a gra tworzy ten wymiar jak zwykle",
   "flatgen.dimension.make_flat": "Spłaszcz %s",
   "flatgen.dimension.make_flat_tip": "Dostaje własne warstwy, jak Nadziemie; portale nadal działają",

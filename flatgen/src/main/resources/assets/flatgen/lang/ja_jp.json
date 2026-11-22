@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "ゲームが生成",
   "flatgen.dimension.game_made_title": "%sはゲームが生成",
   "flatgen.dimension.give_back": "ゲームに生成させる",
-  "flatgen.dimension.give_back_question": "%sを再びゲームに生成させますか？地層は消えますが、「元に戻す」で戻せます。",
   "flatgen.dimension.give_back_tip": "この地層を消して、このディメンションをいつも通りゲームに生成させる",
   "flatgen.dimension.make_flat": "%sをフラットに",
   "flatgen.dimension.make_flat_tip": "オーバーワールドのように独自の地層を持たせる。ポータルはそのまま使える",

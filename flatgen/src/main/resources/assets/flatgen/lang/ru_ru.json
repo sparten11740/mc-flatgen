@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Создаёт игра",
   "flatgen.dimension.game_made_title": "%s создаёт игра",
   "flatgen.dimension.give_back": "Отдать игре",
-  "flatgen.dimension.give_back_question": "Снова отдать %s игре? Слои пропадут, но «Отменить» вернёт их.",
   "flatgen.dimension.give_back_tip": "Убирает эти слои, и игра создаёт это измерение как обычно",
   "flatgen.dimension.make_flat": "Сделать %s плоским",
   "flatgen.dimension.make_flat_tip": "Даёт ему свои слои, как у обычного мира; порталы работают как прежде",

@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "由游戏生成",
   "flatgen.dimension.game_made_title": "%s由游戏生成",
   "flatgen.dimension.give_back": "交给游戏生成",
-  "flatgen.dimension.give_back_question": "让游戏重新生成%s吗？它的层会被移除；用“撤销”可以找回。",
   "flatgen.dimension.give_back_tip": "移除这些层，让游戏像平常一样生成这个维度",
   "flatgen.dimension.make_flat": "让%s变平坦",
   "flatgen.dimension.make_flat_tip": "像主世界一样给它自己的层；传送门照常可用",

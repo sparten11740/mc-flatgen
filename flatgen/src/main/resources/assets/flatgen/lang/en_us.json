@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Made by the game",
   "flatgen.dimension.game_made_title": "The game makes the %s",
   "flatgen.dimension.give_back": "Let the game make it",
-  "flatgen.dimension.give_back_question": "Let the game make the %s again? Its layers go; Undo brings them back.",
   "flatgen.dimension.give_back_tip": "Drops these layers, and the game makes this dimension as it always does",
   "flatgen.dimension.make_flat": "Make the %s flat",
   "flatgen.dimension.make_flat_tip": "Gives it layers of its own, as the overworld has; the portals keep working",

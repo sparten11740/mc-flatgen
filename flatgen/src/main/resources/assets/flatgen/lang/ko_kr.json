@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "게임이 만듦",
   "flatgen.dimension.game_made_title": "게임이 만드는 %s",
   "flatgen.dimension.give_back": "게임에 맡기기",
-  "flatgen.dimension.give_back_question": "%s을(를) 다시 게임에 맡길까요? 레이어는 사라지지만 '실행 취소'로 되돌릴 수 있습니다.",
   "flatgen.dimension.give_back_tip": "이 레이어를 버리고, 게임이 이 차원을 평소대로 만듭니다",
   "flatgen.dimension.make_flat": "%s 평평하게 만들기",
   "flatgen.dimension.make_flat_tip": "오버월드처럼 고유한 레이어를 줍니다. 차원문은 그대로 작동합니다",

@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Creado por el juego",
   "flatgen.dimension.game_made_title": "El juego crea el %s",
   "flatgen.dimension.give_back": "Dejárselo al juego",
-  "flatgen.dimension.give_back_question": "¿Dejar que el juego vuelva a crear el %s? Sus capas desaparecen; Deshacer las recupera.",
   "flatgen.dimension.give_back_tip": "Quita estas capas, y el juego crea esta dimensión como siempre",
   "flatgen.dimension.make_flat": "Aplanar el %s",
   "flatgen.dimension.make_flat_tip": "Le da capas propias, como el mundo superior; los portales siguen funcionando",

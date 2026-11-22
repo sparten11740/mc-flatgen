@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Vom Spiel gemacht",
   "flatgen.dimension.game_made_title": "Vom Spiel gemacht: %s",
   "flatgen.dimension.give_back": "Vom Spiel machen lassen",
-  "flatgen.dimension.give_back_question": "%s wieder vom Spiel machen lassen? Die Schichten verschwinden; Rückgängig holt sie zurück.",
   "flatgen.dimension.give_back_tip": "Verwirft diese Schichten, und das Spiel macht die Dimension wie immer",
   "flatgen.dimension.make_flat": "%s flach machen",
   "flatgen.dimension.make_flat_tip": "Bekommt eigene Schichten wie die Oberwelt; die Portale funktionieren weiter",

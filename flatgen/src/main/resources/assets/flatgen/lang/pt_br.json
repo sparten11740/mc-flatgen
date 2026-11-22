@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Criado pelo jogo",
   "flatgen.dimension.game_made_title": "O jogo cria o %s",
   "flatgen.dimension.give_back": "Deixar com o jogo",
-  "flatgen.dimension.give_back_question": "Deixar o jogo criar o %s de novo? As camadas somem; Desfazer as traz de volta.",
   "flatgen.dimension.give_back_tip": "Descarta estas camadas, e o jogo cria esta dimensão como sempre",
   "flatgen.dimension.make_flat": "Deixar o %s plano",
   "flatgen.dimension.make_flat_tip": "Ganha camadas próprias, como a Superfície; os portais continuam funcionando",

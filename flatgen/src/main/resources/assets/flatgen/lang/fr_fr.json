@@ -35,7 +35,6 @@
   "flatgen.dimension.game_made": "Le jeu s'en charge",
   "flatgen.dimension.game_made_title": "%s : le jeu s'en charge",
   "flatgen.dimension.give_back": "Laisser faire le jeu",
-  "flatgen.dimension.give_back_question": "%s : laisser le jeu s'en charger à nouveau ? Ses couches disparaissent ; \"Défaire\" les ramène.",
   "flatgen.dimension.give_back_tip": "Retire ces couches : le jeu crée cette dimension comme d'habitude",
   "flatgen.dimension.make_flat": "Rendre plat : %s",
   "flatgen.dimension.make_flat_tip": "Lui donne ses propres couches, comme la Surface ; les portails marchent toujours",
