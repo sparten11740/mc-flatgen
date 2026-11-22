@@ -74,7 +74,8 @@ of Generate Structures; the game's editor as a panel; shared click and key handl
 export names; dead code gone (CycleButton, text-only buttons, methods only tests used, unused pictures); the drawing
 tools' shared PNG writer; and the templates' preview showing a thin top.
 
-Left for the owner, as they would change screens the owner designed or words in all ten languages:
+Left for the owner, as they would change screens the owner designed or words in all ten languages (decided on
+2026-11-22, the work in [F31](31-review-decisions.md)):
 
 - No slimes stands among the facts at a fact's size and reads as one; it could be a button with words on a row of its
   own, its picture the slime face with the up arrow.

@@ -86,6 +86,7 @@ v3 and v4 may swap; both come after v2.
 | F21 | [Exports for servers and datapacks](21-exports.md) | done | F20 |
 | F22 | [Flat Nether and End](22-flat-nether-end.md) | done | F20 |
 | F28 | [Java API for world options](28-options-java-api.md) | todo | F27, F20 |
+| F31 | [What the release review left open](31-review-decisions.md) | todo | F20 |
 
 ### Design track, when the owner asks for it
 
