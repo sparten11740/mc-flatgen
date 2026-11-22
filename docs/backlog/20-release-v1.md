@@ -1,6 +1,6 @@
 # F20 Release v1
 
-Milestone: M4 finish and release v1 · Release: v1 · Status: doing · Depends on: F00 to F19
+Milestone: M4 finish and release v1 · Release: v1 · Status: done · Depends on: F00 to F19
 
 ## Why
 
@@ -9,11 +9,11 @@ page that says what Flatgen does.
 
 ## Acceptance criteria
 
-- [ ] Every v1 feature done; the milestone reviews of M0 to M4 done and their findings fixed.
+- [x] Every v1 feature done; the milestone reviews of M0 to M4 done and their findings fixed.
 - [x] Boot test: a dedicated server of each loader starts with the jar in its mods folder and is unaffected (client
   mod), and a client of each loader starts with it (`tools/boot.mjs`, as in Glowline), also on the oldest loader
   versions the metadata accepts (NeoForge 21.1.1, Fabric Loader 0.16.14).
-- [ ] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender present:
+- [x] Played in the test instance (NeoForge, about 105 mods) with Create Aeronautics, Hydrol and TerraBlender present:
   Customize, editing, presets, a world created and loaded. Copying the jar into the instance is asked for first.
 - [x] GitHub Actions: build and release workflows as in Glowline, run on request.
 - [x] README with screenshots; the CurseForge page (Modrinth not for now); changelog from the `feat` and `fix` commit
@@ -102,5 +102,5 @@ and a promo video (recorded with Blockpilot's `record`) are ready outside the re
 Blockpilot's does: on GitHub Actions it built every node with its tests and GameTests, booted each jar on its servers,
 uploaded the twelve jars to CurseForge and made the GitHub release, the notes on both the changelog's 1.0.0 section. The
 first tag pushes found workflows turned off in the repository, and the first run stopped at the pictures check, which
-took Python's bytecode cache for a changed picture (now ignored); the tag was moved to the commit with that fix. Left
-for the owner to tick: every v1 feature and milestone review, and play in the test instance.
+took Python's bytecode cache for a changed picture (now ignored); the tag was moved to the commit with that fix. The
+owner ticked the rest, every v1 feature and milestone review and play in the test instance, and F20 is done.
