@@ -58,7 +58,7 @@ public final class PictureButton implements Control {
         return this;
     }
 
-    /** Whether the keyboard's focus is on it. */
+    @Override
     public boolean focused() {
         return focused;
     }

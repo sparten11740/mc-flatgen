@@ -82,6 +82,11 @@ public final class TextField implements Control {
     }
 
     @Override
+    public boolean focused() {
+        return keyboard;
+    }
+
+    @Override
     public void keyboard(boolean held) {
         keyboard = held;
     }

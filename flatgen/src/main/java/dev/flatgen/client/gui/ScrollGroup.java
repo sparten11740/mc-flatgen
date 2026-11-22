@@ -26,10 +26,16 @@ public final class ScrollGroup implements Widget {
 
     private final Rect window;
     private final Content content;
-    private int scroll;
+    /** How far it is scrolled, kept where its owner says, so a group laid out anew starts where the last one was. */
+    private final Position position;
     private WidgetGroup widgets;
     /** How tall the widgets are laid out, from the first one's top to the last one's bottom. */
     private int contentHeight;
+
+    /** How far a scrolling group is scrolled, in GUI pixels, kept by its owner across the groups it lays out. */
+    public static final class Position {
+        private int scroll;
+    }
 
     /** Lays the widgets out from a top Y down. */
     public interface Content {
@@ -46,11 +52,17 @@ public final class ScrollGroup implements Widget {
     public record Laid(List<Widget> widgets, int bottom) {
     }
 
-    /** A window onto widgets laid out from its top down. */
+    /** A window onto widgets laid out from its top down, starting at its top. */
     public ScrollGroup(Rect window, Content content) {
+        this(window, content, new Position());
+    }
+
+    /** A window onto widgets laid out from its top down, scrolled as far as this position, as far as they reach. */
+    public ScrollGroup(Rect window, Content content, Position position) {
         this.window = window;
         this.content = content;
-        layOut();
+        this.position = position;
+        layOutAgain();
     }
 
     @Override
@@ -88,9 +100,9 @@ public final class ScrollGroup implements Widget {
         if (widgets.scroll(x, y, amount, modifiers)) {
             return true;
         }
-        int scrolled = Scrolling.scrolled(scroll, amount, Scrolling.WHEEL_STEP, hidden());
-        if (scrolled != scroll) {
-            scroll = scrolled;
+        int scrolled = Scrolling.scrolled(position.scroll, amount, Scrolling.WHEEL_STEP, hidden());
+        if (scrolled != position.scroll) {
+            position.scroll = scrolled;
             widgets.keyboard(false);
             layOut();
         }
@@ -129,15 +141,15 @@ public final class ScrollGroup implements Widget {
 
     /** Scrolls so an area of the content, as it lies with the content scrolled to its top, is in sight. */
     public void revealContent(Rect area) {
-        reveal(new Rect(area.x(), area.y() - scroll, area.width(), area.height()));
+        reveal(new Rect(area.x(), area.y() - position.scroll, area.width(), area.height()));
     }
 
     /** Scrolls so that a part of the widgets is in the window, as far as it fits. */
     @Override
     public void reveal(Rect area) {
-        int scrolled = Scrolling.showing(scroll, area, window, hidden());
-        if (scrolled != scroll) {
-            scroll = scrolled;
+        int scrolled = Scrolling.showing(position.scroll, area, window, hidden());
+        if (scrolled != position.scroll) {
+            position.scroll = scrolled;
             layOut();
         }
     }
@@ -153,8 +165,8 @@ public final class ScrollGroup implements Widget {
      */
     public void layOutAgain() {
         layOut();
-        if (scroll > hidden()) {
-            scroll = hidden();
+        if (position.scroll > hidden()) {
+            position.scroll = hidden();
             layOut();
         }
     }
@@ -166,7 +178,7 @@ public final class ScrollGroup implements Widget {
 
     /** Lays the content out a little inside the window's top, so its first border never touches the clip. */
     private void layOut() {
-        int top = window.y() - scroll + INSET;
+        int top = window.y() - position.scroll + INSET;
         Laid laid = content.layOut(top);
         widgets = new WidgetGroup(laid.widgets());
         contentHeight = laid.bottom() - top + 2 * INSET;
@@ -180,7 +192,7 @@ public final class ScrollGroup implements Widget {
     private void drawBar(Canvas canvas) {
         Rect track = new Rect(window.right() + BAR_GAP, window.y(), BAR_WIDTH, window.height());
         int handleHeight = Math.max(SHORTEST_HANDLE, window.height() * window.height() / contentHeight);
-        int handleY = track.y() + scroll * (track.height() - handleHeight) / hidden();
+        int handleY = track.y() + position.scroll * (track.height() - handleHeight) / hidden();
         canvas.fill(track, BAR_TRACK);
         canvas.fill(new Rect(track.x(), handleY, BAR_WIDTH, handleHeight), BAR_HANDLE);
     }

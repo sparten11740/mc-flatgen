@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Label;
 import dev.flatgen.client.gui.NumberField;
+import dev.flatgen.client.gui.ScrollGroup;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Modifiers;
@@ -25,19 +26,29 @@ public final class LayerPanel implements EditorPanel {
     /** How wide the field to type the ground's Y is, in GUI pixels. */
     private static final int FIELD = 40;
 
+    /** How far the cards are scrolled, kept as the editor lays them out again, as an edit adds or removes a layer. */
+    private final ScrollGroup.Position cardsScroll = new ScrollGroup.Position();
+
     /** Shown for every dimension the preset gives a stack of its own (F22). */
     @Override
     public boolean shows(EditorContext editor) {
         return editor.shown().stack().isPresent();
     }
 
-    /** The cards in the layers' place ({@link LayerCards#list}); the bar's controls above them. */
+    /**
+     * The cards in the layers' place ({@link LayerCards#list}); the bar's controls above them. The cards are laid out
+     * only where the place has room: the editor also lays the panels out without any, to measure its header, which
+     * would scroll the cards' kept position.
+     */
     @Override
     public void layOut(EditorContext editor, EditorLayout layout) {
         if (editor.advanced()) {
             layout.add(EditorRegion.LAYERS_BAR, groundRow(editor, layout.flow(EditorRegion.LAYERS_BAR)));
         }
-        layout.add(EditorRegion.LAYERS, LayerCards.list(editor, layout.area(EditorRegion.LAYERS)));
+        Rect place = layout.area(EditorRegion.LAYERS);
+        if (place.height() > 0) {
+            layout.add(EditorRegion.LAYERS, LayerCards.list(editor, place, cardsScroll));
+        }
     }
 
     @Override

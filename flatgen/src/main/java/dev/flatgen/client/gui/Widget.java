@@ -44,6 +44,11 @@ public interface Widget {
     default void keyboard(boolean held) {
     }
 
+    /** Whether the widget has the keyboard, from a click or the focus, as it was last told; never, by default. */
+    default boolean focused() {
+        return false;
+    }
+
     /** A key pressed while the widget has the keyboard, by the game's key code; whether the widget took it. */
     default boolean key(int keyCode, Modifiers modifiers) {
         return false;

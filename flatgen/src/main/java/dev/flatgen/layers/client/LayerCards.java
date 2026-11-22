@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.network.chat.Component;
@@ -75,16 +74,16 @@ final class LayerCards {
     }
 
     /**
-     * The cards in this area, scrolling when they do not fit, scrolled to show the chosen layer's card and kept so as
-     * the chosen layer changes, by a click, a key or an edit.
+     * The cards in this area, scrolling when they do not fit, scrolled where the position says, as they were before
+     * the editor laid them out again, and to show the chosen layer's card, kept so as the chosen layer changes.
      */
-    static List<Widget> list(EditorContext editor, Rect area) {
+    static List<Widget> list(EditorContext editor, Rect area, ScrollGroup.Position scroll) {
         Rect newRow = new Rect(area.x(), area.y(), area.width(), CARD_HEIGHT);
         int cardsTop = newRow.bottom() + CARD_GAP;
         Rect cardsArea = new Rect(area.x(), cardsTop, area.width(), area.bottom() - cardsTop);
         Drag drag = new Drag();
         CopyPlace copy = new CopyPlace();
-        ScrollGroup cards = new ScrollGroup(cardsArea, top -> layOut(editor, cardsArea, top, drag, copy));
+        ScrollGroup cards = new ScrollGroup(cardsArea, top -> layOut(editor, cardsArea, top, drag, copy), scroll);
         chosen(editor, cardsArea).ifPresent(cards::revealContent);
         return List.of(newRow(editor, newRow), cards, new FollowChosen(editor, cardsArea, cards, drag),
                 new FollowCopy(editor, cardsArea, cards, drag, copy));
@@ -129,10 +128,10 @@ final class LayerCards {
         List<Widget> widgets = new ArrayList<>();
         for (int place = 0; place < count; place++) {
             Rect card = shown.at(place < copyPlace ? place : place + 1);
-            widgets.addAll(card(editor, count - 1 - place, card, slots, drag, copy.buttons::add));
+            widgets.addAll(card(editor, count - 1 - place, card, slots, drag, copy));
         }
         copy.place = copying ? Optional.of(shown.at(copyPlace)) : Optional.empty();
-        copy.place.ifPresent(place -> widgets.add(new CopyCard(editor, copy.layer, place)));
+        copy.copied = copying ? Optional.of(shown.at(copyPlace - 1)) : Optional.empty();
         widgets.add(new LiftedCard(editor, slots, drag));
         return new ScrollGroup.Laid(widgets, shown.bottom());
     }
@@ -154,7 +153,7 @@ final class LayerCards {
      * order they stand from the left, which the keyboard follows: the block, the thickness, Copy in Advanced, Remove.
      */
     private static List<Widget> card(EditorContext editor, int index, Rect card, ListSlots slots, Drag drag,
-            Consumer<Copyable> copies) {
+            CopyPlace copies) {
         int middle = card.y() + (card.height() - BUTTON) / 2;
         Rect remove = new Rect(card.right() - PADDING - BUTTON, middle, BUTTON, BUTTON);
         Optional<Rect> copy = editor.advanced()
@@ -174,7 +173,7 @@ final class LayerCards {
         int nameX = tile.right() + 2 * SPACING;
         widgets.addAll(words(editor, index, new Rect(nameX, card.y(), stepperLeft - SPACING - nameX, card.height())));
         List<Rect> controls = widgets.stream().flatMap(widget -> widget.focusArea().stream()).toList();
-        widgets.add(0, new Background(editor, index, card, controls, slots, drag));
+        widgets.add(0, new Background(editor, index, card, controls, slots, drag, copies));
         return widgets;
     }
 
@@ -197,11 +196,11 @@ final class LayerCards {
     }
 
     /** Copy, in Advanced, whose copy is shown below the card while the mouse or the keyboard's focus is on it. */
-    private static PictureButton copyButton(EditorContext editor, int index, Rect place, Consumer<Copyable> copies) {
+    private static PictureButton copyButton(EditorContext editor, int index, Rect place, CopyPlace copies) {
         PictureButton copy = button(editor, index, Icon.line("copy"), "flatgen.editor.duplicate", place,
                 new LayerEdits.Duplicate(), () -> roomLeft(editor) > 0,
                 () -> LayerText.whyFull(editor.shown(), editor.world()));
-        copies.accept(new Copyable(index, copy));
+        copies.buttons.add(new Copyable(index, copy));
         return copy;
     }
 
@@ -309,17 +308,21 @@ final class LayerCards {
         /** The cards' slots as laid out with this one, which a drag finds its place among. */
         private final ListSlots slots;
         private final Drag drag;
+        /** The copy's row, which moves the cards below it, so no drag starts while it is open. */
+        private final CopyPlace copy;
         /** The height the mouse's button went down at on this card, in GUI pixels. */
         private int pressedAt;
         private boolean dragging;
 
-        Background(EditorContext editor, int index, Rect card, List<Rect> controls, ListSlots slots, Drag drag) {
+        Background(EditorContext editor, int index, Rect card, List<Rect> controls, ListSlots slots, Drag drag,
+                CopyPlace copy) {
             this.editor = editor;
             this.index = index;
             this.card = card;
             this.controls = controls;
             this.slots = slots;
             this.drag = drag;
+            this.copy = copy;
         }
 
         @Override
@@ -339,7 +342,7 @@ final class LayerCards {
                 return false;
             }
             editor.select(index);
-            drag.held = true;
+            drag.held = copy.layer == CopyPlace.NONE;
             pressedAt = (int) y;
             return true;
         }
@@ -389,18 +392,18 @@ final class LayerCards {
         private static final int NONE = -1;
         /** The layer whose copy is shown, or {@link #NONE}. */
         private int layer = NONE;
-        /** Where the copy is shown. */
+        /** Where the copy is shown, and the card it copies, above it. */
         private Optional<Rect> place = Optional.empty();
+        private Optional<Rect> copied = Optional.empty();
         private final List<Copyable> buttons = new ArrayList<>();
     }
 
     /**
      * The copy a card's Copy would make, a faint card with the accent colour's dashed edge in its place below the card,
-     * its block and its name.
+     * its block and its name; drawn over the list rather than in it, so a copy below the window's last card shows.
      */
-    private record CopyCard(EditorContext editor, int index, Rect card) implements Widget {
-        @Override
-        public void draw(Canvas canvas, int mouseX, int mouseY) {
+    private record CopyCard(EditorContext editor, int index, Rect card) {
+        void draw(Canvas canvas) {
             canvas.sprite(Look.GHOST_LIT, card);
             canvas.dashedFrame(card, Look.ACCENT);
             Rect picture = picture(tile(card));
@@ -412,9 +415,9 @@ final class LayerCards {
 
     /**
      * Gives a card's copy its place below the card while the mouse or the keyboard's focus is on the card's Copy, and
-     * keeps it while the mouse is on the copy, so the card stays under the mouse and only the cards below it move. The
-     * cards are laid out again as the copy comes and goes, but not while a card is held or a field typed in, whose
-     * widgets laid out again would not hear the rest.
+     * keeps it while the mouse stays on the card or its copy, so the card stays under the mouse and only the cards
+     * below it move; the copy is drawn over the list. The cards are laid out again as the copy comes and goes, but not
+     * while a card is held or another of their controls has the keyboard, which widgets laid out again would lose.
      */
     private static final class FollowCopy implements Widget {
         private final EditorContext editor;
@@ -433,30 +436,45 @@ final class LayerCards {
 
         @Override
         public void draw(Canvas canvas, int mouseX, int mouseY) {
-            if (drag.held || cards.holdsKeyboard()) {
+            if (!drag.held && !keyboardElsewhere()) {
+                follow(mouseX, mouseY);
+            }
+            copy.place.filter(place -> place.y() >= area.y()).ifPresent(place -> canvas.raised(
+                    () -> new CopyCard(editor, copy.layer, place).draw(canvas)));
+        }
+
+        /** Opens the wanted copy's row, or closes the row, keeping the keyboard on the Copy that had it. */
+        private void follow(int mouseX, int mouseY) {
+            int wanted = wanted(mouseX, mouseY);
+            if (wanted == copy.layer) {
                 return;
             }
-            int wanted = wanted(mouseX, mouseY);
-            if (wanted != copy.layer) {
-                int focused = copy.buttons.stream().filter(copyable -> copyable.button().focused())
-                        .mapToInt(Copyable::index).findFirst().orElse(CopyPlace.NONE);
-                copy.layer = wanted;
-                cards.layOutAgain();
-                copy.buttons.stream().filter(copyable -> copyable.index() == focused)
-                        .forEach(copyable -> copyable.button().keyboard(true));
-            }
+            int focused = copy.buttons.stream().filter(copyable -> copyable.button().focused())
+                    .mapToInt(Copyable::index).findFirst().orElse(CopyPlace.NONE);
+            copy.layer = wanted;
+            cards.layOutAgain();
+            copy.buttons.stream().filter(copyable -> copyable.index() == focused)
+                    .forEach(copyable -> copyable.button().keyboard(true));
+        }
+
+        /** Whether a control of the cards other than a Copy has the keyboard, from a click or the focus. */
+        private boolean keyboardElsewhere() {
+            return cards.holdsKeyboard() || cards.focusables().stream().anyMatch(control -> control.focused()
+                    && copy.buttons.stream().noneMatch(copyable -> copyable.button() == control));
         }
 
         /**
          * The layer whose copy is wanted: the one whose Copy the mouse is on in the cards' window, or the focus is on,
-         * and the one shown while the mouse is on its copy; none while no layer has room.
+         * and the one shown while the mouse stays on its card or its copy; none while no layer has room.
          */
         private int wanted(int mouseX, int mouseY) {
             if (roomLeft(editor) < 1) {
                 return CopyPlace.NONE;
             }
             boolean inside = area.contains(mouseX, mouseY);
-            if (inside && copy.place.filter(place -> place.contains(mouseX, mouseY)).isPresent()) {
+            Optional<Rect> kept = copy.copied.flatMap(card -> copy.place.map(place -> new Rect(card.x(), card.y(),
+                    card.width(), place.bottom() - card.y())));
+            if (inside && kept.filter(rows -> rows.contains(mouseX, mouseY)).isPresent()) {
                 return copy.layer;
             }
             return copy.buttons.stream()
@@ -499,7 +517,7 @@ final class LayerCards {
             canvas.sprite(Look.CHOSEN_RING, landing);
             canvas.fill(new Rect(lifted.x() + SHADOW_OFFSET, lifted.y() + SHADOW_OFFSET, lifted.width(),
                     lifted.height()), SHADOW);
-            card(editor, index, lifted, slots, new Drag(), copyable -> { })
+            card(editor, index, lifted, slots, new Drag(), new CopyPlace())
                     .forEach(widget -> widget.draw(canvas, -1, -1));
         }
     }
