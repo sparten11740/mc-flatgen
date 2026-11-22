@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "Alle Biome",
-  "flatgen.biomes.is_chosen": "Ausgewählt",
   "flatgen.biomes.kind.caves": "Höhlen",
   "flatgen.biomes.kind.dry": "Trocken",
   "flatgen.biomes.kind.end": "Ende",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "Übliche",
   "flatgen.biomes.kind.water": "Wasser",
   "flatgen.biomes.now": "%s – jetziges Biom",
-  "flatgen.biomes.pick": "%s nehmen",
   "flatgen.biomes.search": "Biome suchen",
   "flatgen.biomes.title": "Biom wählen",
   "flatgen.blocks.every": "Alle Blöcke",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "Zuletzt benutzt",
   "flatgen.picks.star": "Rechtsklick für einen Stern · Shift+Enter",
   "flatgen.picks.starred": "Mit Stern",
+  "flatgen.picks.now": "Gerade verwendet",
   "flatgen.picks.unstar": "Rechtsklick nimmt den Stern weg · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "Antike Stätten",
   "flatgen.structure_set.minecraft.buried_treasures": "Vergrabene Schätze",

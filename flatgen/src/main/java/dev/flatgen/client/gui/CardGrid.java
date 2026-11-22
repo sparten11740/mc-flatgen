@@ -52,6 +52,10 @@ public final class CardGrid implements Control {
      * one card (starred, recent and among all): the place counts while its card is still that entry's.
      */
     private int focusedCard;
+    /** Whether the keyboard's focus is on the grid. */
+    private boolean hasFocus;
+    /** The entry whose card the mouse was on when the grid was last drawn, by its id. */
+    private Optional<String> pointed = Optional.empty();
     /** The sections {@link #placed} was laid out for, at the scroll it had, and that layout. */
     private List<Section> placedSections;
     private int placedScroll;
@@ -142,6 +146,15 @@ public final class CardGrid implements Control {
         return placed().cards();
     }
 
+    /**
+     * The entry the player looks at, by its id: the one whose card the mouse is on, else the one the keyboard is on
+     * while the grid has the focus; none otherwise.
+     */
+    public Optional<String> lookedAt() {
+        List<Card> all = cards();
+        return pointed.isPresent() || !hasFocus || all.isEmpty() ? pointed : Optional.of(focused(all).entry().id());
+    }
+
     /** Starts the grid at its top again, as when what it shows changes. */
     public void toTop() {
         scroll = 0;
@@ -190,7 +203,9 @@ public final class CardGrid implements Control {
             }
         }
         canvas.unclip();
-        cardAt(mouseX, mouseY).ifPresent(card -> canvas.tooltipBelow(describe(card.entry()), card.place()));
+        Optional<Card> underMouse = cardAt(mouseX, mouseY);
+        pointed = underMouse.map(card -> card.entry().id());
+        underMouse.ifPresent(card -> canvas.tooltipBelow(describe(card.entry()), card.place()));
     }
 
     /** A section's heading in bold, and its detail quieter beside it. */
@@ -240,6 +255,11 @@ public final class CardGrid implements Control {
                 Keys.across(keyCode), Keys.down(keyCode));
         next.ifPresent(this::moveTo);
         return Keys.isArrow(keyCode);
+    }
+
+    @Override
+    public void keyboard(boolean held) {
+        hasFocus = held;
     }
 
     /** The tooltip of the card the keyboard is on. */

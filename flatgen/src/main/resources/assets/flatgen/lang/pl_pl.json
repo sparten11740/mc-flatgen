@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "Wszystkie biomy",
-  "flatgen.biomes.is_chosen": "Wybrany",
   "flatgen.biomes.kind.caves": "Jaskinie",
   "flatgen.biomes.kind.dry": "Suche",
   "flatgen.biomes.kind.end": "End",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "Zwykłe",
   "flatgen.biomes.kind.water": "Woda",
   "flatgen.biomes.now": "%s: obecny biom",
-  "flatgen.biomes.pick": "Wybierz: %s",
   "flatgen.biomes.search": "Szukaj biomów",
   "flatgen.biomes.title": "Wybierz biom",
   "flatgen.blocks.every": "Wszystkie bloki",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "Ostatnie",
   "flatgen.picks.star": "Prawy przycisk: dodaj gwiazdkę · Shift+Enter",
   "flatgen.picks.starred": "Z gwiazdką",
+  "flatgen.picks.now": "Używany teraz",
   "flatgen.picks.unstar": "Prawy przycisk: usuń gwiazdkę · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "Starożytne miasta",
   "flatgen.structure_set.minecraft.buried_treasures": "Ukryte skarby",

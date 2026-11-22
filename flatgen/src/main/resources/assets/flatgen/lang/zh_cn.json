@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "所有生物群系",
-  "flatgen.biomes.is_chosen": "已选",
   "flatgen.biomes.kind.caves": "洞穴",
   "flatgen.biomes.kind.dry": "干燥",
   "flatgen.biomes.kind.end": "末地",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "常见",
   "flatgen.biomes.kind.water": "水域",
   "flatgen.biomes.now": "%s当前的生物群系",
-  "flatgen.biomes.pick": "选择%s",
   "flatgen.biomes.search": "搜索生物群系",
   "flatgen.biomes.title": "选择生物群系",
   "flatgen.blocks.every": "所有方块",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "最近使用",
   "flatgen.picks.star": "右键收藏 · Shift+Enter",
   "flatgen.picks.starred": "收藏",
+  "flatgen.picks.now": "当前使用中",
   "flatgen.picks.unstar": "右键取消收藏 · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "远古城市",
   "flatgen.structure_set.minecraft.buried_treasures": "埋藏的宝藏",

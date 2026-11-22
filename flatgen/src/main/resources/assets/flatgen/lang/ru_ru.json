@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "Все биомы",
-  "flatgen.biomes.is_chosen": "Выбран",
   "flatgen.biomes.kind.caves": "Пещеры",
   "flatgen.biomes.kind.dry": "Сухие",
   "flatgen.biomes.kind.end": "Энд",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "Обычные",
   "flatgen.biomes.kind.water": "Вода",
   "flatgen.biomes.now": "%s — текущий биом",
-  "flatgen.biomes.pick": "Выбрать: %s",
   "flatgen.biomes.search": "Поиск биомов",
   "flatgen.biomes.title": "Выберите биом",
   "flatgen.blocks.every": "Все блоки",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "Недавние",
   "flatgen.picks.star": "Правый клик — в избранное · Shift+Enter",
   "flatgen.picks.starred": "Избранное",
+  "flatgen.picks.now": "Используется сейчас",
   "flatgen.picks.unstar": "Правый клик — убрать из избранного · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "Древние города",
   "flatgen.structure_set.minecraft.buried_treasures": "Клады",

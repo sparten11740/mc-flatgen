@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "全バイオーム",
-  "flatgen.biomes.is_chosen": "選択中",
   "flatgen.biomes.kind.caves": "洞窟",
   "flatgen.biomes.kind.dry": "乾燥",
   "flatgen.biomes.kind.end": "エンド",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "ふつう",
   "flatgen.biomes.kind.water": "水辺",
   "flatgen.biomes.now": "%sの今のバイオーム",
-  "flatgen.biomes.pick": "%sを選ぶ",
   "flatgen.biomes.search": "バイオームを検索",
   "flatgen.biomes.title": "バイオームを選ぶ",
   "flatgen.blocks.every": "全ブロック",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "最近",
   "flatgen.picks.star": "右クリックでお気に入り · Shift+Enter",
   "flatgen.picks.starred": "お気に入り",
+  "flatgen.picks.now": "現在使用中",
   "flatgen.picks.unstar": "右クリックでお気に入り解除 · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "古代都市",
   "flatgen.structure_set.minecraft.buried_treasures": "埋もれた宝",

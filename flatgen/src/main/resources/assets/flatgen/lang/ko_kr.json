@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "모든 생물 군계",
-  "flatgen.biomes.is_chosen": "선택됨",
   "flatgen.biomes.kind.caves": "동굴",
   "flatgen.biomes.kind.dry": "건조",
   "flatgen.biomes.kind.end": "엔드",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "일반",
   "flatgen.biomes.kind.water": "물",
   "flatgen.biomes.now": "%s의 현재 생물 군계",
-  "flatgen.biomes.pick": "%s 선택",
   "flatgen.biomes.search": "생물 군계 검색",
   "flatgen.biomes.title": "생물 군계 선택",
   "flatgen.blocks.every": "모든 블록",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "최근",
   "flatgen.picks.star": "우클릭으로 즐겨찾기 · Shift+Enter",
   "flatgen.picks.starred": "즐겨찾기",
+  "flatgen.picks.now": "지금 사용 중",
   "flatgen.picks.unstar": "우클릭으로 즐겨찾기 해제 · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "고대 도시",
   "flatgen.structure_set.minecraft.buried_treasures": "땅에 묻힌 보물",

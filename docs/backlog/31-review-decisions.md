@@ -22,7 +22,7 @@ pictures, four ways").
 - [x] Small biome pictures (16 pixels: the shelves, the Biome button, the recent and starred rows) are close-ups (the
   canvas's A): the horizon high and the biome's feature big, such as a tree, a cactus, a spruce, a peak, lava, an End
   island, or bamboo for the bamboo jungle. The picker's big pictures stay whole landscapes.
-- [ ] One click picks in both pickers. In the biome picker the details follow the pointer and the keyboard's focus,
+- [x] One click picks in both pickers. In the biome picker the details follow the pointer and the keyboard's focus,
   showing the biome picked otherwise; its Pick button goes.
 - [ ] The block picker has pictured Starred and Recent shelves at the top of its list, as the biome picker has, and
   rings the block the layer has now.

@@ -1,6 +1,5 @@
 {
   "flatgen.biomes.every": "Every biome",
-  "flatgen.biomes.is_chosen": "Chosen",
   "flatgen.biomes.kind.caves": "Caves",
   "flatgen.biomes.kind.dry": "Dry",
   "flatgen.biomes.kind.end": "End",
@@ -12,7 +11,6 @@
   "flatgen.biomes.kind.usual": "Usual",
   "flatgen.biomes.kind.water": "Water",
   "flatgen.biomes.now": "The %s's biome now",
-  "flatgen.biomes.pick": "Pick %s",
   "flatgen.biomes.search": "Search biomes",
   "flatgen.biomes.title": "Pick a biome",
   "flatgen.blocks.every": "All blocks",
@@ -154,6 +152,7 @@
   "flatgen.picks.recent": "Recent",
   "flatgen.picks.star": "Right-click to star · Shift+Enter",
   "flatgen.picks.starred": "Starred",
+  "flatgen.picks.now": "In use now",
   "flatgen.picks.unstar": "Right-click to unstar · Shift+Enter",
   "flatgen.structure_set.minecraft.ancient_cities": "Ancient Cities",
   "flatgen.structure_set.minecraft.buried_treasures": "Buried Treasures",

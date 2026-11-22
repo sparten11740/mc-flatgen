@@ -9,7 +9,6 @@ import dev.flatgen.client.gui.Icon;
 import dev.flatgen.client.gui.Look;
 import dev.flatgen.client.gui.ShelvedPickerScreen;
 import dev.flatgen.client.gui.Surface;
-import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextStyle;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.Rect;
@@ -34,8 +33,8 @@ import net.minecraft.network.chat.Component;
 /**
  * The biome picker (F07), as round 3 of docs/design/simple-editor.md drew it: the dimension's biome now in its header;
  * down its side the starred and the recent biomes, each kind of biome and every biome; the side's choice as landscapes
- * in the middle; and at the right the biome chosen, painted larger, with what it does to the world in words beside
- * their pictures and a button that picks it. A click on a card chooses its biome, a second click picks it.
+ * in the middle; and at the right the biome looked at, painted larger, with what it does to the world in words beside
+ * their pictures: the one the mouse or the keyboard is on, else the biome now. A click on a card picks its biome.
  */
 public final class BiomePickerScreen extends ShelvedPickerScreen {
     /** Space between the grid and the panel, and in the header, in GUI pixels. */
@@ -49,10 +48,9 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
     private static final int CARD_HEIGHT = 52;
     private static final int CARD_PICTURE = 38;
     private static final int INSET = 2;
-    /** Space inside the panel, the landscape on it, its Pick button and the space between facts, in GUI pixels. */
+    /** Space inside the panel, the landscape on it and the space between facts, in GUI pixels. */
     private static final int PANEL_PADDING = 6;
     private static final int PANEL_PICTURE = 60;
-    private static final int PICK_HEIGHT = 20;
     private static final int FACT_GAP = 4;
     /** The biomes Every biome's picture shows, four in a square, of those the game has. */
     private static final List<String> EVERY = List.of("minecraft:plains", "minecraft:desert",
@@ -63,8 +61,8 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
     private final Component now;
     private final String current;
     private final Map<String, List<Fact.Shown>> facts = new HashMap<>();
-    /** The biome chosen, which the panel shows and its button picks. */
-    private String chosen;
+    /** The biome the panel shows while none is looked at: the biome now, or the first when the game lacks it. */
+    private final String idle;
 
     /**
      * A picker of these biomes going back to {@code parent}, handing a picked biome's id to {@code onPick}.
@@ -72,7 +70,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
      * @param biomes    every biome of the world being created, by id
      * @param situation the world as the editor has it, but of a biome, for its facts
      * @param now       what the header says of the dimension's biome now, as "The Overworld's biome now"
-     * @param current   that biome, by id, the one chosen at first unless the game lacks it
+     * @param current   that biome, by id, ringed among the cards
      */
     BiomePickerScreen(Screen parent, Picker picker, Map<String, BiomeInfo> biomes,
             Function<BiomeInfo, Situation> situation, Component now, String current, Consumer<String> onPick) {
@@ -81,7 +79,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         this.situation = situation;
         this.now = now;
         this.current = current;
-        this.chosen = biomes.containsKey(current) ? current : entries().get(0).id();
+        this.idle = biomes.containsKey(current) ? current : entries().get(0).id();
     }
 
     /** The starred and the recent biomes, each kind of biome that has any, and every biome. */
@@ -144,18 +142,18 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
                         TextStyle.STRONG, Look.TEXT));
     }
 
-    /** The grid, and the panel of the biome chosen at the right. */
+    /** The grid, and the panel of the biome looked at on the right. */
     @Override
     protected List<Widget> beside(Rect area) {
         Rect panel = new Rect(area.right() - PANEL_WIDTH, area.y(), PANEL_WIDTH, area.height());
         List<Widget> widgets = new ArrayList<>();
         widgets.add(grid(new Rect(area.x(), area.y(), panel.x() - GAP - area.x(), area.height()), CARD_WIDTH,
-                CARD_HEIGHT, new Cards(), this::choose));
+                CARD_HEIGHT, new Cards(), this::pick));
         widgets.addAll(panel(panel));
         return widgets;
     }
 
-    /** The biome chosen: painted, its name and its mod, its facts in words, and the button that picks it. */
+    /** The biome looked at: painted, its name and its mod, and its facts in words. */
     private List<Widget> panel(Rect panel) {
         Rect inside = new Rect(panel.x() + PANEL_PADDING, panel.y() + PANEL_PADDING,
                 panel.width() - 2 * PANEL_PADDING, panel.height() - 2 * PANEL_PADDING);
@@ -163,25 +161,17 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         Rect name = new Rect(inside.x(), picture.bottom() + PANEL_PADDING, inside.width(),
                 TextStyle.TITLE.lineHeight());
         Rect from = new Rect(inside.x(), name.bottom(), inside.width(), TextStyle.BODY.lineHeight());
-        Rect pick = new Rect(inside.x(), inside.bottom() - PICK_HEIGHT, inside.width(), PICK_HEIGHT);
         int factsTop = from.bottom() + PANEL_PADDING;
-        return List.of(new Surface(Look.PANEL, panel), new Painted(() -> biomes.get(chosen), picture),
-                new Caption(() -> Names.biome(chosen), name, TextStyle.TITLE, Look.TEXT),
-                new Caption(() -> Component.literal(modName(biomes.get(chosen).namespace())), from, TextStyle.BODY,
+        return List.of(new Surface(Look.PANEL, panel), new Painted(() -> biomes.get(shown()), picture),
+                new Caption(() -> Names.biome(shown()), name, TextStyle.TITLE, Look.TEXT),
+                new Caption(() -> Component.literal(modName(biomes.get(shown()).namespace())), from, TextStyle.BODY,
                         Look.MUTED),
-                new FactList(new Rect(inside.x(), factsTop, inside.width(), pick.y() - PANEL_PADDING - factsTop)),
-                new TextButton(Icon.line("check"),
-                        () -> Component.translatable("flatgen.biomes.pick", Names.biome(chosen)), pick,
-                        () -> pick(chosen), () -> true, List::of).kind(Look.ButtonKind.PRIMARY));
+                new FactList(new Rect(inside.x(), factsTop, inside.width(), inside.bottom() - factsTop)));
     }
 
-    /** Chooses a biome, or picks it when it is chosen already. */
-    private void choose(String id) {
-        if (id.equals(chosen)) {
-            pick(id);
-        } else {
-            chosen = id;
-        }
+    /** The biome the panel shows: the one the mouse or the keyboard is on, else the biome now. */
+    private String shown() {
+        return grid().lookedAt().filter(biomes::containsKey).orElse(idle);
     }
 
     /** A biome's facts in the world as the editor has it, worked out once per biome while the picker is open. */
@@ -193,27 +183,27 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         return Facts.ABOUT_THE_BIOME.stream().map(fact -> fact.show(world)).toList();
     }
 
-    /** A biome's card: its landscape over its name, ringed while it is the one chosen; its facts in its tooltip. */
+    /** A biome's card: its landscape over its name, ringed while it is the biome now; its facts in its tooltip. */
     private final class Cards implements CardGrid.Cards {
         @Override
         public void draw(Canvas canvas, Search.Entry entry, Rect place) {
-            boolean isChosen = entry.id().equals(chosen);
+            boolean isNow = entry.id().equals(current);
             Rect picture = new Rect(place.x() + INSET, place.y() + INSET, place.width() - 2 * INSET, CARD_PICTURE);
             BiomeLandscape.draw(canvas, biomes.get(entry.id()), picture);
             Component name = canvas.fitted(Component.literal(entry.name()), picture.width(), TextStyle.BODY);
             canvas.text(name, picture.x(), TextStyle.BODY.top(picture.bottom(), place.bottom() - picture.bottom()),
-                    isChosen ? Look.TEXT : Look.MUTED);
-            if (isChosen) {
+                    isNow ? Look.TEXT : Look.MUTED);
+            if (isNow) {
                 canvas.sprite(Look.CHOSEN_RING, place);
             }
         }
 
-        /** Whether it is the one chosen, then its facts in words. */
+        /** Whether it is the biome now, then its facts in words. */
         @Override
         public List<Component> describe(Search.Entry entry) {
-            Stream<Component> chosenLine = entry.id().equals(chosen)
-                    ? Stream.of(Component.translatable("flatgen.biomes.is_chosen")) : Stream.empty();
-            return Stream.concat(chosenLine, facts(entry.id()).stream()
+            Stream<Component> nowLine = entry.id().equals(current)
+                    ? Stream.of(Component.translatable("flatgen.picks.now")) : Stream.empty();
+            return Stream.concat(nowLine, facts(entry.id()).stream()
                     .flatMap(shown -> FactPictures.words(shown).stream())).toList();
         }
     }
@@ -241,7 +231,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         }
     }
 
-    /** The chosen biome's facts, each its picture beside its words, wrapped to the panel. */
+    /** The facts of the biome looked at, each its picture beside its words, wrapped to the panel. */
     private final class FactList implements Widget {
         private final Rect area;
 
@@ -253,7 +243,7 @@ public final class BiomePickerScreen extends ShelvedPickerScreen {
         public void draw(Canvas canvas, int mouseX, int mouseY) {
             int y = area.y();
             int wordsX = area.x() + Icon.SIZE + 2 * INSET;
-            for (Fact.Shown shown : facts(chosen)) {
+            for (Fact.Shown shown : facts(shown())) {
                 FactPictures.icon(shown).draw(canvas, area.x(), y);
                 List<Component> lines = FactPictures.words(shown).stream()
                         .flatMap(words -> wrapped(words, area.right() - wordsX).stream()).toList();
