@@ -31,8 +31,8 @@ Mods and modpacks can add switches of their own, such as an airport at the spawn
 [docs/world-options.md](docs/world-options.md). Modpacks can also bring their own presets and choose the one Superflat
 starts with: [docs/pack-authors.md](docs/pack-authors.md).
 
-Flatgen is a client mod for Minecraft 1.20.1 on Forge and Fabric, and for 1.21.1, 1.21.11, 26.1, 26.2 and 26.3 on
-NeoForge and Fabric. `docs/backlog/` shows what is done and what is next.
+Flatgen is a client mod for Minecraft 1.20.1 on Forge and Fabric, and for 1.21.1, 1.21.11, 26.1 (26.1.2 on
+NeoForge), 26.2 and 26.3 on NeoForge and Fabric. `docs/backlog/` shows what is done and what is next.
 
 Missing your Minecraft version, loader or language? Requests are welcome as a GitHub issue or a comment on CurseForge.
 

@@ -3,9 +3,10 @@
 // starts and stops with it: faults of remapping, mixin configs and metadata show only in a jar as it ships
 // (docs/backlog/20-release-v1.md). Flatgen is a client mod, so a server must load its jar and otherwise be
 // unaffected. Each node's jar in build/libs boots on the loader version its node is built with and on the oldest one
-// its metadata accepts (neo_min_version, forge_min_version, fabric_loader_min_version), and 1.20.1's Forge jar on
-// NeoForge 47.1 too (boot_neoforge_version). A boot holds when the server lists Flatgen among
-// its mods, logs no error naming it, finishes starting and stops cleanly when told to.
+// its metadata accepts (neo_min_version, forge_min_version, fabric_loader_min_version), 1.20.1's Forge jar on
+// NeoForge 47.1 too (boot_neoforge_version), and a Fabric jar accepting older game releases than its own on the oldest
+// (boot_minecraft_version). A boot holds when the server lists Flatgen among its mods, logs no error naming it,
+// finishes starting and stops cleanly when told to.
 //
 //   node tools/boot.mjs [node...]
 //   node tools/boot.mjs --matrix
@@ -62,7 +63,8 @@ function fabricServer(minecraft, loader) {
 }
 
 // Each loader's servers a node's jar boots on, by the version each is named for: the loader version it is built with
-// and the oldest it accepts, and for 1.20.1's Forge jar NeoForge 47.1 too, which still called itself Forge.
+// and the oldest it accepts, for 1.20.1's Forge jar NeoForge 47.1 too, which still called itself Forge, and for a
+// Fabric jar accepting older game releases than its own the oldest of them.
 const SERVERS = {
   neoforge: (node) => [node.neo_version, node.neo_min_version]
     .map((version) => ({ version, server: installedServer(NEOFORGED_MAVEN, "net/neoforged/neoforge", version) })),
@@ -71,7 +73,9 @@ const SERVERS = {
     .concat([{ version: `neoforge-${node.boot_neoforge_version}`,
       server: forgeServer(NEOFORGED_MAVEN, "net/neoforged/forge", node, node.boot_neoforge_version) }]),
   fabric: (node) => [node.fabric_loader_version, node.fabric_loader_min_version]
-    .map((version) => ({ version, server: fabricServer(node.minecraft_version, version) })),
+    .map((version) => ({ version, server: fabricServer(node.minecraft_version, version) }))
+    .concat(node.boot_minecraft_version ? [{ version: `minecraft-${node.boot_minecraft_version}`,
+      server: fabricServer(node.boot_minecraft_version, node.fabric_loader_version) }] : []),
 };
 
 /** A server of Forge, or of NeoForge before it renamed itself, versioned by the game's version and its own. */
