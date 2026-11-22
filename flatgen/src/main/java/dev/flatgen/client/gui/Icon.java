@@ -127,7 +127,12 @@ public interface Icon {
 
     /** One of Flatgen's own pictures, by its name in {@code textures/gui/sprites/icon/}, such as {@code undo}. */
     static Icon own(String name) {
-        return sprite("flatgen:icon/" + name);
+        return sprite(ownSprite(name));
+    }
+
+    /** The sprite of one of Flatgen's own pictures, to draw larger than an icon, as an empty state's picture. */
+    static String ownSprite(String name) {
+        return "flatgen:icon/" + name;
     }
 
     /**

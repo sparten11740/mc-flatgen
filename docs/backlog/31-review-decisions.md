@@ -16,7 +16,7 @@ pictures, four ways").
   slimes spawn in slime chunks at the surface.
 - [x] A chosen tab, shelf or way is drawn in a blue fill with light blue words (the canvas's C), hover staying a grey
   fill: the world's tabs, the structures' ways and both pickers' shelves.
-- [ ] Make flat and Let the game make it get two pictures unlike each other, in each dimension's own blocks: a neat
+- [x] Make flat and Let the game make it get two pictures unlike each other, in each dimension's own blocks: a neat
   stack of flat layers, and the dimension's own rough ground (netherrack crags with lava, an End stone island); 32
   pixels in the empty state, 16 on the button.
 - [ ] Small biome pictures (16 pixels: the shelves, the Biome button, the recent and starred rows) are close-ups (the

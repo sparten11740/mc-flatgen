@@ -119,7 +119,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Editor | favourites row | each favourite's top block |
 | Editor | Presets, Templates | bookshelf, crafting table |
 | Editor | dimension tabs (F22) | grass block, own: a lit Nether portal, end stone; the chosen one raised; own flat badge |
-| Editor | Make flat, Give back (F22) | own: bumpy ground, an arrow, flat stripes; the same turned round |
+| Editor | Make flat, Let the game make it (F22) | own, in the dimension's blocks: a neat flat stack; its rough ground, netherrack crags with lava or an End stone island (F31) |
 | Editor | Biome | the biome's landscape in its colours, and its name |
 | Editor | Structures | village house, and how they are chosen |
 | Editor | Block | the selected layer's block, and its name |

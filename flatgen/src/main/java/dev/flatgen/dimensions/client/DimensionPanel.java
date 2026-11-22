@@ -28,16 +28,14 @@ import net.minecraft.network.chat.Component;
  * would win.
  */
 public final class DimensionPanel implements EditorPanel {
-    /** The picture of making a dimension flat: bumpy ground, an arrow, flat stripes. */
-    private static final Icon MAKE_FLAT = Icon.own("make_flat");
-    /** The picture of giving a dimension back to the game: flat stripes, an arrow, bumpy ground. */
-    private static final Icon GIVE_BACK = Icon.own("give_back");
+    /** How large the empty state's picture of the dimension as the game makes it is, in GUI pixels. */
+    private static final int GAME_MADE_PICTURE = 32;
     /** Space between the parts of the empty state, in GUI pixels. */
     private static final int SPACING = 6;
     /** How tall the button that makes a dimension flat is, in GUI pixels. */
     private static final int MAKE_FLAT_HEIGHT = 21;
     /** How tall the empty state is, in GUI pixels: picture, heading, line, button and the space between. */
-    private static final int EMPTY_STATE_HEIGHT = Icon.SIZE + 4 * SPACING + TextStyle.TITLE.lineHeight()
+    private static final int EMPTY_STATE_HEIGHT = GAME_MADE_PICTURE + 4 * SPACING + TextStyle.TITLE.lineHeight()
             + TextStyle.BODY.lineHeight() + MAKE_FLAT_HEIGHT;
 
     /** Shown while the Nether or the End is edited. */
@@ -55,7 +53,8 @@ public final class DimensionPanel implements EditorPanel {
     public void layOut(EditorContext editor, EditorLayout layout) {
         Dimension dimension = editor.shown().edited();
         if (editor.shown().stack().isPresent()) {
-            layout.buttonBox(GIVE_BACK, Component.translatable("flatgen.dimension.give_back"),
+            layout.buttonBox(Icon.own(DimensionPictures.rough(dimension)),
+                    Component.translatable("flatgen.dimension.give_back"),
                     () -> editor.apply(new SetStack(Optional.empty())),
                     () -> List.of(Component.translatable("flatgen.dimension.give_back_tip")));
             return;
@@ -71,22 +70,28 @@ public final class DimensionPanel implements EditorPanel {
         layout.add(EditorRegion.LAYERS, emptyState(editor, dimension, area));
     }
 
-    /** In the middle of the layers' place: the dimension's picture, that the game makes it, and making it flat. */
+    /**
+     * In the middle of the layers' place: the dimension as the game makes it, large, that the game makes it, and making
+     * it flat.
+     */
     private static List<Widget> emptyState(EditorContext editor, Dimension dimension, Rect area) {
         int top = area.y() + (area.height() - EMPTY_STATE_HEIGHT) / 2;
         Component name = DimensionPictures.name(dimension);
-        Rect line = new Rect(area.x(), top + Icon.SIZE + 2 * SPACING + TextStyle.TITLE.lineHeight(), area.width(),
-                TextStyle.BODY.lineHeight());
+        Rect line = new Rect(area.x(), top + GAME_MADE_PICTURE + 2 * SPACING + TextStyle.TITLE.lineHeight(),
+                area.width(), TextStyle.BODY.lineHeight());
         int buttonWidth = TextButton.width(editor.textWidth(makeFlatName(dimension)));
         Rect button = new Rect(area.x() + (area.width() - buttonWidth) / 2, line.bottom() + 2 * SPACING, buttonWidth,
                 MAKE_FLAT_HEIGHT);
-        return List.of(new Surface(Look.PANEL, area), picture(DimensionPictures.of(dimension), area, top),
+        Rect picture = new Rect(area.x() + (area.width() - GAME_MADE_PICTURE) / 2, top, GAME_MADE_PICTURE,
+                GAME_MADE_PICTURE);
+        return List.of(new Surface(Look.PANEL, area),
+                new Surface(Icon.ownSprite(DimensionPictures.rough(dimension)), picture),
                 new Caption(() -> Component.translatable("flatgen.dimension.game_made_title", name), new Rect(area.x(),
-                        top + Icon.SIZE + SPACING, area.width(), TextStyle.TITLE.lineHeight()), TextStyle.TITLE,
+                        picture.bottom() + SPACING, area.width(), TextStyle.TITLE.lineHeight()), TextStyle.TITLE,
                         Look.TEXT, true),
                 new Caption(() -> Component.translatable("flatgen.dimension.make_flat_tip"), line, TextStyle.BODY,
                         Look.MUTED, true),
-                new TextButton(MAKE_FLAT, () -> makeFlatName(dimension), button,
+                new TextButton(Icon.own(DimensionPictures.flat(dimension)), () -> makeFlatName(dimension), button,
                         () -> makeFlat(editor, dimension), () -> true, () -> List.of(makeFlatName(dimension)))
                         .kind(Look.ButtonKind.VIVID));
     }

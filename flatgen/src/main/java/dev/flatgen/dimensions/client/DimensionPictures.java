@@ -19,6 +19,22 @@ public final class DimensionPictures {
         };
     }
 
+    /**
+     * The Nether or the End made flat, a neat stack of layers in its own blocks: the name of Flatgen's own picture of
+     * it, the picture of making it flat.
+     */
+    public static String flat(Dimension dimension) {
+        return dimension.key() + "_flat";
+    }
+
+    /**
+     * The Nether or the End as the game makes it, its own rough ground (netherrack crags with lava, an End stone
+     * island): the name of Flatgen's own picture of it, the picture of giving it back to the game.
+     */
+    public static String rough(Dimension dimension) {
+        return dimension.key() + "_rough";
+    }
+
     /** The colour of a dimension's air, drawn behind its layers and around the ground the game makes. */
     public static int air(Dimension dimension) {
         return switch (dimension) {
