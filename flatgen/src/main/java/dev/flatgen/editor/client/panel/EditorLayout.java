@@ -80,6 +80,12 @@ public final class EditorLayout {
         add(EditorRegion.ASIDE, Surface.box(flow(EditorRegion.ASIDE), content));
     }
 
+    /** Adds a box to the aside holding one button across it: a picture, its name, and a tooltip saying more. */
+    public void buttonBox(Icon icon, Component name, Runnable action, Supplier<List<Component>> tooltip) {
+        box(inside -> List.of(new TextButton(icon, () -> name, inside.line(EditorRegion.ASIDE.rowHeight()), action,
+                () -> true, tooltip)));
+    }
+
     /** The widgets placed in a region. */
     public List<Widget> widgets(EditorRegion region) {
         return List.copyOf(widgets.get(region));

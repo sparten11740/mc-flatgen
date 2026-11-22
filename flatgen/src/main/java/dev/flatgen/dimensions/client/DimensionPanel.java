@@ -56,10 +56,9 @@ public final class DimensionPanel implements EditorPanel {
     public void layOut(EditorContext editor, EditorLayout layout) {
         Dimension dimension = editor.shown().edited();
         if (editor.shown().stack().isPresent()) {
-            layout.box(inside -> List.of(new TextButton(GIVE_BACK,
-                    () -> Component.translatable("flatgen.dimension.give_back"),
-                    inside.line(EditorRegion.ASIDE.rowHeight()), () -> askToGiveBack(editor, dimension), () -> true,
-                    () -> List.of(Component.translatable("flatgen.dimension.give_back_tip")))));
+            layout.buttonBox(GIVE_BACK, Component.translatable("flatgen.dimension.give_back"),
+                    () -> askToGiveBack(editor, dimension),
+                    () -> List.of(Component.translatable("flatgen.dimension.give_back_tip")));
             return;
         }
         Rect area = layout.area(EditorRegion.LAYERS);
