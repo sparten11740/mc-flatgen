@@ -10,8 +10,9 @@ import java.util.function.Supplier;
 import net.minecraft.network.chat.Component;
 
 /**
- * A tab of a segmented choice, such as the dimensions: a picture and its name. The chosen one stands on a raised
- * segment with its name in bold, so which is chosen shows by its shape, not by colour alone; its tooltip says more.
+ * A tab of a segmented choice, such as the dimensions, or a picker's shelf: a picture and its name. The chosen one
+ * stands on a blue fill ({@link Look#TAB_CHOSEN}) with its name light blue and in bold, so which is chosen shows by its
+ * fill and its weight, not by colour alone, and never looks like the grey one under the mouse; its tooltip says more.
  */
 public final class PictureTab implements Control {
     /** A tab's height, in GUI pixels: its picture's. */
@@ -48,11 +49,11 @@ public final class PictureTab implements Control {
         boolean isChosen = chosen.getAsBoolean();
         boolean hovered = bounds.contains(mouseX, mouseY);
         if (isChosen || hovered) {
-            canvas.sprite(isChosen ? Look.SEGMENT_ON : Look.BUTTON, bounds);
+            canvas.sprite(isChosen ? Look.TAB_CHOSEN : Look.BUTTON, bounds);
         }
         icon.draw(canvas, bounds.x() + PADDING, bounds.y() + (bounds.height() - Icon.SIZE) / 2);
         canvas.text(name.get(), bounds.x() + PADDING + Icon.SIZE + GAP, bounds.y() + (bounds.height()
-                - TextStyle.BODY.lineHeight()) / 2 + 1, isChosen ? Look.TEXT : Look.MUTED,
+                - TextStyle.BODY.lineHeight()) / 2 + 1, isChosen ? Look.ON_ACCENT : Look.MUTED,
                 isChosen ? TextStyle.STRONG : TextStyle.BODY);
         if (hovered) {
             canvas.tooltipBelow(tooltip.get(), bounds);

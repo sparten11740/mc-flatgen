@@ -20,7 +20,10 @@ public final class Look {
     public static final int DISABLED = 0xFF5F656D;
     /** What is chosen, and a link. */
     public static final int ACCENT = 0xFF5AA9FF;
-    /** Text on the green button that goes ahead, on the blue one that adds, and on the purple one that stands out. */
+    /**
+     * Text on the green button that goes ahead, on the blue one that adds and a chosen tab, and on the purple one that
+     * stands out.
+     */
     public static final int ON_PRIMARY = 0xFFFFFFFF;
     public static final int ON_ACCENT = 0xFFD6E7FF;
     public static final int ON_VIVID = 0xFFFFFFFF;
@@ -64,8 +67,11 @@ public final class Look {
     public static final String FOCUS = sprite("focus");
     /** The track of segmented choices, such as the dimensions. */
     public static final String SEGMENTS = sprite("segments");
-    /** The chosen segment on that track. */
-    public static final String SEGMENT_ON = sprite("segment_on");
+    /**
+     * A chosen tab, segment or shelf, as the dimensions, the structures' ways and the pickers' shelves have it: a blue
+     * fill with its words in {@link #ON_ACCENT}, where one under the mouse shows {@link #BUTTON}, grey.
+     */
+    public static final String TAB_CHOSEN = sprite("tab_chosen");
     /** A switch's track while on and while off, and its knob. */
     public static final String SWITCH_ON = sprite("switch_on");
     public static final String SWITCH_OFF = sprite("switch_off");
