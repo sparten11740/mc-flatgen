@@ -5,25 +5,15 @@ are its section here ([docs/release/releasing.md](docs/release/releasing.md)).
 
 ## 1.1.0 (2026-11-22)
 
-What the review before 1.0.0 left open, as decided on today's screens, and what trying it in game asked for:
-
-- **No slimes on a row of its own:** under the facts, a slime with the red "no" sign and the words "No slimes", there
-  only while slimes can spawn at the surface; it raises the ground out of their reach.
-- **Copy shows where the copy goes:** the copy takes a row of its own below the card, the cards below making room,
-  and lands there.
-- **The chosen one is blue:** the chosen dimension, shelf and structures' way have a blue fill across their bar,
-  unlike the grey one under the mouse.
-- **Pictures that tell things apart:** Make flat shows a neat stack and Let the game make it the dimension's own rough
-  ground, each in that dimension's blocks; small biome pictures are close-ups, a tree, a cactus or a peak big; the
-  desert gets its cactus, the bamboo jungle its bamboo and the Nether its lava.
-- **One click picks a biome,** the panel showing the biome under the mouse or the keyboard; the block picker has
-  Starred and Recent shelves as the biome picker has, and rings the layer's block.
-- **The mod filter is a menu** of the mods, each with its picture, rather than a button stepping through them.
-- **Rename by typing:** a preset's name in the library saves once you are done typing it, with no Rename button.
-- **Steadier screens:** Presets and Templates stay in the header on the Nether and End, greyed out; Let the game make
-  it acts at once, Undo bringing the layers back; the templates leave by their Back arrow alone; a click on a button
-  right after typing in a field works with what was typed.
-- **Words:** a layer's size is its thickness in every language, and starring is starring everywhere.
+- "No slimes" get's an easier to understand CTA that shows only while slimes can spawn at the surface; it raises the
+  ground out of their reach.
+- Duplicate layer preview now takes the space in which it will be placed
+- Active/hover styles are now better distinguished
+- Improved pictures & icons
+- Biomes are now selected with a single click, no longer requiring to confirm
+- Mod filter becomes a menu from which the mods can be selected
+- Preset names are now changed on typing/blur and no longer require explicit confirmation
+- Copy improvements & other UI nits
 
 ## 1.0.0 (2026-11-22)
 
