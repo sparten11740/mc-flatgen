@@ -6,6 +6,7 @@ import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.Widget;
 import dev.flatgen.client.gui.rules.FlowLayout;
 import dev.flatgen.client.gui.rules.Rect;
+import dev.flatgen.preset.rules.Dimension;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -73,6 +74,16 @@ public final class EditorLayout {
                 () -> Stream.concat(Stream.of(name), more.get().stream()).toList());
         add(region, button);
         return button;
+    }
+
+    /**
+     * Adds a header button for a tool that works on the overworld's settings only, as the presets and the templates do:
+     * there for every dimension, so the header keeps its place, and greyed out, saying so, while another is edited.
+     */
+    public TextButton overworldTool(EditorContext editor, Icon icon, Component name, Runnable action, Component tip) {
+        BooleanSupplier overworld = () -> editor.shown().edited() == Dimension.OVERWORLD;
+        return button(EditorRegion.HEADER, icon, name, action, overworld, () -> overworld.getAsBoolean()
+                ? List.of(tip) : List.of(tip, Component.translatable("flatgen.editor.overworld_only")));
     }
 
     /** Adds a box to the aside, on a raised panel, holding what the content places in the flow it is given. */

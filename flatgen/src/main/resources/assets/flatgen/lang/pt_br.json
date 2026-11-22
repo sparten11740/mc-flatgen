@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Camadas",
   "flatgen.editor.pick_biome": "Escolher o bioma do mundo",
   "flatgen.editor.new_layer": "Nova camada",
+  "flatgen.editor.overworld_only": "Só para a Superfície",
   "flatgen.editor.pick_block": "Escolher o bloco da camada",
   "flatgen.editor.redo": "Refazer",
   "flatgen.editor.remove": "Remover",

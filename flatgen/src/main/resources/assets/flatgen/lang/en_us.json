@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Layers",
   "flatgen.editor.pick_biome": "Pick the world's biome",
   "flatgen.editor.new_layer": "New layer",
+  "flatgen.editor.overworld_only": "Only for the Overworld",
   "flatgen.editor.pick_block": "Pick the layer's block",
   "flatgen.editor.redo": "Redo",
   "flatgen.editor.remove": "Remove",

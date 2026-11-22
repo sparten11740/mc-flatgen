@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Couches",
   "flatgen.editor.pick_biome": "Choisir le biome du monde",
   "flatgen.editor.new_layer": "Nouvelle couche",
+  "flatgen.editor.overworld_only": "Seulement pour la Surface",
   "flatgen.editor.pick_block": "Choisir le bloc de la couche",
   "flatgen.editor.redo": "Refaire",
   "flatgen.editor.remove": "Retirer",

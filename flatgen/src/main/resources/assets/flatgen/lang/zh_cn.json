@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "各层",
   "flatgen.editor.pick_biome": "选择世界的生物群系",
   "flatgen.editor.new_layer": "新建层",
+  "flatgen.editor.overworld_only": "仅限主世界",
   "flatgen.editor.pick_block": "选择这一层的方块",
   "flatgen.editor.redo": "重做",
   "flatgen.editor.remove": "移除",

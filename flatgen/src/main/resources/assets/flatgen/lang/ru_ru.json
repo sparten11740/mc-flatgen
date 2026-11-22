@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Слои",
   "flatgen.editor.pick_biome": "Выбрать биом мира",
   "flatgen.editor.new_layer": "Новый слой",
+  "flatgen.editor.overworld_only": "Только для обычного мира",
   "flatgen.editor.pick_block": "Выбрать блок слоя",
   "flatgen.editor.redo": "Повторить",
   "flatgen.editor.remove": "Удалить",

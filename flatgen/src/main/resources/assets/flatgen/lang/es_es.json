@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Capas",
   "flatgen.editor.pick_biome": "Elegir el bioma del mundo",
   "flatgen.editor.new_layer": "Nueva capa",
+  "flatgen.editor.overworld_only": "Solo para el Mundo superior",
   "flatgen.editor.pick_block": "Elegir el bloque de la capa",
   "flatgen.editor.redo": "Rehacer",
   "flatgen.editor.remove": "Quitar",

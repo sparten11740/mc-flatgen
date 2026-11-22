@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "地層",
   "flatgen.editor.pick_biome": "ワールドのバイオームを選ぶ",
   "flatgen.editor.new_layer": "新しい地層",
+  "flatgen.editor.overworld_only": "オーバーワールドのみ",
   "flatgen.editor.pick_block": "地層のブロックを選ぶ",
   "flatgen.editor.redo": "やり直す",
   "flatgen.editor.remove": "削除",

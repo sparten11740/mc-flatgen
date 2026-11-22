@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "레이어",
   "flatgen.editor.pick_biome": "세계의 생물 군계 선택",
   "flatgen.editor.new_layer": "새 레이어",
+  "flatgen.editor.overworld_only": "오버월드 전용",
   "flatgen.editor.pick_block": "레이어 블록 선택",
   "flatgen.editor.redo": "다시 실행",
   "flatgen.editor.remove": "제거",

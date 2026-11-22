@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Schichten",
   "flatgen.editor.pick_biome": "Das Biom der Welt wählen",
   "flatgen.editor.new_layer": "Neue Schicht",
+  "flatgen.editor.overworld_only": "Nur für die Oberwelt",
   "flatgen.editor.pick_block": "Den Block der Schicht wählen",
   "flatgen.editor.redo": "Wiederholen",
   "flatgen.editor.remove": "Entfernen",

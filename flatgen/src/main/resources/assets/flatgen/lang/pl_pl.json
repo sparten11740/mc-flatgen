@@ -53,6 +53,7 @@
   "flatgen.editor.layers": "Warstwy",
   "flatgen.editor.pick_biome": "Wybierz biom świata",
   "flatgen.editor.new_layer": "Nowa warstwa",
+  "flatgen.editor.overworld_only": "Tylko dla Nadziemia",
   "flatgen.editor.pick_block": "Wybierz blok warstwy",
   "flatgen.editor.redo": "Ponów",
   "flatgen.editor.remove": "Usuń",

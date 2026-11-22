@@ -26,7 +26,7 @@ pictures, four ways").
   showing the biome picked otherwise; its Pick button goes.
 - [ ] The block picker has pictured Starred and Recent shelves at the top of its list, as the biome picker has, and
   rings the block the layer has now.
-- [ ] On the Nether and End tabs, Presets and Templates stay in the header, greyed out, with a tooltip saying they are
+- [x] On the Nether and End tabs, Presets and Templates stay in the header, greyed out, with a tooltip saying they are
   for the Overworld, so the header no longer jumps.
 - [ ] Let the game make it acts at once, without asking first; Undo brings the layers back, as for every other edit.
 - [ ] The templates keep their Back arrow and lose Cancel, as the presets library has it.
