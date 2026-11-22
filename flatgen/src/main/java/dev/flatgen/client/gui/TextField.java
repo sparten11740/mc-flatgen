@@ -28,6 +28,8 @@ public final class TextField implements Control {
     private final TypedText typed =
             new TypedText(text -> text.chars().allMatch(character -> character >= FIRST_TYPED), MOST_CHARACTERS);
     private boolean keyboard;
+    /** What the field does when the player is done typing: Enter, or the field letting go of the keyboard. */
+    private Runnable onDone = () -> { };
 
     /** The width a search takes with a field this wide, in GUI pixels: the spyglass and the space before the field. */
     public static int searchWidth(int fieldWidth) {
@@ -88,11 +90,25 @@ public final class TextField implements Control {
 
     @Override
     public void keyboard(boolean held) {
+        boolean letGo = keyboard && !held;
         keyboard = held;
+        if (letGo) {
+            onDone.run();
+        }
+    }
+
+    /** The field doing this when the player is done typing, as saving a name typed in it. */
+    public TextField onDone(Runnable done) {
+        this.onDone = done;
+        return this;
     }
 
     @Override
     public boolean key(int keyCode, Modifiers modifiers) {
+        if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
+            onDone.run();
+            return true;
+        }
         if (keyCode != InputConstants.KEY_BACKSPACE) {
             return keyCode == InputConstants.KEY_DELETE;
         }

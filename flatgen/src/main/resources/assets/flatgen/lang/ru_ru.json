@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "скопированный текст",
   "flatgen.library.presets": "Ваши шаблоны",
   "flatgen.library.presets_where": "в config/flatgen/presets",
-  "flatgen.library.rename": "Переименовать",
-  "flatgen.library.rename_tip": "Дать выбранному шаблону название, введённое рядом",
   "flatgen.library.save_new": "Сохранить как новый",
   "flatgen.library.save_new_tip": "Сохранить настройки редактора как новый шаблон — он сразу выбран, чтобы его переименовать",
   "flatgen.library.search": "Поиск шаблонов",

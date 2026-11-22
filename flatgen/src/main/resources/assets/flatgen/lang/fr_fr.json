@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "le texte copié",
   "flatgen.library.presets": "Vos préréglages",
   "flatgen.library.presets_where": "dans config/flatgen/presets",
-  "flatgen.library.rename": "Renommer",
-  "flatgen.library.rename_tip": "Donner au préréglage choisi le nom saisi à côté",
   "flatgen.library.save_new": "Enregistrer comme nouveau",
   "flatgen.library.save_new_tip": "Enregistrer les réglages de l'éditeur comme nouveau préréglage, déjà choisi pour le renommer",
   "flatgen.library.search": "Chercher un préréglage",

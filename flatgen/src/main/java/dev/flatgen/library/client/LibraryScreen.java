@@ -10,7 +10,6 @@ import dev.flatgen.client.gui.MenuItem;
 import dev.flatgen.client.gui.MenuScreen;
 import dev.flatgen.client.gui.PictureButton;
 import dev.flatgen.client.gui.QuestionScreen;
-import dev.flatgen.client.gui.ShownWhile;
 import dev.flatgen.client.gui.TextButton;
 import dev.flatgen.client.gui.TextField;
 import dev.flatgen.client.gui.TextStyle;
@@ -57,8 +56,8 @@ import net.minecraft.network.chat.Component;
  * Back, a search, saving the editor's preset as a new one and a menu of the rest (pasting, the folder, the exports and
  * the library's settings); the player's presets and the built-in ones as cards, each its layers standing in the sky
  * over its name (a barrier on one naming parts the game lacks or that cannot be read, a bed on the default); and a
- * footer for the card picked: its name to change, renaming, copying, sharing, the default, saving over, deleting and
- * Use (a step to undo). Saving over, deleting and using one with missing parts ask first.
+ * footer for the card picked: its name, renamed once the player is done typing, copying, sharing, the default, saving
+ * over, deleting and Use (a step to undo). Saving over, deleting and using one with missing parts ask first.
  */
 public final class LibraryScreen extends FlatgenScreen {
     /** Space between the header's and the footer's parts, in GUI pixels. */
@@ -154,8 +153,10 @@ public final class LibraryScreen extends FlatgenScreen {
         drawFrameLines(canvas);
     }
 
+    /** Goes back to the editor, a name being typed saved first. */
     @Override
     public void onClose() {
+        rename();
         Screens.show(editor.screen());
     }
 
@@ -197,7 +198,7 @@ public final class LibraryScreen extends FlatgenScreen {
                 PICKED_HEIGHT);
         Rect field = new Rect(layers.right() + GAP, pickedTop + line, NAME_WIDTH, row.height());
         nameField = new TextField("name", field, Component.translatable("flatgen.library.name"), name,
-                text -> name = text);
+                text -> name = text).onDone(this::rename);
         List<Widget> widgets = new ArrayList<>(List.of((canvas, mouseX, mouseY) -> drawPickedLayers(canvas, layers),
                 new Caption(() -> Component.translatable("flatgen.library.is_picked"), new Rect(field.x(), pickedTop,
                         NAME_WIDTH, line), TextStyle.BODY, Look.MUTED), nameField));
@@ -208,8 +209,6 @@ public final class LibraryScreen extends FlatgenScreen {
     /** What can be done with the card picked, in this much room, Use last. */
     private List<Widget> actions(PageFrame frame, int room) {
         List<Action> actions = List.of(
-                new Action(Icon.item("minecraft:name_tag"), "flatgen.library.rename", "flatgen.library.rename_tip",
-                        this::rename, this::renamable, this::renamable),
                 new Action(Icon.line("copy"), "flatgen.library.duplicate",
                         "flatgen.library.duplicate_tip", this::duplicate, () -> pickedPreset().isPresent()),
                 new Action(Icon.toClipboard(this::drawPickedIcon), "flatgen.library.share", "flatgen.library.share_tip",
@@ -245,23 +244,16 @@ public final class LibraryScreen extends FlatgenScreen {
 
     /**
      * One of the footer's buttons for the card picked: its picture, the translation keys of its name and of what it
-     * does, which its tooltip says, what it does, whether it can now, and whether it shows now, keeping its place when
-     * it does not.
+     * does, which its tooltip says, what it does and whether it can now.
      */
-    private record Action(Icon icon, String key, String tipKey, Runnable run, BooleanSupplier usable,
-            BooleanSupplier shown) {
-        /** A button that always shows. */
-        Action(Icon icon, String key, String tipKey, Runnable run, BooleanSupplier usable) {
-            this(icon, key, tipKey, run, usable, () -> true);
-        }
-
+    private record Action(Icon icon, String key, String tipKey, Runnable run, BooleanSupplier usable) {
         Component label() {
             return Component.translatable(key);
         }
 
-        Widget button(Rect place) {
-            return new ShownWhile(shown, new TextButton(icon, this::label, place, run, usable,
-                    () -> List.of(label(), Component.translatable(tipKey))));
+        TextButton button(Rect place) {
+            return new TextButton(icon, this::label, place, run, usable,
+                    () -> List.of(label(), Component.translatable(tipKey)));
         }
     }
 
@@ -377,7 +369,19 @@ public final class LibraryScreen extends FlatgenScreen {
                 .ifPresent(this::reloadPicking);
     }
 
+    /**
+     * Renames the picked preset to the name typed, once the player is done typing it: when it is one of the player's
+     * and the name is new; a built-in's name, or one left blank, shows again as it is.
+     */
     private void rename() {
+        Optional<PresetLibrary.Entry> entry = picked.flatMap(this::entry);
+        if (entry.isEmpty() || entry.get().name().equals(name.strip())) {
+            return;
+        }
+        if (!entry.get().isPlayers() || name.isBlank()) {
+            nameField.show(entry.get().name());
+            return;
+        }
         String file = picked.get();
         saved(store.rename(file, pickedPreset().orElseThrow(), name.strip()))
                 .ifPresent(renamed -> renamedTo(file, renamed));
@@ -528,12 +532,6 @@ public final class LibraryScreen extends FlatgenScreen {
     }
 
     /** Whether the preset picked is the player's own, which they may rename, save over and delete. */
-    /** Whether the name typed would rename the card picked: one of the player's, named otherwise now. */
-    private boolean renamable() {
-        return pickedIsPlayers() && !name.isBlank()
-                && picked.flatMap(this::entry).filter(entry -> !entry.name().equals(name.strip())).isPresent();
-    }
-
     private boolean pickedIsPlayers() {
         return picked.flatMap(this::entry).filter(PresetLibrary.Entry::isPlayers).isPresent();
     }

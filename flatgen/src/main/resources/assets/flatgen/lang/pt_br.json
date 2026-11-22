@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "o texto copiado",
   "flatgen.library.presets": "Seus modelos",
   "flatgen.library.presets_where": "em config/flatgen/presets",
-  "flatgen.library.rename": "Renomear",
-  "flatgen.library.rename_tip": "Dar ao modelo escolhido o nome digitado ao lado",
   "flatgen.library.save_new": "Salvar como novo",
   "flatgen.library.save_new_tip": "Salvar os ajustes do editor como um novo modelo, já escolhido para renomear",
   "flatgen.library.search": "Buscar modelos",

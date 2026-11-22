@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "コピーしたテキスト",
   "flatgen.library.presets": "マイプリセット",
   "flatgen.library.presets_where": "保存先：config/flatgen/presets",
-  "flatgen.library.rename": "名前を変更",
-  "flatgen.library.rename_tip": "選んだプリセットの名前を、横に入力した名前に変える",
   "flatgen.library.save_new": "今の設定を新規保存",
   "flatgen.library.save_new_tip": "エディターの設定を新しいプリセットとして保存し、すぐ名前を変えられるように選択する",
   "flatgen.library.search": "プリセットを検索",

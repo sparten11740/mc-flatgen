@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "skopiowany tekst",
   "flatgen.library.presets": "Twoje szablony",
   "flatgen.library.presets_where": "w config/flatgen/presets",
-  "flatgen.library.rename": "Zmień nazwę",
-  "flatgen.library.rename_tip": "Nadaj wybranemu szablonowi nazwę wpisaną obok",
   "flatgen.library.save_new": "Zapisz jako nowy",
   "flatgen.library.save_new_tip": "Zapisz ustawienia edytora jako nowy szablon, wybrany, by od razu zmienić mu nazwę",
   "flatgen.library.search": "Szukaj szablonów",

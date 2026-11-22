@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "der kopierte Text",
   "flatgen.library.presets": "Deine Vorlagen",
   "flatgen.library.presets_where": "in config/flatgen/presets",
-  "flatgen.library.rename": "Umbenennen",
-  "flatgen.library.rename_tip": "Der gewählten Vorlage den daneben geschriebenen Namen geben",
   "flatgen.library.save_new": "Aktuelle als neu speichern",
   "flatgen.library.save_new_tip": "Die Einstellungen des Editors als neue Vorlage speichern, gewählt, um sie gleich umzubenennen",
   "flatgen.library.search": "Vorlagen suchen",

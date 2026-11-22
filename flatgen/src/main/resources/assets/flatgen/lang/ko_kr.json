@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "복사한 텍스트",
   "flatgen.library.presets": "내 사전 설정",
   "flatgen.library.presets_where": "config/flatgen/presets 폴더",
-  "flatgen.library.rename": "이름 바꾸기",
-  "flatgen.library.rename_tip": "선택한 사전 설정의 이름을 옆에 입력한 이름으로 바꿉니다",
   "flatgen.library.save_new": "새로 저장",
   "flatgen.library.save_new_tip": "편집기의 설정을 새 사전 설정으로 저장하고, 바로 이름을 바꿀 수 있게 선택합니다",
   "flatgen.library.search": "사전 설정 검색",

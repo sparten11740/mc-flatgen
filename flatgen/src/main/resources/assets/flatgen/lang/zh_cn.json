@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "复制的文本",
   "flatgen.library.presets": "我的预设",
   "flatgen.library.presets_where": "保存在config/flatgen/presets",
-  "flatgen.library.rename": "重命名",
-  "flatgen.library.rename_tip": "把旁边输入的名称设为选中预设的名称",
   "flatgen.library.save_new": "另存为新预设",
   "flatgen.library.save_new_tip": "把编辑器的设置保存为新预设，并选中它以便马上重命名",
   "flatgen.library.search": "搜索预设",

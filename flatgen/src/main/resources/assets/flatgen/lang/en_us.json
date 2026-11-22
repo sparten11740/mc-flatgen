@@ -122,8 +122,6 @@
   "flatgen.library.pasted_text": "the copied text",
   "flatgen.library.presets": "Your presets",
   "flatgen.library.presets_where": "in config/flatgen/presets",
-  "flatgen.library.rename": "Rename",
-  "flatgen.library.rename_tip": "Give the picked preset the name typed beside it",
   "flatgen.library.save_new": "Save current as new",
   "flatgen.library.save_new_tip": "Save the editor's settings as a new preset, picked to rename at once",
   "flatgen.library.search": "Search presets",

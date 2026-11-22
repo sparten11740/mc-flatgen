@@ -58,7 +58,7 @@ layers.
 | Thickness | own: a layer between a two-headed arrow |
 | Search | spyglass |
 | Mod filter | the state itself: all mods own 2x2 of small cubes, Minecraft the grass block, a mod its first block |
-| Name field, Rename | name tag, anvil |
+| Name field | the picked preset's layers beside it; it renames as typed, with no button (F31) |
 | Save new, Save over | writable book with a plus badge, with a circular-arrow badge |
 | Built-ins setting | book; the grass block with the "no" sign; the book with the "no" sign |
 | Folder | own: a folder |
@@ -146,7 +146,7 @@ Every control and what shows it besides words; a word alone is never all (checke
 | Library | Back, search | left arrow; spyglass |
 | Library | Save current as new, More | writable book with a plus badge; three dots |
 | Library | the menu | a clipboard, an arrow and the bookshelf (paste), folder, own server rack (server lines, F21), bundle (datapack), Flatgen's icon with its box (Start on Superflat), book or a grass block or book under the "no" sign (the built-ins shown) |
-| Library | the footer | the picked preset's layers; name tag (Rename), the copy sign (Copy), the preset, an arrow and a clipboard (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
+| Library | the footer | the picked preset's layers beside its name, renamed as typed (F31); the copy sign (Copy), the preset, an arrow and a clipboard (Share), writable book with a circular-arrow badge (Save over), trash can (Delete), red bed with its box (Default), tick (Use) |
 | Library | cards | the preset's layers in the sky with its own item beside them; marks for default (red bed), missing parts (the missing texture), starred (gold star); a built-in's mod or pack on a chip |
 | Templates | the templates | a card each: a picture of what it makes with the template's item over it (grass block, elytra, water bucket, stone, redstone), its name and a line on what it is |
 | Templates | number settings | ladder, water bucket, iron shovel, white carpet before each slider; minus and plus for its steps |

@@ -40,8 +40,9 @@ pictures, four ways").
 - [x] Copy's preview takes a row of its own below the card, the cards below moving down to make room, rather than
   being drawn over the card above; the copy goes there, below the layer, which stays chosen, so the card under the
   mouse never moves (the owner's, on trying 1.1.0-alpha.2).
-- [x] The library's Rename shows only while the name typed differs from the picked preset's, keeping its place so
-  nothing beside it moves (the owner's, on trying the library).
+- [x] The library renames the picked preset as its name is edited, with no Rename button: once the player is done
+  typing (Enter, Tab or a click elsewhere) or leaves the library; a built-in's name shows again as it is (the
+  owner's, on trying the library).
 
 ## Design
 
