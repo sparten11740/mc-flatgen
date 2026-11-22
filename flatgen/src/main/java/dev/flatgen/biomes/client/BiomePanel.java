@@ -13,7 +13,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
-import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.facts.client.FactsNow;
 import dev.flatgen.mc.Names;
 import java.util.HashMap;
@@ -25,8 +24,8 @@ import net.minecraft.network.chat.Component;
 public final class BiomePanel implements EditorPanel {
     /** Shown for every dimension the preset gives a stack of its own (F22). */
     @Override
-    public boolean shows(EditorState state) {
-        return state.stack().isPresent();
+    public boolean shows(EditorContext editor) {
+        return editor.shown().stack().isPresent();
     }
 
     /** The world's biome, a button with its picture and name on a box of the aside. */

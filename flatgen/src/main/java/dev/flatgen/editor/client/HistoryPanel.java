@@ -8,7 +8,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
-import dev.flatgen.editor.rules.EditorState;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 
@@ -16,7 +15,7 @@ import net.minecraft.network.chat.Component;
 final class HistoryPanel implements EditorPanel {
     /** Shown for every dimension, with a stack or without (F22). */
     @Override
-    public boolean shows(EditorState state) {
+    public boolean shows(EditorContext editor) {
         return true;
     }
 

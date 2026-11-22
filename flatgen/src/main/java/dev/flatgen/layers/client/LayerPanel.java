@@ -12,7 +12,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
-import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.layers.rules.LayerEdits;
 import java.util.List;
 import net.minecraft.network.chat.Component;
@@ -28,8 +27,8 @@ public final class LayerPanel implements EditorPanel {
 
     /** Shown for every dimension the preset gives a stack of its own (F22). */
     @Override
-    public boolean shows(EditorState state) {
-        return state.stack().isPresent();
+    public boolean shows(EditorContext editor) {
+        return editor.shown().stack().isPresent();
     }
 
     /** The cards in the layers' place ({@link LayerCards#list}); the bar's controls above them. */

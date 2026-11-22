@@ -301,7 +301,7 @@ public final class EditorScreen extends FlatgenScreen {
 
     /** The panels that show for what the editor holds now. */
     private List<EditorPanel> shownPanels() {
-        return EditorPanels.ALL.stream().filter(panel -> panel.shows(editor.shown())).toList();
+        return EditorPanels.ALL.stream().filter(panel -> panel.shows(editor)).toList();
     }
 
     /** The edited dimension's world. */

@@ -1,7 +1,6 @@
 package dev.flatgen.editor.client.panel;
 
 import dev.flatgen.client.gui.rules.Modifiers;
-import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.preset.rules.Dimension;
 import java.nio.file.Path;
 import java.util.List;
@@ -16,8 +15,8 @@ public interface EditorPanel {
      * Whether the panel shows for what the editor holds now; by default only while the overworld is edited, as a panel
      * that changes the whole preset needs (F22).
      */
-    default boolean shows(EditorState state) {
-        return state.edited() == Dimension.OVERWORLD;
+    default boolean shows(EditorContext editor) {
+        return editor.shown().edited() == Dimension.OVERWORLD;
     }
 
     /**

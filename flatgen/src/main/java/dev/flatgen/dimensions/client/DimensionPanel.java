@@ -17,7 +17,6 @@ import dev.flatgen.editor.client.panel.EditorContext;
 import dev.flatgen.editor.client.panel.EditorLayout;
 import dev.flatgen.editor.client.panel.EditorPanel;
 import dev.flatgen.editor.client.panel.EditorRegion;
-import dev.flatgen.editor.rules.EditorState;
 import dev.flatgen.preset.rules.Dimension;
 import java.util.List;
 import java.util.Optional;
@@ -44,8 +43,8 @@ public final class DimensionPanel implements EditorPanel {
 
     /** Shown while the Nether or the End is edited. */
     @Override
-    public boolean shows(EditorState state) {
-        return state.edited() != Dimension.OVERWORLD;
+    public boolean shows(EditorContext editor) {
+        return editor.shown().edited() != Dimension.OVERWORLD;
     }
 
     /**
