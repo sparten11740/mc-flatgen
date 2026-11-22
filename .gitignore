@@ -13,6 +13,9 @@ logs/
 *.log
 
 
+# Python's bytecode cache, which the drawing tools leave beside them
+__pycache__/
+
 # Editor-local settings
 /.eclipse/
 .classpath
