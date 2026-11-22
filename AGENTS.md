@@ -14,6 +14,8 @@ and 1.21.11, 26.1, 26.2 and 26.3 on NeoForge and Fabric. `docs/plan.md` is the p
   checked in for, is `1.21.1-neoforge`; switch it with the "Set active project to ..." tasks and switch back before
   committing.
 - Java 21 for 1.21.1, 25 for 26.x, 17 for 1.20.1; Gradle's toolchains fetch them.
+- CI: `.github/workflows/tests.yml` builds and tests each node on every push to `main`; `release.yml` releases a tag
+  (`docs/release/releasing.md`).
 
 ## Layout
 
