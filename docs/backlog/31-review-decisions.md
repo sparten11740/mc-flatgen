@@ -29,7 +29,7 @@ pictures, four ways").
 - [x] On the Nether and End tabs, Presets and Templates stay in the header, greyed out, with a tooltip saying they are
   for the Overworld, so the header no longer jumps.
 - [x] Let the game make it acts at once, without asking first; Undo brings the layers back, as for every other edit.
-- [ ] The templates keep their Back arrow and lose Cancel, as the presets library has it.
+- [x] The templates keep their Back arrow and lose Cancel, as the presets library has it.
 - [ ] The mod filter opens a menu of All mods and the mods that add blocks or biomes, each with its icon and name,
   instead of stepping to the next mod on each click.
 - [ ] A layer's size is its thickness in every language: one block thicker or thinner, the thickness of the layer,

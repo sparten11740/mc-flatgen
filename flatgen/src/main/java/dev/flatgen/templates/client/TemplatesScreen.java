@@ -45,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 /**
@@ -203,16 +202,15 @@ public final class TemplatesScreen extends FlatgenScreen {
                 .map(FactPictures::look);
     }
 
-    /** The note on what Use does at the left; Cancel and Use at the right. */
+    /** The note on what Use does at the left and Use at the right; Back in the header leaves, as the library has it. */
     private List<Widget> footer(PageFrame frame) {
         Component use = Component.translatable("flatgen.templates.use");
-        List<Rect> actions = frame.actions(actionWidth(CommonComponents.GUI_CANCEL), actionWidth(use));
+        Rect action = frame.actions(actionWidth(use)).get(0);
         Rect row = frame.footerRow();
         return List.of(new Caption(() -> Component.translatable("flatgen.templates.use_note"),
-                        new Rect(row.x(), row.y(), actions.get(0).x() - GAP - row.x(), row.height()), TextStyle.BODY,
+                        new Rect(row.x(), row.y(), action.x() - GAP - row.x(), row.height()), TextStyle.BODY,
                         Look.MUTED),
-                new TextButton(Icon.line("cross"), CommonComponents.GUI_CANCEL, actions.get(0), this::onClose),
-                new TextButton(Icon.line("check"), () -> use, actions.get(1), this::use, () -> true,
+                new TextButton(Icon.line("check"), () -> use, action, this::use, () -> true,
                         () -> List.of(Component.translatable("flatgen.templates.use_tip")))
                         .kind(Look.ButtonKind.PRIMARY));
     }
