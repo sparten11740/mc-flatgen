@@ -65,3 +65,19 @@ dev client of each loader for every screen changed, with Blockpilot where it rea
   moves Bedrock down a row, the faint Dirt in the place between; a click puts the copy there, Dirt staying chosen; the
   mouse away closes the row. Walking a card's controls with the arrows, the row opens on Copy and closes on Remove,
   the focus staying where it is.
+- Each change, in a 1.21.1 Fabric dev client driven by Blockpilot, from screenshots and the editor's queries: the blue
+  chosen tab and shelf filling their bar with the hover grey; Presets and Templates greyed in place on the Nether;
+  Let the game make it emptying the Nether at once and Undo bringing its two layers back; the dimensions' new pictures
+  at 32 and 16 pixels; the small biome pictures as close-ups, unclipped; one click picking Desert, the panel following
+  the mouse and the keyboard; the block picker's Starred and Recent shelves and Grass Block ringed; the mod menu,
+  scrolling when longer than the screen (tried with its rows repeated); the templates without Cancel; "Thickness" in
+  the narration; the library renaming on Enter and on a click elsewhere, a built-in's name showing again.
+- The release review's fixes, there too: digits typed in a thickness field kept with the mouse over a Copy; no drag
+  from a card pressed while a copy's row is open; the last card's copy shown below the list; in a list of nine layers
+  scrolled down, the card under the mouse staying put after Copy.
+- Every node (1.20.1 Forge and Fabric; 1.21.1, 1.21.11, 26.1, 26.2 and 26.3 NeoForge and Fabric), by one Blockpilot
+  script each: the No slimes row, Copy's row moving Bedrock down, the header greyed on the Nether, Let the game make it
+  and Undo, the biome picker without Pick and picking in one click, the block picker's shelves, the mod menu, the
+  templates without Cancel and the library's inline rename all as above, the logs without errors from Flatgen. The
+  owner tried the screens in 1.21.1 NeoForge dev clients along the way. Not tried in game: the mod menu with more than
+  one mod that adds blocks or biomes, in a real modpack.
